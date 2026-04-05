@@ -4,69 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Blandis Genéticos</title>
-    <style>
-        /* CSS Básico - Reseteo y fondo */
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #f0f4f8; /* Un tono gris-azulado muy suave */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow: hidden; /* Evita que el celular haga scroll si arrastras el dedo */
-        }
-
-        /* El contenedor principal simulando la pantalla del celular */
-        #game-container {
-            width: 100%;
-            max-width: 400px; /* Tamaño máximo para que en PC se vea como un móvil */
-            height: 100%;
-            max-height: 800px;
-            background-color: white;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* La zona donde vivirá el Blandi */
-        #room-area {
-            flex: 1;
-            background: linear-gradient(to bottom, #e0eaf5 0%, #ffffff 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-            border-bottom: 2px solid #eee;
-        }
-
-        /* Un menú inferior provisional */
-        #bottom-menu {
-            height: 80px;
-            background-color: #ffffff;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 0 10px;
-        }
-        
-        .menu-btn {
-            width: 50px;
-            height: 50px;
-            background-color: #f0f0f0;
-            border-radius: 50%;
-            border: 2px solid #ddd;
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <div id="game-container">
         <div id="room-area">
             <h2 style="color: #ccc; position: absolute; top: 20px;">Tu Laboratorio</h2>
+            
+            <div id="blandi-container"></div>
         </div>
 
         <div id="bottom-menu">
@@ -77,5 +23,6 @@
         </div>
     </div>
 
+    <script src="app.js"></script>
 </body>
 </html>
