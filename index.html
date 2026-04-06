@@ -44,7 +44,7 @@
                 <div class="arcade-card" id="card-catch-game">
                     <div class="card-icon">🍎</div>
                     <h3>Lluvia de Manzanas</h3>
-                    <p>Atrapa recursos para tu inventario.</p>
+                    <p>Atrapa recursos (30 seg)</p>
                 </div>
                 <div class="arcade-card locked">
                     <div class="card-icon">🔒</div>
@@ -58,7 +58,7 @@
         <div id="minigame-screen" class="app-screen hidden">
             <div id="game-header">
                 <button class="back-btn small" id="btn-quit-minigame">Salir</button>
-                <div id="minigame-score">Manzanas: 0</div>
+                <div id="minigame-timer">⏱️ 30s</div> <div id="minigame-score">Manzanas: 0</div>
             </div>
             
             <div id="play-area">
@@ -82,5 +82,6 @@
 
     <script src="app.js"></script>
     <script src="InventoryManager.js"></script>
-    <script src="ArcadeManager.js"></script> </body>
+    <script src="ArcadeManager.js"></script> 
+    <script src="MinigameCatch.js"></script> </body>
 </html>

@@ -1,68 +1,390 @@
 /* CSS Básico - Reseteo y fondo */
-body { margin: 0; padding: 0; background-color: #f0f4f8; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; }
-#game-container { width: 100%; max-width: 400px; height: 100%; max-height: 800px; background-color: white; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative; display: flex; flex-direction: column; }
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f0f4f8; /* Un tono gris-azulado muy suave */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden; /* Evita que el celular haga scroll si arrastras el dedo */
+}
+
+/* El contenedor principal simulando la pantalla del celular */
+#game-container {
+    width: 100%;
+    max-width: 400px; /* Tamaño máximo para que en PC se vea como un móvil */
+    height: 100%;
+    max-height: 800px;
+    background-color: white;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
 
 /* Sistema de Pantallas */
-.app-screen { flex: 1; position: relative; width: 100%; display: flex; flex-direction: column; background: linear-gradient(to bottom, #e0eaf5 0%, #ffffff 100%); }
-.app-screen.hidden { display: none !important; }
+.app-screen {
+    flex: 1;
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(to bottom, #e0eaf5 0%, #ffffff 100%);
+}
 
-/* El Cuarto */
-#room-area { justify-content: center; align-items: center; border-bottom: 2px solid #eee; }
+.app-screen.hidden {
+    display: none !important;
+}
 
-/* Menú Inferior */
-#bottom-menu { height: 80px; background-color: #ffffff; display: flex; justify-content: space-around; align-items: center; padding: 0 10px; z-index: 30; }
-.menu-btn { width: 50px; height: 50px; background-color: #f0f0f0; border-radius: 50%; border: 2px solid #ddd; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 24px; transition: transform 0.1s; }
-.menu-btn:active { transform: scale(0.9); }
+/* La zona donde vivirá el Blandi */
+#room-area {
+    justify-content: center;
+    align-items: center;
+    border-bottom: 2px solid #eee;
+}
 
-/* Animaciones Blandi */
-@keyframes respiracion { 0% { transform: scale(1, 1); } 50% { transform: scale(1.02, 0.98); } 100% { transform: scale(1, 1); } }
-#blandi-container { animation: respiracion 4s infinite ease-in-out; }
-@keyframes happyJump { 0% { transform: translateY(0) scale(1, 1); } 30% { transform: translateY(-20px) scale(0.9, 1.1); } 50% { transform: translateY(0) scale(1.05, 0.95); } 70% { transform: translateY(-10px) scale(0.95, 1.05); } 100% { transform: translateY(0) scale(1, 1); } }
-.happy-jump { animation: happyJump 0.5s ease-in-out !important; }
+/* Un menú inferior provisional */
+#bottom-menu {
+    height: 80px;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0 10px;
+    z-index: 30; /* Asegura que esté por encima de otras cosas */
+}
 
-/* Bolsillos Rotos (Inventario) */
-#inventory-ui { position: absolute; top: 20px; right: 20px; display: flex; flex-direction: column; align-items: center; background-color: rgba(255, 255, 255, 0.8); padding: 5px 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; transition: transform 0.2s; z-index: 10; }
-#inventory-ui:hover { transform: scale(1.05); }
-#backpack-icon { font-size: 28px; margin-bottom: 2px; }
-#slot-counter { font-size: 11px; font-weight: bold; color: #444; text-align: center; line-height: 1.1; }
+.menu-btn {
+    width: 50px;
+    height: 50px;
+    background-color: #f0f0f0;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    transition: transform 0.1s;
+}
 
-#inventory-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 50; }
-#inventory-modal.hidden { display: none; }
-.modal-content { background-color: white; width: 85%; max-width: 320px; border-radius: 15px; padding: 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.3); }
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-.modal-header h3 { margin: 0; color: #333; font-size: 18px; }
-#close-inventory { background: none; border: none; font-size: 18px; cursor: pointer; color: #888; }
-#inventory-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-.inventory-slot { aspect-ratio: 1; background-color: #f8f9fa; border: 2px dashed #ccc; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 24px; position: relative; cursor: pointer; }
-.inventory-slot.selected { border: 2px solid #ffaa00; background-color: #fff9e6; transform: scale(1.05); box-shadow: 0 0 8px rgba(255, 170, 0, 0.4); }
-.item-count { position: absolute; bottom: 2px; right: 4px; font-size: 11px; font-weight: bold; color: #333; background-color: rgba(255, 255, 255, 0.9); border-radius: 4px; padding: 0 4px; }
-#item-actions { margin-top: 15px; padding-top: 15px; border-top: 2px solid #eee; text-align: center; }
-#item-actions.hidden { display: none; }
-#selected-item-info { display: block; font-size: 14px; color: #555; margin-bottom: 10px; font-weight: bold; }
-.action-buttons { display: flex; justify-content: center; gap: 10px; }
-.release-btn { padding: 8px 12px; border: none; border-radius: 6px; background-color: #f0ad4e; color: white; font-weight: bold; cursor: pointer; }
-.release-btn.danger { background-color: #d9534f; }
+.menu-btn:active {
+    transform: scale(0.9);
+}
 
-/* --- NUEVO: Estilos del Salón Arcade y Minijuego --- */
-.screen-title { text-align: center; color: #444; margin-top: 30px; font-size: 24px; }
-.arcade-grid { display: flex; flex-direction: column; gap: 15px; padding: 20px; }
-.arcade-card { background: white; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 2px solid #ddd; cursor: pointer; transition: transform 0.2s; }
-.arcade-card:active { transform: scale(0.95); }
-.arcade-card h3 { margin: 10px 0 5px 0; color: #333; }
-.arcade-card p { margin: 0; font-size: 12px; color: #777; text-align: center; }
-.card-icon { font-size: 40px; }
-.arcade-card.locked { opacity: 0.6; filter: grayscale(100%); cursor: not-allowed; }
+/* Animación de respiración básica para el Blandi */
+@keyframes respiracion {
+    0% { transform: scale(1, 1); }
+    50% { transform: scale(1.02, 0.98); }
+    100% { transform: scale(1, 1); }
+}
 
-.back-btn { margin: auto auto 20px auto; padding: 12px 20px; background-color: #6c757d; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-.back-btn.small { margin: 0; padding: 8px 12px; font-size: 12px; }
+#blandi-container {
+    animation: respiracion 4s infinite ease-in-out;
+}
 
-#game-header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: rgba(255,255,255,0.9); border-bottom: 2px solid #ddd; z-index: 10; }
-#minigame-score { font-weight: bold; font-size: 18px; color: #333; }
+/* Animación de Felicidad (Comer) */
+@keyframes happyJump {
+    0% { transform: translateY(0) scale(1, 1); }
+    30% { transform: translateY(-20px) scale(0.9, 1.1); }
+    50% { transform: translateY(0) scale(1.05, 0.95); }
+    70% { transform: translateY(-10px) scale(0.95, 1.05); }
+    100% { transform: translateY(0) scale(1, 1); }
+}
 
-#play-area { flex: 1; position: relative; overflow: hidden; background: #87CEEB; }
-#falling-apple { position: absolute; font-size: 30px; top: -40px; left: 50%; transform: translateX(-50%); z-index: 2; }
-#player-basket { position: absolute; font-size: 40px; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 2; transition: left 0.1s linear; }
+.happy-jump {
+    animation: happyJump 0.5s ease-in-out !important; 
+}
+
+/* --- Estilos de Bolsillos Rotos --- */
+#inventory-ui {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 5px 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: transform 0.2s;
+    z-index: 10;
+}
+
+#inventory-ui:hover {
+    transform: scale(1.05);
+}
+
+#backpack-icon {
+    font-size: 28px;
+    margin-bottom: 2px;
+}
+
+#slot-counter {
+    font-size: 11px;
+    font-weight: bold;
+    color: #444;
+    text-align: center;
+    line-height: 1.1;
+}
+
+/* --- Modal de Inventario y Cuadrícula --- */
+#inventory-modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+}
+
+#inventory-modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background-color: white;
+    width: 85%;
+    max-width: 320px;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #333;
+    font-size: 18px;
+}
+
+#close-inventory {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #888;
+}
+
+#inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+}
+
+.inventory-slot {
+    aspect-ratio: 1;
+    background-color: #f8f9fa;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    position: relative;
+    cursor: pointer;
+}
+
+.inventory-slot.selected {
+    border: 2px solid #ffaa00;
+    background-color: #fff9e6;
+    transform: scale(1.05);
+    box-shadow: 0 0 8px rgba(255, 170, 0, 0.4);
+}
+
+.item-count {
+    position: absolute;
+    bottom: 2px;
+    right: 4px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #333;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 4px;
+    padding: 0 4px;
+}
+
+#item-actions {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid #eee;
+    text-align: center;
+}
+
+#item-actions.hidden {
+    display: none;
+}
+
+#selected-item-info {
+    display: block;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.release-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    background-color: #f0ad4e;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.release-btn.danger {
+    background-color: #d9534f;
+}
+
+/* --- Estilos del Salón Arcade y Minijuego --- */
+.screen-title {
+    text-align: center;
+    color: #444;
+    margin-top: 30px;
+    font-size: 24px;
+}
+
+.arcade-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+}
+
+.arcade-card {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border: 2px solid #ddd;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.arcade-card:active {
+    transform: scale(0.95);
+}
+
+.arcade-card h3 {
+    margin: 10px 0 5px 0;
+    color: #333;
+}
+
+.arcade-card p {
+    margin: 0;
+    font-size: 12px;
+    color: #777;
+    text-align: center;
+}
+
+.card-icon {
+    font-size: 40px;
+}
+
+.arcade-card.locked {
+    opacity: 0.6;
+    filter: grayscale(100%);
+    cursor: not-allowed;
+}
+
+.back-btn {
+    margin: auto auto 20px auto;
+    padding: 12px 20px;
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.back-btn.small {
+    margin: 0;
+    padding: 8px 12px;
+    font-size: 12px;
+}
+
+#game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: rgba(255,255,255,0.9);
+    border-bottom: 2px solid #ddd;
+    z-index: 10;
+}
+
+#minigame-score, #minigame-timer {
+    font-weight: bold;
+    font-size: 16px;
+    color: #333;
+}
+
+#minigame-timer {
+    color: #d9534f;
+}
+
+#play-area {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background: #87CEEB;
+}
+
+/* REPARACIÓN DEL BUG VISUAL DE LA MANZANA */
+#falling-apple {
+    position: absolute;
+    font-size: 30px;
+    z-index: 2;
+    transition: none !important; /* Evita que patine hacia los lados */
+}
+
+#player-basket {
+    position: absolute;
+    font-size: 40px;
+    bottom: 20px;
+    z-index: 2;
+    transition: left 0.1s linear; /* Solo la cesta tiene transición suave */
+}
 
 /* Controles invisibles dividiendo la pantalla en dos */
-#touch-controls { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; z-index: 5; }
-#touch-left, #touch-right { flex: 1; height: 100%; }
+#touch-controls {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    z-index: 5;
+}
+
+#touch-left, #touch-right {
+    flex: 1;
+    height: 100%;
+}
