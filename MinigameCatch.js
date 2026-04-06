@@ -1,6 +1,6 @@
 class MinigameCatch {
     constructor() {
-        this.appleElement = document.getElementById("falling-apple");
+        this.objectElement = document.getElementById("falling-object");
         this.basketElement = document.getElementById("player-basket");
         this.scoreElement = document.getElementById("minigame-score");
         this.timerElement = document.getElementById("minigame-timer");
@@ -9,132 +9,104 @@ class MinigameCatch {
         this.timerInterval = null;
         
         this.basketX = 50;
-        this.appleY = -10;
-        this.appleX = 50;
+        this.objY = -10;
+        this.objX = 50;
         this.speed = 1.5;
         this.score = 0;
-        this.timeLeft = 30; // LÍMITE DE TIEMPO
+        this.applesBuffer = 0; // CONTADOR PARA EL 5:1
+        this.timeLeft = 30;
         this.isPlaying = false;
+        this.currentType = "apple"; // apple o bomb
 
         this.setupEvents();
     }
 
     start() {
         this.score = 0;
+        this.applesBuffer = 0;
         this.speed = 1.5;
         this.timeLeft = 30;
         this.isPlaying = true;
-        
         this.updateScore();
         this.updateTimer();
-        this.basketX = 50;
-        this.updateBasketPosition();
-        this.resetApple();
-        
-        // Iniciamos el motor gráfico
+        this.resetObject();
         this.gameLoop();
 
-        // Iniciamos el reloj
         this.timerInterval = setInterval(() => {
             this.timeLeft--;
             this.updateTimer();
-            if (this.timeLeft <= 0) {
-                this.endGame();
-            }
+            if (this.timeLeft <= 0) this.endGame("¡Tiempo agotado!");
         }, 1000);
     }
 
-    endGame() {
+    endGame(message) {
         this.isPlaying = false;
         cancelAnimationFrame(this.gameInterval);
         clearInterval(this.timerInterval);
-        
-        alert(`¡Tiempo terminado! Atrapaste ${this.score} manzanas y están en tus Bolsillos Rotos.`);
-        window.miArcade.returnToMenu(); // Le decimos al Manager que vuelva al menú
-    }
-
-    stopManually() {
-        this.isPlaying = false;
-        cancelAnimationFrame(this.gameInterval);
-        clearInterval(this.timerInterval);
+        alert(message);
         window.miArcade.returnToMenu();
     }
 
-    resetApple() {
-        this.appleY = -10;
-        this.appleX = Math.random() * 80 + 10;
-        this.appleElement.style.left = `${this.appleX}%`;
-        this.appleElement.style.top = `${this.appleY}%`;
+    resetObject() {
+        this.objY = -10;
+        this.objX = Math.random() * 80 + 10;
+        // 20% de probabilidad de que sea una bomba
+        this.currentType = Math.random() > 0.8 ? "bomb" : "apple";
+        this.objectElement.innerHTML = this.currentType === "apple" ? "🍎" : "💣";
+        this.objectElement.style.left = `${this.objX}%`;
     }
 
     moveBasket(direction) {
         if (!this.isPlaying) return;
         if (direction === 'left' && this.basketX > 10) this.basketX -= 10;
         if (direction === 'right' && this.basketX < 90) this.basketX += 10;
-        this.updateBasketPosition();
-    }
-
-    updateBasketPosition() {
         this.basketElement.style.left = `${this.basketX}%`;
     }
 
-    updateScore() {
-        this.scoreElement.innerText = `Manzanas: ${this.score}`;
-    }
-
-    updateTimer() {
-        this.timerElement.innerText = `⏱️ ${this.timeLeft}s`;
-    }
+    updateScore() { this.scoreElement.innerText = `Manzanas: ${this.score}`; }
+    updateTimer() { this.timerElement.innerText = `⏱️ ${this.timeLeft}s`; }
 
     gameLoop() {
         if (!this.isPlaying) return;
+        this.objY += this.speed;
+        this.objectElement.style.top = `${this.objY}%`;
 
-        this.appleY += this.speed;
-        this.appleElement.style.top = `${this.appleY}%`;
-
-        // Detección de colisión limpia
-        if (this.appleY >= 85) {
-            if (Math.abs(this.basketX - this.appleX) < 15) {
-                this.score++;
-                this.speed += 0.05; // Aumenta levemente la dificultad
-                this.updateScore();
-                
-                // Inventario
-                if (window.miInventario) {
-                    const success = window.miInventario.addItem({ id: "apple_01", icon: "🍎", type: "consumable" });
-                    if (!success) {
-                        alert("¡Tus Bolsillos Rotos están llenos! El juego termina aquí.");
-                        this.endGame();
-                        return;
+        if (this.objY >= 85) {
+            if (Math.abs(this.basketX - this.objX) < 15) {
+                if (this.currentType === "bomb") {
+                    this.endGame("¡BOOM! Agarraste una bomba. Perdiste todo lo de esta ronda.");
+                    return;
+                } else {
+                    this.score++;
+                    this.applesBuffer++;
+                    this.speed += 0.05;
+                    this.updateScore();
+                    
+                    // REGLA 5:1 -> Solo añade al inventario cada 5 manzanas
+                    if (this.applesBuffer >= 5) {
+                        window.miInventario.addItem({ id: "apple_01", icon: "🍎", type: "consumable" });
+                        this.applesBuffer = 0;
                     }
                 }
             }
-            this.resetApple();
+            this.resetObject();
         }
-
         this.gameInterval = requestAnimationFrame(() => this.gameLoop());
     }
 
     setupEvents() {
-        const btnQuit = document.getElementById("btn-quit-minigame");
-        if (btnQuit) {
-            btnQuit.addEventListener("click", () => this.stopManually());
-        }
-
-        const touchLeft = document.getElementById("touch-left");
-        const touchRight = document.getElementById("touch-right");
-        
-        if (touchLeft) {
-            touchLeft.addEventListener("mousedown", () => this.moveBasket('left'));
-            touchLeft.addEventListener("touchstart", (e) => { e.preventDefault(); this.moveBasket('left'); });
-        }
-        if (touchRight) {
-            touchRight.addEventListener("mousedown", () => this.moveBasket('right'));
-            touchRight.addEventListener("touchstart", (e) => { e.preventDefault(); this.moveBasket('right'); });
-        }
+        document.getElementById("btn-quit-minigame").addEventListener("click", () => {
+            this.isPlaying = false;
+            cancelAnimationFrame(this.gameInterval);
+            clearInterval(this.timerInterval);
+            window.miArcade.returnToMenu();
+        });
+        document.getElementById("touch-left").addEventListener("mousedown", () => this.moveBasket('left'));
+        document.getElementById("touch-right").addEventListener("mousedown", () => this.moveBasket('right'));
+        // Touch para móvil
+        document.getElementById("touch-left").addEventListener("touchstart", (e) => { e.preventDefault(); this.moveBasket('left'); });
+        document.getElementById("touch-right").addEventListener("touchstart", (e) => { e.preventDefault(); this.moveBasket('right'); });
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    window.minigameCatch = new MinigameCatch();
-});
+document.addEventListener("DOMContentLoaded", () => { window.minigameCatch = new MinigameCatch(); });

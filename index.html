@@ -11,17 +11,21 @@
     <div id="game-container">
         
         <div id="room-area" class="app-screen">
-            <h2 style="color: #ccc; position: absolute; top: 20px; left: 20px; margin: 0;">Tu Laboratorio</h2>
+            <h2 style="color: #ccc; position: absolute; top: 20px; left: 20px; margin: 0;">Laboratorio</h2>
             
+            <div id="currency-ui">
+                <span id="vital-essence-amount">✨ 0</span>
+            </div>
+
             <div id="inventory-ui">
-                <div id="backpack-icon" title="Abrir Bolsillos Rotos">🎒</div>
+                <div id="backpack-icon" title="Abrir Mochila">🎒</div>
                 <div id="slot-counter">0/10<br>SLOTS</div>
             </div>
 
             <div id="inventory-modal" class="hidden">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h3>Bolsillos Rotos</h3>
+                        <h3>Mochila de Blandi</h3>
                         <button id="close-inventory">❌</button>
                     </div>
                     <div id="inventory-grid"></div>
@@ -44,7 +48,7 @@
                 <div class="arcade-card" id="card-catch-game">
                     <div class="card-icon">🍎</div>
                     <h3>Lluvia de Manzanas</h3>
-                    <p>Atrapa recursos (30 seg)</p>
+                    <p>Atrapa 5 manzanas para ganar 1 item.</p>
                 </div>
                 <div class="arcade-card locked">
                     <div class="card-icon">🔒</div>
@@ -58,12 +62,12 @@
         <div id="minigame-screen" class="app-screen hidden">
             <div id="game-header">
                 <button class="back-btn small" id="btn-quit-minigame">Salir</button>
-                <div id="minigame-timer">⏱️ 30s</div> <div id="minigame-score">Manzanas: 0</div>
+                <div id="minigame-timer">⏱️ 30s</div>
+                <div id="minigame-score">Manzanas: 0</div>
             </div>
             
             <div id="play-area">
-                <div id="falling-apple">🍎</div>
-                <div id="player-basket">🧺</div>
+                <div id="falling-object">🍎</div> <div id="player-basket">🧺</div>
             </div>
             
             <div id="touch-controls">
@@ -83,5 +87,6 @@
     <script src="app.js"></script>
     <script src="InventoryManager.js"></script>
     <script src="ArcadeManager.js"></script> 
-    <script src="MinigameCatch.js"></script> </body>
+    <script src="MinigameCatch.js"></script>
+</body>
 </html>
