@@ -9,7 +9,8 @@
 <body>
 
     <div id="game-container">
-        <div id="room-area">
+        
+        <div id="room-area" class="app-screen">
             <h2 style="color: #ccc; position: absolute; top: 20px; left: 20px; margin: 0;">Tu Laboratorio</h2>
             
             <div id="inventory-ui">
@@ -17,19 +18,13 @@
                 <div id="slot-counter">0/10<br>SLOTS</div>
             </div>
 
-            <button id="test-add-apple" style="position: absolute; top: 90px; right: 20px; padding: 10px; background: #ffcccc; border: 2px solid #ff4444; border-radius: 8px; cursor: pointer; z-index: 10; font-weight: bold;">
-                + 🍎
-            </button>
-
             <div id="inventory-modal" class="hidden">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3>Bolsillos Rotos</h3>
                         <button id="close-inventory">❌</button>
                     </div>
-                    
                     <div id="inventory-grid"></div>
-
                     <div id="item-actions" class="hidden">
                         <div id="selected-item-info">Seleccionado: --</div>
                         <div class="action-buttons">
@@ -37,22 +32,55 @@
                             <button id="btn-release-all" class="release-btn danger">Liberar Todo</button>
                         </div>
                     </div>
-
                 </div>
             </div>
 
             <div id="blandi-container"></div>
         </div>
 
+        <div id="arcade-menu" class="app-screen hidden">
+            <h2 class="screen-title">Salón Arcade</h2>
+            <div class="arcade-grid">
+                <div class="arcade-card" id="card-catch-game">
+                    <div class="card-icon">🍎</div>
+                    <h3>Lluvia de Manzanas</h3>
+                    <p>Atrapa recursos para tu inventario.</p>
+                </div>
+                <div class="arcade-card locked">
+                    <div class="card-icon">🔒</div>
+                    <h3>Próximamente</h3>
+                    <p>Nuevo minijuego en desarrollo.</p>
+                </div>
+            </div>
+            <button class="back-btn" id="btn-back-from-menu">Volver al Laboratorio</button>
+        </div>
+
+        <div id="minigame-screen" class="app-screen hidden">
+            <div id="game-header">
+                <button class="back-btn small" id="btn-quit-minigame">Salir</button>
+                <div id="minigame-score">Manzanas: 0</div>
+            </div>
+            
+            <div id="play-area">
+                <div id="falling-apple">🍎</div>
+                <div id="player-basket">🧺</div>
+            </div>
+            
+            <div id="touch-controls">
+                <div id="touch-left"></div>
+                <div id="touch-right"></div>
+            </div>
+        </div>
+
         <div id="bottom-menu">
             <div id="btn-feed" class="menu-btn" title="Alimentar">🍎</div>
-            <div class="menu-btn" title="Limpiar">🧼</div>
-            <div class="menu-btn" title="Arcade">🕹️</div>
-            <div class="menu-btn" title="Coliseo">⚔️</div>
+            <div id="btn-clean" class="menu-btn" title="Limpiar">🧼</div>
+            <div id="btn-arcade" class="menu-btn" title="Arcade">🕹️</div>
+            <div id="btn-coliseum" class="menu-btn" title="Coliseo">⚔️</div>
         </div>
     </div>
 
     <script src="app.js"></script>
     <script src="InventoryManager.js"></script>
-</body>
+    <script src="ArcadeManager.js"></script> </body>
 </html>
