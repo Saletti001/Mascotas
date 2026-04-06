@@ -227,3 +227,17 @@ body {
 .release-btn.danger {
     background-color: #d9534f;
 }
+
+/* --- NUEVO: Animación de Felicidad (Comer) --- */
+@keyframes happyJump {
+    0% { transform: translateY(0) scale(1, 1); }
+    30% { transform: translateY(-20px) scale(0.9, 1.1); }
+    50% { transform: translateY(0) scale(1.05, 0.95); }
+    70% { transform: translateY(-10px) scale(0.95, 1.05); }
+    100% { transform: translateY(0) scale(1, 1); }
+}
+
+.happy-jump {
+    /* El !important hace que deje de respirar temporalmente para poder saltar */
+    animation: happyJump 0.5s ease-in-out !important; 
+}

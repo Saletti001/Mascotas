@@ -7,7 +7,7 @@ class InventoryManager {
             consumable: 20,
             equipment: 1
         };
-        this.selectedIndex = null; // NUEVO: Recuerda qué cuadrito tocaste
+        this.selectedIndex = null; 
     }
 
     addItem(newItem) {
@@ -30,16 +30,28 @@ class InventoryManager {
         return true;
     }
 
-    // NUEVA FUNCIÓN: Restar o eliminar objetos
+    // NUEVA FUNCIÓN: Consumir objetos desde el exterior (ej. Alimentar)
+    consumeItem(itemId, amount = 1) {
+        // Buscamos si tenemos el objeto
+        let index = this.slots.findIndex(slot => slot.id === itemId);
+        
+        // Si existe y tenemos cantidad suficiente
+        if (index !== -1 && this.slots[index].count >= amount) {
+            this.removeItem(index, amount);
+            return true; // Éxito
+        }
+        return false; // Fallo (no hay objeto)
+    }
+
     removeItem(index, amount) {
         if (this.slots[index]) {
             this.slots[index].count -= amount;
             
-            // Si el contador llega a cero, borramos el objeto del espacio
             if (this.slots[index].count <= 0) {
                 this.slots.splice(index, 1); 
-                this.selectedIndex = null; // Quitamos la selección
-                document.getElementById("item-actions").classList.add("hidden");
+                this.selectedIndex = null; 
+                const actions = document.getElementById("item-actions");
+                if(actions) actions.classList.add("hidden");
             }
             
             this.updateUI();
@@ -80,17 +92,14 @@ class InventoryManager {
                     slotDiv.appendChild(countSpan);
                 }
 
-                // NUEVO: Al hacer clic en un objeto
                 slotDiv.addEventListener("click", () => {
                     this.selectedIndex = i;
-                    this.renderGrid(); // Redibujar para marcar la selección
+                    this.renderGrid(); 
                     
-                    // Mostramos el panel inferior
-                    infoText.innerText = `Seleccionado: ${item.icon} (Cant: ${item.count})`;
-                    actionsPanel.classList.remove("hidden");
+                    if(infoText) infoText.innerText = `Seleccionado: ${item.icon} (Cant: ${item.count})`;
+                    if(actionsPanel) actionsPanel.classList.remove("hidden");
                 });
 
-                // Si este es el cuadrito seleccionado, lo pintamos diferente
                 if (this.selectedIndex === i) {
                     slotDiv.classList.add("selected");
                 }
@@ -105,8 +114,6 @@ class InventoryManager {
         const modal = document.getElementById("inventory-modal");
         const closeBtn = document.getElementById("close-inventory");
         const testBtn = document.getElementById("test-add-apple"); 
-        
-        // Botones de liberar
         const btnReleaseOne = document.getElementById("btn-release-one");
         const btnReleaseAll = document.getElementById("btn-release-all");
 
@@ -118,8 +125,8 @@ class InventoryManager {
 
             closeBtn.addEventListener("click", () => {
                 modal.classList.add("hidden"); 
-                // Al cerrar, ocultamos el menú de selección
-                document.getElementById("item-actions").classList.add("hidden");
+                const actions = document.getElementById("item-actions");
+                if(actions) actions.classList.add("hidden");
                 this.selectedIndex = null;
             });
         }
@@ -130,21 +137,15 @@ class InventoryManager {
             });
         }
 
-        // Lógica de los botones de Liberar
         if (btnReleaseOne) {
             btnReleaseOne.addEventListener("click", () => {
-                if (this.selectedIndex !== null) {
-                    this.removeItem(this.selectedIndex, 1);
-                }
+                if (this.selectedIndex !== null) this.removeItem(this.selectedIndex, 1);
             });
         }
 
         if (btnReleaseAll) {
             btnReleaseAll.addEventListener("click", () => {
-                if (this.selectedIndex !== null) {
-                    // Le decimos que borre todas las que haya
-                    this.removeItem(this.selectedIndex, this.slots[this.selectedIndex].count);
-                }
+                if (this.selectedIndex !== null) this.removeItem(this.selectedIndex, this.slots[this.selectedIndex].count);
             });
         }
     }
@@ -156,6 +157,7 @@ class InventoryManager {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    const miInventario = new InventoryManager();
-    miInventario.init();
+    // NUEVO: La hacemos "window." para que app.js pueda hablar con el inventario
+    window.miInventario = new InventoryManager();
+    window.miInventario.init();
 });
