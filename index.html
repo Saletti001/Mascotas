@@ -10,19 +10,35 @@
 
     <div id="game-container">
         <div id="room-area">
-            <h2 style="color: #ccc; position: absolute; top: 20px;">Tu Laboratorio</h2>
+            <h2 style="color: #ccc; position: absolute; top: 20px; left: 20px; margin: 0;">Tu Laboratorio</h2>
             
+            <div id="inventory-ui">
+                <div id="backpack-icon" title="Abrir Bolsillos Rotos">🎒</div>
+                <div id="slot-counter">0/10<br>SLOTS</div>
+            </div>
+
+            <div id="inventory-modal" class="hidden">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Bolsillos Rotos</h3>
+                        <button id="close-inventory">❌</button>
+                    </div>
+                    <div id="inventory-grid"></div>
+                </div>
+            </div>
+
             <div id="blandi-container"></div>
         </div>
 
         <div id="bottom-menu">
-            <div class="menu-btn" title="Alimentar"></div>
-            <div class="menu-btn" title="Limpiar"></div>
-            <div class="menu-btn" title="Arcade"></div>
-            <div class="menu-btn" title="Coliseo"></div>
+            <div class="menu-btn" title="Alimentar">🍎</div>
+            <div class="menu-btn" title="Limpiar">🧼</div>
+            <div class="menu-btn" title="Arcade">🕹️</div>
+            <div class="menu-btn" title="Coliseo">⚔️</div>
         </div>
     </div>
 
     <script src="app.js"></script>
+    <script src="InventoryManager.js"></script>
 </body>
 </html>
