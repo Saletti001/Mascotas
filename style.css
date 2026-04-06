@@ -2,19 +2,18 @@
 body {
     margin: 0;
     padding: 0;
-    background-color: #f0f4f8; /* Un tono gris-azulado muy suave */
+    background-color: #f0f4f8;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    overflow: hidden; /* Evita que el celular haga scroll si arrastras el dedo */
+    overflow: hidden;
 }
 
-/* El contenedor principal simulando la pantalla del celular */
 #game-container {
     width: 100%;
-    max-width: 400px; /* Tamaño máximo para que en PC se vea como un móvil */
+    max-width: 400px;
     height: 100%;
     max-height: 800px;
     background-color: white;
@@ -24,7 +23,6 @@ body {
     flex-direction: column;
 }
 
-/* La zona donde vivirá el Blandi */
 #room-area {
     flex: 1;
     background: linear-gradient(to bottom, #e0eaf5 0%, #ffffff 100%);
@@ -35,7 +33,6 @@ body {
     border-bottom: 2px solid #eee;
 }
 
-/* Un menú inferior provisional */
 #bottom-menu {
     height: 80px;
     background-color: #ffffff;
@@ -55,10 +52,9 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 24px; /* Añadido para centrar bien los emojis de los botones inferiores */
+    font-size: 24px;
 }
 
-/* Animación de respiración básica para el Blandi */
 @keyframes respiracion {
     0% { transform: scale(1, 1); }
     50% { transform: scale(1.02, 0.98); }
@@ -110,15 +106,15 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro semitransparente */
+    background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 20; /* Se asegura de estar por encima de todo */
+    z-index: 20;
 }
 
 #inventory-modal.hidden {
-    display: none; /* Esta clase oculta el modal cuando no se usa */
+    display: none;
 }
 
 .modal-content {
@@ -155,23 +151,31 @@ body {
 
 #inventory-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr); /* 5 columnas de ancho igual */
-    gap: 8px; /* Espacio entre los cuadritos */
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
 }
 
 .inventory-slot {
-    aspect-ratio: 1; /* Mantiene los slots como cuadrados perfectos */
+    aspect-ratio: 1;
     background-color: #f8f9fa;
     border: 2px dashed #ccc;
     border-radius: 8px;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 24px; /* Un poco más grande para el emoji */
-    position: relative; /* Necesario para colocar el numerito */
+    font-size: 24px;
+    position: relative;
+    cursor: pointer; /* Indica que se puede hacer clic */
 }
 
-/* El diseño del número de cantidad apilada */
+/* NUEVO: Clase cuando seleccionas un cuadrito */
+.inventory-slot.selected {
+    border: 2px solid #ffaa00;
+    background-color: #fff9e6;
+    transform: scale(1.05);
+    box-shadow: 0 0 8px rgba(255, 170, 0, 0.4);
+}
+
 .item-count {
     position: absolute;
     bottom: 2px;
@@ -182,4 +186,44 @@ body {
     background-color: rgba(255, 255, 255, 0.9);
     border-radius: 4px;
     padding: 0 4px;
+}
+
+/* NUEVO: Estilos del panel de acciones */
+#item-actions {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid #eee;
+    text-align: center;
+}
+
+#item-actions.hidden {
+    display: none;
+}
+
+#selected-item-info {
+    display: block;
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.release-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    background-color: #f0ad4e;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.release-btn.danger {
+    background-color: #d9534f;
 }

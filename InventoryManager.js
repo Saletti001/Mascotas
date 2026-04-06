@@ -1,79 +1,98 @@
 class InventoryManager {
     constructor() {
         this.maxSlots = 10; 
-        this.slots = []; // Ahora guardará objetos complejos con cantidades
+        this.slots = []; 
         this.stackLimits = {
             basic: 99,
-            consumable: 20, // Las manzanas usarán este límite
+            consumable: 20,
             equipment: 1
         };
+        this.selectedIndex = null; // NUEVO: Recuerda qué cuadrito tocaste
     }
 
-    // NUEVA FUNCIÓN: La inteligencia del inventario
     addItem(newItem) {
         let limit = this.stackLimits[newItem.type] || 1;
-        
-        // 1. Buscamos si ya tenemos este objeto y si aún no llega al límite de 20
         let existingSlot = this.slots.find(slot => slot.id === newItem.id && slot.count < limit);
 
         if (existingSlot) {
-            // Si existe y hay espacio, sumamos 1 a ese montón
             existingSlot.count++;
         } else {
-            // 2. Si no existe o el montón de 20 está lleno, intentamos usar un nuevo espacio vacío
             if (this.slots.length < this.maxSlots) {
-                // Clonamos el objeto y le ponemos cantidad 1
                 this.slots.push({ ...newItem, count: 1 });
             } else {
-                // 3. Si no hay espacios vacíos, la mochila está llena
                 alert("¡Bolsillos Rotos al límite! Debes liberar espacio.");
                 return false; 
             }
         }
         
-        // Refrescamos los gráficos
         this.updateUI();
         this.renderGrid();
         return true;
+    }
+
+    // NUEVA FUNCIÓN: Restar o eliminar objetos
+    removeItem(index, amount) {
+        if (this.slots[index]) {
+            this.slots[index].count -= amount;
+            
+            // Si el contador llega a cero, borramos el objeto del espacio
+            if (this.slots[index].count <= 0) {
+                this.slots.splice(index, 1); 
+                this.selectedIndex = null; // Quitamos la selección
+                document.getElementById("item-actions").classList.add("hidden");
+            }
+            
+            this.updateUI();
+            this.renderGrid();
+        }
     }
 
     updateUI() {
         const counter = document.getElementById("slot-counter");
         if (counter) {
             counter.innerHTML = `${this.slots.length}/${this.maxSlots}<br>SLOTS`;
-            
-            if (this.slots.length >= this.maxSlots) {
-                counter.style.color = "#d9534f"; 
-            } else {
-                counter.style.color = "#444";
-            }
+            counter.style.color = this.slots.length >= this.maxSlots ? "#d9534f" : "#444";
         }
     }
 
     renderGrid() {
         const grid = document.getElementById("inventory-grid");
+        const actionsPanel = document.getElementById("item-actions");
+        const infoText = document.getElementById("selected-item-info");
+
         if (!grid) return;
-        
         grid.innerHTML = ""; 
 
         for (let i = 0; i < this.maxSlots; i++) {
             const slotDiv = document.createElement("div");
             slotDiv.className = "inventory-slot";
             
-            // Si hay un objeto guardado en esta posición del array
             if (this.slots[i]) {
                 const item = this.slots[i];
-                // Dibujamos el emoji
                 slotDiv.innerHTML = item.icon;
                 slotDiv.style.borderStyle = "solid";
                 slotDiv.style.borderColor = "#999";
                 
-                // Si hay más de 1, dibujamos el numerito en la esquina
                 if (item.count > 1) {
                     const countSpan = document.createElement("span");
                     countSpan.className = "item-count";
                     countSpan.innerText = item.count;
                     slotDiv.appendChild(countSpan);
+                }
+
+                // NUEVO: Al hacer clic en un objeto
+                slotDiv.addEventListener("click", () => {
+                    this.selectedIndex = i;
+                    this.renderGrid(); // Redibujar para marcar la selección
+                    
+                    // Mostramos el panel inferior
+                    infoText.innerText = `Seleccionado: ${item.icon} (Cant: ${item.count})`;
+                    actionsPanel.classList.remove("hidden");
+                });
+
+                // Si este es el cuadrito seleccionado, lo pintamos diferente
+                if (this.selectedIndex === i) {
+                    slotDiv.classList.add("selected");
                 }
             }
             
@@ -85,7 +104,11 @@ class InventoryManager {
         const backpackBtn = document.getElementById("inventory-ui");
         const modal = document.getElementById("inventory-modal");
         const closeBtn = document.getElementById("close-inventory");
-        const testBtn = document.getElementById("test-add-apple"); // NUEVO BOTÓN
+        const testBtn = document.getElementById("test-add-apple"); 
+        
+        // Botones de liberar
+        const btnReleaseOne = document.getElementById("btn-release-one");
+        const btnReleaseAll = document.getElementById("btn-release-all");
 
         if (backpackBtn && modal && closeBtn) {
             backpackBtn.addEventListener("click", () => {
@@ -95,19 +118,33 @@ class InventoryManager {
 
             closeBtn.addEventListener("click", () => {
                 modal.classList.add("hidden"); 
+                // Al cerrar, ocultamos el menú de selección
+                document.getElementById("item-actions").classList.add("hidden");
+                this.selectedIndex = null;
             });
         }
 
-        // Lógica al hacer clic en el botón de prueba
         if (testBtn) {
             testBtn.addEventListener("click", () => {
-                // Definimos cómo es una Manzana para el código
-                const manzana = { 
-                    id: "apple_01", 
-                    icon: "🍎", 
-                    type: "consumable" 
-                };
-                this.addItem(manzana);
+                this.addItem({ id: "apple_01", icon: "🍎", type: "consumable" });
+            });
+        }
+
+        // Lógica de los botones de Liberar
+        if (btnReleaseOne) {
+            btnReleaseOne.addEventListener("click", () => {
+                if (this.selectedIndex !== null) {
+                    this.removeItem(this.selectedIndex, 1);
+                }
+            });
+        }
+
+        if (btnReleaseAll) {
+            btnReleaseAll.addEventListener("click", () => {
+                if (this.selectedIndex !== null) {
+                    // Le decimos que borre todas las que haya
+                    this.removeItem(this.selectedIndex, this.slots[this.selectedIndex].count);
+                }
             });
         }
     }
