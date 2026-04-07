@@ -2,23 +2,19 @@
    CSS GENERAL Y UTILIDADES
    ========================================= */
 body { margin: 0; padding: 0; background-color: #f0f4f8; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; }
-#game-container { width: 100%; max-width: 400px; height: 100%; max-height: 800px; background-color: white; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative; display: flex; flex-direction: column; }
+#game-container { width: 100%; max-width: 400px; height: 100%; max-height: 800px; background-color: white; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative; display: flex; flex-direction: column; overflow: hidden;}
 .hidden { display: none !important; }
-.app-screen { flex: 1; position: relative; width: 100%; display: flex; flex-direction: column; background: linear-gradient(to bottom, #e0eaf5 0%, #ffffff 100%); }
+.app-screen { flex: 1; position: absolute; top:0; left:0; width: 100%; height: 100%; display: flex; flex-direction: column; background: linear-gradient(to bottom, #e0eaf5 0%, #ffffff 100%); z-index: 1;}
 
 /* =========================================
    PANTALLA 1: EL LABORATORIO
    ========================================= */
-#room-area { display: flex; justify-content: center; align-items: center; }
+#room-area { justify-content: center; align-items: center; }
 #currency-ui { position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.9); padding: 5px 12px; border-radius: 20px; border: 2px solid #ffcc00; font-weight: bold; font-size: 14px; z-index: 10; color: #b8860b; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
 #inventory-ui { position: absolute; top: 20px; right: 20px; display: flex; flex-direction: column; align-items: center; background-color: rgba(255, 255, 255, 0.8); padding: 5px 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; z-index: 10; }
 #backpack-icon { font-size: 28px; }
 #slot-counter { font-size: 11px; font-weight: bold; color: #444; text-align: center; }
-
-#bottom-menu { height: 80px; background-color: #ffffff; display: flex; justify-content: space-around; align-items: center; padding: 0 10px; z-index: 30; border-top: 2px solid #eee;}
-.menu-btn { width: 50px; height: 50px; background-color: #f0f0f0; border-radius: 50%; border: 2px solid #ddd; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 24px; transition: transform 0.1s;}
-.menu-btn:active { transform: scale(0.9); }
 
 /* =========================================
    GENO Y ANIMACIONES
@@ -54,8 +50,8 @@ body { margin: 0; padding: 0; background-color: #f0f4f8; display: flex; justify-
 .screen-title { text-align: center; color: #444; margin-top: 30px; }
 .arcade-grid { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
 .arcade-card { background: white; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; border: 2px solid #ddd; cursor: pointer; }
-.arcade-card.locked { opacity: 0.5; filter: grayscale(1); }
-.back-btn { margin: auto auto 20px auto; padding: 10px 20px; border-radius: 8px; border: none; background: #6c757d; color: white; font-weight: bold; cursor: pointer; }
+.arcade-card.locked { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
+.back-btn { margin: auto auto 20px auto; padding: 10px 20px; border-radius: 8px; border: none; background: #6c757d; color: white; font-weight: bold; cursor: pointer; z-index: 10; }
 
 #play-area { flex: 1; position: relative; overflow: hidden; background: #87CEEB; }
 #falling-object { position: absolute; font-size: 30px; transition: none !important; }
@@ -76,3 +72,34 @@ body { margin: 0; padding: 0; background-color: #f0f4f8; display: flex; justify-
 .btn-liberar-geno { background: #d9534f; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: background 0.2s;}
 .btn-liberar-geno:hover { background: #c9302c; }
 .btn-liberar-geno:disabled { background: #ccc; cursor: not-allowed; }
+
+/* =========================================
+   ALQUIMIA
+   ========================================= */
+.alchemy-panel { background: white; margin: 20px; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(139, 92, 246, 0.2); border: 2px solid #8B5CF6; display: flex; flex-direction: column; align-items: center;}
+.alchemy-stats { width: 100%; display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px dashed #ccc;}
+.alchemy-visual { font-size: 24px; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px; width: 100%; text-align: center; letter-spacing: 2px; }
+.btn-fuse { background: #8B5CF6; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; width: 100%; transition: background 0.3s;}
+.btn-fuse:hover { background: #7c3aed; }
+.btn-fuse:disabled { background: #ccc; cursor: not-allowed; }
+
+/* =========================================
+   NUEVO MENÚ DESPLEGABLE Y BOTÓN FLOTANTE
+   ========================================= */
+.fab-btn { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 25px; border-radius: 30px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; z-index: 100; transition: transform 0.2s;}
+.fab-btn:active { transform: translateX(-50%) scale(0.95); }
+
+.drawer-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; display: flex; flex-direction: column; justify-content: flex-end; transition: opacity 0.3s; }
+.drawer-content { background: white; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.2); animation: slideUp 0.3s ease-out;}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+.drawer-header h3 { margin: 0; color: #333; }
+#close-drawer { background: none; border: none; font-size: 16px; cursor: pointer; }
+
+.drawer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+.drawer-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s; }
+.drawer-item:active { transform: scale(0.9); }
+.drawer-item.locked { opacity: 0.4; cursor: not-allowed; }
+.drawer-icon { width: 50px; height: 50px; background: #f0f4f8; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 8px; border: 1px solid #ddd; }
+.drawer-item span { font-size: 11px; font-weight: bold; color: #444; }

@@ -75,7 +75,7 @@
                     <p>Nuevo minijuego en desarrollo.</p>
                 </div>
             </div>
-            <button class="back-btn" id="btn-back-from-menu">Volver al Laboratorio</button>
+            <button class="back-btn btn-go-home">Volver al Laboratorio</button>
         </div>
 
         <div id="minigame-screen" class="app-screen hidden">
@@ -102,18 +102,68 @@
                 Límite diario: <span id="daily-release-count">0</span>/3
             </div>
             
-            <div id="sanctuary-grid" class="sanctuary-grid">
-                </div>
+            <div id="sanctuary-grid" class="sanctuary-grid"></div>
             
-            <button class="back-btn" id="btn-back-from-sanctuary">Volver al Laboratorio</button>
+            <button class="back-btn btn-go-home">Volver al Laboratorio</button>
         </div>
 
-        <div id="bottom-menu">
-            <div id="btn-feed" class="menu-btn" title="Alimentar">🍎</div>
-            <div id="btn-sanctuary" class="menu-btn" title="Santuario">🏛️</div>
-            <div id="btn-arcade" class="menu-btn" title="Arcade">🕹️</div>
-            <div id="btn-coliseum" class="menu-btn" title="Coliseo" style="opacity: 0.5;">⚔️</div>
+        <div id="alchemy-screen" class="app-screen hidden">
+            <h2 class="screen-title" style="color: #8B5CF6;">Cámara de Alquimia</h2>
+            <p style="text-align: center; color: #666; font-size: 14px; padding: 0 20px; margin-bottom: 20px;">
+                Fusiona 5 Genos Comunes para crear 1 Geno Raro.
+            </p>
+            
+            <div class="alchemy-panel">
+                <div class="alchemy-stats">
+                    <div>Tus Genos Comunes: <span id="alchemy-common-count" style="font-weight: bold;">0</span>/5</div>
+                    <div>Costo de Esencia: <span style="font-weight: bold; color: #b8860b;">100 ✨</span></div>
+                </div>
+                
+                <div id="alchemy-visual" class="alchemy-visual">
+                    🧬 + 🧬 + 🧬 + 🧬 + 🧬 = 🌟
+                </div>
+
+                <button id="btn-fuse-genos" class="btn-fuse">Fusionar Genos</button>
+            </div>
+            
+            <button class="back-btn btn-go-home">Volver al Laboratorio</button>
         </div>
+
+        <div id="fab-menu" class="fab-btn">
+            <span>⚙️ MENÚ</span>
+        </div>
+
+        <div id="drawer-menu" class="drawer-overlay hidden">
+            <div class="drawer-content">
+                <div class="drawer-header">
+                    <h3>Aplicaciones</h3>
+                    <button id="close-drawer">❌</button>
+                </div>
+                <div class="drawer-grid">
+                    <div class="drawer-item" id="btn-feed">
+                        <div class="drawer-icon">🍎</div>
+                        <span>Alimentar</span>
+                    </div>
+                    <div class="drawer-item" id="btn-sanctuary">
+                        <div class="drawer-icon">🏛️</div>
+                        <span>Santuario</span>
+                    </div>
+                    <div class="drawer-item" id="btn-alchemy">
+                        <div class="drawer-icon">🔮</div>
+                        <span>Alquimia</span>
+                    </div>
+                    <div class="drawer-item" id="btn-arcade">
+                        <div class="drawer-icon">🕹️</div>
+                        <span>Arcade</span>
+                    </div>
+                    <div class="drawer-item locked">
+                        <div class="drawer-icon">⚔️</div>
+                        <span>Coliseo</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script src="app.js"></script>
