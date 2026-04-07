@@ -17,16 +17,73 @@ function generarSvgBlandi(genesVisuales) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Generar Blandi
-    const miMascota = { visual_genes: { body_shape: "frijol", base_color: "#77DD77" } };
+    
+    // 1. ESTADO GLOBAL DEL BLANDI (Unificado visual y stats)
+    const miMascota = { 
+        visual_genes: { body_shape: "frijol", base_color: "#77DD77" },
+        rarity: "Común",
+        element: "🧪 Tóxico",
+        stats: {
+            hp: Math.floor(Math.random() * 6) + 5, // Rango 5 a 10
+            atk: Math.floor(Math.random() * 6) + 5,
+            spd: Math.floor(Math.random() * 6) + 5,
+            luk: Math.floor(Math.random() * 6) + 5
+        },
+        scanned: false
+    };
+
+    // 2. RENDERIZADO VISUAL
     const contenedor = document.getElementById("blandi-container");
     if (contenedor) contenedor.innerHTML = generarSvgBlandi(miMascota.visual_genes);
 
-    // Sistema de Pantallas
+    // 3. RENDERIZADO DE STATS (Panel)
+    document.getElementById("blandi-rarity").innerText = miMascota.rarity;
+    document.getElementById("blandi-element").innerText = miMascota.element;
+
+    const btnStats = document.getElementById("btn-show-stats");
+    const panelStats = document.getElementById("blandi-stats-panel");
+    const btnScanner = document.getElementById("btn-use-scanner");
+
+    if (btnStats && panelStats) {
+        btnStats.addEventListener("click", () => {
+            panelStats.classList.toggle("hidden");
+        });
+    }
+
+    // 4. LÓGICA DEL ESCÁNER DE ADN
+    if (btnScanner) {
+        btnScanner.addEventListener("click", () => {
+            if (miMascota.scanned) {
+                alert("El ADN de este Blandi ya ha sido decodificado.");
+                return;
+            }
+
+            // Verificamos si tiene el objeto en el inventario y consumimos 1
+            if (window.miInventario && window.miInventario.consumeItem("dna_scanner", 1)) {
+                
+                // Revelar las estadísticas reales en el HTML
+                document.getElementById("stat-hp").innerText = miMascota.stats.hp;
+                document.getElementById("stat-atk").innerText = miMascota.stats.atk;
+                document.getElementById("stat-spd").innerText = miMascota.stats.spd;
+                document.getElementById("stat-luk").innerText = miMascota.stats.luk;
+                
+                // Cambios visuales para confirmar éxito
+                panelStats.style.boxShadow = "0 0 20px #8B5CF6";
+                btnScanner.innerText = "ADN Revelado ✅";
+                btnScanner.style.background = "#4CAF50";
+                
+                miMascota.scanned = true;
+                
+            } else {
+                alert("No tienes un 'Escáner de ADN' en tu inventario. Consigue uno jugando.");
+            }
+        });
+    }
+
+    // 5. NAVEGACIÓN Y SISTEMA DE PANTALLAS
     const screenRoom = document.getElementById("room-area");
     const screenArcadeMenu = document.getElementById("arcade-menu");
     
-    // Botones
     const btnFeed = document.getElementById("btn-feed");
     const btnArcade = document.getElementById("btn-arcade");
     const btnBackLab = document.getElementById("btn-back-from-menu");
@@ -43,7 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Navegación
+    // Navegación Arcade
     if (btnArcade && screenRoom && screenArcadeMenu) {
         btnArcade.addEventListener("click", () => {
             screenRoom.classList.add("hidden");
@@ -57,4 +114,17 @@ document.addEventListener("DOMContentLoaded", () => {
             screenRoom.classList.remove("hidden");
         });
     }
+
+    // 6. TRUCO DE DESARROLLO: Añadir escáner inicial
+    setTimeout(() => {
+        if (window.miInventario && window.miInventario.addItem) {
+            window.miInventario.addItem({ 
+                id: "dna_scanner", 
+                name: "Escáner ADN", 
+                icon: "🧬", 
+                type: "consumible", 
+                maxStack: 20 
+            }, 1);
+        }
+    }, 500);
 });
