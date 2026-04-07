@@ -41,6 +41,12 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("blandi-element").innerText = miMascota.element;
 
     const btnStats = document.getElementById("btn-show-stats");
+    const btnCloseStats = document.getElementById("close-stats-btn");
+if (btnCloseStats) {
+    btnCloseStats.addEventListener("click", () => {
+        document.getElementById("blandi-stats-panel").classList.add("hidden");
+    });
+}
     const panelStats = document.getElementById("blandi-stats-panel");
     const btnScanner = document.getElementById("btn-use-scanner");
 
@@ -128,3 +134,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }, 500);
 });
+
+// Forzar ocultar botones de acción al abrir el inventario
+const backpackIconUI = document.getElementById("backpack-icon");
+if (backpackIconUI) {
+    backpackIconUI.addEventListener("click", () => {
+        const itemActions = document.getElementById("item-actions");
+        if (itemActions) itemActions.classList.add("hidden");
+    });
+}
