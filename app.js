@@ -18,13 +18,13 @@ function generarSvgBlandi(genesVisuales) {
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // 1. ESTADO GLOBAL DEL BLANDI (Unificado visual y stats)
+    // 1. ESTADO GLOBAL DEL BLANDI
     const miMascota = { 
         visual_genes: { body_shape: "frijol", base_color: "#77DD77" },
         rarity: "Común",
         element: "🧪 Tóxico",
         stats: {
-            hp: Math.floor(Math.random() * 6) + 5, // Rango 5 a 10
+            hp: Math.floor(Math.random() * 6) + 5,
             atk: Math.floor(Math.random() * 6) + 5,
             spd: Math.floor(Math.random() * 6) + 5,
             luk: Math.floor(Math.random() * 6) + 5
@@ -41,18 +41,21 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("blandi-element").innerText = miMascota.element;
 
     const btnStats = document.getElementById("btn-show-stats");
-    const btnCloseStats = document.getElementById("close-stats-btn");
-if (btnCloseStats) {
-    btnCloseStats.addEventListener("click", () => {
-        document.getElementById("blandi-stats-panel").classList.add("hidden");
-    });
-}
     const panelStats = document.getElementById("blandi-stats-panel");
+    const btnCloseStats = document.getElementById("close-stats-btn");
     const btnScanner = document.getElementById("btn-use-scanner");
 
+    // Abrir panel de stats
     if (btnStats && panelStats) {
         btnStats.addEventListener("click", () => {
             panelStats.classList.toggle("hidden");
+        });
+    }
+
+    // Cerrar panel de stats con la 'X'
+    if (btnCloseStats && panelStats) {
+        btnCloseStats.addEventListener("click", () => {
+            panelStats.classList.add("hidden");
         });
     }
 
@@ -64,22 +67,19 @@ if (btnCloseStats) {
                 return;
             }
 
-            // Verificamos si tiene el objeto en el inventario y consumimos 1
             if (window.miInventario && window.miInventario.consumeItem("dna_scanner", 1)) {
-                
-                // Revelar las estadísticas reales en el HTML
+                // Revelar las estadísticas reales
                 document.getElementById("stat-hp").innerText = miMascota.stats.hp;
                 document.getElementById("stat-atk").innerText = miMascota.stats.atk;
                 document.getElementById("stat-spd").innerText = miMascota.stats.spd;
                 document.getElementById("stat-luk").innerText = miMascota.stats.luk;
                 
-                // Cambios visuales para confirmar éxito
+                // Cambios visuales
                 panelStats.style.boxShadow = "0 0 20px #8B5CF6";
                 btnScanner.innerText = "ADN Revelado ✅";
                 btnScanner.style.background = "#4CAF50";
                 
                 miMascota.scanned = true;
-                
             } else {
                 alert("No tienes un 'Escáner de ADN' en tu inventario. Consigue uno jugando.");
             }
@@ -94,7 +94,7 @@ if (btnCloseStats) {
     const btnArcade = document.getElementById("btn-arcade");
     const btnBackLab = document.getElementById("btn-back-from-menu");
 
-    // Lógica Alimentar
+    // Alimentar
     if (btnFeed) {
         btnFeed.addEventListener("click", () => {
             if (window.miInventario && window.miInventario.consumeItem("apple_01", 1)) {
@@ -106,14 +106,16 @@ if (btnCloseStats) {
         });
     }
 
-    // Navegación Arcade
+    // Ir al Arcade
     if (btnArcade && screenRoom && screenArcadeMenu) {
         btnArcade.addEventListener("click", () => {
             screenRoom.classList.add("hidden");
             screenArcadeMenu.classList.remove("hidden");
+            if (panelStats) panelStats.classList.add("hidden"); // Cierra los stats si te vas al arcade
         });
     }
 
+    // Volver del Arcade
     if (btnBackLab) {
         btnBackLab.addEventListener("click", () => {
             screenArcadeMenu.classList.add("hidden");
@@ -121,7 +123,16 @@ if (btnCloseStats) {
         });
     }
 
-    // 6. TRUCO DE DESARROLLO: Añadir escáner inicial
+    // 6. SOLUCIÓN BUG INVENTARIO: Forzar ocultar botones de acción al abrir la mochila
+    const backpackIconUI = document.getElementById("backpack-icon");
+    if (backpackIconUI) {
+        backpackIconUI.addEventListener("click", () => {
+            const itemActions = document.getElementById("item-actions");
+            if (itemActions) itemActions.classList.add("hidden");
+        });
+    }
+
+    // 7. TRUCO DE DESARROLLO: Añadir escáner inicial al inventario
     setTimeout(() => {
         if (window.miInventario && window.miInventario.addItem) {
             window.miInventario.addItem({ 
@@ -134,12 +145,3 @@ if (btnCloseStats) {
         }
     }, 500);
 });
-
-// Forzar ocultar botones de acción al abrir el inventario
-const backpackIconUI = document.getElementById("backpack-icon");
-if (backpackIconUI) {
-    backpackIconUI.addEventListener("click", () => {
-        const itemActions = document.getElementById("item-actions");
-        if (itemActions) itemActions.classList.add("hidden");
-    });
-}

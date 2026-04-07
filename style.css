@@ -1,45 +1,220 @@
-/* CSS Básico */
-body { margin: 0; padding: 0; background-color: #f0f4f8; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; }
-#game-container { width: 100%; max-width: 400px; height: 100%; max-height: 800px; background-color: white; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative; display: flex; flex-direction: column; }
+/* =========================================
+   CSS GENERAL Y UTILIDADES
+   ========================================= */
+body { 
+    margin: 0; 
+    padding: 0; 
+    background-color: #f0f4f8; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    overflow: hidden; 
+}
 
-/* Pantallas */
-.app-screen { flex: 1; position: relative; width: 100%; display: flex; flex-direction: column; background: linear-gradient(to bottom, #e0eaf5 0%, #ffffff 100%); }
-.app-screen.hidden { display: none !important; }
+#game-container { 
+    width: 100%; 
+    max-width: 400px; 
+    height: 100%; 
+    max-height: 800px; 
+    background-color: white; 
+    box-shadow: 0 0 20px rgba(0,0,0,0.1); 
+    position: relative; 
+    display: flex; 
+    flex-direction: column; 
+}
+
+/* LA CLASE MÁGICA: Esto soluciona que las ventanas no se cierren */
+.hidden { 
+    display: none !important; 
+}
+
+.app-screen { 
+    flex: 1; 
+    position: relative; 
+    width: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    background: linear-gradient(to bottom, #e0eaf5 0%, #ffffff 100%); 
+}
+
+/* =========================================
+   PANTALLA 1: EL LABORATORIO
+   ========================================= */
+#room-area {
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Centra verticalmente */
+}
 
 /* UI de Moneda */
-#currency-ui { position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.9); padding: 5px 12px; border-radius: 20px; border: 2px solid #ffcc00; font-weight: bold; font-size: 14px; z-index: 10; color: #b8860b; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+#currency-ui { 
+    position: absolute; 
+    top: 20px; 
+    left: 20px; 
+    background: rgba(255,255,255,0.9); 
+    padding: 5px 12px; 
+    border-radius: 20px; 
+    border: 2px solid #ffcc00; 
+    font-weight: bold; 
+    font-size: 14px; 
+    z-index: 10; 
+    color: #b8860b; 
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+}
 
-/* Mochila */
-#inventory-ui { position: absolute; top: 20px; right: 20px; display: flex; flex-direction: column; align-items: center; background-color: rgba(255, 255, 255, 0.8); padding: 5px 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; z-index: 10; }
+/* Icono de Mochila */
+#inventory-ui { 
+    position: absolute; 
+    top: 20px; 
+    right: 20px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    background-color: rgba(255, 255, 255, 0.8); 
+    padding: 5px 10px; 
+    border-radius: 10px; 
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+    cursor: pointer; 
+    z-index: 10; 
+}
 #backpack-icon { font-size: 28px; }
 #slot-counter { font-size: 11px; font-weight: bold; color: #444; text-align: center; }
 
 /* Menú Inferior */
-#bottom-menu { height: 80px; background-color: #ffffff; display: flex; justify-content: space-around; align-items: center; padding: 0 10px; z-index: 30; }
-.menu-btn { width: 50px; height: 50px; background-color: #f0f0f0; border-radius: 50%; border: 2px solid #ddd; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 24px; }
+#bottom-menu { 
+    height: 80px; 
+    background-color: #ffffff; 
+    display: flex; 
+    justify-content: space-around; 
+    align-items: center; 
+    padding: 0 10px; 
+    z-index: 30; 
+    border-top: 2px solid #eee;
+}
+.menu-btn { 
+    width: 50px; 
+    height: 50px; 
+    background-color: #f0f0f0; 
+    border-radius: 50%; 
+    border: 2px solid #ddd; 
+    cursor: pointer; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    font-size: 24px; 
+    transition: transform 0.1s;
+}
+.menu-btn:active { transform: scale(0.9); }
 
-/* Blandi y Animaciones */
-@keyframes respiracion { 0% { transform: scale(1, 1); } 50% { transform: scale(1.02, 0.98); } 100% { transform: scale(1, 1); } }
-#blandi-container { animation: respiracion 4s infinite ease-in-out; }
-@keyframes happyJump { 0% { transform: translateY(0) scale(1, 1); } 30% { transform: translateY(-20px) scale(0.9, 1.1); } 50% { transform: translateY(0) scale(1.05, 0.95); } 70% { transform: translateY(-10px) scale(0.95, 1.05); } 100% { transform: translateY(0) scale(1, 1); } }
+/* =========================================
+   BLANDI Y ANIMACIONES
+   ========================================= */
+#blandi-container { 
+    margin: auto; /* Ancla la mascota al centro absoluto */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: respiracion 4s infinite ease-in-out; 
+}
+
+@keyframes respiracion { 
+    0% { transform: scale(1, 1); } 
+    50% { transform: scale(1.02, 0.98); } 
+    100% { transform: scale(1, 1); } 
+}
+
+@keyframes happyJump { 
+    0% { transform: translateY(0) scale(1, 1); } 
+    30% { transform: translateY(-20px) scale(0.9, 1.1); } 
+    50% { transform: translateY(0) scale(1.05, 0.95); } 
+    70% { transform: translateY(-10px) scale(0.95, 1.05); } 
+    100% { transform: translateY(0) scale(1, 1); } 
+}
 .happy-jump { animation: happyJump 0.5s ease-in-out !important; }
 
-/* Modal Inventario */
-#inventory-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 50; }
-#inventory-modal.hidden { display: none; }
-.modal-content { background-color: white; width: 85%; max-width: 320px; border-radius: 15px; padding: 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.3); }
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-#inventory-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-.inventory-slot { aspect-ratio: 1; background-color: #f8f9fa; border: 2px dashed #ccc; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 24px; position: relative; }
-.inventory-slot.selected { border: 2px solid #ffaa00; background-color: #fff9e6; }
-.item-count { position: absolute; bottom: 2px; right: 4px; font-size: 11px; font-weight: bold; background: white; padding: 0 3px; border-radius: 3px; }
+/* =========================================
+   SISTEMA DE INVENTARIO (MODAL)
+   ========================================= */
+#inventory-modal { 
+    position: absolute; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%; 
+    background-color: rgba(0, 0, 0, 0.6); 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    z-index: 50; 
+}
+.modal-content { 
+    background-color: white; 
+    width: 85%; 
+    max-width: 320px; 
+    border-radius: 15px; 
+    padding: 20px; 
+    box-shadow: 0 5px 25px rgba(0,0,0,0.3); 
+}
+.modal-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 15px; 
+    border-bottom: 2px solid #eee; 
+    padding-bottom: 10px; 
+}
+.modal-header h3 { margin: 0; color: #333; }
+#close-inventory { background: none; border: none; cursor: pointer; font-size: 16px; }
 
-/* Arcade y Minijuego */
+#inventory-grid { 
+    display: grid; 
+    grid-template-columns: repeat(5, 1fr); 
+    gap: 8px; 
+}
+.inventory-slot { 
+    aspect-ratio: 1; 
+    background-color: #f8f9fa; 
+    border: 2px dashed #ccc; 
+    border-radius: 8px; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    font-size: 24px; 
+    position: relative; 
+    cursor: pointer;
+}
+.inventory-slot.selected { 
+    border: 2px solid #ffaa00; 
+    background-color: #fff9e6; 
+}
+.item-count { 
+    position: absolute; 
+    bottom: 2px; 
+    right: 4px; 
+    font-size: 11px; 
+    font-weight: bold; 
+    background: white; 
+    padding: 0 3px; 
+    border-radius: 3px; 
+}
+
+/* Botones de Acción del Inventario */
+#item-actions { margin-top: 15px; padding-top: 15px; border-top: 2px solid #eee; text-align: center; }
+#selected-item-info { font-weight: bold; color: #444; margin-bottom: 10px; }
+.action-buttons { display: flex; justify-content: center; gap: 10px; }
+.release-btn { padding: 8px 12px; border: none; border-radius: 6px; background: #f0ad4e; color: white; font-weight: bold; cursor: pointer; }
+.release-btn.danger { background: #d9534f; }
+
+/* =========================================
+   PANTALLAS ARCADE Y MINIJUEGO
+   ========================================= */
 .screen-title { text-align: center; color: #444; margin-top: 30px; }
 .arcade-grid { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
 .arcade-card { background: white; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; border: 2px solid #ddd; cursor: pointer; }
 .arcade-card.locked { opacity: 0.5; filter: grayscale(1); }
-.back-btn { margin: auto auto 20px auto; padding: 10px 20px; border-radius: 8px; border: none; background: #6c757d; color: white; font-weight: bold; }
+.back-btn { margin: auto auto 20px auto; padding: 10px 20px; border-radius: 8px; border: none; background: #6c757d; color: white; font-weight: bold; cursor: pointer; }
 
 #play-area { flex: 1; position: relative; overflow: hidden; background: #87CEEB; }
 #falling-object { position: absolute; font-size: 30px; transition: none !important; }
@@ -47,13 +222,3 @@ body { margin: 0; padding: 0; background-color: #f0f4f8; display: flex; justify-
 #touch-controls { position: absolute; top: 0; width: 100%; height: 100%; display: flex; z-index: 5; }
 #touch-left, #touch-right { flex: 1; }
 #game-header { display: flex; justify-content: space-between; padding: 15px; background: white; border-bottom: 2px solid #ddd; }
-
-#room-area {
-    display: flex;
-    justify-content: center;
-    align-items: center; /* Esto centra a tu mascota en la pantalla */
-}
-
-#blandi-container {
-    margin: auto; /* Mantiene el centro sin romper tu animación de respiración */
-}
