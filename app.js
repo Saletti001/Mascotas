@@ -190,9 +190,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (window.miInventario && window.miInventario.consumeItem("apple_01", 1)) {
             drawerMenu.classList.add("hidden");
             contenedor.classList.add("happy-jump");
+            window.ganarXP(25); // ¡Gana 25 XP por comer!
             setTimeout(() => contenedor.classList.remove("happy-jump"), 500);
         } else {
-            alert("No tienes manzanas.");
+            alert("No tienes manzanas en tu mochila.");
         }
     });
     document.getElementById("btn-sanctuary").addEventListener("click", () => { goToScreen(screenSanctuary); renderizarSantuario(); });
