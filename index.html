@@ -108,8 +108,9 @@
 
         <div id="alchemy-screen" class="app-screen hidden">
             <h2 class="screen-title" style="color: #8B5CF6;">Reactor Genético</h2>
-            <p style="text-align: center; color: #666; font-size: 14px; padding: 0 20px; margin-bottom: 20px;">
-                Fusiona 5 Genos Comunes para crear 1 Geno Raro.
+            
+            <p id="reactor-description" style="text-align: center; color: #666; font-size: 14px; padding: 0 20px; margin-bottom: 20px;">
+                Fusiona 5 Genos Comunes para intentar crear 1 Geno Raro.
             </p>
             
             <div class="alchemy-panel">
@@ -121,16 +122,19 @@
                     </select>
                     
                     <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px; padding-bottom: 10px; border-bottom: 1px dashed #ccc;">
-                        <div>Tus Genos <span id="reactor-req-name">Comunes</span>: <span id="alchemy-common-count" style="font-weight: bold;">0</span>/5</div>
+                        <div>Disponibles (<span id="reactor-req-name">Comunes</span>): <span id="alchemy-common-count" style="font-weight: bold;">0</span></div>
                         <div>Costo: <span id="reactor-cost-display" style="font-weight: bold; color: #b8860b;">100 ✨</span></div>
                     </div>
                 </div>
                 
-                <div id="alchemy-visual" class="alchemy-visual">
-                    🧬 + 🧬 + 🧬 + 🧬 + 🧬 = 🌟
-                </div>
+                <div id="reactor-slots-container" style="display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; width: 100%; min-height: 55px;">
+                    </div>
+                
+                <div style="font-size: 11px; color: #888; text-align: left; width: 100%; margin-bottom: 5px;">Toca un Geno para cargarlo:</div>
+                <div id="reactor-available-genos" style="display: flex; overflow-x: auto; gap: 10px; padding: 10px; background: #f0f4f8; border-radius: 8px; margin-bottom: 20px; width: 100%; min-height: 60px; box-sizing: border-box;">
+                    </div>
 
-                <button id="btn-fuse-genos" class="btn-fuse">Activar Reactor</button>
+                <button id="btn-fuse-genos" class="btn-fuse" disabled>Activar Reactor</button>
             </div>
             
             <button class="back-btn btn-go-home">Volver al Laboratorio</button>
