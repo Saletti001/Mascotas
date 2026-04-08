@@ -169,42 +169,80 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-   // =========================================
-    // LÓGICA DEL REACTOR GENÉTICO (V7.0) - NIVEL 1
+  // =========================================
+    // LÓGICA DEL REACTOR GENÉTICO (NIVELES 1, 2 Y 3)
     // =========================================
+    
+    // Diccionario de Reglas de la V7.0
+    const reactorRules = {
+        "1": { 
+            reqRarity: "Común", cost: 100, 
+            probCrit: 3, probNorm: 35, probStag: 35, // Colapso es el resto (27%)
+            resCrit: { rarity: "Épico", name: "Mutante Primordial", color: "#8A2BE2", shape: "estrella" },
+            resNorm: { rarity: "Raro", name: "Geno Evolucionado", color: "#4169E1", shape: "frijol" },
+            resStag: { rarity: "Común+", name: "Superviviente", color: "#32CD32", shape: "gota" }
+        },
+        "2": { 
+            reqRarity: "Raro", cost: 500, // Costo mayor para Nivel 2
+            probCrit: 0.5, probNorm: 25, probStag: 35, // Colapso es el resto (39.5%)
+            resCrit: { rarity: "Legendario", name: "Anomalía Leyenda", color: "#FFD700", shape: "estrella" },
+            resNorm: { rarity: "Épico", name: "Geno Superior", color: "#8A2BE2", shape: "estrella" },
+            resStag: { rarity: "Raro+", name: "Veterano Raro", color: "#4169E1", shape: "frijol" }
+        },
+        "3": { 
+            reqRarity: "Épico", cost: 2500, // Costo extremo para Nivel 3
+            probCrit: 0.1, probNorm: 5, probStag: 40, // Colapso es el resto (54.9%)
+            resCrit: { rarity: "Mítico", name: "Dios Primigenio", color: "#111111", shape: "estrella" },
+            resNorm: { rarity: "Legendario", name: "Mito Viviente", color: "#FFD700", shape: "estrella" },
+            resStag: { rarity: "Épico+", name: "Titán Épico", color: "#8A2BE2", shape: "estrella" }
+        }
+    };
+
+    const selectNivel = document.getElementById("reactor-level-select");
+    
+    // Actualizar pantalla cuando el jugador cambia de nivel en el selector
+    selectNivel.addEventListener("change", renderizarAlquimia);
+
     function renderizarAlquimia() {
-        // Solo contamos los Genos "Comunes" puros (excluímos los Común+)
-        const comunes = window.misGenos.filter(g => g.rarity === "Común");
-        const countDisplay = document.getElementById("alchemy-common-count");
+        const nivel = selectNivel.value;
+        const reglas = reactorRules[nivel];
+        
+        // Actualizar textos de la UI
+        document.getElementById("reactor-req-name").innerText = reglas.reqRarity + "s";
+        document.getElementById("reactor-cost-display").innerText = reglas.cost + " ✨";
+
+        // Contar los Genos de la rareza exacta solicitada
+        const genosValidos = window.misGenos.filter(g => g.rarity === reglas.reqRarity);
+        document.getElementById("alchemy-common-count").innerText = genosValidos.length;
+        
         const btnFuse = document.getElementById("btn-fuse-genos");
-        
-        countDisplay.innerText = comunes.length;
-        
-        const tieneGenos = comunes.length >= 5;
-        const tieneEsencia = window.miInventario && window.miInventario.vitalEssence >= 100;
+        const tieneGenos = genosValidos.length >= 5;
+        const tieneEsencia = window.miInventario && window.miInventario.vitalEssence >= reglas.cost;
         
         btnFuse.disabled = !(tieneGenos && tieneEsencia);
     }
 
     document.getElementById("btn-fuse-genos").addEventListener("click", () => {
-        const comunes = window.misGenos.filter(g => g.rarity === "Común");
+        const nivel = selectNivel.value;
+        const reglas = reactorRules[nivel];
+        const genosValidos = window.misGenos.filter(g => g.rarity === reglas.reqRarity);
         
-        if (comunes.length >= 5 && window.miInventario && window.miInventario.vitalEssence >= 100) {
+        if (genosValidos.length >= 5 && window.miInventario && window.miInventario.vitalEssence >= reglas.cost) {
             
             const btnFuse = document.getElementById("btn-fuse-genos");
             const visual = document.getElementById("alchemy-visual");
             
-            // 1. Cobrar la Esencia inmediatamente
-            window.miInventario.addEssence(-100);
+            // 1. Cobrar la Esencia
+            window.miInventario.addEssence(-reglas.cost);
             
-            // 2. Quemar los 5 Genos (Se eliminan del inventario)
+            // 2. Quemar los 5 Genos específicos
             let borrados = 0;
             window.misGenos = window.misGenos.filter(g => {
-                if (g.rarity === "Común" && borrados < 5) { borrados++; return false; }
+                if (g.rarity === reglas.reqRarity && borrados < 5) { borrados++; return false; }
                 return true;
             });
 
-            // 3. BLOQUEAR UI Y EMPEZAR ANIMACIÓN ("Game Juice")
+            // 3. ANIMACIÓN DE SOBRECARGA
             btnFuse.disabled = true;
             btnFuse.innerText = "Sintetizando ADN...";
             visual.style.transition = "all 0.2s";
@@ -216,74 +254,86 @@ document.addEventListener("DOMContentLoaded", () => {
                 visual.style.backgroundColor = toggle ? "#f3e8ff" : "#e0eaf5";
                 visual.style.color = toggle ? "#8B5CF6" : "#333";
                 visual.style.transform = toggle ? "scale(1.02)" : "scale(0.98)";
-            }, 150); // Cambia cada 150ms creando un efecto de vibración/procesamiento
+            }, 150);
 
-            // 4. RESOLUCIÓN DESPUÉS DE 2.5 SEGUNDOS
+            // 4. RESOLUCIÓN DE PROBABILIDADES
             setTimeout(() => {
-                clearInterval(animacionReactor); // Detener vibración
+                clearInterval(animacionReactor);
                 visual.style.transform = "scale(1)";
                 
-                // --- MOTOR DE PROBABILIDAD V7.0 (NIVEL 1) ---
-                // 3% Épico | 35% Raro | 35% Común+ | 27% Colapso
                 const tirada = Math.random() * 100;
                 let mensaje = "";
+                
+                // Límites acumulativos para la ruleta
+                const limiteCritico = reglas.probCrit;
+                const limiteNormal = limiteCritico + reglas.probNorm;
+                const limiteEstancada = limiteNormal + reglas.probStag;
 
-                if (tirada < 3) {
-                    // ÉXITO CRÍTICO (0 a 2.99)
-                    window.misGenos.push({ id: Date.now(), name: "Mutante Primordial", rarity: "Épico", element: "🌌 Cósmico", shape: "estrella", color: "#8A2BE2", reward: 1000 });
-                    mensaje = "¡ÉXITO CRÍTICO! 🌟\nEl Reactor ha creado una anomalía: [Geno Épico].";
-                    visual.innerHTML = "🌟 ÉPICO CREADO 🌟";
+                if (tirada < limiteCritico) {
+                    // ÉXITO CRÍTICO
+                    window.misGenos.push({ id: Date.now(), name: reglas.resCrit.name, rarity: reglas.resCrit.rarity, element: "🌌 Cósmico", shape: reglas.resCrit.shape, color: reglas.resCrit.color, reward: 1500 });
+                    mensaje = `¡ÉXITO CRÍTICO! 🌟\nEl Reactor ha creado una anomalía: [Geno ${reglas.resCrit.rarity}].`;
+                    visual.innerHTML = `🌟 ${reglas.resCrit.rarity.toUpperCase()} 🌟`;
                     visual.style.backgroundColor = "#fff0f5";
-                    visual.style.color = "#8A2BE2";
-                    visual.style.boxShadow = "0 0 20px rgba(138, 43, 226, 0.5)";
+                    visual.style.color = reglas.resCrit.color;
 
-                } else if (tirada < 38) { // 3 + 35
-                    // ÉXITO NORMAL (3.00 a 37.99)
-                    window.misGenos.push({ id: Date.now(), name: "Geno Evolucionado", rarity: "Raro", element: "⚙️ Cibernético", shape: "frijol", color: "#4169E1", reward: 250 });
-                    mensaje = "¡FUSIÓN ESTABLE! ✨\nHas obtenido un [Geno Raro].";
-                    visual.innerHTML = "✨ RARO CREADO ✨";
+                } else if (tirada < limiteNormal) { 
+                    // ÉXITO NORMAL
+                    window.misGenos.push({ id: Date.now(), name: reglas.resNorm.name, rarity: reglas.resNorm.rarity, element: "⚙️ Cibernético", shape: reglas.resNorm.shape, color: reglas.resNorm.color, reward: 500 });
+                    mensaje = `¡FUSIÓN ESTABLE! ✨\nHas obtenido un [Geno ${reglas.resNorm.rarity}].`;
+                    visual.innerHTML = `✨ ${reglas.resNorm.rarity.toUpperCase()} ✨`;
                     visual.style.backgroundColor = "#e6f2ff";
-                    visual.style.color = "#4169E1";
+                    visual.style.color = reglas.resNorm.color;
 
-                } else if (tirada < 73) { // 38 + 35
-                    // MUTACIÓN ESTANCADA (38.00 a 72.99)
-                    window.misGenos.push({ id: Date.now(), name: "Superviviente", rarity: "Común+", element: "🧪 Tóxico", shape: "gota", color: "#32CD32", reward: 100 });
-                    mensaje = "MUTACIÓN ESTANCADA ⚠️\nRecuperas 1 [Geno Común+].";
-                    visual.innerHTML = "⚠️ COMÚN+ ⚠️";
+                } else if (tirada < limiteEstancada) { 
+                    // MUTACIÓN ESTANCADA
+                    window.misGenos.push({ id: Date.now(), name: reglas.resStag.name, rarity: reglas.resStag.rarity, element: "🧪 Tóxico", shape: reglas.resStag.shape, color: reglas.resStag.color, reward: 150 });
+                    mensaje = `MUTACIÓN ESTANCADA ⚠️\nRecuperas 1 [Geno ${reglas.resStag.rarity}].`;
+                    visual.innerHTML = `⚠️ ${reglas.resStag.rarity.toUpperCase()} ⚠️`;
                     visual.style.backgroundColor = "#f0fff0";
-                    visual.style.color = "#32CD32";
+                    visual.style.color = reglas.resStag.color;
 
                 } else {
-                    // COLAPSO GENÉTICO (73.00 a 100)
-                    window.miInventario.addEssence(300); // Premio de consolación
-                    mensaje = "¡COLAPSO DEL REACTOR! 💥\nLos 5 Genos se han desintegrado. Has recuperado 300 ✨ de los restos.";
+                    // COLAPSO GENÉTICO
+                    const compensacion = reglas.cost * 1.5; // Te devuelve un 50% extra de lo que gastaste
+                    window.miInventario.addEssence(compensacion);
+                    mensaje = `¡COLAPSO DEL REACTOR! 💥\nLos 5 Genos se desintegraron. Recuperas ${compensacion} ✨ de los restos.`;
                     visual.innerHTML = "💥 COLAPSO 💥";
                     visual.style.backgroundColor = "#ffeeee";
                     visual.style.color = "#d9534f";
                 }
 
-                // Mostrar resultado al jugador
                 setTimeout(() => {
                     alert(mensaje);
-                    // Resetear la interfaz después de que cierre la alerta
                     visual.innerHTML = "🧬 + 🧬 + 🧬 + 🧬 + 🧬 = 🌟";
                     visual.style.backgroundColor = "#f8f9fa";
                     visual.style.color = "#333";
                     visual.style.boxShadow = "none";
-                    btnFuse.innerText = "Fusionar Genos";
-                    renderizarAlquimia(); // Actualizar panel
+                    btnFuse.innerText = "Activar Reactor";
+                    renderizarAlquimia();
                 }, 100);
 
-            }, 2500); // Tiempo de suspense: 2.5 segundos
+            }, 2500);
         }
     });
 
-    // Truco: Dar recursos iniciales (Dejamos 6 comunes para que puedas probar la fusión)
+    // ---------------------------------------------------------
+    // HACK DE DESARROLLADOR: INYECCIÓN DE RECURSOS PARA PRUEBAS
+    // ---------------------------------------------------------
     setTimeout(() => {
         if (window.miInventario) {
-            window.miInventario.addItem({ id: "dna_scanner", name: "Escáner ADN", icon: "🧬", type: "consumible", maxStack: 20 }, 1);
-            window.miInventario.addEssence(150); 
+            window.miInventario.addItem({ id: "dna_scanner", name: "Escáner ADN", icon: "🧬", type: "consumible", maxStack: 20 }, 5);
+            window.miInventario.addEssence(10000); // 10k de Esencia para que quemes sin piedad
+        }
+        
+        // Inyectar 5 Raros para probar Nivel 2
+        for(let i=0; i<5; i++) {
+            window.misGenos.push({ id: 100+i, name: "Sujeto Raro", rarity: "Raro", element: "💧 Acuático", shape: "frijol", color: "#4169E1", reward: 100 });
+        }
+        // Inyectar 5 Épicos para probar Nivel 3
+        for(let i=0; i<5; i++) {
+            window.misGenos.push({ id: 200+i, name: "Sujeto Épico", rarity: "Épico", element: "🌌 Cósmico", shape: "estrella", color: "#8A2BE2", reward: 200 });
         }
     }, 500);
 
-}); // <- Esta llave cierra el document.addEventListener del principio
+}); // Fin del evento DOMContentLoaded
