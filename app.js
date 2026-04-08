@@ -29,31 +29,110 @@ window.misGenos = [
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // 1. ESTADO GLOBAL DEL GENO PRINCIPAL
+    // 1. ESTADO GLOBAL DEL GENO PRINCIPAL (RPG)
     const miMascota = { 
+        name: "Geno Base [Gen 0]",
         visual_genes: { body_shape: "frijol", base_color: "#77DD77" },
         rarity: "Común",
         element: "🧪 Tóxico",
+        level: 1,
+        xp: 0,
+        xpNeeded: 100,
+        statPoints: 0,
         stats: {
-            hp: Math.floor(Math.random() * 6) + 5,
-            atk: Math.floor(Math.random() * 6) + 5,
-            spd: Math.floor(Math.random() * 6) + 5,
-            luk: Math.floor(Math.random() * 6) + 5
+            hp: Math.floor(Math.random() * 6) + 40, // Base Común (Rango 40-70)
+            atk: Math.floor(Math.random() * 6) + 10,
+            spd: Math.floor(Math.random() * 6) + 10,
+            luk: Math.floor(Math.random() * 6) + 10
         },
+        recessive_gene: "🔥 Ígneo (Recesivo)", // El secreto genético
         scanned: false
     };
 
-    // Renderizar Geno en Laboratorio
+    // Referencias del Panel
+    const panelStats = document.getElementById("geno-stats-panel");
+    const badgePuntos = document.getElementById("stat-points-badge");
+    const btnsAddStat = document.querySelectorAll(".btn-add-stat");
+
+    // Función Central: Actualizar Panel de Stats
+    function actualizarPanelRPG() {
+        document.getElementById("geno-name").innerText = miMascota.name;
+        document.getElementById("geno-rarity").innerText = miMascota.rarity;
+        document.getElementById("geno-element").innerText = miMascota.element;
+        
+        // XP y Nivel
+        document.getElementById("geno-level").innerText = `Nv. ${miMascota.level}`;
+        document.getElementById("geno-xp-text").innerText = `${miMascota.xp}/${miMascota.xpNeeded}`;
+        const xpPorcentaje = Math.min((miMascota.xp / miMascota.xpNeeded) * 100, 100);
+        document.getElementById("geno-xp-fill").style.width = xpPorcentaje + "%";
+
+        // Stats Visuales
+        document.getElementById("stat-hp").innerText = miMascota.stats.hp;
+        document.getElementById("stat-atk").innerText = miMascota.stats.atk;
+        document.getElementById("stat-spd").innerText = miMascota.stats.spd;
+        document.getElementById("stat-luk").innerText = miMascota.stats.luk;
+
+        // Gestión de Puntos Disponibles
+        if (miMascota.statPoints > 0) {
+            badgePuntos.innerText = `+${miMascota.statPoints} Pts`;
+            badgePuntos.classList.remove("hidden");
+            btnsAddStat.forEach(btn => btn.classList.remove("hidden"));
+        } else {
+            badgePuntos.classList.add("hidden");
+            btnsAddStat.forEach(btn => btn.classList.add("hidden"));
+        }
+
+        // Genética Oculta
+        document.getElementById("geno-recessive").innerText = miMascota.scanned ? miMascota.recessive_gene : "???";
+    }
+
+    // Función: Ganar Experiencia
+    window.ganarXP = function(cantidad) {
+        if (miMascota.level >= 50) return; // Nivel Máximo
+        
+        miMascota.xp += cantidad;
+        console.log(`Geno ganó ${cantidad} XP!`);
+        
+        // Comprobar Level Up
+        if (miMascota.xp >= miMascota.xpNeeded) {
+            miMascota.level++;
+            miMascota.xp -= miMascota.xpNeeded;
+            miMascota.xpNeeded = Math.floor(miMascota.xpNeeded * 1.2); // Escala de dificultad del 20%
+            miMascota.statPoints += 3; // +3 Puntos libres por nivel
+            
+            // Efecto visual en el contenedor
+            const contenedor = document.getElementById("geno-container");
+            contenedor.classList.add("happy-jump");
+            setTimeout(() => contenedor.classList.remove("happy-jump"), 500);
+            
+            alert(`¡Súper Evolución! 🌟\n${miMascota.name} ha alcanzado el Nivel ${miMascota.level}.\nTienes 3 Puntos de Atributo disponibles.`);
+        }
+        actualizarPanelRPG();
+    };
+
+    // Eventos: Distribuir Puntos
+    btnsAddStat.forEach(btn => {
+        btn.addEventListener("click", (e) => {
+            const stat = e.target.getAttribute("data-stat");
+            if (miMascota.statPoints > 0) {
+                if (stat === 'hp') miMascota.stats.hp += 5; // 1 punto = 5 HP
+                if (stat === 'atk') miMascota.stats.atk += 1;
+                if (stat === 'spd') miMascota.stats.spd += 1;
+                if (stat === 'luk') miMascota.stats.luk += 1;
+                
+                miMascota.statPoints--;
+                actualizarPanelRPG();
+            }
+        });
+    });
+
+    // Renderizar Geno Base
     const contenedor = document.getElementById("geno-container");
     if (contenedor) contenedor.innerHTML = generarSvgGeno(miMascota.visual_genes);
+    actualizarPanelRPG(); // Inicializar UI
 
-    // Renderizar Stats
-    document.getElementById("geno-rarity").innerText = miMascota.rarity;
-    document.getElementById("geno-element").innerText = miMascota.element;
-
-    // Panel de Stats y Escáner
+    // Eventos del Panel
     const btnStats = document.getElementById("btn-show-stats");
-    const panelStats = document.getElementById("geno-stats-panel");
     const btnCloseStats = document.getElementById("close-stats-btn");
     const btnScanner = document.getElementById("btn-use-scanner");
 
@@ -62,18 +141,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (btnScanner) {
         btnScanner.addEventListener("click", () => {
-            if (miMascota.scanned) { alert("El ADN ya ha sido decodificado."); return; }
+            if (miMascota.scanned) { alert("El ADN recesivo ya ha sido decodificado."); return; }
             if (window.miInventario && window.miInventario.consumeItem("dna_scanner", 1)) {
-                document.getElementById("stat-hp").innerText = miMascota.stats.hp;
-                document.getElementById("stat-atk").innerText = miMascota.stats.atk;
-                document.getElementById("stat-spd").innerText = miMascota.stats.spd;
-                document.getElementById("stat-luk").innerText = miMascota.stats.luk;
-                panelStats.style.boxShadow = "0 0 20px #8B5CF6";
-                btnScanner.innerText = "ADN Revelado ✅";
-                btnScanner.style.background = "#4CAF50";
                 miMascota.scanned = true;
+                actualizarPanelRPG();
+                panelStats.style.boxShadow = "0 0 20px #8B5CF6";
+                btnScanner.innerText = "Gen Revelado ✅";
+                btnScanner.style.background = "#4CAF50";
             } else {
-                alert("No tienes un Escáner de ADN.");
+                alert("No tienes un Escáner de ADN en el inventario.");
             }
         });
     }

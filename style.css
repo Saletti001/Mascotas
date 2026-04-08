@@ -103,3 +103,11 @@ body { margin: 0; padding: 0; background-color: #f0f4f8; display: flex; justify-
 .drawer-item.locked { opacity: 0.4; cursor: not-allowed; }
 .drawer-icon { width: 50px; height: 50px; background: #f0f4f8; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 8px; border: 1px solid #ddd; }
 .drawer-item span { font-size: 11px; font-weight: bold; color: #444; }
+
+/* =========================================
+   SISTEMA DE ENTRENAMIENTO Y STATS
+   ========================================= */
+.stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 13px; color: #111; }
+.btn-add-stat { background: #4CAF50; color: white; border: none; border-radius: 4px; width: 22px; height: 22px; font-size: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center; padding: 0; transition: transform 0.1s, background 0.2s;}
+.btn-add-stat:hover { background: #3e8e41; }
+.btn-add-stat:active { transform: scale(0.9); }
