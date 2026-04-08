@@ -169,18 +169,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // =========================================
-    // LÓGICA DE ALQUIMIA (FUSIÓN)
+   // =========================================
+    // LÓGICA DEL REACTOR GENÉTICO (V7.0) - NIVEL 1
     // =========================================
     function renderizarAlquimia() {
-        // Contamos cuántos genos 'Comunes' tiene el jugador
+        // Solo contamos los Genos "Comunes" puros (excluímos los Común+)
         const comunes = window.misGenos.filter(g => g.rarity === "Común");
         const countDisplay = document.getElementById("alchemy-common-count");
         const btnFuse = document.getElementById("btn-fuse-genos");
         
         countDisplay.innerText = comunes.length;
         
-        // Habilitar botón solo si tiene 5 o más comunes y 100 de esencia
         const tieneGenos = comunes.length >= 5;
         const tieneEsencia = window.miInventario && window.miInventario.vitalEssence >= 100;
         
@@ -192,39 +191,99 @@ document.addEventListener("DOMContentLoaded", () => {
         
         if (comunes.length >= 5 && window.miInventario && window.miInventario.vitalEssence >= 100) {
             
-            // 1. Cobrar la Esencia (Hacemos un hack agregando esencia negativa)
+            const btnFuse = document.getElementById("btn-fuse-genos");
+            const visual = document.getElementById("alchemy-visual");
+            
+            // 1. Cobrar la Esencia inmediatamente
             window.miInventario.addEssence(-100);
             
-            // 2. Eliminar 5 Genos Comunes de la lista
+            // 2. Quemar los 5 Genos (Se eliminan del inventario)
             let borrados = 0;
             window.misGenos = window.misGenos.filter(g => {
                 if (g.rarity === "Común" && borrados < 5) { borrados++; return false; }
                 return true;
             });
+
+            // 3. BLOQUEAR UI Y EMPEZAR ANIMACIÓN ("Game Juice")
+            btnFuse.disabled = true;
+            btnFuse.innerText = "Sintetizando ADN...";
+            visual.style.transition = "all 0.2s";
             
-            // 3. Crear el nuevo Geno Raro
-            const nuevoGeno = {
-                id: Date.now(),
-                name: "Geno Evolucionado",
-                rarity: "Raro",
-                element: "🌌 Cósmico",
-                shape: "estrella", // Nueva forma!
-                color: "#FFD700",
-                reward: 250
-            };
-            window.misGenos.push(nuevoGeno);
-            
-            alert("¡FUSIÓN EXITOSA! 🌟\nHas obtenido un [Geno Evolucionado] Raro.");
-            renderizarAlquimia(); // Actualizar panel
+            let toggle = false;
+            const animacionReactor = setInterval(() => {
+                toggle = !toggle;
+                visual.innerHTML = toggle ? "⚡ 🧬 ⚡ 🧬 ⚡" : "🧬 ⚡ 🧬 ⚡ 🧬";
+                visual.style.backgroundColor = toggle ? "#f3e8ff" : "#e0eaf5";
+                visual.style.color = toggle ? "#8B5CF6" : "#333";
+                visual.style.transform = toggle ? "scale(1.02)" : "scale(0.98)";
+            }, 150); // Cambia cada 150ms creando un efecto de vibración/procesamiento
+
+            // 4. RESOLUCIÓN DESPUÉS DE 2.5 SEGUNDOS
+            setTimeout(() => {
+                clearInterval(animacionReactor); // Detener vibración
+                visual.style.transform = "scale(1)";
+                
+                // --- MOTOR DE PROBABILIDAD V7.0 (NIVEL 1) ---
+                // 3% Épico | 35% Raro | 35% Común+ | 27% Colapso
+                const tirada = Math.random() * 100;
+                let mensaje = "";
+
+                if (tirada < 3) {
+                    // ÉXITO CRÍTICO (0 a 2.99)
+                    window.misGenos.push({ id: Date.now(), name: "Mutante Primordial", rarity: "Épico", element: "🌌 Cósmico", shape: "estrella", color: "#8A2BE2", reward: 1000 });
+                    mensaje = "¡ÉXITO CRÍTICO! 🌟\nEl Reactor ha creado una anomalía: [Geno Épico].";
+                    visual.innerHTML = "🌟 ÉPICO CREADO 🌟";
+                    visual.style.backgroundColor = "#fff0f5";
+                    visual.style.color = "#8A2BE2";
+                    visual.style.boxShadow = "0 0 20px rgba(138, 43, 226, 0.5)";
+
+                } else if (tirada < 38) { // 3 + 35
+                    // ÉXITO NORMAL (3.00 a 37.99)
+                    window.misGenos.push({ id: Date.now(), name: "Geno Evolucionado", rarity: "Raro", element: "⚙️ Cibernético", shape: "frijol", color: "#4169E1", reward: 250 });
+                    mensaje = "¡FUSIÓN ESTABLE! ✨\nHas obtenido un [Geno Raro].";
+                    visual.innerHTML = "✨ RARO CREADO ✨";
+                    visual.style.backgroundColor = "#e6f2ff";
+                    visual.style.color = "#4169E1";
+
+                } else if (tirada < 73) { // 38 + 35
+                    // MUTACIÓN ESTANCADA (38.00 a 72.99)
+                    window.misGenos.push({ id: Date.now(), name: "Superviviente", rarity: "Común+", element: "🧪 Tóxico", shape: "gota", color: "#32CD32", reward: 100 });
+                    mensaje = "MUTACIÓN ESTANCADA ⚠️\nRecuperas 1 [Geno Común+].";
+                    visual.innerHTML = "⚠️ COMÚN+ ⚠️";
+                    visual.style.backgroundColor = "#f0fff0";
+                    visual.style.color = "#32CD32";
+
+                } else {
+                    // COLAPSO GENÉTICO (73.00 a 100)
+                    window.miInventario.addEssence(300); // Premio de consolación
+                    mensaje = "¡COLAPSO DEL REACTOR! 💥\nLos 5 Genos se han desintegrado. Has recuperado 300 ✨ de los restos.";
+                    visual.innerHTML = "💥 COLAPSO 💥";
+                    visual.style.backgroundColor = "#ffeeee";
+                    visual.style.color = "#d9534f";
+                }
+
+                // Mostrar resultado al jugador
+                setTimeout(() => {
+                    alert(mensaje);
+                    // Resetear la interfaz después de que cierre la alerta
+                    visual.innerHTML = "🧬 + 🧬 + 🧬 + 🧬 + 🧬 = 🌟";
+                    visual.style.backgroundColor = "#f8f9fa";
+                    visual.style.color = "#333";
+                    visual.style.boxShadow = "none";
+                    btnFuse.innerText = "Fusionar Genos";
+                    renderizarAlquimia(); // Actualizar panel
+                }, 100);
+
+            }, 2500); // Tiempo de suspense: 2.5 segundos
         }
     });
 
-    // Truco: Dar recursos para probar
+    // Truco: Dar recursos iniciales (Dejamos 6 comunes para que puedas probar la fusión)
     setTimeout(() => {
         if (window.miInventario) {
             window.miInventario.addItem({ id: "dna_scanner", name: "Escáner ADN", icon: "🧬", type: "consumible", maxStack: 20 }, 1);
-            window.miInventario.addEssence(150); // Te regalo 150 para que pruebes la fusión
+            window.miInventario.addEssence(150); 
         }
     }, 500);
 
-});
+}); // <- Esta llave cierra el document.addEventListener del principio
