@@ -31,7 +31,9 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // 1. ESTADO GLOBAL DEL GENO PRINCIPAL (RPG)
     const miMascota = { 
-        name: "Geno Base [Gen 0]",
+        name: "Geno Base", 
+        generation: 0,
+        renames: 0, // <--- Contador de bautizos
         visual_genes: { body_shape: "frijol", base_color: "#77DD77" },
         rarity: "Común",
         element: "🧪 Tóxico",
@@ -56,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Función Central: Actualizar Panel de Stats
     function actualizarPanelRPG() {
-        document.getElementById("geno-name").innerText = miMascota.name;
+        document.getElementById("geno-name").innerText = `${miMascota.name} [Gen ${miMascota.generation}]`;
         document.getElementById("geno-rarity").innerText = miMascota.rarity;
         document.getElementById("geno-element").innerText = miMascota.element;
         
@@ -150,6 +152,55 @@ document.addEventListener("DOMContentLoaded", () => {
                 btnScanner.style.background = "#4CAF50";
             } else {
                 alert("No tienes un Escáner de ADN en el inventario.");
+            }
+        });
+    }
+
+    // =========================================
+    // SISTEMA DE RENOMBRAMIENTO (LA REGLA DEL BAUTIZO)
+    // =========================================
+    const btnRename = document.getElementById("btn-rename-geno");
+    if (btnRename) {
+        btnRename.addEventListener("click", () => {
+            // Animación al clickear
+            btnRename.style.transform = "scale(0.8)";
+            setTimeout(() => btnRename.style.transform = "scale(1)", 150);
+
+            const costoEsencia = 50;
+            let mensaje = miMascota.renames === 0 
+                ? "Bautizo Genético:\nEl primer cambio de nombre es GRATUITO.\n\n¿Cómo quieres llamar a tu Geno?" 
+                : `Cambio de Identidad:\nRenombrar a este Geno cuesta ${costoEsencia} ✨.\n\nNuevo nombre:`;
+
+            // Si cuesta, verificar si tiene dinero antes de preguntar
+            if (miMascota.renames > 0 && (!window.miInventario || window.miInventario.vitalEssence < costoEsencia)) {
+                alert(`No tienes suficiente Esencia Vital. Cuesta ${costoEsencia} ✨.`);
+                return;
+            }
+
+            const nuevoNombre = prompt(mensaje);
+
+            if (nuevoNombre && nuevoNombre.trim().length > 0) {
+                if (nuevoNombre.trim().length > 15) {
+                    alert("El nombre es demasiado largo (Máximo 15 caracteres).");
+                    return;
+                }
+
+                // Cobrar si no es el primer bautizo
+                if (miMascota.renames > 0) {
+                    window.miInventario.addEssence(-costoEsencia);
+                }
+
+                // Aplicar cambios
+                miMascota.name = nuevoNombre.trim();
+                miMascota.renames++;
+                actualizarPanelRPG();
+                
+                // Efecto de celebración
+                const contenedor = document.getElementById("geno-container");
+                if(contenedor) {
+                    contenedor.classList.add("happy-jump");
+                    setTimeout(() => contenedor.classList.remove("happy-jump"), 500);
+                }
             }
         });
     }
