@@ -23,15 +23,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const screenArcade = document.getElementById("arcade-menu");
     const screenSanctuary = document.getElementById("sanctuary-screen");
     const screenAlchemy = document.getElementById("alchemy-screen");
-    const screens = [screenRoom, screenArcade, screenSanctuary, screenAlchemy];
+    
+    // 1. NUEVA PANTALLA AÑADIDA AQUÍ
+    const screenBreeding = document.getElementById("breeding-screen"); 
+    
+    // 2. AÑADIDA AL ARRAY DE PANTALLAS
+    const screens = [screenRoom, screenArcade, screenSanctuary, screenAlchemy, screenBreeding]; 
 
     // Abrir / Cerrar Menú Nexo
     if(fabMenu) fabMenu.addEventListener("click", () => drawerMenu.classList.remove("hidden"));
     if(closeDrawer) closeDrawer.addEventListener("click", () => drawerMenu.classList.add("hidden"));
 
     function goToScreen(targetScreen) {
-        screens.forEach(s => s.classList.add("hidden"));
-        targetScreen.classList.remove("hidden");
+        screens.forEach(s => { if(s) s.classList.add("hidden"); });
+        if(targetScreen) targetScreen.classList.remove("hidden");
         if(drawerMenu) drawerMenu.classList.add("hidden"); 
         
         const panelStats = document.getElementById("geno-stats-panel");
@@ -79,6 +84,15 @@ document.addEventListener("DOMContentLoaded", () => {
         btnAlchemy.addEventListener("click", () => { 
             goToScreen(screenAlchemy); 
             if(window.renderizarAlquimia) window.renderizarAlquimia(); 
+        });
+    }
+
+    // 3. NUEVO ENRUTADOR PARA EL CENTRO DE CRIANZA
+    const btnBreeding = document.getElementById("btn-breeding");
+    if(btnBreeding) {
+        btnBreeding.addEventListener("click", () => { 
+            goToScreen(screenBreeding); 
+            if(window.iniciarSelectorCrianza) window.iniciarSelectorCrianza(); 
         });
     }
 

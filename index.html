@@ -159,7 +159,42 @@
             
             <button class="back-btn btn-go-home">Volver al Laboratorio</button>
         </div>
+<div id="breeding-screen" class="app-screen hidden">
+            <h2 class="screen-title" style="color: #E91E63;">Centro de Crianza</h2>
+            <p style="text-align: center; color: #666; font-size: 14px; padding: 0 20px; margin-bottom: 20px;">
+                Cruza dos Genos Nivel 10+ para crear una nueva generación. Costo: 500 ✨
+            </p>
+            
+            <div class="alchemy-panel" style="background: #fff0f5; border-color: #f8bbd0;">
+                <div style="display: flex; justify-content: space-around; width: 100%; margin-bottom: 20px; position: relative;">
+                    
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                        <div id="slot-parent-1" style="width: 70px; height: 70px; border: 2px dashed #E91E63; border-radius: 10px; display: flex; justify-content: center; align-items: center; background: #fff; cursor: pointer; transition: 0.2s;">
+                            <span style="color: #E91E63; font-size: 24px;">+</span>
+                        </div>
+                        <span style="font-size: 11px; font-weight: bold; color: #555;">Padre A</span>
+                    </div>
 
+                    <div style="display: flex; align-items: center; font-size: 24px; color: #E91E63; font-weight: bold;">❤️</div>
+
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
+                        <div id="slot-parent-2" style="width: 70px; height: 70px; border: 2px dashed #E91E63; border-radius: 10px; display: flex; justify-content: center; align-items: center; background: #fff; cursor: pointer; transition: 0.2s;">
+                            <span style="color: #E91E63; font-size: 24px;">+</span>
+                        </div>
+                        <span style="font-size: 11px; font-weight: bold; color: #555;">Padre B</span>
+                    </div>
+                </div>
+
+                <div id="breeding-selector" class="hidden" style="width: 100%; background: #fff; border: 1px solid #ccc; border-radius: 8px; padding: 10px; margin-bottom: 15px; max-height: 150px; overflow-y: auto;">
+                    <div style="font-size: 12px; margin-bottom: 5px; color: #888;">Elige un Geno (Nivel 10+ y menos de 7 crías):</div>
+                    <div id="breeding-list" style="display: flex; flex-wrap: wrap; gap: 5px;"></div>
+                </div>
+
+                <button id="btn-start-breeding" class="btn-fuse" style="background: linear-gradient(135deg, #E91E63, #9C27B0);" disabled>Iniciar Crianza</button>
+            </div>
+            
+            <button class="back-btn btn-go-home">Volver al Laboratorio</button>
+        </div>
         <div id="fab-menu" class="fab-btn">
             <span>⚙️ NEXO</span>
         </div>
@@ -183,6 +218,10 @@
                         <div class="drawer-icon">⚛️</div>
                         <span>Reactor</span>
                     </div>
+                    <div class="drawer-item" id="btn-breeding">
+                        <div class="drawer-icon">🧬</div>
+                        <span>Crianza</span>
+                    </div>
                     <div class="drawer-item" id="btn-arcade">
                         <div class="drawer-icon">🕹️</div>
                         <span>Arcade</span>
@@ -205,7 +244,8 @@
     <script src="ReactorManager.js"></script>
     <script src="ArcadeManager.js"></script> 
     <script src="MinigameCatch.js"></script>
-    
+    <script src="BreedingManager.js"></script>
     <script src="app.js"></script>
+    
 </body>
 </html>
