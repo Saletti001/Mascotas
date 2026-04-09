@@ -19,16 +19,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const drawerMenu = document.getElementById("drawer-menu");
     const closeDrawer = document.getElementById("close-drawer");
 
+    // REFERENCIAS A TODAS LAS PANTALLAS
     const screenRoom = document.getElementById("room-area");
     const screenArcade = document.getElementById("arcade-menu");
     const screenSanctuary = document.getElementById("sanctuary-screen");
     const screenAlchemy = document.getElementById("alchemy-screen");
+    const screenBreeding = document.getElementById("breeding-screen");
+    const screenColiseum = document.getElementById("coliseum-screen"); // NUEVA PANTALLA
     
-    // 1. NUEVA PANTALLA AÑADIDA AQUÍ
-    const screenBreeding = document.getElementById("breeding-screen"); 
-    
-    // 2. AÑADIDA AL ARRAY DE PANTALLAS
-    const screens = [screenRoom, screenArcade, screenSanctuary, screenAlchemy, screenBreeding]; 
+    const screens = [screenRoom, screenArcade, screenSanctuary, screenAlchemy, screenBreeding, screenColiseum]; 
 
     // Abrir / Cerrar Menú Nexo
     if(fabMenu) fabMenu.addEventListener("click", () => drawerMenu.classList.remove("hidden"));
@@ -50,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.addEventListener("click", () => goToScreen(screenRoom));
     });
 
-    // Enrutadores del Menú Nexo
+    // ENRUTADORES DEL MENÚ NEXO
     const btnFeed = document.getElementById("btn-feed");
     if(btnFeed) {
         btnFeed.addEventListener("click", () => {
@@ -87,7 +86,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 3. NUEVO ENRUTADOR PARA EL CENTRO DE CRIANZA
     const btnBreeding = document.getElementById("btn-breeding");
     if(btnBreeding) {
         btnBreeding.addEventListener("click", () => { 
@@ -96,18 +94,29 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // HACKS DE DESARROLLADOR (Recursos iniciales)
+    // NUEVO ENRUTADOR PARA EL COLISEO
+    const btnColiseum = document.getElementById("btn-coliseum");
+    if(btnColiseum) {
+        btnColiseum.addEventListener("click", () => { 
+            goToScreen(screenColiseum); 
+            if(window.iniciarColiseo) window.iniciarColiseo(); 
+        });
+    }
+
     // HACKS DE DESARROLLADOR (Recursos iniciales)
     setTimeout(() => {
-        window.miWallet = { pol: 10.0 }; // <--- Billetera Falsa para pruebas
+        window.miWallet = { pol: 10.0 };
         if (window.miInventario) {
             window.miInventario.addItem({ id: "dna_scanner", name: "Escáner ADN", icon: "🧬", type: "consumible", maxStack: 20 }, 5);
             window.miInventario.addEssence(10000);
         }
-        // ... (resto del código)
-        for(let i=0; i<5; i++) {
-            window.misGenos.push({ id: 100+i, name: "Sujeto Raro", rarity: "Raro", element: "💧 Acuático", shape: "frijol", color: "#4169E1", reward: 100 });
-            window.misGenos.push({ id: 200+i, name: "Sujeto Épico", rarity: "Épico", element: "🌌 Cósmico", shape: "estrella", color: "#8A2BE2", reward: 200 });
+        
+        // Agregar Genos iniciales para testear si no existen (evitar duplicados con el guardado)
+        if(window.misGenos.length < 10) {
+            for(let i=0; i<5; i++) {
+                window.misGenos.push({ id: 100+i, name: "Sujeto Raro", rarity: "Raro", element: "💧 Acuático", shape: "frijol", color: "#4169E1", reward: 100 });
+                window.misGenos.push({ id: 200+i, name: "Sujeto Épico", rarity: "Épico", element: "🌌 Cósmico", shape: "estrella", color: "#8A2BE2", reward: 200 });
+            }
         }
     }, 500);
 
