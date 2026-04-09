@@ -10,16 +10,12 @@ body {
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     
-    /* FONDO DE LABORATORIO CIBERNÉTICO */
-    background-color: #030712; /* Azul casi negro */
+    background-color: #030712; 
     background-image: 
-        /* Resplandores de maquinaria fuera de foco */
         radial-gradient(circle at 15% 50%, rgba(77, 208, 225, 0.08) 0%, transparent 50%),
         radial-gradient(circle at 85% 30%, rgba(138, 43, 226, 0.08) 0%, transparent 50%),
-        /* Cuadrícula principal cian sutil */
         linear-gradient(rgba(77, 208, 225, 0.15) 1px, transparent 1px),
         linear-gradient(90deg, rgba(77, 208, 225, 0.15) 1px, transparent 1px),
-        /* Cuadrícula secundaria milimétrica */
         linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
     background-size: 100% 100%, 100% 100%, 100px 100px, 100px 100px, 20px 20px, 20px 20px;
@@ -41,7 +37,6 @@ body {
     overflow: hidden;
     background: #fff;
     border-radius: 24px;
-    /* Borde de tablet futurista con brillo cian proyectado al laboratorio */
     box-shadow: 
         0 0 0 12px #0f172a,         
         0 20px 50px rgba(0,0,0,0.8),
@@ -59,7 +54,7 @@ body {
 }
 
 #room-area {
-    background: radial-gradient(circle at 50% 50%, #dcf8fc 0%, #b2ebf2 50%, #80deea 100%);
+    background: radial-gradient(circle at 50% 50%, #162a35 0%, #0d1a24 50%, #060d13 100%);
     position: relative;
 }
 
@@ -67,9 +62,63 @@ body {
     content: ""; position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
     background: repeating-linear-gradient(
-        0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2) 2px, transparent 2px, transparent 8px
+        0deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05) 2px, transparent 2px, transparent 8px
     );
-    pointer-events: none; z-index: 1; 
+    pointer-events: none; z-index: 4; 
+}
+
+/* ========================================= */
+/* MAQUINARIA DE FONDO (NUEVO)               */
+/* ========================================= */
+#lab-machinery {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 2; /* Por detrás del pedestal */
+    pointer-events: none;
+}
+
+/* Servidores Genéticos */
+.server-rack {
+    position: absolute;
+    bottom: 25%;
+    width: 60px; height: 180px;
+    background: linear-gradient(to right, #0a1118, #1a2a36);
+    border: 1px solid rgba(77, 208, 225, 0.3);
+    border-radius: 8px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
+    opacity: 0.7;
+    filter: blur(1px); /* Da sensación de profundidad (están atrás) */
+}
+.server-rack.left { left: 5%; }
+.server-rack.right { right: 5%; }
+
+/* Luces parpadeantes de los servidores */
+.server-lights {
+    position: absolute; top: 15px; left: 10px; width: 6px; height: 6px;
+    background: #4dd0e1; border-radius: 50%;
+    box-shadow: 0 15px 0 #4dd0e1, 0 30px 0 #8A2BE2, 0 45px 0 #4dd0e1, 0 80px 0 #E91E63;
+    animation: blinkLights 2s infinite alternate;
+}
+@keyframes blinkLights {
+    0% { opacity: 0.2; }
+    50% { opacity: 1; box-shadow: 0 15px 0 #4dd0e1, 0 30px 0 #8A2BE2, 0 45px 0 transparent, 0 80px 0 #E91E63;}
+    100% { opacity: 0.6; }
+}
+
+/* Anillo holográfico de escaneo */
+.holo-ring {
+    position: absolute;
+    top: 45%; left: 50%;
+    transform: translate(-50%, -50%) rotateX(70deg);
+    width: 250px; height: 250px;
+    border: 2px dashed rgba(77, 208, 225, 0.3);
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(77, 208, 225, 0.1), inset 0 0 20px rgba(77, 208, 225, 0.1);
+    animation: spinRing 20s linear infinite;
+}
+@keyframes spinRing {
+    0% { transform: translate(-50%, -50%) rotateX(70deg) rotateZ(0deg); }
+    100% { transform: translate(-50%, -50%) rotateX(70deg) rotateZ(360deg); }
 }
 
 /* ========================================= */
@@ -87,43 +136,39 @@ body {
     justify-content: flex-end; 
 }
 
-/* Base de metal pesada */
 .pedestal-bottom {
     width: 100%; height: 60px;
-    background: radial-gradient(ellipse at top, #2c3e50, #1a252c);
+    background: radial-gradient(ellipse at top, #2c3e50, #0a1118);
     border-radius: 50%;
     z-index: 3;
     border-top: 2px solid rgba(77, 208, 225, 0.9);
-    box-shadow: 0 15px 25px rgba(0,0,0,0.6), inset 0 5px 20px rgba(77,208,225,0.4);
+    box-shadow: 0 15px 25px rgba(0,0,0,0.8), inset 0 5px 20px rgba(77,208,225,0.3);
     display: flex; justify-content: center; align-items: center;
 }
 
-/* Detalle del núcleo de energía en la base */
 .pedestal-light {
-    width: 50px; height: 6px;
+    width: 60px; height: 6px;
     background: #80deea;
     border-radius: 10px;
-    box-shadow: 0 0 15px #80deea, 0 0 30px #4dd0e1;
+    box-shadow: 0 0 20px #80deea, 0 0 40px #4dd0e1;
     margin-top: 25px; 
 }
 
-/* Haz de luz ascendente */
 .energy-beam {
     position: absolute;
     bottom: 30px; 
     width: 150px; height: 250px;
-    background: linear-gradient(to top, rgba(77, 208, 225, 0.3) 0%, rgba(77, 208, 225, 0.05) 50%, transparent 100%);
+    background: linear-gradient(to top, rgba(77, 208, 225, 0.4) 0%, rgba(77, 208, 225, 0.05) 50%, transparent 100%);
     border-radius: 50% 50% 0 0 / 20% 20% 0 0;
     z-index: 1;
     mask-image: radial-gradient(ellipse at bottom, black 40%, transparent 100%);
     -webkit-mask-image: radial-gradient(ellipse at bottom, black 40%, transparent 100%);
 }
 
-/* Partículas de energía subiendo */
 .energy-particle {
     position: absolute;
     bottom: 0;
-    width: 4px; height: 15px;
+    width: 3px; height: 12px;
     background: rgba(255, 255, 255, 0.9);
     border-radius: 10px;
     box-shadow: 0 0 10px #fff, 0 0 20px #80deea;
@@ -138,11 +183,11 @@ body {
 }
 
 /* ========================================= */
-/* GENO ANIMACIONES Y POSICIÓN               */
+/* GENO ANIMACIONES                          */
 /* ========================================= */
 #geno-container {
     position: absolute;
-    top: 40%; /* Centrado en el haz de luz */
+    top: 40%; 
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 10;
@@ -155,95 +200,120 @@ body {
     100% { transform: translate(-50%, -50%); }
 }
 
-.geno-idle {
-    animation: floatIdle 4s ease-in-out infinite;
-    position: absolute;
-    cursor: pointer;
-    z-index: 10;
-}
-
+.geno-idle { animation: floatIdle 4s ease-in-out infinite; position: absolute; cursor: pointer; z-index: 10; }
 @keyframes happyJump { 0% { transform: translate(-50%, -50%) scale(1, 1); } 30% { transform: translate(-50%, -80px) scale(0.9, 1.1); } 50% { transform: translate(-50%, -50%) scale(1.05, 0.95); } 70% { transform: translate(-50%, -70px) scale(0.95, 1.05); } 100% { transform: translate(-50%, -50%) scale(1, 1); } }
 .happy-jump { animation: happyJump 0.5s ease-in-out !important; }
-
 @keyframes floatUpHeart { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-40px) scale(1.5); } }
 .heart-particle { position: absolute; color: #E91E63; font-size: 24px; pointer-events: none; animation: floatUpHeart 1s ease-out forwards; z-index: 20; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
 /* =========================================
    SISTEMA DE ALMACÉN (UI)
    ========================================= */
-#inventory-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 50; }
-.modal-content { background-color: #f8f9fa; width: 85%; max-width: 320px; border-radius: 15px; padding: 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); border: 2px solid #8A2BE2; }
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
-.modal-header h3 { margin: 0; color: #333; }
-#close-inventory { background: none; border: none; cursor: pointer; font-size: 16px; }
+#inventory-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); display: flex; justify-content: center; align-items: center; z-index: 50; }
+.modal-content { background-color: #0d1a24; width: 85%; max-width: 320px; border-radius: 15px; padding: 20px; box-shadow: 0 0 30px rgba(138, 43, 226, 0.4); border: 1px solid #8A2BE2; color: white;}
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+.modal-header h3 { margin: 0; color: #80deea; text-transform: uppercase; letter-spacing: 1px;}
+#close-inventory { background: none; border: none; cursor: pointer; font-size: 16px; color: white; }
 #inventory-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-.inventory-slot { aspect-ratio: 1; background-color: #fff; border: 2px dashed #bbb; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 24px; position: relative; cursor: pointer; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);}
-.inventory-slot.selected { border: 2px solid #8A2BE2; background-color: #f3e5f5; }
-.item-count { position: absolute; bottom: 2px; right: 4px; font-size: 11px; font-weight: bold; background: #333; color: white; padding: 1px 4px; border-radius: 4px; }
-#item-actions { margin-top: 15px; padding-top: 15px; border-top: 2px solid #ddd; text-align: center; }
-#selected-item-info { font-weight: bold; color: #444; margin-bottom: 10px; }
+.inventory-slot { aspect-ratio: 1; background-color: #1a2a36; border: 1px dashed #4dd0e1; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 24px; position: relative; cursor: pointer;}
+.inventory-slot.selected { border: 2px solid #8A2BE2; background-color: rgba(138, 43, 226, 0.2); }
+.item-count { position: absolute; bottom: 2px; right: 4px; font-size: 11px; font-weight: bold; background: #8A2BE2; color: white; padding: 1px 4px; border-radius: 4px; }
+#item-actions { margin-top: 15px; padding-top: 15px; border-top: 1px solid #333; text-align: center; }
+#selected-item-info { font-weight: bold; color: #80deea; margin-bottom: 10px; }
 .action-buttons { display: flex; justify-content: center; gap: 10px; }
-.release-btn { padding: 8px 12px; border: none; border-radius: 6px; background: #f0ad4e; color: white; font-weight: bold; cursor: pointer; }
-.release-btn.danger { background: #d9534f; }
+.release-btn { padding: 8px 12px; border: none; border-radius: 6px; background: #1a2a36; border: 1px solid #f0ad4e; color: #f0ad4e; font-weight: bold; cursor: pointer; }
+.release-btn.danger { border-color: #d9534f; color: #d9534f; }
 
 /* =========================================
-   RESTO DE LAS PANTALLAS (Arcade, Santuario, etc)
+   PANTALLAS ARCADE Y MINIJUEGO
    ========================================= */
-.screen-title { text-align: center; color: #444; margin-top: 30px; }
+.screen-title { text-align: center; color: #fff; margin-top: 30px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
 .arcade-grid { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-.arcade-card { background: white; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; border: 2px solid #ddd; cursor: pointer; }
-.arcade-card.locked { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
-.back-btn { margin: auto auto 20px auto; padding: 10px 20px; border-radius: 8px; border: none; background: #6c757d; color: white; font-weight: bold; cursor: pointer; z-index: 10; box-shadow: 0 4px 6px rgba(0,0,0,0.2);}
+.arcade-card { background: #0d1a24; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; border: 1px solid #4dd0e1; cursor: pointer; color: white;}
+.arcade-card.locked { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; border-color: #555;}
+.back-btn { margin: auto auto 20px auto; padding: 12px 25px; border-radius: 8px; border: 1px solid #80deea; background: #0d1a24; color: #80deea; font-weight: bold; cursor: pointer; z-index: 10; text-transform: uppercase;}
 
-#play-area { flex: 1; position: relative; overflow: hidden; background: #87CEEB; }
+#play-area { flex: 1; position: relative; overflow: hidden; background: #0a1118; }
 #falling-object { position: absolute; font-size: 30px; transition: none !important; }
 #player-basket { position: absolute; font-size: 40px; bottom: 20px; transition: left 0.1s linear; }
 #touch-controls { position: absolute; top: 0; width: 100%; height: 100%; display: flex; z-index: 5; }
 #touch-left, #touch-right { flex: 1; }
-#game-header { display: flex; justify-content: space-between; padding: 15px; background: white; border-bottom: 2px solid #ddd; }
+#game-header { display: flex; justify-content: space-between; padding: 15px; background: #0d1a24; border-bottom: 1px solid #4dd0e1; color: white;}
 
 .sanctuary-grid { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; overflow-y: auto; flex: 1; }
-.geno-card { background: white; border-radius: 12px; padding: 10px; text-align: center; border: 2px solid #ddd; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between;}
-.geno-card svg { width: 60px; height: 60px; margin: 0 auto 10px auto; }
-.geno-card h4 { margin: 0 0 5px 0; font-size: 14px; color: #333; }
-.geno-card p { margin: 0; font-size: 11px; color: #777; }
-.geno-reward { font-weight: bold; color: #b8860b; margin: 8px 0; font-size: 13px; }
-.btn-liberar-geno { background: #d9534f; color: white; border: none; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: background 0.2s;}
-.btn-liberar-geno:hover { background: #c9302c; }
-.btn-liberar-geno:disabled { background: #ccc; cursor: not-allowed; }
+.geno-card { background: #0d1a24; border-radius: 12px; padding: 10px; text-align: center; border: 1px solid #4dd0e1; display: flex; flex-direction: column; justify-content: space-between; color: white;}
+.geno-card svg { width: 60px; height: 60px; margin: 0 auto 10px auto; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5));}
+.geno-card h4 { margin: 0 0 5px 0; font-size: 14px; color: #80deea; }
+.geno-card p { margin: 0; font-size: 11px; color: #aaa; }
+.geno-reward { font-weight: bold; color: #f0ad4e; margin: 8px 0; font-size: 13px; }
+.btn-liberar-geno { background: transparent; color: #d9534f; border: 1px solid #d9534f; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: all 0.2s;}
+.btn-liberar-geno:hover { background: rgba(217, 83, 79, 0.2); }
+.btn-liberar-geno:disabled { border-color: #555; color: #555; cursor: not-allowed; }
 
-.alchemy-panel { background: white; margin: 20px; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(139, 92, 246, 0.2); border: 2px solid #8B5CF6; display: flex; flex-direction: column; align-items: center;}
-.alchemy-stats { width: 100%; display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px dashed #ccc;}
-.alchemy-visual { font-size: 24px; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px; width: 100%; text-align: center; letter-spacing: 2px; }
-.btn-fuse { background: #8B5CF6; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; width: 100%; transition: background 0.3s;}
-.btn-fuse:hover { background: #7c3aed; }
-.btn-fuse:disabled { background: #ccc; cursor: not-allowed; }
+.alchemy-panel { background: #0d1a24; margin: 20px; border-radius: 15px; padding: 20px; border: 1px solid #8A2BE2; display: flex; flex-direction: column; align-items: center; box-shadow: inset 0 0 20px rgba(138, 43, 226, 0.1); color: white;}
+.alchemy-stats { width: 100%; display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px dashed #333;}
+.alchemy-visual { font-size: 24px; background: #1a2a36; padding: 15px; border-radius: 10px; margin-bottom: 20px; width: 100%; text-align: center; letter-spacing: 2px; border: 1px solid #333;}
+.btn-fuse { background: rgba(138, 43, 226, 0.2); color: #e0b0ff; border: 1px solid #8A2BE2; padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; width: 100%; transition: all 0.3s;}
+.btn-fuse:hover { background: rgba(138, 43, 226, 0.4); box-shadow: 0 0 15px rgba(138, 43, 226, 0.4);}
+.btn-fuse:disabled { border-color: #555; color: #555; cursor: not-allowed; }
 
 /* =========================================
-   MENÚ DESPLEGABLE Y BOTÓN FLOTANTE
+   NUEVO BOTÓN NEXO (HOLOGRÁFICO)
    ========================================= */
-.fab-btn { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 25px; border-radius: 30px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer; z-index: 100; transition: transform 0.2s; border: 2px solid #555;}
+.fab-btn { 
+    position: absolute; 
+    bottom: 30px; 
+    left: 50%; 
+    transform: translateX(-50%); 
+    background: linear-gradient(135deg, #0d1a24, #1a2a36);
+    color: #80deea; 
+    padding: 12px 30px; 
+    border-radius: 30px; 
+    font-weight: bold; 
+    font-size: 15px;
+    letter-spacing: 2px;
+    cursor: pointer; 
+    z-index: 100; 
+    border: 2px solid #4dd0e1;
+    /* Efecto de brillo constante */
+    box-shadow: 0 0 15px rgba(77, 208, 225, 0.4), inset 0 0 10px rgba(77, 208, 225, 0.2);
+    text-shadow: 0 0 5px #80deea;
+    animation: nexoPulse 2s infinite ease-in-out;
+    transition: all 0.3s ease;
+}
+.fab-btn:hover {
+    transform: translateX(-50%) scale(1.05);
+    background: #1a2a36;
+    box-shadow: 0 0 25px rgba(77, 208, 225, 0.8), inset 0 0 15px rgba(77, 208, 225, 0.5);
+}
 .fab-btn:active { transform: translateX(-50%) scale(0.95); }
 
-.drawer-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; display: flex; flex-direction: column; justify-content: flex-end; transition: opacity 0.3s; }
-.drawer-content { background: white; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 20px; box-shadow: 0 -5px 20px rgba(0,0,0,0.2); animation: slideUp 0.3s ease-out;}
+@keyframes nexoPulse {
+    0% { box-shadow: 0 0 15px rgba(77, 208, 225, 0.4), inset 0 0 10px rgba(77, 208, 225, 0.2); }
+    50% { box-shadow: 0 0 25px rgba(77, 208, 225, 0.6), inset 0 0 15px rgba(77, 208, 225, 0.4); border-color: #fff; color: #fff;}
+    100% { box-shadow: 0 0 15px rgba(77, 208, 225, 0.4), inset 0 0 10px rgba(77, 208, 225, 0.2); }
+}
+
+.drawer-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 200; display: flex; flex-direction: column; justify-content: flex-end; transition: opacity 0.3s; backdrop-filter: blur(5px);}
+.drawer-content { background: #0d1a24; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 25px 20px; box-shadow: 0 -5px 30px rgba(77, 208, 225, 0.2); border-top: 1px solid #4dd0e1; animation: slideUp 0.3s ease-out;}
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-.drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-.drawer-header h3 { margin: 0; color: #333; }
-#close-drawer { background: none; border: none; font-size: 16px; cursor: pointer; }
+.drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+.drawer-header h3 { margin: 0; color: #80deea; text-transform: uppercase; letter-spacing: 1px;}
+#close-drawer { background: none; border: none; font-size: 16px; cursor: pointer; color: white;}
 
-.drawer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+.drawer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 10px; }
 .drawer-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s; }
+.drawer-item:hover .drawer-icon { border-color: #4dd0e1; box-shadow: 0 0 15px rgba(77, 208, 225, 0.3); }
 .drawer-item:active { transform: scale(0.9); }
 .drawer-item.locked { opacity: 0.4; cursor: not-allowed; }
-.drawer-icon { width: 50px; height: 50px; background: #f0f4f8; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 8px; border: 1px solid #ddd; }
-.drawer-item span { font-size: 11px; font-weight: bold; color: #444; }
+.drawer-icon { width: 50px; height: 50px; background: #1a2a36; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 8px; border: 1px solid #333; transition: all 0.3s;}
+.drawer-item span { font-size: 11px; font-weight: bold; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px;}
 
 /* =========================================
    SISTEMA DE ENTRENAMIENTO Y STATS
    ========================================= */
-.stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 13px; color: #111; }
+.stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 13px; color: #333; }
 .btn-add-stat { background: #4CAF50; color: white; border: none; border-radius: 4px; width: 22px; height: 22px; font-size: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center; padding: 0; transition: transform 0.1s, background 0.2s;}
 .btn-add-stat:hover { background: #3e8e41; }
 .btn-add-stat:active { transform: scale(0.9); }
