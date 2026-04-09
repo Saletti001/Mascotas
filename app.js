@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const screenAlchemy = document.getElementById("alchemy-screen");
     const screenBreeding = document.getElementById("breeding-screen");
     const screenColiseum = document.getElementById("coliseum-screen");
-    const screenMarket = document.getElementById("market-screen"); // NUEVA PANTALLA
+    const screenMarket = document.getElementById("market-screen"); 
     
     const screens = [screenRoom, screenArcade, screenSanctuary, screenAlchemy, screenBreeding, screenColiseum, screenMarket]; 
 
@@ -73,9 +73,33 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnColiseum = document.getElementById("btn-coliseum");
     if(btnColiseum) btnColiseum.addEventListener("click", () => { goToScreen(screenColiseum); if(window.iniciarColiseo) window.iniciarColiseo(); });
 
-    // NUEVO: ENRUTADOR MERCADO
     const btnMarket = document.getElementById("btn-market");
     if(btnMarket) btnMarket.addEventListener("click", () => { goToScreen(screenMarket); if(window.iniciarMercado) window.iniciarMercado(); });
+
+    // ==========================================
+    // NUEVO ENRUTADOR: BOTÓN DE MÚSICA
+    // ==========================================
+    const btnMusic = document.getElementById("btn-toggle-music");
+    const musicIcon = document.getElementById("music-icon");
+    const musicText = document.getElementById("music-text");
+    
+    if(btnMusic) {
+        btnMusic.addEventListener("click", () => {
+            if(window.Sonidos) {
+                const estaSonando = window.Sonidos.toggleMusica();
+                if(estaSonando) {
+                    musicIcon.innerText = "🔊";
+                    musicText.innerText = "Música: ON";
+                    btnMusic.style.background = "#e0f7fa";
+                } else {
+                    musicIcon.innerText = "🎵";
+                    musicText.innerText = "Música: OFF";
+                    btnMusic.style.background = "transparent";
+                }
+            }
+        });
+    }
+    // ==========================================
 
     setTimeout(() => {
         if(!window.miWallet) window.miWallet = { pol: 10.0 };
