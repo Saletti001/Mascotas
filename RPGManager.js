@@ -69,9 +69,14 @@ document.addEventListener("DOMContentLoaded", () => {
             
             const contenedor = document.getElementById("geno-container");
             if(contenedor) {
+                contenedor.classList.remove("geno-idle");
                 contenedor.classList.add("happy-jump");
-                setTimeout(() => contenedor.classList.remove("happy-jump"), 500);
+                setTimeout(() => {
+                    contenedor.classList.remove("happy-jump");
+                    contenedor.classList.add("geno-idle");
+                }, 500);
             }
+            if(window.Sonidos) window.Sonidos.play("heal"); // Sonido de Level Up
             alert(`¡Súper Evolución! 🌟\n${window.miMascota.name} ha alcanzado el Nivel ${window.miMascota.level}.\nTienes 3 Puntos de Atributo disponibles.`);
         }
         window.actualizarPanelRPG();
@@ -87,11 +92,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (stat === 'luk') window.miMascota.stats.luk += 1;
                 window.miMascota.statPoints--;
                 window.actualizarPanelRPG();
+                if(window.guardarProgreso) window.guardarProgreso();
             }
         });
     });
 
-    // Inicializar UI (Nombre, Botones, Escáner)
     const btnStats = document.getElementById("btn-show-stats");
     const btnCloseStats = document.getElementById("close-stats-btn");
     const btnScanner = document.getElementById("btn-use-scanner");
@@ -109,6 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 panelStats.style.boxShadow = "0 0 20px #8B5CF6";
                 btnScanner.innerText = "Gen Revelado ✅";
                 btnScanner.style.background = "#4CAF50";
+                if(window.guardarProgreso) window.guardarProgreso();
             } else { alert("No tienes un Escáner de ADN en el inventario."); }
         });
     }
@@ -137,18 +143,62 @@ document.addEventListener("DOMContentLoaded", () => {
                 window.miMascota.name = nuevoNombre.trim();
                 window.miMascota.renames++;
                 window.actualizarPanelRPG();
+                if(window.guardarProgreso) window.guardarProgreso();
                 
                 const contenedor = document.getElementById("geno-container");
                 if(contenedor) {
+                    contenedor.classList.remove("geno-idle");
                     contenedor.classList.add("happy-jump");
-                    setTimeout(() => contenedor.classList.remove("happy-jump"), 500);
+                    setTimeout(() => {
+                        contenedor.classList.remove("happy-jump");
+                        contenedor.classList.add("geno-idle");
+                    }, 500);
                 }
             }
         });
     }
 
-    // Dibujar el Geno principal al arrancar
+    // =========================================
+    // RENDERIZADO Y MASCOTA INTERACTIVA
+    // =========================================
     const contenedor = document.getElementById("geno-container");
-    if (contenedor) contenedor.innerHTML = generarSvgGeno(window.miMascota.visual_genes);
+    if (contenedor) {
+        // Dibujar el Geno y añadirle la clase de respiración
+        contenedor.innerHTML = generarSvgGeno(window.miMascota.visual_genes);
+        contenedor.classList.add("geno-idle");
+        
+        // INTERACCIÓN: Acariciar al Geno
+        contenedor.addEventListener("click", (e) => {
+            // 1. Sonido de cariño (si tienes el audio activado)
+            if(window.Sonidos) window.Sonidos.play("click");
+            
+            // 2. Efecto de Saltito
+            contenedor.classList.remove("geno-idle");
+            contenedor.classList.add("happy-jump");
+            setTimeout(() => {
+                contenedor.classList.remove("happy-jump");
+                contenedor.classList.add("geno-idle");
+            }, 300);
+
+            // 3. Crear Partícula de Corazón
+            const heart = document.createElement("div");
+            heart.className = "heart-particle";
+            heart.innerText = "❤️";
+            
+            // Posicionar el corazón donde hiciste clic
+            const rect = contenedor.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            heart.style.left = `${x}px`;
+            heart.style.top = `${y}px`;
+            
+            contenedor.appendChild(heart);
+            
+            // Eliminar el corazón del HTML cuando termine la animación
+            setTimeout(() => heart.remove(), 1000);
+        });
+    }
+
     window.actualizarPanelRPG();
 });

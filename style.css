@@ -144,3 +144,59 @@ body { margin: 0; padding: 0; background-color: #f0f4f8; display: flex; justify-
 .heal-effect {
     animation: healPulse 0.6s ease-out;
 }
+
+/* ========================================= */
+/* ANIMACIONES DEL GENO PRINCIPAL            */
+/* ========================================= */
+
+/* Animación de respiración/flote constante */
+@keyframes floatIdle {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+.geno-idle {
+    animation: floatIdle 3s ease-in-out infinite;
+    position: relative;
+    cursor: pointer;
+    z-index: 5;
+}
+
+/* Sombra dinámica en el suelo */
+#geno-container::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    filter: blur(2px);
+    z-index: -1;
+    animation: shadowPulse 3s ease-in-out infinite;
+}
+
+@keyframes shadowPulse {
+    0% { transform: translateX(-50%) scale(1); opacity: 0.5; }
+    50% { transform: translateX(-50%) scale(0.8); opacity: 0.2; }
+    100% { transform: translateX(-50%) scale(1); opacity: 0.5; }
+}
+
+/* Partículas de corazones al acariciar */
+@keyframes floatUpHeart {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-40px) scale(1.5); }
+}
+
+.heart-particle {
+    position: absolute;
+    color: #E91E63;
+    font-size: 24px;
+    pointer-events: none;
+    animation: floatUpHeart 1s ease-out forwards;
+    z-index: 10;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
