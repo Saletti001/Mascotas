@@ -9,11 +9,15 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #0f172a; 
-    background-image: 
-        linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-    background-size: 60px 60px; /* CUADRÍCULA AMPLIADA (4 en 1) */
+    /* Nuevo Fondo: Paneles de Laboratorio Futurista */
+    background-color: #0b101e;
+    background-image:
+        linear-gradient(#1a2436 2px, transparent 2px),
+        linear-gradient(90deg, #1a2436 2px, transparent 2px),
+        linear-gradient(#0b101e 1px, transparent 1px),
+        linear-gradient(90deg, #0b101e 1px, transparent 1px);
+    background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+    background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -32,11 +36,12 @@ body {
     border-radius: 24px;
     box-shadow: 
         0 0 0 12px #1e293b,         
-        0 20px 50px rgba(0,0,0,0.8); 
+        0 20px 50px rgba(0,0,0,0.8),
+        0 0 100px rgba(77, 208, 225, 0.2); /* Sutil brillo exterior cian */
 }
 
 /* ========================================= */
-/* PANTALLAS Y CÁMARA DE INCUBACIÓN          */
+/* PANTALLAS Y FONDO DEL CUARTO              */
 /* ========================================= */
 .app-screen {
     position: absolute;
@@ -46,7 +51,7 @@ body {
 }
 
 #room-area {
-    background: radial-gradient(circle at 50% 50%, #e0f7fa 0%, #b2ebf2 40%, #4dd0e1 100%);
+    background: radial-gradient(circle at 50% 50%, #dcf8fc 0%, #b2ebf2 50%, #80deea 100%);
     position: relative;
 }
 
@@ -54,82 +59,147 @@ body {
     content: ""; position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
     background: repeating-linear-gradient(
-        0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15) 2px, transparent 2px, transparent 6px
+        0deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.2) 2px, transparent 2px, transparent 8px
     );
     pointer-events: none; z-index: 1; 
 }
 
+/* ========================================= */
+/* CÁPSULA DE INCUBACIÓN (TIPO MEWTWO)       */
+/* ========================================= */
+#incubator-capsule {
+    position: absolute;
+    top: 55%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px; height: 340px;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Tapa superior de la cápsula */
+.capsule-top {
+    width: 100%; height: 35px;
+    background: linear-gradient(135deg, #2c3e50, #4ca1af, #2c3e50);
+    border-radius: 50% / 15px;
+    z-index: 3;
+    border-bottom: 2px solid rgba(255,255,255,0.8);
+    box-shadow: inset 0 -5px 10px rgba(0,0,0,0.5), 0 10px 20px rgba(77, 208, 225, 0.4);
+    display: flex; justify-content: center; align-items: center;
+}
+
+/* Luz de estado en la tapa */
+.capsule-light {
+    width: 15px; height: 8px;
+    background: #4CAF50;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #4CAF50;
+}
+
+/* El cristal de la cápsula y el líquido interior */
+.capsule-glass {
+    width: 90%; height: 280px;
+    background: linear-gradient(to right, 
+        rgba(255,255,255,0.3) 0%, 
+        rgba(77, 208, 225, 0.2) 15%, 
+        rgba(77, 208, 225, 0.5) 50%, 
+        rgba(77, 208, 225, 0.2) 85%, 
+        rgba(255,255,255,0.4) 100%);
+    border-left: 4px solid rgba(255,255,255,0.5);
+    border-right: 4px solid rgba(255,255,255,0.5);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    margin-top: -15px; /* Para que encaje dentro de la tapa */
+    margin-bottom: -20px;
+    box-shadow: inset 0 0 40px rgba(0, 180, 255, 0.4);
+}
+
+/* Base inferior pesada */
+.capsule-bottom {
+    width: 100%; height: 50px;
+    background: linear-gradient(135deg, #1a252c, #34495e, #1a252c);
+    border-radius: 50% / 20px;
+    z-index: 3;
+    border-top: 2px solid rgba(255,255,255,0.5);
+    box-shadow: inset 0 10px 10px rgba(0,0,0,0.5), 0 -5px 20px rgba(77, 208, 225, 0.5);
+}
+
+/* Burbujas realistas */
+.bubble {
+    position: absolute;
+    bottom: -10px;
+    width: 12px; height: 12px;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.2));
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.5);
+    animation: floatBubble infinite ease-in;
+}
+
+@keyframes floatBubble {
+    0% { transform: translateY(0) scale(0.8) translateX(0); opacity: 0; }
+    20% { opacity: 1; transform: translateY(-50px) scale(1) translateX(10px); }
+    80% { opacity: 0.8; transform: translateY(-200px) scale(1.2) translateX(-10px); }
+    100% { transform: translateY(-300px) scale(1.3) translateX(0); opacity: 0; }
+}
+
+/* ========================================= */
+/* GENO ANIMACIONES (Dentro de la cápsula)   */
+/* ========================================= */
 #geno-container {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     z-index: 10;
+    display: flex; justify-content: center; align-items: center;
 }
 
-@keyframes happyJump { 0% { transform: translate(-50%, -50%) scale(1, 1); } 30% { transform: translate(-50%, -70px) scale(0.9, 1.1); } 50% { transform: translate(-50%, -50%) scale(1.05, 0.95); } 70% { transform: translate(-50%, -60px) scale(0.95, 1.05); } 100% { transform: translate(-50%, -50%) scale(1, 1); } }
+@keyframes floatIdle {
+    0% { transform: translate(-50%, -50%); }
+    50% { transform: translate(-50%, -60px); } /* Flota hacia arriba en el líquido */
+    100% { transform: translate(-50%, -50%); }
+}
+
+.geno-idle {
+    animation: floatIdle 4s ease-in-out infinite;
+    position: absolute;
+    cursor: pointer;
+    z-index: 10;
+}
+
+@keyframes happyJump { 0% { transform: translate(-50%, -50%) scale(1, 1); } 30% { transform: translate(-50%, -80px) scale(0.9, 1.1); } 50% { transform: translate(-50%, -50%) scale(1.05, 0.95); } 70% { transform: translate(-50%, -70px) scale(0.95, 1.05); } 100% { transform: translate(-50%, -50%) scale(1, 1); } }
 .happy-jump { animation: happyJump 0.5s ease-in-out !important; }
 
-/* ========================================= */
-/* FONDO DEL GENO: BASE Y BURBUJAS           */
-/* ========================================= */
-#incubator-bg {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 200px; height: 200px;
-    z-index: 2; /* Debajo del Geno, encima del cristal */
-    pointer-events: none;
-}
-.incubator-base {
-    position: absolute;
-    bottom: 0; left: 0;
-    width: 100%; height: 40px;
-    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
-    border-bottom: 2px solid rgba(255,255,255,0.4);
-    border-radius: 50%;
-}
-.bubble {
-    position: absolute;
-    bottom: 20px;
-    width: 8px; height: 8px;
-    background: rgba(255, 255, 255, 0.6);
-    border-radius: 50%;
-    animation: floatBubble 4s infinite ease-in;
-}
-@keyframes floatBubble {
-    0% { transform: translateY(0) scale(0.5); opacity: 0; }
-    20% { opacity: 1; }
-    100% { transform: translateY(-120px) scale(1.2); opacity: 0; }
-}
+@keyframes floatUpHeart { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-40px) scale(1.5); } }
+.heart-particle { position: absolute; color: #E91E63; font-size: 24px; pointer-events: none; animation: floatUpHeart 1s ease-out forwards; z-index: 20; text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
 
 /* =========================================
-   SISTEMA DE ALMACÉN (ANTES MOCHILA)
+   SISTEMA DE ALMACÉN (UI)
    ========================================= */
-#inventory-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 50; }
-.modal-content { background-color: white; width: 85%; max-width: 320px; border-radius: 15px; padding: 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.3); }
-.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+#inventory-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: flex; justify-content: center; align-items: center; z-index: 50; }
+.modal-content { background-color: #f8f9fa; width: 85%; max-width: 320px; border-radius: 15px; padding: 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.5); border: 2px solid #8A2BE2; }
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
 .modal-header h3 { margin: 0; color: #333; }
 #close-inventory { background: none; border: none; cursor: pointer; font-size: 16px; }
-
 #inventory-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-.inventory-slot { aspect-ratio: 1; background-color: #f8f9fa; border: 2px dashed #ccc; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 24px; position: relative; cursor: pointer;}
-.inventory-slot.selected { border: 2px solid #ffaa00; background-color: #fff9e6; }
-.item-count { position: absolute; bottom: 2px; right: 4px; font-size: 11px; font-weight: bold; background: white; padding: 0 3px; border-radius: 3px; }
-
-#item-actions { margin-top: 15px; padding-top: 15px; border-top: 2px solid #eee; text-align: center; }
+.inventory-slot { aspect-ratio: 1; background-color: #fff; border: 2px dashed #bbb; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 24px; position: relative; cursor: pointer; box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);}
+.inventory-slot.selected { border: 2px solid #8A2BE2; background-color: #f3e5f5; }
+.item-count { position: absolute; bottom: 2px; right: 4px; font-size: 11px; font-weight: bold; background: #333; color: white; padding: 1px 4px; border-radius: 4px; }
+#item-actions { margin-top: 15px; padding-top: 15px; border-top: 2px solid #ddd; text-align: center; }
 #selected-item-info { font-weight: bold; color: #444; margin-bottom: 10px; }
 .action-buttons { display: flex; justify-content: center; gap: 10px; }
 .release-btn { padding: 8px 12px; border: none; border-radius: 6px; background: #f0ad4e; color: white; font-weight: bold; cursor: pointer; }
 .release-btn.danger { background: #d9534f; }
 
 /* =========================================
-   PANTALLAS ARCADE Y MINIJUEGO
+   RESTO DE LAS PANTALLAS (Arcade, Santuario, etc)
    ========================================= */
 .screen-title { text-align: center; color: #444; margin-top: 30px; }
 .arcade-grid { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
 .arcade-card { background: white; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; border: 2px solid #ddd; cursor: pointer; }
 .arcade-card.locked { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; }
-.back-btn { margin: auto auto 20px auto; padding: 10px 20px; border-radius: 8px; border: none; background: #6c757d; color: white; font-weight: bold; cursor: pointer; z-index: 10; }
+.back-btn { margin: auto auto 20px auto; padding: 10px 20px; border-radius: 8px; border: none; background: #6c757d; color: white; font-weight: bold; cursor: pointer; z-index: 10; box-shadow: 0 4px 6px rgba(0,0,0,0.2);}
 
 #play-area { flex: 1; position: relative; overflow: hidden; background: #87CEEB; }
 #falling-object { position: absolute; font-size: 30px; transition: none !important; }
@@ -138,9 +208,6 @@ body {
 #touch-left, #touch-right { flex: 1; }
 #game-header { display: flex; justify-content: space-between; padding: 15px; background: white; border-bottom: 2px solid #ddd; }
 
-/* =========================================
-   SANTUARIO GENÉTICO
-   ========================================= */
 .sanctuary-grid { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; overflow-y: auto; flex: 1; }
 .geno-card { background: white; border-radius: 12px; padding: 10px; text-align: center; border: 2px solid #ddd; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: space-between;}
 .geno-card svg { width: 60px; height: 60px; margin: 0 auto 10px auto; }
@@ -151,9 +218,6 @@ body {
 .btn-liberar-geno:hover { background: #c9302c; }
 .btn-liberar-geno:disabled { background: #ccc; cursor: not-allowed; }
 
-/* =========================================
-   ALQUIMIA
-   ========================================= */
 .alchemy-panel { background: white; margin: 20px; border-radius: 15px; padding: 20px; box-shadow: 0 5px 15px rgba(139, 92, 246, 0.2); border: 2px solid #8B5CF6; display: flex; flex-direction: column; align-items: center;}
 .alchemy-stats { width: 100%; display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px dashed #ccc;}
 .alchemy-visual { font-size: 24px; background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px; width: 100%; text-align: center; letter-spacing: 2px; }
@@ -162,9 +226,9 @@ body {
 .btn-fuse:disabled { background: #ccc; cursor: not-allowed; }
 
 /* =========================================
-   MENÚ DESPLEGABLE Y BOTÓN FLOTANTE
+   NUEVO MENÚ DESPLEGABLE Y BOTÓN FLOTANTE
    ========================================= */
-.fab-btn { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 25px; border-radius: 30px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; z-index: 100; transition: transform 0.2s;}
+.fab-btn { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 25px; border-radius: 30px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer; z-index: 100; transition: transform 0.2s; border: 2px solid #555;}
 .fab-btn:active { transform: translateX(-50%) scale(0.95); }
 
 .drawer-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 200; display: flex; flex-direction: column; justify-content: flex-end; transition: opacity 0.3s; }
@@ -214,55 +278,3 @@ body {
     100% { filter: brightness(1) drop-shadow(0 0 0 rgba(76, 175, 80, 0)); }
 }
 .heal-effect { animation: healPulse 0.6s ease-out; }
-
-/* ========================================= */
-/* ANIMACIONES DEL GENO PRINCIPAL            */
-/* ========================================= */
-@keyframes floatIdle {
-    0% { transform: translate(-50%, -50%); }
-    50% { transform: translate(-50%, -60px); }
-    100% { transform: translate(-50%, -50%); }
-}
-
-.geno-idle {
-    animation: floatIdle 3s ease-in-out infinite;
-    position: absolute;
-    cursor: pointer;
-    z-index: 5;
-}
-
-#geno-container::after {
-    content: "";
-    position: absolute;
-    bottom: -30px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 15px;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 50%;
-    filter: blur(2px);
-    z-index: -1;
-    animation: shadowPulse 3s ease-in-out infinite;
-}
-
-@keyframes shadowPulse {
-    0% { transform: translateX(-50%) scale(1); opacity: 0.5; }
-    50% { transform: translateX(-50%) scale(0.8); opacity: 0.2; }
-    100% { transform: translateX(-50%) scale(1); opacity: 0.5; }
-}
-
-@keyframes floatUpHeart {
-    0% { opacity: 1; transform: translateY(0) scale(1); }
-    100% { opacity: 0; transform: translateY(-40px) scale(1.5); }
-}
-
-.heart-particle {
-    position: absolute;
-    color: #E91E63;
-    font-size: 24px;
-    pointer-events: none;
-    animation: floatUpHeart 1s ease-out forwards;
-    z-index: 10;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}

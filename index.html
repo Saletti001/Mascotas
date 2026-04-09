@@ -13,14 +13,12 @@
         <div id="room-area" class="app-screen">
             
             <div id="top-hud" style="position: absolute; top: 15px; left: 15px; right: 15px; z-index: 20;">
-                
                 <div id="currency-ui" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <span id="vital-essence-amount" style="background: rgba(255,255,255,0.9); padding: 6px 12px; border-radius: 20px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">✨ 0</span>
                     <span id="pol-amount" style="background: rgba(255,255,255,0.9); padding: 6px 12px; border-radius: 20px; color: #8A2BE2; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">🔷 10 POL</span>
                 </div>
 
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; position: relative;">
-                    
                     <div>
                         <button id="btn-show-stats" style="background: #4CAF50; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">📊 Stats</button>
                         
@@ -54,8 +52,8 @@
                         </div>
                     </div>
 
-                    <div id="inventory-ui" style="background: rgba(255,255,255,0.9); padding: 8px 12px; border-radius: 10px; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); border: 1px solid #ddd;">
-                        <div id="backpack-icon" title="Abrir Almacén" style="font-size: 22px;">📦</div>
+                    <div id="inventory-ui" style="background: rgba(255,255,255,0.9); padding: 8px 12px; border-radius: 10px; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2); border: 1px solid #8A2BE2;">
+                        <div id="backpack-icon" title="Abrir Almacén" style="font-size: 24px; color: #8A2BE2;">💠</div>
                         <div id="slot-counter" style="font-size: 11px; font-weight: bold; line-height: 1.2; color: #333; text-align: center;">0/10<br>CAP.</div>
                     </div>
 
@@ -65,28 +63,37 @@
             <div id="inventory-modal" class="hidden">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h3>Almacén de Objetos</h3>
+                        <h3>Almacén Nexo</h3>
                         <button id="close-inventory">❌</button>
                     </div>
                     <div id="inventory-grid"></div>
                     <div id="item-actions" class="hidden">
                         <div id="selected-item-info">Seleccionado: --</div>
                         <div class="action-buttons">
-                            <button id="btn-release-one" class="release-btn">Tirar 1</button>
-                            <button id="btn-release-all" class="release-btn danger">Tirar Todo</button>
+                            <button id="btn-release-one" class="release-btn">Destruir 1</button>
+                            <button id="btn-release-all" class="release-btn danger">Vaciar</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div id="incubator-bg">
-                <div class="incubator-base"></div>
-                <div class="bubble" style="left: 30%; animation-delay: 0s;"></div>
-                <div class="bubble" style="left: 50%; animation-delay: 1.5s;"></div>
-                <div class="bubble" style="left: 70%; animation-delay: 3s; transform: scale(0.8);"></div>
+            <div id="incubator-capsule">
+                <div class="capsule-top">
+                    <div class="capsule-light"></div>
+                </div>
+                
+                <div class="capsule-glass">
+                    <div class="bubble" style="left: 20%; animation-duration: 3.5s; animation-delay: 0s;"></div>
+                    <div class="bubble" style="left: 55%; animation-duration: 4.2s; animation-delay: 1s; transform: scale(1.2);"></div>
+                    <div class="bubble" style="left: 75%; animation-duration: 3.8s; animation-delay: 2.5s; transform: scale(0.8);"></div>
+                    <div class="bubble" style="left: 35%; animation-duration: 4.5s; animation-delay: 1.5s; transform: scale(1.1);"></div>
+                    
+                    <div id="geno-container"></div>
+                </div>
+                
+                <div class="capsule-bottom"></div>
             </div>
 
-            <div id="geno-container"></div>
         </div>
 
         <div id="arcade-menu" class="app-screen hidden">
@@ -231,7 +238,6 @@
     <script src="AudioEngine.js"></script>
     <script src="InventoryManager.js"></script>
     <script src="SaveManager.js"></script>
-    
     <script src="RPGManager.js"></script>
     <script src="SanctuaryManager.js"></script>
     <script src="ReactorManager.js"></script>
@@ -240,7 +246,6 @@
     <script src="BreedingManager.js"></script>
     <script src="ColiseumManager.js"></script>
     <script src="MarketManager.js"></script> 
-    
     <script src="app.js"></script>
     
 </body>
