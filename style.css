@@ -1,20 +1,84 @@
-/* =========================================
-   CSS GENERAL Y UTILIDADES
-   ========================================= */
-body { margin: 0; padding: 0; background-color: #f0f4f8; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow: hidden; }
-#game-container { width: 100%; max-width: 400px; height: 100%; max-height: 800px; background-color: white; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative; display: flex; flex-direction: column; overflow: hidden;}
-.hidden { display: none !important; }
-.app-screen { flex: 1; position: absolute; top:0; left:0; width: 100%; height: 100%; display: flex; flex-direction: column; background: linear-gradient(to bottom, #e0eaf5 0%, #ffffff 100%); z-index: 1;}
+/* ========================================= */
+/* ESTRUCTURA BASE Y ESCRITORIO (DESKTOP)    */
+/* ========================================= */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Fondo oscuro y tecnológico para monitores grandes */
+    background-color: #0f172a; 
+    background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 30px 30px; /* Crea una cuadrícula sutil de laboratorio */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    user-select: none;
+}
 
-/* =========================================
-   PANTALLA 1: EL LABORATORIO
-   ========================================= */
-#room-area { justify-content: center; align-items: center; }
-#currency-ui { position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.9); padding: 5px 12px; border-radius: 20px; border: 2px solid #ffcc00; font-weight: bold; font-size: 14px; z-index: 10; color: #b8860b; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+#game-container {
+    width: 100%;
+    max-width: 400px;
+    height: 100vh;
+    max-height: 850px; /* Evita que se estire demasiado en monitores gigantes */
+    position: relative;
+    overflow: hidden;
+    background: #fff;
+    
+    /* El truco del "Teléfono Falso": Bordes y sombras pesadas */
+    border-radius: 24px;
+    box-shadow: 
+        0 0 0 12px #1e293b,         /* Borde oscuro del dispositivo */
+        0 20px 50px rgba(0,0,0,0.8); /* Sombra proyectada en el escritorio */
+}
 
-#inventory-ui { position: absolute; top: 20px; right: 20px; display: flex; flex-direction: column; align-items: center; background-color: rgba(255, 255, 255, 0.8); padding: 5px 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; z-index: 10; }
-#backpack-icon { font-size: 28px; }
-#slot-counter { font-size: 11px; font-weight: bold; color: #444; text-align: center; }
+/* ========================================= */
+/* PANTALLAS Y CÁMARA DE INCUBACIÓN          */
+/* ========================================= */
+.app-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #f4f6f8;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* El fondo específico donde está tu Geno */
+#room-area {
+    /* Degradado radial que simula un biorreactor iluminado en el centro */
+    background: radial-gradient(circle at 50% 50%, #e0f7fa 0%, #b2ebf2 40%, #4dd0e1 100%);
+    position: relative;
+}
+
+/* Efecto de cristal y escáner sobre el fondo (Líneas horizontales sutiles) */
+#room-area::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(255, 255, 255, 0.15),
+        rgba(255, 255, 255, 0.15) 2px,
+        transparent 2px,
+        transparent 6px
+    );
+    pointer-events: none; /* Muy importante para que no bloquee tus clics */
+    z-index: 1; /* Se pone por encima del fondo pero por debajo del Geno */
+}
+
+/* Asegurar que el contenedor del Geno esté por encima de los efectos de cristal */
+#geno-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+}
 
 /* =========================================
    GENO Y ANIMACIONES
