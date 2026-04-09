@@ -97,11 +97,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // HACKS DE DESARROLLADOR (Recursos iniciales)
+    // HACKS DE DESARROLLADOR (Recursos iniciales)
     setTimeout(() => {
+        window.miWallet = { pol: 10.0 }; // <--- Billetera Falsa para pruebas
         if (window.miInventario) {
             window.miInventario.addItem({ id: "dna_scanner", name: "Escáner ADN", icon: "🧬", type: "consumible", maxStack: 20 }, 5);
             window.miInventario.addEssence(10000);
         }
+        // ... (resto del código)
         for(let i=0; i<5; i++) {
             window.misGenos.push({ id: 100+i, name: "Sujeto Raro", rarity: "Raro", element: "💧 Acuático", shape: "frijol", color: "#4169E1", reward: 100 });
             window.misGenos.push({ id: 200+i, name: "Sujeto Épico", rarity: "Épico", element: "🌌 Cósmico", shape: "estrella", color: "#8A2BE2", reward: 200 });

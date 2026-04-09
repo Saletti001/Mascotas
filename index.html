@@ -12,8 +12,9 @@
         
         <div id="room-area" class="app-screen">
             
-            <div id="currency-ui">
-                <span id="vital-essence-amount">✨ 0</span>
+            <div id="currency-ui" style="display: flex; gap: 10px;">
+                <span id="vital-essence-amount" style="background: rgba(255,255,255,0.8); padding: 5px 10px; border-radius: 15px;">✨ 0</span>
+                <span id="pol-amount" style="background: rgba(255,255,255,0.8); padding: 5px 10px; border-radius: 15px; color: #8A2BE2; font-weight: bold;">🔷 10 POL</span>
             </div>
 
             <button id="btn-show-stats" style="position: absolute; left: 20px; top: 60px; background: #4CAF50; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; z-index: 10; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">📊 Stats</button>
@@ -148,18 +149,19 @@
                 </div>
                 
                 <div id="reactor-slots-container" style="display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; width: 100%; min-height: 55px;">
-                    </div>
+                </div>
                 
                 <div style="font-size: 11px; color: #888; text-align: left; width: 100%; margin-bottom: 5px;">Toca un Geno para cargarlo:</div>
                 <div id="reactor-available-genos" style="display: flex; overflow-x: auto; gap: 10px; padding: 10px; background: #f0f4f8; border-radius: 8px; margin-bottom: 20px; width: 100%; min-height: 60px; box-sizing: border-box;">
-                    </div>
+                </div>
 
                 <button id="btn-fuse-genos" class="btn-fuse" disabled>Activar Reactor</button>
             </div>
             
             <button class="back-btn btn-go-home">Volver al Laboratorio</button>
         </div>
-<div id="breeding-screen" class="app-screen hidden">
+
+        <div id="breeding-screen" class="app-screen hidden">
             <h2 class="screen-title" style="color: #E91E63;">Centro de Crianza</h2>
             <p style="text-align: center; color: #666; font-size: 14px; padding: 0 20px; margin-bottom: 20px;">
                 Cruza dos Genos Nivel 10+ para crear una nueva generación. Costo: 500 ✨
@@ -191,10 +193,16 @@
                 </div>
 
                 <button id="btn-start-breeding" class="btn-fuse" style="background: linear-gradient(135deg, #E91E63, #9C27B0);" disabled>Iniciar Crianza</button>
-            </div>
+                
+                <hr style="margin: 20px 0; border: 1px dashed #f8bbd0; width: 100%;">
+                <h3 style="text-align: center; color: #d81b60; margin-top: 0; font-size: 16px;">Incubadora Térmica</h3>
+                <div id="incubator-grid" style="display: flex; gap: 10px; overflow-x: auto; padding: 10px; background: rgba(255,255,255,0.5); border-radius: 8px; min-height: 120px; width: 100%; box-sizing: border-box;">
+                    </div>
+                </div>
             
             <button class="back-btn btn-go-home">Volver al Laboratorio</button>
         </div>
+
         <div id="fab-menu" class="fab-btn">
             <span>⚙️ NEXO</span>
         </div>
@@ -236,9 +244,8 @@
 
     </div>
 
-  <script src="SVGEngine.js"></script>
+    <script src="SVGEngine.js"></script>
     <script src="InventoryManager.js"></script>
-    
     <script src="RPGManager.js"></script>
     <script src="SanctuaryManager.js"></script>
     <script src="ReactorManager.js"></script>
