@@ -1,6 +1,12 @@
 /* ========================================= */
 /* ESTRUCTURA BASE Y ESCRITORIO (DESKTOP)    */
 /* ========================================= */
+
+/* ¡ESTA ES LA CLASE QUE FALTABA PARA OCULTAR VENTANAS! */
+.hidden { 
+    display: none !important; 
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -83,9 +89,9 @@ body {
 /* =========================================
    GENO Y ANIMACIONES
    ========================================= */
-#geno-container { margin: auto; display: flex; justify-content: center; align-items: center; animation: respiracion 4s infinite ease-in-out; }
-@keyframes respiracion { 0% { transform: scale(1, 1); } 50% { transform: scale(1.02, 0.98); } 100% { transform: scale(1, 1); } }
-@keyframes happyJump { 0% { transform: translateY(0) scale(1, 1); } 30% { transform: translateY(-20px) scale(0.9, 1.1); } 50% { transform: translateY(0) scale(1.05, 0.95); } 70% { transform: translateY(-10px) scale(0.95, 1.05); } 100% { transform: translateY(0) scale(1, 1); } }
+#geno-container { margin: auto; display: flex; justify-content: center; align-items: center; }
+
+@keyframes happyJump { 0% { transform: translate(-50%, -50%) scale(1, 1); } 30% { transform: translate(-50%, -70px) scale(0.9, 1.1); } 50% { transform: translate(-50%, -50%) scale(1.05, 0.95); } 70% { transform: translate(-50%, -60px) scale(0.95, 1.05); } 100% { transform: translate(-50%, -50%) scale(1, 1); } }
 .happy-jump { animation: happyJump 0.5s ease-in-out !important; }
 
 /* =========================================
@@ -215,14 +221,14 @@ body {
 
 /* Animación de respiración/flote constante */
 @keyframes floatIdle {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0px); }
+    0% { transform: translate(-50%, -50%); }
+    50% { transform: translate(-50%, -60px); }
+    100% { transform: translate(-50%, -50%); }
 }
 
 .geno-idle {
     animation: floatIdle 3s ease-in-out infinite;
-    position: relative;
+    position: absolute;
     cursor: pointer;
     z-index: 5;
 }
@@ -231,7 +237,7 @@ body {
 #geno-container::after {
     content: "";
     position: absolute;
-    bottom: -10px;
+    bottom: -30px;
     left: 50%;
     transform: translateX(-50%);
     width: 60px;
