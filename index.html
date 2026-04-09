@@ -11,7 +11,6 @@
     <div id="game-container">
         
         <div id="room-area" class="app-screen">
-            
             <div id="currency-ui" style="display: flex; gap: 10px;">
                 <span id="vital-essence-amount" style="background: rgba(255,255,255,0.8); padding: 5px 10px; border-radius: 15px;">✨ 0</span>
                 <span id="pol-amount" style="background: rgba(255,255,255,0.8); padding: 5px 10px; border-radius: 15px; color: #8A2BE2; font-weight: bold;">🔷 10 POL</span>
@@ -21,12 +20,10 @@
             
             <div id="geno-stats-panel" class="hidden" style="position: absolute; left: 20px; top: 95px; background: rgba(255,255,255,0.95); padding: 15px; border-radius: 10px; border: 2px solid #ccc; z-index: 20; width: 190px; font-size: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
                 <span id="close-stats-btn" style="position: absolute; top: 8px; right: 8px; cursor: pointer; font-size: 12px; color: #888;">❌</span>
-                
                 <h3 style="margin: 0 0 5px 0; text-align: center; color: #333; display: flex; justify-content: center; align-items: center; gap: 5px;">
                     <span id="geno-name">Geno Base</span> 
                     <button id="btn-rename-geno" style="background: none; border: none; cursor: pointer; font-size: 14px; padding: 2px; transition: transform 0.2s;" title="Cambiar Nombre">✏️</button>
                 </h3>
-                
                 <div style="text-align: center; margin-bottom: 5px;">
                     <span id="geno-level" style="font-weight: bold; background: #333; color: white; padding: 2px 6px; border-radius: 4px; font-size: 12px;">Nv. 1</span>
                 </div>
@@ -34,179 +31,107 @@
                     <div id="geno-xp-fill" style="width: 0%; background: #4CAF50; height: 100%; transition: width 0.3s ease-out;"></div>
                 </div>
                 <div style="text-align: center; font-size: 10px; margin-bottom: 10px; color: #666;"><span id="geno-xp-text">0/100</span> XP</div>
-
                 <div style="display: flex; justify-content: space-between; margin-bottom: 2px;"><span>Rareza:</span> <span id="geno-rarity" style="font-weight: bold;">--</span></div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><span>Elem:</span> <span id="geno-element" style="font-weight: bold;">--</span></div>
                 <hr style="margin: 8px 0; border: 1px solid #eee;">
-                
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                     <span style="font-size: 12px; color: #777; font-weight: bold;">Atributos</span>
                     <span id="stat-points-badge" class="hidden" style="background: #ffcc00; color: #333; font-size: 10px; padding: 2px 5px; border-radius: 4px; font-weight: bold;">+0 Pts</span>
                 </div>
-                
                 <div class="stat-row"><span>❤️ Vit: <span id="stat-hp" style="font-weight: bold;">10</span></span> <button class="btn-add-stat hidden" data-stat="hp">➕</button></div>
                 <div class="stat-row"><span>⚔️ Fue: <span id="stat-atk" style="font-weight: bold;">5</span></span> <button class="btn-add-stat hidden" data-stat="atk">➕</button></div>
                 <div class="stat-row"><span>⚡ Agi: <span id="stat-spd" style="font-weight: bold;">5</span></span> <button class="btn-add-stat hidden" data-stat="spd">➕</button></div>
                 <div class="stat-row"><span>🍀 Sue: <span id="stat-luk" style="font-weight: bold;">5</span></span> <button class="btn-add-stat hidden" data-stat="luk">➕</button></div>
-                
                 <hr style="margin: 8px 0; border: 1px solid #eee;">
-                
                 <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px;"><span>🧬 Gen Oculto:</span> <span id="geno-recessive" style="font-weight: bold; color: #8B5CF6;">???</span></div>
-                
                 <button id="btn-use-scanner" style="width: 100%; margin-top: 8px; background: #8B5CF6; color: white; border: none; padding: 6px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; transition: background 0.3s;">Usar Escáner 🧬</button>
             </div>
 
-            <div id="inventory-ui">
-                <div id="backpack-icon" title="Abrir Mochila">🎒</div>
-                <div id="slot-counter">0/10<br>SLOTS</div>
-            </div>
-
+            <div id="inventory-ui"><div id="backpack-icon" title="Abrir Mochila">🎒</div><div id="slot-counter">0/10<br>SLOTS</div></div>
             <div id="inventory-modal" class="hidden">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h3>Mochila del Geno</h3>
-                        <button id="close-inventory">❌</button>
-                    </div>
+                    <div class="modal-header"><h3>Mochila del Geno</h3><button id="close-inventory">❌</button></div>
                     <div id="inventory-grid"></div>
                     <div id="item-actions" class="hidden">
                         <div id="selected-item-info">Seleccionado: --</div>
-                        <div class="action-buttons">
-                            <button id="btn-release-one" class="release-btn">Tirar 1</button>
-                            <button id="btn-release-all" class="release-btn danger">Tirar Todo</button>
-                        </div>
+                        <div class="action-buttons"><button id="btn-release-one" class="release-btn">Tirar 1</button><button id="btn-release-all" class="release-btn danger">Tirar Todo</button></div>
                     </div>
                 </div>
             </div>
-
             <div id="geno-container"></div>
         </div>
 
         <div id="arcade-menu" class="app-screen hidden">
             <h2 class="screen-title">Salón Arcade</h2>
             <div class="arcade-grid">
-                <div class="arcade-card" id="card-catch-game">
-                    <div class="card-icon">🍎</div>
-                    <h3>Lluvia de Manzanas</h3>
-                    <p>Atrapa 5 manzanas para ganar 1 item.</p>
-                </div>
-                <div class="arcade-card locked">
-                    <div class="card-icon">🔒</div>
-                    <h3>Próximamente</h3>
-                    <p>Nuevo minijuego en desarrollo.</p>
-                </div>
+                <div class="arcade-card" id="card-catch-game"><div class="card-icon">🍎</div><h3>Lluvia de Manzanas</h3><p>Atrapa 5 manzanas para ganar 1 item.</p></div>
+                <div class="arcade-card locked"><div class="card-icon">🔒</div><h3>Próximamente</h3><p>Nuevo minijuego en desarrollo.</p></div>
             </div>
             <button class="back-btn btn-go-home">Volver al Laboratorio</button>
         </div>
-
         <div id="minigame-screen" class="app-screen hidden">
-            <div id="game-header">
-                <button class="back-btn small" id="btn-quit-minigame">Salir</button>
-                <div id="minigame-timer">⏱️ 30s</div>
-                <div id="minigame-score">Manzanas: 0</div>
-            </div>
-            <div id="play-area">
-                <div id="falling-object">🍎</div> <div id="player-basket">🧺</div>
-            </div>
-            <div id="touch-controls">
-                <div id="touch-left"></div>
-                <div id="touch-right"></div>
-            </div>
+            <div id="game-header"><button class="back-btn small" id="btn-quit-minigame">Salir</button><div id="minigame-timer">⏱️ 30s</div><div id="minigame-score">Manzanas: 0</div></div>
+            <div id="play-area"><div id="falling-object">🍎</div> <div id="player-basket">🧺</div></div>
+            <div id="touch-controls"><div id="touch-left"></div><div id="touch-right"></div></div>
         </div>
 
         <div id="sanctuary-screen" class="app-screen hidden">
             <h2 class="screen-title" style="color: #4CAF50;">Santuario Genético</h2>
-            <p style="text-align: center; color: #666; font-size: 14px; padding: 0 20px; margin-bottom: 5px;">
-                Libera Genos en la naturaleza para obtener ✨ Esencia Vital.
-            </p>
-            <div style="text-align: center; font-weight: bold; color: #d9534f; margin-bottom: 15px;">
-                Límite diario: <span id="daily-release-count">0</span>/3
-            </div>
-            
+            <p style="text-align: center; color: #666; font-size: 14px; padding: 0 20px; margin-bottom: 5px;">Libera Genos en la naturaleza para obtener ✨ Esencia Vital.</p>
+            <div style="text-align: center; font-weight: bold; color: #d9534f; margin-bottom: 15px;">Límite diario: <span id="daily-release-count">0</span>/3</div>
             <div id="sanctuary-grid" class="sanctuary-grid"></div>
-            
             <button class="back-btn btn-go-home">Volver al Laboratorio</button>
         </div>
 
         <div id="alchemy-screen" class="app-screen hidden">
             <h2 class="screen-title" style="color: #8B5CF6;">Reactor Genético</h2>
-            
-            <p id="reactor-description" style="text-align: center; color: #666; font-size: 14px; padding: 0 20px; margin-bottom: 20px;">
-                Fusiona 5 Genos Comunes para intentar crear 1 Geno Raro.
-            </p>
-            
+            <p id="reactor-description" style="text-align: center; color: #666; font-size: 14px; padding: 0 20px; margin-bottom: 20px;">Fusiona 5 Genos Comunes para intentar crear 1 Geno Raro.</p>
             <div class="alchemy-panel">
                 <div class="alchemy-stats" style="flex-direction: column; gap: 10px; border-bottom: none; margin-bottom: 10px;">
                     <select id="reactor-level-select" style="padding: 10px; border-radius: 8px; border: 2px solid #8B5CF6; font-weight: bold; color: #333; outline: none; width: 100%; text-align: center; cursor: pointer; background: #f8f9fa;">
-                        <option value="1">Nivel 1 (Quemar 5 Comunes)</option>
-                        <option value="2">Nivel 2 (Quemar 5 Raros)</option>
-                        <option value="3">Nivel 3 (Quemar 5 Épicos)</option>
+                        <option value="1">Nivel 1 (Quemar 5 Comunes)</option><option value="2">Nivel 2 (Quemar 5 Raros)</option><option value="3">Nivel 3 (Quemar 5 Épicos)</option>
                     </select>
-                    
                     <div style="display: flex; justify-content: space-between; width: 100%; margin-top: 10px; padding-bottom: 10px; border-bottom: 1px dashed #ccc;">
                         <div>Disponibles (<span id="reactor-req-name">Comunes</span>): <span id="alchemy-common-count" style="font-weight: bold;">0</span></div>
                         <div>Costo: <span id="reactor-cost-display" style="font-weight: bold; color: #b8860b;">100 ✨</span></div>
                     </div>
                 </div>
-                
-                <div id="reactor-slots-container" style="display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; width: 100%; min-height: 55px;">
-                </div>
-                
+                <div id="reactor-slots-container" style="display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; width: 100%; min-height: 55px;"></div>
                 <div style="font-size: 11px; color: #888; text-align: left; width: 100%; margin-bottom: 5px;">Toca un Geno para cargarlo:</div>
-                <div id="reactor-available-genos" style="display: flex; overflow-x: auto; gap: 10px; padding: 10px; background: #f0f4f8; border-radius: 8px; margin-bottom: 20px; width: 100%; min-height: 60px; box-sizing: border-box;">
-                </div>
-
+                <div id="reactor-available-genos" style="display: flex; overflow-x: auto; gap: 10px; padding: 10px; background: #f0f4f8; border-radius: 8px; margin-bottom: 20px; width: 100%; min-height: 60px; box-sizing: border-box;"></div>
                 <button id="btn-fuse-genos" class="btn-fuse" disabled>Activar Reactor</button>
             </div>
-            
             <button class="back-btn btn-go-home">Volver al Laboratorio</button>
         </div>
 
         <div id="breeding-screen" class="app-screen hidden">
             <h2 class="screen-title" style="color: #E91E63;">Centro de Crianza</h2>
-            <p style="text-align: center; color: #666; font-size: 14px; padding: 0 20px; margin-bottom: 20px;">
-                Cruza dos Genos Nivel 10+ para crear una nueva generación. Costo: 500 ✨
-            </p>
-            
+            <p style="text-align: center; color: #666; font-size: 14px; padding: 0 20px; margin-bottom: 20px;">Cruza dos Genos Nivel 10+ para crear una nueva generación. Costo: 500 ✨</p>
             <div class="alchemy-panel" style="background: #fff0f5; border-color: #f8bbd0;">
                 <div style="display: flex; justify-content: space-around; width: 100%; margin-bottom: 20px; position: relative;">
-                    
                     <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
-                        <div id="slot-parent-1" style="width: 70px; height: 70px; border: 2px dashed #E91E63; border-radius: 10px; display: flex; justify-content: center; align-items: center; background: #fff; cursor: pointer; transition: 0.2s;">
-                            <span style="color: #E91E63; font-size: 24px;">+</span>
-                        </div>
+                        <div id="slot-parent-1" style="width: 70px; height: 70px; border: 2px dashed #E91E63; border-radius: 10px; display: flex; justify-content: center; align-items: center; background: #fff; cursor: pointer; transition: 0.2s;"><span style="color: #E91E63; font-size: 24px;">+</span></div>
                         <span style="font-size: 11px; font-weight: bold; color: #555;">Padre A</span>
                     </div>
-
                     <div style="display: flex; align-items: center; font-size: 24px; color: #E91E63; font-weight: bold;">❤️</div>
-
                     <div style="display: flex; flex-direction: column; align-items: center; gap: 5px;">
-                        <div id="slot-parent-2" style="width: 70px; height: 70px; border: 2px dashed #E91E63; border-radius: 10px; display: flex; justify-content: center; align-items: center; background: #fff; cursor: pointer; transition: 0.2s;">
-                            <span style="color: #E91E63; font-size: 24px;">+</span>
-                        </div>
+                        <div id="slot-parent-2" style="width: 70px; height: 70px; border: 2px dashed #E91E63; border-radius: 10px; display: flex; justify-content: center; align-items: center; background: #fff; cursor: pointer; transition: 0.2s;"><span style="color: #E91E63; font-size: 24px;">+</span></div>
                         <span style="font-size: 11px; font-weight: bold; color: #555;">Padre B</span>
                     </div>
                 </div>
-
                 <div id="breeding-selector" class="hidden" style="width: 100%; background: #fff; border: 1px solid #ccc; border-radius: 8px; padding: 10px; margin-bottom: 15px; max-height: 150px; overflow-y: auto;">
-                    <div style="font-size: 12px; margin-bottom: 5px; color: #888;">Elige un Geno (Nivel 10+ y menos de 7 crías):</div>
-                    <div id="breeding-list" style="display: flex; flex-wrap: wrap; gap: 5px;"></div>
+                    <div style="font-size: 12px; margin-bottom: 5px; color: #888;">Elige un Geno (Nivel 10+ y menos de 7 crías):</div><div id="breeding-list" style="display: flex; flex-wrap: wrap; gap: 5px;"></div>
                 </div>
-
                 <button id="btn-start-breeding" class="btn-fuse" style="background: linear-gradient(135deg, #E91E63, #9C27B0);" disabled>Iniciar Crianza</button>
-                
                 <hr style="margin: 20px 0; border: 1px dashed #f8bbd0; width: 100%;">
                 <h3 style="text-align: center; color: #d81b60; margin-top: 0; font-size: 16px;">Incubadora Térmica</h3>
-                <div id="incubator-grid" style="display: flex; gap: 10px; overflow-x: auto; padding: 10px; background: rgba(255,255,255,0.5); border-radius: 8px; min-height: 120px; width: 100%; box-sizing: border-box;">
-                    </div>
-
+                <div id="incubator-grid" style="display: flex; gap: 10px; overflow-x: auto; padding: 10px; background: rgba(255,255,255,0.5); border-radius: 8px; min-height: 120px; width: 100%; box-sizing: border-box;"></div>
             </div>
-            
             <button class="back-btn btn-go-home">Volver al Laboratorio</button>
         </div>
 
         <div id="coliseum-screen" class="app-screen hidden">
             <h2 class="screen-title" style="color: #d9534f;">Coliseo Nexo</h2>
-            
             <div id="battle-area" style="background: #222; border-radius: 12px; padding: 15px; margin-bottom: 15px; color: white;">
                 <div style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 20px;">
                     <div id="player-sprite-battle" style="text-align: center;">
@@ -214,72 +139,63 @@
                         <div style="margin-top: 5px; font-weight: bold; font-size: 12px;" id="battle-player-name">Tu Geno</div>
                         <div style="width: 80px; height: 10px; background: #444; border-radius: 5px; overflow: hidden; margin-top: 5px; border: 1px solid #000;">
                             <div id="player-hp-bar" style="width: 100%; height: 100%; background: #4CAF50; transition: width 0.3s;"></div>
-                        </div>
-                        <div id="player-hp-text" style="font-size: 10px; margin-top: 2px;">HP</div>
+                        </div><div id="player-hp-text" style="font-size: 10px; margin-top: 2px;">HP</div>
                     </div>
-
                     <div style="font-size: 24px; font-weight: bold; color: #ffcc00;">VS</div>
-
                     <div id="enemy-sprite-battle" style="text-align: center;">
                         <div id="enemy-visual-box"></div>
                         <div style="margin-top: 5px; font-weight: bold; font-size: 12px;">Sujeto Prueba</div>
                         <div style="width: 80px; height: 10px; background: #444; border-radius: 5px; overflow: hidden; margin-top: 5px; border: 1px solid #000;">
                             <div id="enemy-hp-bar" style="width: 100%; height: 100%; background: #d9534f; transition: width 0.3s;"></div>
-                        </div>
-                        <div id="enemy-hp-text" style="font-size: 10px; margin-top: 2px;">HP</div>
+                        </div><div id="enemy-hp-text" style="font-size: 10px; margin-top: 2px;">HP</div>
                     </div>
                 </div>
-
-                <div id="battle-log" style="background: #111; height: 110px; overflow-y: auto; padding: 10px; font-size: 12px; font-family: monospace; border-radius: 6px; border: 1px solid #444; line-height: 1.4;">
-                    Arena preparada. Esperando combatientes...
-                </div>
+                <div id="battle-log" style="background: #111; height: 110px; overflow-y: auto; padding: 10px; font-size: 12px; font-family: monospace; border-radius: 6px; border: 1px solid #444; line-height: 1.4;">Arena preparada. Esperando combatientes...</div>
             </div>
-
             <div id="battle-controls" class="hidden" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
                 <button id="btn-action-atk" style="background: #d32f2f; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 4px #b71c1c;">⚔️ Atacar</button>
                 <button id="btn-action-skill" style="background: #7b1fa2; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 4px #4a148c;">✨ Habilidad</button>
                 <button id="btn-action-item" style="background: #388e3c; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 4px #1b5e20; grid-column: span 2;">🍎 Comer Manzana (+25 HP)</button>
             </div>
-
             <button id="btn-start-battle" class="btn-fuse" style="background: #d9534f;">Entrar a la Arena</button>
             <button id="btn-leave-battle" class="back-btn btn-go-home">Retirarse</button>
         </div>
 
-        <div id="fab-menu" class="fab-btn">
-            <span>⚙️ NEXO</span>
+        <div id="market-screen" class="app-screen hidden">
+            <h2 class="screen-title" style="color: #8A2BE2;">Mercado Web3</h2>
+            
+            <div style="display: flex; justify-content: center; margin-bottom: 15px;">
+                <button id="tab-market-buy" style="background: #8A2BE2; color: white; border: 1px solid #8A2BE2; padding: 8px 20px; font-weight: bold; border-radius: 8px 0 0 8px; cursor: pointer;">Comprar</button>
+                <button id="tab-market-sell" style="background: #eee; color: #333; border: 1px solid #ccc; padding: 8px 20px; font-weight: bold; border-radius: 0 8px 8px 0; cursor: pointer;">Mis Ventas</button>
+            </div>
+
+            <div id="market-buy-view">
+                <p style="text-align: center; color: #666; font-size: 12px; margin-bottom: 15px;">Adquiere Genos de otros criadores usando $POL.</p>
+                <div id="market-buy-grid" class="sanctuary-grid"></div>
+            </div>
+
+            <div id="market-sell-view" class="hidden">
+                <p style="text-align: center; color: #666; font-size: 12px; margin-bottom: 15px;">Ponle un precio en $POL a tus Genos. Los NPCs podrían comprarlos.</p>
+                <div id="market-my-listed" style="margin-bottom: 15px;"></div>
+                <div id="market-sell-grid" class="sanctuary-grid"></div>
+            </div>
+
+            <button class="back-btn btn-go-home">Volver al Laboratorio</button>
         </div>
+
+        <div id="fab-menu" class="fab-btn"><span>⚙️ NEXO</span></div>
 
         <div id="drawer-menu" class="drawer-overlay hidden">
             <div class="drawer-content">
-                <div class="drawer-header">
-                    <h3>Red Nexo</h3>
-                    <button id="close-drawer">❌</button>
-                </div>
+                <div class="drawer-header"><h3>Red Nexo</h3><button id="close-drawer">❌</button></div>
                 <div class="drawer-grid">
-                    <div class="drawer-item" id="btn-feed">
-                        <div class="drawer-icon">🍎</div>
-                        <span>Alimentar</span>
-                    </div>
-                    <div class="drawer-item" id="btn-sanctuary">
-                        <div class="drawer-icon">🏛️</div>
-                        <span>Santuario</span>
-                    </div>
-                    <div class="drawer-item" id="btn-alchemy">
-                        <div class="drawer-icon">⚛️</div>
-                        <span>Reactor</span>
-                    </div>
-                    <div class="drawer-item" id="btn-breeding">
-                        <div class="drawer-icon">🧬</div>
-                        <span>Crianza</span>
-                    </div>
-                    <div class="drawer-item" id="btn-arcade">
-                        <div class="drawer-icon">🕹️</div>
-                        <span>Arcade</span>
-                    </div>
-                    <div class="drawer-item" id="btn-coliseum">
-                        <div class="drawer-icon">⚔️</div>
-                        <span>Coliseo</span>
-                    </div>
+                    <div class="drawer-item" id="btn-feed"><div class="drawer-icon">🍎</div><span>Alimentar</span></div>
+                    <div class="drawer-item" id="btn-sanctuary"><div class="drawer-icon">🏛️</div><span>Santuario</span></div>
+                    <div class="drawer-item" id="btn-alchemy"><div class="drawer-icon">⚛️</div><span>Reactor</span></div>
+                    <div class="drawer-item" id="btn-breeding"><div class="drawer-icon">🧬</div><span>Crianza</span></div>
+                    <div class="drawer-item" id="btn-arcade"><div class="drawer-icon">🕹️</div><span>Arcade</span></div>
+                    <div class="drawer-item" id="btn-coliseum"><div class="drawer-icon">⚔️</div><span>Coliseo</span></div>
+                    <div class="drawer-item" id="btn-market"><div class="drawer-icon">🛒</div><span>Mercado</span></div>
                 </div>
             </div>
         </div>
@@ -296,7 +212,9 @@
     <script src="ArcadeManager.js"></script> 
     <script src="MinigameCatch.js"></script>
     <script src="BreedingManager.js"></script>
-    <script src="ColiseumManager.js"></script> 
+    <script src="ColiseumManager.js"></script>
+    
+    <script src="MarketManager.js"></script> 
     
     <script src="app.js"></script>
     
