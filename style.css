@@ -1,8 +1,6 @@
 /* ========================================= */
 /* ESTRUCTURA BASE Y ESCRITORIO (DESKTOP)    */
 /* ========================================= */
-
-/* ¡ESTA ES LA CLASE QUE FALTABA PARA OCULTAR VENTANAS! */
 .hidden { 
     display: none !important; 
 }
@@ -11,12 +9,11 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    /* Fondo oscuro y tecnológico para monitores grandes */
     background-color: #0f172a; 
     background-image: 
         linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
         linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
-    background-size: 30px 30px; /* Crea una cuadrícula sutil de laboratorio */
+    background-size: 60px 60px; /* CUADRÍCULA AMPLIADA (4 en 1) */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -28,16 +25,14 @@ body {
     width: 100%;
     max-width: 400px;
     height: 100vh;
-    max-height: 850px; /* Evita que se estire demasiado en monitores gigantes */
+    max-height: 850px; 
     position: relative;
     overflow: hidden;
     background: #fff;
-    
-    /* El truco del "Teléfono Falso": Bordes y sombras pesadas */
     border-radius: 24px;
     box-shadow: 
-        0 0 0 12px #1e293b,         /* Borde oscuro del dispositivo */
-        0 20px 50px rgba(0,0,0,0.8); /* Sombra proyectada en el escritorio */
+        0 0 0 12px #1e293b,         
+        0 20px 50px rgba(0,0,0,0.8); 
 }
 
 /* ========================================= */
@@ -45,57 +40,70 @@ body {
 /* ========================================= */
 .app-screen {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0; width: 100%; height: 100%;
     background-color: #f4f6f8;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow-y: auto; overflow-x: hidden;
 }
 
-/* El fondo específico donde está tu Geno */
 #room-area {
-    /* Degradado radial que simula un biorreactor iluminado en el centro */
     background: radial-gradient(circle at 50% 50%, #e0f7fa 0%, #b2ebf2 40%, #4dd0e1 100%);
     position: relative;
 }
 
-/* Efecto de cristal y escáner sobre el fondo (Líneas horizontales sutiles) */
 #room-area::before {
-    content: "";
-    position: absolute;
+    content: ""; position: absolute;
     top: 0; left: 0; right: 0; bottom: 0;
     background: repeating-linear-gradient(
-        0deg,
-        rgba(255, 255, 255, 0.15),
-        rgba(255, 255, 255, 0.15) 2px,
-        transparent 2px,
-        transparent 6px
+        0deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.15) 2px, transparent 2px, transparent 6px
     );
-    pointer-events: none; /* Muy importante para que no bloquee tus clics */
-    z-index: 1; /* Se pone por encima del fondo pero por debajo del Geno */
+    pointer-events: none; z-index: 1; 
 }
 
-/* Asegurar que el contenedor del Geno esté por encima de los efectos de cristal */
 #geno-container {
     position: absolute;
-    top: 50%;
-    left: 50%;
+    top: 50%; left: 50%;
     transform: translate(-50%, -50%);
     z-index: 10;
 }
 
-/* =========================================
-   GENO Y ANIMACIONES
-   ========================================= */
-#geno-container { margin: auto; display: flex; justify-content: center; align-items: center; }
-
 @keyframes happyJump { 0% { transform: translate(-50%, -50%) scale(1, 1); } 30% { transform: translate(-50%, -70px) scale(0.9, 1.1); } 50% { transform: translate(-50%, -50%) scale(1.05, 0.95); } 70% { transform: translate(-50%, -60px) scale(0.95, 1.05); } 100% { transform: translate(-50%, -50%) scale(1, 1); } }
 .happy-jump { animation: happyJump 0.5s ease-in-out !important; }
 
+/* ========================================= */
+/* FONDO DEL GENO: BASE Y BURBUJAS           */
+/* ========================================= */
+#incubator-bg {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200px; height: 200px;
+    z-index: 2; /* Debajo del Geno, encima del cristal */
+    pointer-events: none;
+}
+.incubator-base {
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 40px;
+    background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+    border-bottom: 2px solid rgba(255,255,255,0.4);
+    border-radius: 50%;
+}
+.bubble {
+    position: absolute;
+    bottom: 20px;
+    width: 8px; height: 8px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    animation: floatBubble 4s infinite ease-in;
+}
+@keyframes floatBubble {
+    0% { transform: translateY(0) scale(0.5); opacity: 0; }
+    20% { opacity: 1; }
+    100% { transform: translateY(-120px) scale(1.2); opacity: 0; }
+}
+
 /* =========================================
-   SISTEMA DE INVENTARIO (MODAL)
+   SISTEMA DE ALMACÉN (ANTES MOCHILA)
    ========================================= */
 #inventory-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: flex; justify-content: center; align-items: center; z-index: 50; }
 .modal-content { background-color: white; width: 85%; max-width: 320px; border-radius: 15px; padding: 20px; box-shadow: 0 5px 25px rgba(0,0,0,0.3); }
@@ -154,7 +162,7 @@ body {
 .btn-fuse:disabled { background: #ccc; cursor: not-allowed; }
 
 /* =========================================
-   NUEVO MENÚ DESPLEGABLE Y BOTÓN FLOTANTE
+   MENÚ DESPLEGABLE Y BOTÓN FLOTANTE
    ========================================= */
 .fab-btn { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 25px; border-radius: 30px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.3); cursor: pointer; z-index: 100; transition: transform 0.2s;}
 .fab-btn:active { transform: translateX(-50%) scale(0.95); }
@@ -185,7 +193,6 @@ body {
 /* ========================================= */
 /* EFECTOS DE "GAME FEEL" (JUGO)             */
 /* ========================================= */
-
 @keyframes shake {
     0% { transform: translate(1px, 1px) rotate(0deg); }
     10% { transform: translate(-2px, -2px) rotate(-1deg); }
@@ -199,27 +206,18 @@ body {
     90% { transform: translate(1px, 2px) rotate(0deg); }
     100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
+.shake-effect { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
 
-.shake-effect {
-    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
-}
-
-/* Efecto de palpitación para curación */
 @keyframes healPulse {
     0% { filter: brightness(1) drop-shadow(0 0 0 rgba(76, 175, 80, 0)); }
     50% { filter: brightness(1.5) drop-shadow(0 0 15px rgba(76, 175, 80, 1)); }
     100% { filter: brightness(1) drop-shadow(0 0 0 rgba(76, 175, 80, 0)); }
 }
-
-.heal-effect {
-    animation: healPulse 0.6s ease-out;
-}
+.heal-effect { animation: healPulse 0.6s ease-out; }
 
 /* ========================================= */
 /* ANIMACIONES DEL GENO PRINCIPAL            */
 /* ========================================= */
-
-/* Animación de respiración/flote constante */
 @keyframes floatIdle {
     0% { transform: translate(-50%, -50%); }
     50% { transform: translate(-50%, -60px); }
@@ -233,7 +231,6 @@ body {
     z-index: 5;
 }
 
-/* Sombra dinámica en el suelo */
 #geno-container::after {
     content: "";
     position: absolute;
@@ -255,7 +252,6 @@ body {
     100% { transform: translateX(-50%) scale(1); opacity: 0.5; }
 }
 
-/* Partículas de corazones al acariciar */
 @keyframes floatUpHeart {
     0% { opacity: 1; transform: translateY(0) scale(1); }
     100% { opacity: 0; transform: translateY(-40px) scale(1.5); }
