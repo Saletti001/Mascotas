@@ -14,16 +14,57 @@
     pointer-events: none; z-index: 4; 
 }
 
-/* MAQUINARIA DE FONDO */
-#lab-machinery { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
-.server-rack { position: absolute; bottom: 25%; width: 60px; height: 180px; background: linear-gradient(to right, #0a1118, #1a2a36); border: 1px solid rgba(77, 208, 225, 0.3); border-radius: 8px; box-shadow: inset 0 0 20px rgba(0,0,0,0.9); opacity: 0.7; filter: blur(1px); }
+/* MAQUINARIA DE FONDO (NUEVO) */
+#lab-machinery {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 2; /* Por detrás del pedestal */
+    pointer-events: none;
+}
+
+/* Servidores Genéticos */
+.server-rack {
+    position: absolute;
+    bottom: 25%;
+    width: 60px; height: 180px;
+    background: linear-gradient(to right, #0a1118, #1a2a36);
+    border: 1px solid rgba(77, 208, 225, 0.3);
+    border-radius: 8px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
+    opacity: 0.7;
+    filter: blur(1px); /* Da sensación de profundidad (están atrás) */
+}
 .server-rack.left { left: 5%; }
 .server-rack.right { right: 5%; }
-.server-lights { position: absolute; top: 15px; left: 10px; width: 6px; height: 6px; background: #4dd0e1; border-radius: 50%; box-shadow: 0 15px 0 #4dd0e1, 0 30px 0 #8A2BE2, 0 45px 0 #4dd0e1, 0 80px 0 #E91E63; animation: blinkLights 2s infinite alternate; }
-@keyframes blinkLights { 0% { opacity: 0.2; } 50% { opacity: 1; box-shadow: 0 15px 0 #4dd0e1, 0 30px 0 #8A2BE2, 0 45px 0 transparent, 0 80px 0 #E91E63;} 100% { opacity: 0.6; } }
-.holo-ring { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%) rotateX(70deg); width: 250px; height: 250px; border: 2px dashed rgba(77, 208, 225, 0.3); border-radius: 50%; box-shadow: 0 0 30px rgba(77, 208, 225, 0.1), inset 0 0 20px rgba(77, 208, 225, 0.1); animation: spinRing 20s linear infinite; }
-@keyframes spinRing { 0% { transform: translate(-50%, -50%) rotateX(70deg) rotateZ(0deg); } 100% { transform: translate(-50%, -50%) rotateX(70deg) rotateZ(360deg); } }
 
+/* Luces parpadeantes de los servidores */
+.server-lights {
+    position: absolute; top: 15px; left: 10px; width: 6px; height: 6px;
+    background: #4dd0e1; border-radius: 50%;
+    box-shadow: 0 15px 0 #4dd0e1, 0 30px 0 #8A2BE2, 0 45px 0 #4dd0e1, 0 80px 0 #E91E63;
+    animation: blinkLights 2s infinite alternate;
+}
+@keyframes blinkLights {
+    0% { opacity: 0.2; }
+    50% { opacity: 1; box-shadow: 0 15px 0 #4dd0e1, 0 30px 0 #8A2BE2, 0 45px 0 transparent, 0 80px 0 #E91E63;}
+    100% { opacity: 0.6; }
+}
+
+/* Anillo holográfico de escaneo */
+.holo-ring {
+    position: absolute;
+    top: 45%; left: 50%;
+    transform: translate(-50%, -50%) rotateX(70deg);
+    width: 250px; height: 250px;
+    border: 2px dashed rgba(77, 208, 225, 0.3);
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(77, 208, 225, 0.1), inset 0 0 20px rgba(77, 208, 225, 0.1);
+    animation: spinRing 20s linear infinite;
+}
+@keyframes spinRing {
+    0% { transform: translate(-50%, -50%) rotateX(70deg) rotateZ(0deg); }
+    100% { transform: translate(-50%, -50%) rotateX(70deg) rotateZ(360deg); }
+}
 /* PEDESTAL Y GENO */
 #incubator-capsule { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); width: 220px; height: 300px; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
 .pedestal-bottom { width: 100%; height: 60px; background: radial-gradient(ellipse at top, #2c3e50, #0a1118); border-radius: 50%; z-index: 3; border-top: 2px solid rgba(77, 208, 225, 0.9); box-shadow: 0 15px 25px rgba(0,0,0,0.8), inset 0 5px 20px rgba(77,208,225,0.3); display: flex; justify-content: center; align-items: center; }
