@@ -1,0 +1,59 @@
+/* ========================================= */
+/* ui.css - INTERFAZ DE USUARIO Y MENÚS      */
+/* ========================================= */
+
+/* BOTÓN FLOTANTE NEXO */
+.fab-btn { 
+    position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); 
+    background: linear-gradient(135deg, #0d1a24, #1a2a36); color: #80deea; 
+    padding: 12px 30px; border-radius: 30px; font-weight: bold; font-size: 15px; letter-spacing: 2px;
+    cursor: pointer; z-index: 100; border: 2px solid #4dd0e1;
+    box-shadow: 0 0 15px rgba(77, 208, 225, 0.4), inset 0 0 10px rgba(77, 208, 225, 0.2); text-shadow: 0 0 5px #80deea;
+    animation: nexoPulse 2s infinite ease-in-out; transition: all 0.3s ease;
+}
+.fab-btn:hover { transform: translateX(-50%) scale(1.05); background: #1a2a36; box-shadow: 0 0 25px rgba(77, 208, 225, 0.8), inset 0 0 15px rgba(77, 208, 225, 0.5); }
+.fab-btn:active { transform: translateX(-50%) scale(0.95); }
+
+@keyframes nexoPulse {
+    0%, 100% { box-shadow: 0 0 15px rgba(77, 208, 225, 0.4), inset 0 0 10px rgba(77, 208, 225, 0.2); }
+    50% { box-shadow: 0 0 25px rgba(77, 208, 225, 0.6), inset 0 0 15px rgba(77, 208, 225, 0.4); border-color: #fff; color: #fff;}
+}
+
+/* MENÚ DESPLEGABLE (DRAWER) */
+.drawer-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 200; display: flex; flex-direction: column; justify-content: flex-end; transition: opacity 0.3s; backdrop-filter: blur(5px);}
+.drawer-content { background: #0d1a24; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 25px 20px; box-shadow: 0 -5px 30px rgba(77, 208, 225, 0.2); border-top: 1px solid #4dd0e1; animation: slideUp 0.3s ease-out;}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+.drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+.drawer-header h3 { margin: 0; color: #80deea; text-transform: uppercase; letter-spacing: 1px;}
+#close-drawer { background: none; border: none; font-size: 16px; cursor: pointer; color: white;}
+
+.drawer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 10px; }
+.drawer-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s; }
+.drawer-item:hover .drawer-icon { border-color: #4dd0e1; box-shadow: 0 0 15px rgba(77, 208, 225, 0.3); }
+.drawer-item:active { transform: scale(0.9); }
+.drawer-item.locked { opacity: 0.4; cursor: not-allowed; }
+.drawer-icon { width: 50px; height: 50px; background: #1a2a36; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 8px; border: 1px solid #333; transition: all 0.3s;}
+.drawer-item span { font-size: 11px; font-weight: bold; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px;}
+
+/* ALMACÉN (MODAL) */
+#inventory-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); display: flex; justify-content: center; align-items: center; z-index: 50; }
+.modal-content { background-color: #0d1a24; width: 85%; max-width: 320px; border-radius: 15px; padding: 20px; box-shadow: 0 0 30px rgba(138, 43, 226, 0.4); border: 1px solid #8A2BE2; color: white;}
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+.modal-header h3 { margin: 0; color: #80deea; text-transform: uppercase; letter-spacing: 1px;}
+#close-inventory { background: none; border: none; cursor: pointer; font-size: 16px; color: white; }
+#inventory-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.inventory-slot { aspect-ratio: 1; background-color: #1a2a36; border: 1px dashed #4dd0e1; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 24px; position: relative; cursor: pointer;}
+.inventory-slot.selected { border: 2px solid #8A2BE2; background-color: rgba(138, 43, 226, 0.2); }
+.item-count { position: absolute; bottom: 2px; right: 4px; font-size: 11px; font-weight: bold; background: #8A2BE2; color: white; padding: 1px 4px; border-radius: 4px; }
+#item-actions { margin-top: 15px; padding-top: 15px; border-top: 1px solid #333; text-align: center; }
+#selected-item-info { font-weight: bold; color: #80deea; margin-bottom: 10px; }
+.action-buttons { display: flex; justify-content: center; gap: 10px; }
+.release-btn { padding: 8px 12px; border: none; border-radius: 6px; background: #1a2a36; border: 1px solid #f0ad4e; color: #f0ad4e; font-weight: bold; cursor: pointer; }
+.release-btn.danger { border-color: #d9534f; color: #d9534f; }
+
+/* PANEL DE STATS INTERNO */
+.stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 13px; color: #333; }
+.btn-add-stat { background: #4CAF50; color: white; border: none; border-radius: 4px; width: 22px; height: 22px; font-size: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center; padding: 0; transition: transform 0.1s, background 0.2s;}
+.btn-add-stat:hover { background: #3e8e41; }
+.btn-add-stat:active { transform: scale(0.9); }
