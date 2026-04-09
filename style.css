@@ -1,5 +1,5 @@
 /* ========================================= */
-/* ESTRUCTURA BASE Y ESCRITORIO (DESKTOP)    */
+/* ESTRUCTURA BASE Y ESCRITORIO FUTURISTA    */
 /* ========================================= */
 .hidden { 
     display: none !important; 
@@ -9,15 +9,22 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    /* Nuevo Fondo: Paneles de Laboratorio Futurista */
-    background-color: #0b101e;
-    background-image:
-        linear-gradient(#1a2436 2px, transparent 2px),
-        linear-gradient(90deg, #1a2436 2px, transparent 2px),
-        linear-gradient(#0b101e 1px, transparent 1px),
-        linear-gradient(90deg, #0b101e 1px, transparent 1px);
-    background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
-    background-position: -2px -2px, -2px -2px, -1px -1px, -1px -1px;
+    
+    /* FONDO DE LABORATORIO CIBERNÉTICO */
+    background-color: #030712; /* Azul casi negro */
+    background-image: 
+        /* Resplandores de maquinaria fuera de foco */
+        radial-gradient(circle at 15% 50%, rgba(77, 208, 225, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 85% 30%, rgba(138, 43, 226, 0.08) 0%, transparent 50%),
+        /* Cuadrícula principal cian sutil */
+        linear-gradient(rgba(77, 208, 225, 0.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(77, 208, 225, 0.15) 1px, transparent 1px),
+        /* Cuadrícula secundaria milimétrica */
+        linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+    background-position: 0 0, 0 0, -1px -1px, -1px -1px, -1px -1px, -1px -1px;
+    
     display: flex;
     justify-content: center;
     align-items: center;
@@ -34,10 +41,11 @@ body {
     overflow: hidden;
     background: #fff;
     border-radius: 24px;
+    /* Borde de tablet futurista con brillo cian proyectado al laboratorio */
     box-shadow: 
-        0 0 0 12px #1e293b,         
+        0 0 0 12px #0f172a,         
         0 20px 50px rgba(0,0,0,0.8),
-        0 0 100px rgba(77, 208, 225, 0.2); /* Sutil brillo exterior cian */
+        0 0 80px rgba(77, 208, 225, 0.15); 
 }
 
 /* ========================================= */
@@ -65,91 +73,77 @@ body {
 }
 
 /* ========================================= */
-/* CÁPSULA DE INCUBACIÓN (TIPO MEWTWO)       */
+/* PLATAFORMA / PEDESTAL ANTIGRAVEDAD        */
 /* ========================================= */
 #incubator-capsule {
     position: absolute;
     top: 55%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 200px; height: 340px;
+    width: 220px; height: 300px;
     z-index: 5;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-end; 
 }
 
-/* Tapa superior de la cápsula */
-.capsule-top {
-    width: 100%; height: 35px;
-    background: linear-gradient(135deg, #2c3e50, #4ca1af, #2c3e50);
-    border-radius: 50% / 15px;
+/* Base de metal pesada */
+.pedestal-bottom {
+    width: 100%; height: 60px;
+    background: radial-gradient(ellipse at top, #2c3e50, #1a252c);
+    border-radius: 50%;
     z-index: 3;
-    border-bottom: 2px solid rgba(255,255,255,0.8);
-    box-shadow: inset 0 -5px 10px rgba(0,0,0,0.5), 0 10px 20px rgba(77, 208, 225, 0.4);
+    border-top: 2px solid rgba(77, 208, 225, 0.9);
+    box-shadow: 0 15px 25px rgba(0,0,0,0.6), inset 0 5px 20px rgba(77,208,225,0.4);
     display: flex; justify-content: center; align-items: center;
 }
 
-/* Luz de estado en la tapa */
-.capsule-light {
-    width: 15px; height: 8px;
-    background: #4CAF50;
+/* Detalle del núcleo de energía en la base */
+.pedestal-light {
+    width: 50px; height: 6px;
+    background: #80deea;
     border-radius: 10px;
-    box-shadow: 0 0 10px #4CAF50;
+    box-shadow: 0 0 15px #80deea, 0 0 30px #4dd0e1;
+    margin-top: 25px; 
 }
 
-/* El cristal de la cápsula y el líquido interior */
-.capsule-glass {
-    width: 90%; height: 280px;
-    background: linear-gradient(to right, 
-        rgba(255,255,255,0.3) 0%, 
-        rgba(77, 208, 225, 0.2) 15%, 
-        rgba(77, 208, 225, 0.5) 50%, 
-        rgba(77, 208, 225, 0.2) 85%, 
-        rgba(255,255,255,0.4) 100%);
-    border-left: 4px solid rgba(255,255,255,0.5);
-    border-right: 4px solid rgba(255,255,255,0.5);
-    position: relative;
-    overflow: hidden;
-    z-index: 1;
-    margin-top: -15px; /* Para que encaje dentro de la tapa */
-    margin-bottom: -20px;
-    box-shadow: inset 0 0 40px rgba(0, 180, 255, 0.4);
-}
-
-/* Base inferior pesada */
-.capsule-bottom {
-    width: 100%; height: 50px;
-    background: linear-gradient(135deg, #1a252c, #34495e, #1a252c);
-    border-radius: 50% / 20px;
-    z-index: 3;
-    border-top: 2px solid rgba(255,255,255,0.5);
-    box-shadow: inset 0 10px 10px rgba(0,0,0,0.5), 0 -5px 20px rgba(77, 208, 225, 0.5);
-}
-
-/* Burbujas realistas */
-.bubble {
+/* Haz de luz ascendente */
+.energy-beam {
     position: absolute;
-    bottom: -10px;
-    width: 12px; height: 12px;
-    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.2));
-    border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.5);
-    animation: floatBubble infinite ease-in;
+    bottom: 30px; 
+    width: 150px; height: 250px;
+    background: linear-gradient(to top, rgba(77, 208, 225, 0.3) 0%, rgba(77, 208, 225, 0.05) 50%, transparent 100%);
+    border-radius: 50% 50% 0 0 / 20% 20% 0 0;
+    z-index: 1;
+    mask-image: radial-gradient(ellipse at bottom, black 40%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse at bottom, black 40%, transparent 100%);
 }
 
-@keyframes floatBubble {
-    0% { transform: translateY(0) scale(0.8) translateX(0); opacity: 0; }
-    20% { opacity: 1; transform: translateY(-50px) scale(1) translateX(10px); }
-    80% { opacity: 0.8; transform: translateY(-200px) scale(1.2) translateX(-10px); }
-    100% { transform: translateY(-300px) scale(1.3) translateX(0); opacity: 0; }
+/* Partículas de energía subiendo */
+.energy-particle {
+    position: absolute;
+    bottom: 0;
+    width: 4px; height: 15px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 0 10px #fff, 0 0 20px #80deea;
+    animation: floatEnergy infinite ease-in;
+}
+
+@keyframes floatEnergy {
+    0% { transform: translateY(0) scale(1); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 0.8; transform: translateY(-180px) scale(0.6); }
+    100% { transform: translateY(-220px) scale(0); opacity: 0; }
 }
 
 /* ========================================= */
-/* GENO ANIMACIONES (Dentro de la cápsula)   */
+/* GENO ANIMACIONES Y POSICIÓN               */
 /* ========================================= */
 #geno-container {
     position: absolute;
-    top: 50%; left: 50%;
+    top: 40%; /* Centrado en el haz de luz */
+    left: 50%;
     transform: translate(-50%, -50%);
     z-index: 10;
     display: flex; justify-content: center; align-items: center;
@@ -157,7 +151,7 @@ body {
 
 @keyframes floatIdle {
     0% { transform: translate(-50%, -50%); }
-    50% { transform: translate(-50%, -60px); } /* Flota hacia arriba en el líquido */
+    50% { transform: translate(-50%, -60px); } 
     100% { transform: translate(-50%, -50%); }
 }
 
@@ -226,7 +220,7 @@ body {
 .btn-fuse:disabled { background: #ccc; cursor: not-allowed; }
 
 /* =========================================
-   NUEVO MENÚ DESPLEGABLE Y BOTÓN FLOTANTE
+   MENÚ DESPLEGABLE Y BOTÓN FLOTANTE
    ========================================= */
 .fab-btn { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: #333; color: white; padding: 12px 25px; border-radius: 30px; font-weight: bold; box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer; z-index: 100; transition: transform 0.2s; border: 2px solid #555;}
 .fab-btn:active { transform: translateX(-50%) scale(0.95); }
