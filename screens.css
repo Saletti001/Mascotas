@@ -2,74 +2,33 @@
 /* screens.css - FONDOS Y DISEÑO DE PANTALLAS*/
 /* ========================================= */
 
-/* TITULOS Y BOTONES DE REGRESO GENERALES */
 .screen-title { text-align: center; color: #fff; margin-top: 30px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
 .back-btn { margin: auto auto 20px auto; padding: 12px 25px; border-radius: 8px; border: 1px solid #80deea; background: #0d1a24; color: #80deea; font-weight: bold; cursor: pointer; z-index: 10; text-transform: uppercase;}
 
-/* 1. EL LABORATORIO PRINCIPAL */
-#room-area { background: radial-gradient(circle at 50% 50%, #162a35 0%, #0d1a24 50%, #060d13 100%); position: relative; }
+/* 1. EL LABORATORIO PRINCIPAL (¡AHORA SÍ, AZUL CLARO!) */
+#room-area { background: radial-gradient(circle at 50% 50%, #e0f7fa 0%, #b2ebf2 50%, #4dd0e1 100%); position: relative; }
 #room-area::before {
     content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-    background: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.05) 2px, transparent 2px, transparent 8px);
+    /* Líneas de escáner en negro con mucha transparencia para el fondo claro */
+    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 2px, transparent 2px, transparent 8px);
     pointer-events: none; z-index: 4; 
 }
 
-/* MAQUINARIA DE FONDO (NUEVO) */
-#lab-machinery {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    z-index: 2; /* Por detrás del pedestal */
-    pointer-events: none;
-}
-
-/* Servidores Genéticos */
-.server-rack {
-    position: absolute;
-    bottom: 25%;
-    width: 60px; height: 180px;
-    background: linear-gradient(to right, #0a1118, #1a2a36);
-    border: 1px solid rgba(77, 208, 225, 0.3);
-    border-radius: 8px;
-    box-shadow: inset 0 0 20px rgba(0,0,0,0.9);
-    opacity: 0.7;
-    filter: blur(1px); /* Da sensación de profundidad (están atrás) */
-}
+/* MAQUINARIA DE FONDO */
+#lab-machinery { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+.server-rack { position: absolute; bottom: 25%; width: 60px; height: 180px; background: linear-gradient(to right, #0a1118, #1a2a36); border: 1px solid rgba(77, 208, 225, 0.3); border-radius: 8px; box-shadow: inset 0 0 20px rgba(0,0,0,0.9), 0 5px 15px rgba(0,0,0,0.3); opacity: 0.8; filter: blur(1px); }
 .server-rack.left { left: 5%; }
 .server-rack.right { right: 5%; }
+.server-lights { position: absolute; top: 15px; left: 10px; width: 6px; height: 6px; background: #4dd0e1; border-radius: 50%; box-shadow: 0 15px 0 #4dd0e1, 0 30px 0 #8A2BE2, 0 45px 0 #4dd0e1, 0 80px 0 #E91E63; animation: blinkLights 2s infinite alternate; }
+@keyframes blinkLights { 0% { opacity: 0.2; } 50% { opacity: 1; box-shadow: 0 15px 0 #4dd0e1, 0 30px 0 #8A2BE2, 0 45px 0 transparent, 0 80px 0 #E91E63;} 100% { opacity: 0.6; } }
+.holo-ring { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%) rotateX(70deg); width: 250px; height: 250px; border: 2px dashed rgba(77, 208, 225, 0.5); border-radius: 50%; box-shadow: 0 0 30px rgba(77, 208, 225, 0.2), inset 0 0 20px rgba(77, 208, 225, 0.2); animation: spinRing 20s linear infinite; }
+@keyframes spinRing { 0% { transform: translate(-50%, -50%) rotateX(70deg) rotateZ(0deg); } 100% { transform: translate(-50%, -50%) rotateX(70deg) rotateZ(360deg); } }
 
-/* Luces parpadeantes de los servidores */
-.server-lights {
-    position: absolute; top: 15px; left: 10px; width: 6px; height: 6px;
-    background: #4dd0e1; border-radius: 50%;
-    box-shadow: 0 15px 0 #4dd0e1, 0 30px 0 #8A2BE2, 0 45px 0 #4dd0e1, 0 80px 0 #E91E63;
-    animation: blinkLights 2s infinite alternate;
-}
-@keyframes blinkLights {
-    0% { opacity: 0.2; }
-    50% { opacity: 1; box-shadow: 0 15px 0 #4dd0e1, 0 30px 0 #8A2BE2, 0 45px 0 transparent, 0 80px 0 #E91E63;}
-    100% { opacity: 0.6; }
-}
-
-/* Anillo holográfico de escaneo */
-.holo-ring {
-    position: absolute;
-    top: 45%; left: 50%;
-    transform: translate(-50%, -50%) rotateX(70deg);
-    width: 250px; height: 250px;
-    border: 2px dashed rgba(77, 208, 225, 0.3);
-    border-radius: 50%;
-    box-shadow: 0 0 30px rgba(77, 208, 225, 0.1), inset 0 0 20px rgba(77, 208, 225, 0.1);
-    animation: spinRing 20s linear infinite;
-}
-@keyframes spinRing {
-    0% { transform: translate(-50%, -50%) rotateX(70deg) rotateZ(0deg); }
-    100% { transform: translate(-50%, -50%) rotateX(70deg) rotateZ(360deg); }
-}
 /* PEDESTAL Y GENO */
 #incubator-capsule { position: absolute; top: 55%; left: 50%; transform: translate(-50%, -50%); width: 220px; height: 300px; z-index: 5; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; }
-.pedestal-bottom { width: 100%; height: 60px; background: radial-gradient(ellipse at top, #2c3e50, #0a1118); border-radius: 50%; z-index: 3; border-top: 2px solid rgba(77, 208, 225, 0.9); box-shadow: 0 15px 25px rgba(0,0,0,0.8), inset 0 5px 20px rgba(77,208,225,0.3); display: flex; justify-content: center; align-items: center; }
+.pedestal-bottom { width: 100%; height: 60px; background: radial-gradient(ellipse at top, #2c3e50, #0a1118); border-radius: 50%; z-index: 3; border-top: 2px solid rgba(77, 208, 225, 0.9); box-shadow: 0 15px 25px rgba(0,0,0,0.6), inset 0 5px 20px rgba(77,208,225,0.3); display: flex; justify-content: center; align-items: center; }
 .pedestal-light { width: 60px; height: 6px; background: #80deea; border-radius: 10px; box-shadow: 0 0 20px #80deea, 0 0 40px #4dd0e1; margin-top: 25px; }
-.energy-beam { position: absolute; bottom: 30px; width: 150px; height: 250px; background: linear-gradient(to top, rgba(77, 208, 225, 0.4) 0%, rgba(77, 208, 225, 0.05) 50%, transparent 100%); border-radius: 50% 50% 0 0 / 20% 20% 0 0; z-index: 1; mask-image: radial-gradient(ellipse at bottom, black 40%, transparent 100%); -webkit-mask-image: radial-gradient(ellipse at bottom, black 40%, transparent 100%); }
+.energy-beam { position: absolute; bottom: 30px; width: 150px; height: 250px; background: linear-gradient(to top, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%); border-radius: 50% 50% 0 0 / 20% 20% 0 0; z-index: 1; mask-image: radial-gradient(ellipse at bottom, black 40%, transparent 100%); -webkit-mask-image: radial-gradient(ellipse at bottom, black 40%, transparent 100%); }
 .energy-particle { position: absolute; bottom: 0; width: 3px; height: 12px; background: rgba(255, 255, 255, 0.9); border-radius: 10px; box-shadow: 0 0 10px #fff, 0 0 20px #80deea; animation: floatEnergy infinite ease-in; }
 @keyframes floatEnergy { 0% { transform: translateY(0) scale(1); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 0.8; transform: translateY(-180px) scale(0.6); } 100% { transform: translateY(-220px) scale(0); opacity: 0; } }
 
