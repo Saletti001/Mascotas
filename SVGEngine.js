@@ -1,5 +1,5 @@
 // =========================================
-// SVGEngine.js - MOTOR DE GENERACIÓN VISUAL HD (SOMBREADO EXTRA SUAVE)
+// SVGEngine.js - MOTOR DE GENERACIÓN VISUAL HD (ALINEACIÓN CORREGIDA)
 // =========================================
 
 function generarSvgGeno(genesVisuales) {
@@ -25,7 +25,6 @@ function generarSvgGeno(genesVisuales) {
     
     let svgContent = `<svg width="100%" height="100%" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
     
-    // SOMBREADO REDUCIDO AL 5% (0.05)
     svgContent += `
         <defs>
             <linearGradient id="${gradId}" x1="0%" y1="0%" x2="0%" y2="100%">
@@ -59,9 +58,11 @@ function generarSvgGeno(genesVisuales) {
             shineD = "M 72 48 L 48 104 Q 56 80 80 56 Z";
             break;
         case "hongo":
-            svgContent += `<path d="M56 80 L56 128 Q80 152 104 128 L104 80 Z" fill="url(#${gradId})" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
-            pathD = "M 16 88 Q 80 8 144 88 Q 152 104 136 104 L 24 104 Q 8 104 16 88 Z";
-            shineD = "M 32 72 Q 64 32 112 40 Q 64 48 32 88 Z";
+            // CORRECCIÓN: Tallo más corto y anclado al mismo nivel del suelo que el frijol (Y=145)
+            svgContent += `<path d="M60 120 L60 145 Q80 160 100 145 L100 120 Z" fill="url(#${gradId})" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
+            // CORRECCIÓN: Sombrero mucho más grande y bajo, para que la cara quede dentro de la cúpula
+            pathD = "M 16 110 Q 80 10 144 110 Q 155 125 136 125 L 24 125 Q 5 125 16 110 Z";
+            shineD = "M 32 75 Q 64 25 112 35 Q 64 45 32 85 Z";
             break;
         case "frijol":
         default:
@@ -73,6 +74,7 @@ function generarSvgGeno(genesVisuales) {
     svgContent += `<path d="${pathD}" fill="url(#${gradId})" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round" filter="url(#${shadowId})"/>`;
     svgContent += `<path d="${shineD}" fill="#ffffff" opacity="0.3" />`;
 
+    // Las caras se mantienen iguales porque el Hongo ahora se ha movido para adaptarse a la cara
     if (face === "angry") {
         svgContent += `
             <line x1="48" y1="76" x2="67" y2="88" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
