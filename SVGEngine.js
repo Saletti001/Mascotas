@@ -1,5 +1,5 @@
 // =========================================
-// SVGEngine.js - MOTOR DE GENERACIÓN VISUAL HD (ALINEACIÓN PERFECTA)
+// SVGEngine.js - MOTOR VISUAL HD (CAPAS SÓLIDAS)
 // =========================================
 
 function generarSvgGeno(genesVisuales) {
@@ -25,12 +25,12 @@ function generarSvgGeno(genesVisuales) {
     
     let svgContent = `<svg width="100%" height="100%" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
     
-    // SOMBREADO AL 5% (casi imperceptible)
+    // DEGRADADO CORREGIDO: Va de "Totalmente Transparente" a "Negro Suave"
     svgContent += `
         <defs>
             <linearGradient id="${gradId}" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" style="stop-color:${color}; stop-opacity:1" />
-                <stop offset="100%" style="stop-color:#000000; stop-opacity:0.05" /> 
+                <stop offset="0%" stop-color="#000000" stop-opacity="0" />
+                <stop offset="100%" stop-color="#000000" stop-opacity="0.25" /> 
             </linearGradient>
             <filter id="${shadowId}" x="-20%" y="-20%" width="140%" height="140%">
                 <feDropShadow dx="0" dy="8" stdDeviation="4" flood-opacity="0.3" />
@@ -59,25 +59,31 @@ function generarSvgGeno(genesVisuales) {
             shineD = "M 72 48 L 48 104 Q 56 80 80 56 Z";
             break;
         case "hongo":
-            // EL HONGO CORREGIDO
-            // Tallo: Ancho moderado, baja hasta Y=136 (el mismo suelo que el frijol)
-            svgContent += `<path d="M64 100 L64 136 Q80 146 96 136 L96 100 Z" fill="url(#${gradId})" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
-            // Sombrero: Más ancho y alto, cubriendo la zona de la cara (Y de 40 a 100)
+            // Tallo con Capas: Primero el color sólido, luego el degradado
+            svgContent += `<path d="M64 100 L64 136 Q80 146 96 136 L96 100 Z" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
+            svgContent += `<path d="M64 100 L64 136 Q80 146 96 136 L96 100 Z" fill="url(#${gradId})" />`;
+            
+            // Sombrero
             pathD = "M 20 100 Q 80 20 140 100 Q 148 110 130 110 L 30 110 Q 12 110 20 100 Z";
             shineD = "M 36 80 Q 60 40 108 50 Q 64 60 36 90 Z";
             break;
         case "frijol":
         default:
-            // Frijol de referencia (baja hasta Y=136)
             pathD = "M 56 32 C 16 32, 24 112, 56 136 C 88 160, 136 112, 128 72 C 120 32, 96 32, 56 32 Z";
             shineD = "M 40 64 C 32 88, 40 112, 56 128 C 45 104, 48 72, 72 48 C 56 40, 45 48, 40 64 Z";
             break;
     }
 
-    svgContent += `<path d="${pathD}" fill="url(#${gradId})" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round" filter="url(#${shadowId})"/>`;
+    // 1. CAPA BASE SÓLIDA (Asegura que el color sea 100% vibrante y opaco)
+    svgContent += `<path d="${pathD}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round" filter="url(#${shadowId})"/>`;
+    
+    // 2. CAPA DE VOLUMEN (Solo agrega la sombra oscura inferior)
+    svgContent += `<path d="${pathD}" fill="url(#${gradId})" />`;
+    
+    // 3. CAPA DE BRILLO
     svgContent += `<path d="${shineD}" fill="#ffffff" opacity="0.3" />`;
 
-    // CARAS CENTRADAS
+    // CARAS
     if (face === "angry") {
         svgContent += `
             <line x1="48" y1="76" x2="67" y2="88" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
