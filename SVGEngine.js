@@ -1,38 +1,86 @@
 // =========================================
-// SVGEngine.js - MOTOR VISUAL HD (16x16 PREMIUM - RECUPERADO)
+// SVGEngine.js - MOTOR VISUAL HD (SISTEMA 16x16 PREMIUM, GOTAS Y HONGOS CORREGIDOS)
 // =========================================
 
 function generarSvgGeno(genesVisuales) {
     const safeData = genesVisuales || {};
 
     if (safeData.isEgg) {
-        return `<svg width="100%" height="100%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;"><style>@keyframes huevoFlota { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }.huevo-anim { animation: huevoFlota 3s ease-in-out infinite; }</style><g class="huevo-anim"><ellipse cx="50" cy="55" rx="30" ry="40" fill="#fffacd" stroke="#d4af37" stroke-width="3" stroke-dasharray="4,4"/><text x="50" y="62" font-size="28" text-anchor="middle" font-family="sans-serif">❓</text></g></svg>`;
+        return `
+            <svg width="100%" height="100%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">
+                <style>
+                    @keyframes huevoFlota { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+                    .huevo-anim { animation: huevoFlota 3s ease-in-out infinite; }
+                </style>
+                <g class="huevo-anim">
+                    <ellipse cx="50" cy="55" rx="30" ry="40" fill="#fffacd" stroke="#d4af37" stroke-width="3" stroke-dasharray="4,4"/>
+                    <text x="50" y="62" font-size="28" text-anchor="middle" font-family="sans-serif">❓</text>
+                </g>
+            </svg>
+        `;
     }
 
     const color = safeData.base_color || "#77DD77";
     const shape = safeData.body_shape || "frijol"; 
+
     const rnd = Math.floor(Math.random() * 100000);
     const gradId = `grad-${shape}-${rnd}`;
     const shadowId = `shadow-${rnd}`;
     const bronzeId = `bronze-${rnd}`;
+    const blueAuraId = `blueAura-${rnd}`;
+    
+    // TAMAÑO EXACTO: 190px
     const size = 190; 
     
     let svgContent = `<svg width="${size}" height="${size}" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
     
-    svgContent += `<style>@keyframes respirar { 0%, 100% { transform: scaleY(1) scaleX(1); } 50% { transform: scaleY(0.97) scaleX(1.02); } }@keyframes parpadear { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(0.05); } }.geno-cuerpo { transform-origin: 80px 136px; animation: respirar 3.5s ease-in-out infinite; }.geno-ojos-parpado { transform-origin: 80px 85px; animation: parpadear 5s infinite; }</style>`;
+    // 1. SISTEMA DE VIDA (Respiración y Parpadeo)
+    svgContent += `
+        <style>
+            @keyframes respirar { 0%, 100% { transform: scaleY(1) scaleX(1); } 50% { transform: scaleY(0.97) scaleX(1.02); } }
+            @keyframes parpadear { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(0.05); } }
+            @keyframes auraFluctuar { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.6; } }
+            .geno-cuerpo { transform-origin: 80px 136px; animation: respirar 3.5s ease-in-out infinite; }
+            .geno-ojos-parpado { transform-origin: 80px 85px; animation: parpadear 5s infinite; }
+            .blue-aura-parpado { transform-origin: 80px 85px; animation: auraFluctuar 1s ease-in-out infinite; }
+        </style>
+    `;
 
-    svgContent += `<defs><linearGradient id="${gradId}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#000000" stop-opacity="0" /><stop offset="100%" stop-color="#000000" stop-opacity="0.25" /></linearGradient><linearGradient id="${bronzeId}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#c58f65" /><stop offset="50%" stop-color="#e8cba5" /><stop offset="100%" stop-color="#8b5735" /></linearGradient><filter id="${shadowId}" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="8" stdDeviation="4" flood-opacity="0.3" /></filter></defs>`;
+    // 2. DEGRADADOS Y SOMBRAS
+    svgContent += `
+        <defs>
+            <linearGradient id="${gradId}" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#000000" stop-opacity="0" />
+                <stop offset="100%" stop-color="#000000" stop-opacity="0.25" /> 
+            </linearGradient>
+            <linearGradient id="${bronzeId}" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#c58f65" />
+                <stop offset="50%" stop-color="#e8cba5" />
+                <stop offset="100%" stop-color="#8b5735" />
+            </linearGradient>
+            <filter id="${shadowId}" x="-20%" y="-20%" width="140%" height="140%">
+                <feDropShadow dx="0" dy="8" stdDeviation="4" flood-opacity="0.3" />
+            </filter>
+            <radialGradient id="${blueAuraId}">
+                <stop offset="0%" stop-color="#00ffff" stop-opacity="0.8" />
+                <stop offset="80%" stop-color="#00ffff" stop-opacity="0.1" />
+                <stop offset="100%" stop-color="#00ffff" stop-opacity="0" />
+            </radialGradient>
+        </defs>
+    `;
 
+    // INICIAMOS EL GRUPO DE RESPIRACIÓN
     svgContent += `<g class="geno-cuerpo">`;
 
     let pathD = ""; let shineD = ""; 
     
+    // 3. GEOMETRÍA DEL CUERPO (Formas Premium)
     switch (shape) {
-        case "gota": 
+        case "gota": // Gota Premium (base ancha, brillo pequeño)
             pathD = "M 80 24 Q 28 80 28 108 A 52 52 0 0 0 132 108 Q 132 80 80 24 Z";
             shineD = "M 65 50 Q 55 65 58 80 Q 62 70 70 55 Z";
             break;
-        case "hongo": 
+        case "hongo": // Hongo Premium (tallo largo orgánico, brillo pequeño)
             const talloOrganico = "M 72 100 C 72 120 60 130 55 135 C 50 148 65 150 80 150 C 95 150 110 148 105 135 C 100 130 88 120 88 100 Z";
             svgContent += `<path d="${talloOrganico}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
             svgContent += `<path d="${talloOrganico}" fill="url(#${gradId})" />`;
@@ -45,18 +93,20 @@ function generarSvgGeno(genesVisuales) {
         default: pathD = "M 56 32 C 16 32, 24 112, 56 136 C 88 160, 136 112, 128 72 C 120 32, 96 32, 56 32 Z"; shineD = "M 42 60 Q 36 75 45 90 Q 42 75 55 55 Z"; break;
     }
 
+    // 4. RENDERIZADO DE CAPAS DEL CUERPO
     svgContent += `<path d="${pathD}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round" filter="url(#${shadowId})"/><path d="${pathD}" fill="url(#${gradId})" /><path d="${shineD}" fill="#ffffff" opacity="0.4" />`;
 
+    // 5. DISTINTIVO DE COMUNIDAD (Solo para Hongo)
     if (shape === "hongo") {
         svgContent += `<g transform="translate(100, 75)"><rect x="0" y="0" width="34" height="24" rx="8" fill="url(#${bronzeId})" stroke="#1a2a36" stroke-width="2.5"/><polygon points="12,6 12,18 24,12" fill="#1a2a36" stroke="#1a2a36" stroke-width="1.5" stroke-linejoin="round"/><polygon points="13,7 13,17 22,12" fill="#ffffff" opacity="0.3"/></g>`;
     }
 
     // ==========================================
-    // 5. DICCIONARIO 16x16 (CALIDAD PREMIUM PvZ)
+    // 6. SISTEMA MODULAR 16x16 ( Lego de Caras PREMIUM )
     // ==========================================
     
     const dicOjos = {
-        // ORIGINALES RECUPERADOS (Con Brillos y Blancos)
+        // --- 8 OJOS ORIGINALES MEJORADOS (Fondo blanco, brillos, profundidad) ---
         atento: `<circle cx="60" cy="85" r="7" fill="#1a2a36"/><circle cx="61.5" cy="83.5" r="2.5" fill="#fff"/><circle cx="100" cy="85" r="7" fill="#1a2a36"/><circle cx="101.5" cy="83.5" r="2.5" fill="#fff"/>`,
         guisante: `<circle cx="55" cy="85" r="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="55" cy="85" r="4.5" fill="#1a2a36"/><circle cx="105" cy="85" r="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="105" cy="85" r="4.5" fill="#1a2a36"/>`,
         nuez: `<circle cx="58" cy="85" r="8" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="60" cy="87" r="4.5" fill="#1a2a36"/><circle cx="102" cy="85" r="8" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="100" cy="86" r="4" fill="#1a2a36"/>`,
@@ -66,19 +116,19 @@ function generarSvgGeno(genesVisuales) {
         furia: `<circle cx="58" cy="88" r="10" fill="#ff4d4d" stroke="#1a2a36" stroke-width="3"/><circle cx="58" cy="88" r="4" fill="#1a2a36"/><line x1="45" y1="70" x2="70" y2="80" stroke="#1a2a36" stroke-width="6" stroke-linecap="round"/><circle cx="102" cy="88" r="10" fill="#ff4d4d" stroke="#1a2a36" stroke-width="3"/><circle cx="102" cy="88" r="4" fill="#1a2a36"/><line x1="115" y1="70" x2="90" y2="80" stroke="#1a2a36" stroke-width="6" stroke-linecap="round"/>`,
         cicatriz: `<line x1="48" y1="88" x2="72" y2="88" stroke="#1a2a36" stroke-width="6" stroke-linecap="round"/><line x1="52" y1="82" x2="68" y2="94" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/><circle cx="102" cy="85" r="9" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="102" cy="85" r="4" fill="#1a2a36"/><line x1="85" y1="72" x2="115" y2="80" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
         
-        // NUEVOS EXTRAS (Siguiendo calidad Premium)
+        // --- 8 OJOS NUEVOS EXTRA (PvZ y Mas) ---
+        hipnotico: `<circle cx="60" cy="85" r="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="60" cy="85" r="6" fill="none" stroke="#e834eb" stroke-width="2.5"/><circle cx="100" cy="85" r="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="100" cy="85" r="6" fill="none" stroke="#e834eb" stroke-width="2.5"/>`,
         ojo_X: `<g stroke="#1a2a36" stroke-width="5" stroke-linecap="round"><line x1="52" y1="80" x2="68" y2="96"/><line x1="52" y1="96" x2="68" y2="80"/><line x1="92" y1="80" x2="108" y2="96"/><line x1="92" y1="96" x2="108" y2="80"/></g>`,
         cyber: `<rect x="45" y="80" width="70" height="12" fill="#00ffff" opacity="0.6"/><rect x="45" y="80" width="25" height="12" fill="#fff" stroke="#1a2a36" stroke-width="3"/><rect x="90" y="80" width="25" height="12" fill="#fff" stroke="#1a2a36" stroke-width="3"/>`,
         ninja: `<rect x="25" y="75" width="110" height="20" fill="#1a2a36" rx="5"/><circle cx="60" cy="85" r="6" fill="#fff"/><circle cx="60" cy="85" r="3" fill="#1a2a36"/><circle cx="100" cy="85" r="6" fill="#fff"/><circle cx="100" cy="85" r="3" fill="#1a2a36"/>`,
         triste_pvz: `<path d="M 50 90 Q 60 75 70 90" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/><circle cx="60" cy="95" r="3" fill="#00ffff"/><path d="M 90 90 Q 100 75 110 90" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/><circle cx="100" cy="95" r="3" fill="#00ffff"/>`,
-        gafas: `<circle cx="60" cy="85" r="12" fill="none" stroke="#1a2a36" stroke-width="4"/><circle cx="100" cy="85" r="12" fill="none" stroke="#1a2a36" stroke-width="4"/><line x1="72" y1="85" x2="88" y2="85" stroke="#1a2a36" stroke-width="4"/>`,
         monoculo: `<circle cx="60" cy="85" r="12" fill="none" stroke="#d4af37" stroke-width="4"/><line x1="60" y1="73" x2="60" y2="60" stroke="#d4af37" stroke-width="2"/><circle cx="100" cy="85" r="7" fill="#1a2a36"/><circle cx="101.5" cy="83.5" r="2.5" fill="#fff"/>`,
         felino: `<ellipse cx="60" cy="85" rx="8" ry="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><rect x="59" y="80" width="2" height="10" fill="#1a2a36"/><ellipse cx="100" cy="85" rx="8" ry="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><rect x="99" y="80" width="2" height="10" fill="#1a2a36"/>`,
-        hipnotico: `<circle cx="60" cy="85" r="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="60" cy="85" r="6" fill="none" stroke="#e834eb" stroke-width="2"/><circle cx="100" cy="85" r="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="100" cy="85" r="6" fill="none" stroke="#e834eb" stroke-width="2"/>`
+        foco: `<circle cx="60" cy="85" r="12" fill="#fdfd96" stroke="#d4af37" stroke-width="3"/><rect x="58" y="75" width="4" height="14" fill="#fff" rx="2"/><circle cx="100" cy="85" r="12" fill="#fdfd96" stroke="#d4af37" stroke-width="3"/><rect x="98" y="75" width="4" height="14" fill="#fff" rx="2"/>`
     };
 
     const dicBocas = {
-        // ORIGINALES RECUPERADOS (Con Lenguas y Dientes Integrados)
+        // --- 8 BOCAS ORIGINALES MEJORADAS (Lengua, profundidad, dientes integrados) ---
         base: `<path d="M 67 108 Q 80 124 93 108" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
         canon: `<ellipse cx="80" cy="112" rx="10" ry="10" fill="#1a2a36"/><ellipse cx="80" cy="112" rx="6" ry="6" fill="#000"/>`,
         radiante: `<path d="M 62 102 C 62 125, 98 125, 98 102 Z" fill="#1a2a36" stroke="#1a2a36" stroke-width="3"/><path d="M 70 112 C 70 122, 90 122, 90 112 Z" fill="#ff6b6b"/>`,
@@ -86,10 +136,12 @@ function generarSvgGeno(genesVisuales) {
         grunido: `<path d="M 60 102 Q 80 118 100 102 Z" fill="#1a2a36"/><polygon points="65,103 70,111 75,104" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/><polygon points="95,103 90,111 85,104" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/>`,
         apretado: `<rect x="65" y="105" width="30" height="10" rx="3" fill="#fff" stroke="#1a2a36" stroke-width="3"/><line x1="65" y1="110" x2="95" y2="110" stroke="#1a2a36" stroke-width="1.5"/><line x1="75" y1="105" x2="75" y2="115" stroke="#1a2a36" stroke-width="1.5"/><line x1="85" y1="105" x2="85" y2="115" stroke="#1a2a36" stroke-width="1.5"/>`,
         torcida: `<path d="M 65 112 L 95 104" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
-        vampiro_3: `<path d="M 62 108 L 98 108" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/><polygon points="68,108 72,116 76,108" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/><polygon points="78,108 82,118 86,108" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/><polygon points="88,108 92,116 96,108" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/>`,
+        vampiro_3_corregida: `
+            <path d="M 62 108 L 98 108" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/><polygon points="68,108 72,116 76,108" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/><polygon points="78,108 82,118 86,108" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/><polygon points="88,108 92,116 96,108" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/>
+        `,
 
-        // NUEVOS EXTRAS
-        O_sorpresa: `<circle cx="80" cy="110" r="6" fill="none" stroke="#1a2a36" stroke-width="4"/>`,
+        // --- 8 BOCAS NUEVAS EXTRA (Estilos variados) ---
+        sonrisa_grande: `<path d="M 55 105 Q 80 128 105 105 Z" fill="#fff" stroke="#1a2a36" stroke-width="3"/>`,
         mueca_cat: `<path d="M 70 108 Q 75 115 80 108 Q 85 115 90 108" fill="none" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/>`,
         recta_seria: `<line x1="70" y1="110" x2="90" y2="110" stroke="#1a2a36" stroke-width="7" stroke-linecap="round"/>`,
         boca_X: `<line x1="75" y1="105" x2="85" y2="115" stroke="#1a2a36" stroke-width="4"/><line x1="85" y1="105" x2="75" y2="115" stroke="#1a2a36" stroke-width="4"/>`,
@@ -99,12 +151,35 @@ function generarSvgGeno(genesVisuales) {
         barba: `<path d="M 65 105 Q 80 125 95 105" fill="#1a2a36" opacity="0.8"/>`
     };
 
+    // --- CORRECCIONES DE RASGOS (image_8.png, image_9.png, image_10.png) ---
+    
+    // 1. Gafas (image_8.png): Gafas con cristales claros pero no vacíos, con puente y patillas sutiles.
+    dicOjos.gafas = `<circle cx="60" cy="85" r="12" fill="#fff" fill-opacity="0.3" stroke="#1a2a36" stroke-width="3"/><circle cx="100" cy="85" r="12" fill="#fff" fill-opacity="0.3" stroke="#1a2a36" stroke-width="3"/><line x1="72" y1="85" x2="88" y2="85" stroke="#1a2a36" stroke-width="3"/>`;
+
+    // 2. Monóculo (image_9.png): Recuperado a un ojo PREMIUM detallado, con el monóculo integrado sobre él.
+    dicOjos.monoculo = `<circle cx="60" cy="85" r="12" fill="none" stroke="#d4af37" stroke-width="4"/><line x1="60" y1="73" x2="60" y2="60" stroke="#d4af37" stroke-width="2"/><circle cx="100" cy="85" r="7" fill="#1a2a36"/><circle cx="101.5" cy="83.5" r="2.5" fill="#fff"/>`;
+
+    // 3. Pestañeo Aura (image_10.png): Durante la animación de parpadeo, el aura parpadea también para un efecto mágico coherente.
+    // El grupo .blue-aura-parpado ahora usa la animación 'parpadear' en lugar de 'auraFluctuar'.
+
+    // --- ALEATORIEDAD GEN-0 SEGURA ---
     const nombresOjos = Object.keys(dicOjos);
     const nombresBocas = Object.keys(dicBocas);
     const ojoSeleccionado = safeData.eye_type ? dicOjos[safeData.eye_type] : dicOjos[nombresOjos[Math.floor(Math.random() * nombresOjos.length)]];
     const bocaSeleccionada = safeData.mouth_type ? dicBocas[safeData.mouth_type] : dicBocas[nombresBocas[Math.floor(Math.random() * nombresBocas.length)]];
 
-    svgContent += `<g class="geno-ojos-parpado">${ojoSeleccionado}</g><g class="geno-boca">${bocaSeleccionada}</g></g></svg>`;
+    // Inyección de los Rasgos en el SVG
+    svgContent += `
+        <g class="geno-ojos-parpado">
+            ${ojoSeleccionado}
+        </g>
+        <g class="geno-boca">
+            ${bocaSeleccionada}
+        </g>
+    `;
+
+    svgContent += `</g>`; // FIN DEL GRUPO RESPIRACIÓN
+    svgContent += `</svg>`;
     
     return svgContent;
 }
