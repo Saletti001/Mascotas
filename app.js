@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // =========================================
-// SISTEMA DE COLECCIÓN DE GENOS (SIN CHOQUES DE SVG)
+// SISTEMA DE COLECCIÓN DE GENOS (ALINEACIÓN PERFECTA)
 // =========================================
 document.addEventListener('DOMContentLoaded', () => {
     const btnShowGenos = document.getElementById('btn-show-genos');
@@ -203,7 +203,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const card = document.createElement('div');
                 card.style.cssText = "background: #1a2a36; border: 1px solid #4dd0e1; border-radius: 10px; padding: 10px; cursor: pointer; text-align: center; transition: transform 0.2s;";
                 
-                // SVG para usar en la tarjeta del menú
                 const svgCodeMenu = generarSvgGeno({
                     body_shape: geno.shape,
                     base_color: geno.color,
@@ -216,15 +215,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
 
                 card.addEventListener('click', () => {
-                    // LA SOLUCIÓN: Generamos un SVG *nuevo y fresco* para el pedestal
-                    // Así sus IDs internos no chocan con los del menú
                     const svgCodePedestal = generarSvgGeno({
                         body_shape: geno.shape,
                         base_color: geno.color,
                         face: geno.face
                     });
 
-                    if(pedestal) pedestal.innerHTML = `<div class="geno-idle">${svgCodePedestal}</div>`;
+                    // --- LA SOLUCIÓN ESTÁ AQUÍ ---
+                    // Añadimos top: 50%, left: 50% y flexbox para contrarrestar el tirón de la animación
+                    if(pedestal) pedestal.innerHTML = `<div class="geno-idle" style="top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${svgCodePedestal}</div>`;
                     
                     const nameEl = document.getElementById('geno-name');
                     if(nameEl) nameEl.innerText = geno.name;
