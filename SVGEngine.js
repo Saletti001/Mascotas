@@ -1,5 +1,5 @@
 // =========================================
-// SVGEngine.js - MOTOR VISUAL HD (TALLO ORGÁNICO)
+// SVGEngine.js - MOTOR VISUAL HD (TALLO ORGÁNICO Y SIN SOMBRA EN LOGO)
 // =========================================
 
 function generarSvgGeno(genesVisuales) {
@@ -29,12 +29,12 @@ function generarSvgGeno(genesVisuales) {
     const shadowId = `shadow-${rnd}`;
     const bronzeId = `bronze-${rnd}`;
     
-    // Tamaño ajustado al valor ideal de 190
+    // TAMAÑO ELEGIDO POR EL USUARIO
     const size = 190; 
     
     let svgContent = `<svg width="${size}" height="${size}" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
     
-    // 1. SISTEMA DE VIDA (Animaciones de Respiración y Parpadeo)
+    // 1. SISTEMA DE VIDA (Respiración y Parpadeo)
     svgContent += `
         <style>
             @keyframes respirar {
@@ -92,12 +92,12 @@ function generarSvgGeno(genesVisuales) {
             shineD = "M 72 48 L 48 104 Q 56 80 80 56 Z";
             break;
         case "hongo":
-            // TALLO ORGÁNICO: Angosto arriba (X: 70 a 90), ancho y redondeado abajo (X: 54 a 106)
-            const talloOrganico = "M 70 100 Q 66 120 54 136 Q 80 150 106 136 Q 94 120 90 100 Z";
+            // TALLO REVISADO: Angosto arriba (72 a 88), se ensancha hacia abajo (58 a 102), curva sutil en la base (bajando hasta 138)
+            const talloOrganico = "M 72 100 Q 68 120 58 132 Q 80 138 102 132 Q 92 120 88 100 Z";
             svgContent += `<path d="${talloOrganico}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
             svgContent += `<path d="${talloOrganico}" fill="url(#${gradId})" />`;
             
-            // CÚPULA ANCHA Y RECHONCHA
+            // SOMBRERO
             pathD = "M 15 90 C 15 20, 145 20, 145 90 C 145 110, 120 115, 80 115 C 40 115, 15 110, 15 90 Z";
             shineD = "M 32 70 C 40 30, 80 35, 110 40 C 70 50, 40 50, 32 70 Z";
             break;
@@ -108,12 +108,12 @@ function generarSvgGeno(genesVisuales) {
             break;
     }
 
-    // 3. RENDERIZADO DE CAPAS DEL CUERPO
+    // 3. RENDERIZADO DE CAPAS DEL CUERPO (Sistema Sólido)
     svgContent += `<path d="${pathD}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round" filter="url(#${shadowId})"/>`;
     svgContent += `<path d="${pathD}" fill="url(#${gradId})" />`;
     svgContent += `<path d="${shineD}" fill="#ffffff" opacity="0.4" />`;
 
-    // 4. DISTINTIVO DE COMUNIDAD (Logo YouTube para el Hongo - Sin sombra)
+    // 4. DISTINTIVO DE COMUNIDAD (Logo YouTube - SIN SOMBRA)
     if (shape === "hongo") {
         svgContent += `
             <g transform="translate(100, 75)">
@@ -124,7 +124,7 @@ function generarSvgGeno(genesVisuales) {
         `;
     }
 
-    // 5. CARAS
+    // 5. CARAS (Parpadeo)
     svgContent += `<g class="geno-ojos">`;
 
     if (shape === "hongo") {
