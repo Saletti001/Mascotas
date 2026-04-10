@@ -1,5 +1,5 @@
 // =========================================
-// SVGEngine.js - MOTOR VISUAL HD (EXPRESIONES IMPONENTES ESTILO PvZ)
+// SVGEngine.js - MOTOR VISUAL HD (EXPRESIONES DE FURIA Y BATALLA)
 // =========================================
 
 function generarSvgGeno(genesVisuales) {
@@ -109,7 +109,7 @@ function generarSvgGeno(genesVisuales) {
     svgContent += `<path d="${pathD}" fill="url(#${gradId})" />`;
     svgContent += `<path d="${shineD}" fill="#ffffff" opacity="0.4" />`;
 
-    // 4. DISTINTIVO DE COMUNIDAD 
+    // 4. DISTINTIVO DE COMUNIDAD (Placa de YouTube limpia)
     if (shape === "hongo") {
         svgContent += `
             <g transform="translate(100, 75)">
@@ -121,102 +121,69 @@ function generarSvgGeno(genesVisuales) {
     }
 
     // ==========================================
-    // 5. SISTEMA MODULAR IMPONENTE (NIVEL PvZ)
+    // 5. SISTEMA MODULAR ESTABLE (Ojos y Bocas)
     // ==========================================
     
     const dicOjos = {
-        // Base mejorada con brillo
-        atento: `<circle cx="60" cy="85" r="7" fill="#1a2a36"/><circle cx="61.5" cy="83.5" r="2.5" fill="#fff"/><circle cx="100" cy="85" r="7" fill="#1a2a36"/><circle cx="101.5" cy="83.5" r="2.5" fill="#fff"/>`,
+        base: `<circle cx="60" cy="88" r="6" fill="#1a2a36"/><circle cx="100" cy="88" r="6" fill="#1a2a36"/>`,
+        pvz_guisante: `<circle cx="55" cy="85" r="10" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/><circle cx="55" cy="85" r="4" fill="#1a2a36"/><circle cx="105" cy="85" r="10" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/><circle cx="105" cy="85" r="4" fill="#1a2a36"/>`,
+        pvz_nuez: `<circle cx="58" cy="85" r="8" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/><circle cx="58" cy="85" r="5" fill="#1a2a36"/><circle cx="102" cy="85" r="8" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/><circle cx="102" cy="85" r="5" fill="#1a2a36"/>`,
+        picaro: `<path d="M 45 85 C 45 95, 60 95, 60 85 L 60 78 L 45 73 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/><circle cx="55" cy="85" r="4.5" fill="#1a2a36"/><circle cx="53" cy="83" r="1.5" fill="#ffffff"/><path d="M 75 85 C 75 95, 90 95, 90 85 L 90 73 L 75 78 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/><circle cx="80" cy="85" r="4.5" fill="#1a2a36"/><circle cx="78" cy="83" r="1.5" fill="#ffffff"/>`,
+        derpy: `<circle cx="56" cy="85" r="9" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/><circle cx="56" cy="85" r="4" fill="#1a2a36"/><circle cx="104" cy="88" r="5" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/><circle cx="104" cy="88" r="2" fill="#1a2a36"/>`,
         
-        // Estilo Lanzaguisantes (Grandes y decididos)
-        tirador: `
-            <circle cx="55" cy="83" r="11" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
-            <circle cx="58" cy="83" r="5" fill="#1a2a36"/>
-            <circle cx="59.5" cy="81.5" r="2" fill="#ffffff"/>
-            <circle cx="105" cy="83" r="11" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
-            <circle cx="102" cy="83" r="5" fill="#1a2a36"/>
-            <circle cx="100.5" cy="81.5" r="2" fill="#ffffff"/>
-        `,
+        // --- NUEVOS OJOS DE FURIA ---
         
-        // Estilo Nuez (Ligeramente bizcos y asimétricos)
-        defensor: `
-            <circle cx="58" cy="85" r="9" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
-            <circle cx="60" cy="87" r="4.5" fill="#1a2a36"/>
-            <circle cx="61" cy="86" r="1.5" fill="#ffffff"/>
-            <circle cx="102" cy="83" r="8" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
-            <circle cx="100" cy="84" r="4" fill="#1a2a36"/>
-            <circle cx="101" cy="83" r="1.5" fill="#ffffff"/>
+        // Furia Ciega: Ojos enrojecidos, ceño fruncido extremo, pupilas dilatadas (Estilo Jalapeño/Gatling)
+        furia_ciega: `
+            <path d="M 45 70 Q 55 60 65 75" fill="none" stroke="#1a2a36" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="58" cy="88" r="10" fill="#ff4d4d" stroke="#1a2a36" stroke-width="3.5"/>
+            <circle cx="58" cy="88" r="5" fill="#1a2a36"/>
+            <path d="M 95 75 Q 105 60 115 70" fill="none" stroke="#1a2a36" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="102" cy="88" r="10" fill="#ff4d4d" stroke="#1a2a36" stroke-width="3.5"/>
+            <circle cx="102" cy="88" r="5" fill="#1a2a36"/>
         `,
-        
-        // Estilo Repetidora/Jalapeño (Esclerótica cortada por ceño fruncido)
-        feroz: `
-            <path d="M 48 84 A 10 10 0 0 0 68 84 L 68 76 L 46 80 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/>
-            <circle cx="58" cy="85" r="4" fill="#1a2a36"/>
-            <circle cx="59" cy="84" r="1.5" fill="#ffffff"/>
-            <line x1="42" y1="78" x2="72" y2="72" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
-            
-            <path d="M 92 84 A 10 10 0 0 0 112 84 L 114 80 L 92 76 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/>
-            <circle cx="102" cy="85" r="4" fill="#1a2a36"/>
-            <circle cx="103" cy="84" r="1.5" fill="#ffffff"/>
-            <line x1="88" y1="72" x2="118" y2="78" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
+        // Mirada Amenazante: Párpados pesados en ángulo furioso, pupilas pequeñas e intensas (Estilo Repetidora)
+        amenaza_intensa: `
+            <path d="M 48 72 L 72 78 L 72 88 A 12 12 0 0 1 48 88 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
+            <circle cx="58" cy="88" r="4" fill="#1a2a36"/>
+            <line x1="45" y1="70" x2="75" y2="76" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
+            <path d="M 112 72 L 88 78 L 88 88 A 12 12 0 0 0 112 88 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
+            <circle cx="102" cy="88" r="4" fill="#1a2a36"/>
+            <line x1="115" y1="70" x2="85" y2="76" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
         `,
-        
-        // Estilo Seta Hipnótica (Espirales concéntricas)
-        hipnotico: `
-            <circle cx="60" cy="85" r="10" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
-            <circle cx="60" cy="85" r="6" fill="none" stroke="#e834eb" stroke-width="2.5"/>
-            <circle cx="60" cy="85" r="2" fill="#e834eb"/>
-            
-            <circle cx="100" cy="85" r="10" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
-            <circle cx="100" cy="85" r="6" fill="none" stroke="#e834eb" stroke-width="2.5"/>
-            <circle cx="100" cy="85" r="2" fill="#e834eb"/>
-        `,
-
-        // Pícaro (Párpados a la mitad)
-        picaro: `
-            <path d="M 48 85 A 11 11 0 0 0 70 85 L 70 82 L 48 82 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
-            <circle cx="59" cy="86" r="4" fill="#1a2a36"/>
-            <circle cx="60" cy="85" r="1.5" fill="#ffffff"/>
-            <line x1="45" y1="81" x2="73" y2="81" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/>
-            
-            <path d="M 90 85 A 11 11 0 0 0 112 85 L 112 82 L 90 82 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
-            <circle cx="101" cy="86" r="4" fill="#1a2a36"/>
-            <circle cx="102" cy="85" r="1.5" fill="#ffffff"/>
-            <line x1="87" y1="81" x2="115" y2="81" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/>
+        // Ganas de Pelear: Un ojo cerrado con cicatriz de batalla, el otro muy abierto y agresivo (Estilo Mazorca Pícaro/Cicatriz)
+        ganas_pelear: `
+            <line x1="48" y1="88" x2="72" y2="88" stroke="#1a2a36" stroke-width="6" stroke-linecap="round"/>
+            <line x1="52" y1="82" x2="68" y2="94" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/>
+            <path d="M 88 78 Q 100 65 112 78 A 12 12 0 0 1 88 100 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
+            <circle cx="102" cy="88" r="5" fill="#1a2a36"/>
+            <line x1="85" y1="72" x2="115" y2="82" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
         `
     };
 
     const dicBocas = {
         base: `<path d="M 67 108 Q 80 124 93 108" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
+        pvz_guisante_boca: `<circle cx="80" cy="110" r="7" fill="#1a2a36"/>`,
+        pvz_girasol_boca: `<path d="M 60 102 C 60 125, 100 125, 100 102 Z" fill="#1a2a36"/>`,
+        pvz_carnivora_boca: `<path d="M 60 105 L 100 105" fill="none" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/><polygon points="65,107 72,108 68,115" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/><polygon points="80,109 87,110 83,117" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/><polygon points="95,107 88,108 92,115" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/>`,
+        pvz_nuez_boca: `<path d="M 70 110 Q 80 115 90 110" fill="none" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/>`,
+        torcida: `<path d="M 65 110 L 95 102" fill="none" stroke="#1a2a36" stroke-width="4.5" stroke-linecap="round"/>`,
         
-        // Estilo Lanzaguisantes (Círculo con profundidad negra)
-        canon: `
-            <ellipse cx="80" cy="112" rx="10" ry="10" fill="#1a2a36" stroke="#1a2a36" stroke-width="2"/>
-            <ellipse cx="80" cy="112" rx="6" ry="6" fill="#000000"/>
+        // --- NUEVAS BOCAS DE AGRESIVIDAD ---
+        
+        // Gruñido Feroz: Boca entreabierta mostrando colmillos irregulares y lengua (Estilo Carnívora simplificada/Gruñido)
+        grunido_feroz: `
+            <path d="M 60 102 Q 80 118 100 102 Z" fill="#1a2a36"/>
+            <polygon points="65,104 70,112 75,105" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/>
+            <polygon points="95,104 90,112 85,105" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/>
         `,
-        
-        // Estilo Girasol (Boca muy grande con lengua roja)
-        radiante: `
-            <path d="M 62 102 C 62 125, 98 125, 98 102 Z" fill="#1a2a36" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/>
-            <path d="M 70 112 C 70 122, 90 122, 90 112 Z" fill="#ff6b6b"/>
-        `,
-        
-        // Estilo Planta Carnívora (Superposición de dientes afilados)
-        depredador: `
-            <path d="M 52 105 Q 80 118 108 105" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
-            <polygon points="60,107 65,116 70,109" fill="#fff" stroke="#1a2a36" stroke-width="2.5" stroke-linejoin="round"/>
-            <polygon points="75,110 80,119 85,111" fill="#fff" stroke="#1a2a36" stroke-width="2.5" stroke-linejoin="round"/>
-            <polygon points="90,109 95,116 100,107" fill="#fff" stroke="#1a2a36" stroke-width="2.5" stroke-linejoin="round"/>
-        `,
-        
-        // Estilo Nuez (Línea ondulada de tensión)
-        tenso: `
-            <path d="M 65 112 Q 72 105 80 112 Q 88 105 95 112" fill="none" stroke="#1a2a36" stroke-width="4.5" stroke-linecap="round"/>
-        `,
-        
-        // Mueca ladeada
-        torcida: `
-            <path d="M 65 112 L 95 104" fill="none" stroke="#1a2a36" stroke-width="4.5" stroke-linecap="round"/>
+        // Dientes Apretados: Línea de tensión extrema con encías y dientes apretados (Estilo Jalapeño/Nuez Furiosa)
+        dientes_apretados: `
+            <rect x="65" y="105" width="30" height="10" rx="3" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
+            <line x1="65" y1="110" x2="95" y2="110" stroke="#1a2a36" stroke-width="1.5"/>
+            <line x1="72" y1="105" x2="72" y2="115" stroke="#1a2a36" stroke-width="1.5"/>
+            <line x1="80" y1="105" x2="80" y2="115" stroke="#1a2a36" stroke-width="1.5"/>
+            <line x1="88" y1="105" x2="88" y2="115" stroke="#1a2a36" stroke-width="1.5"/>
         `
     };
 
