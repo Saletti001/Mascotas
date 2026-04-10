@@ -31,7 +31,7 @@ function generarSvgGeno(genesVisuales) {
     
     // --- TAMAÑO INCREMENTADO EN UN 25% ---
     // El tamaño original era 160. 160 * 1.25 = 200.
-    const size = 160; 
+    const size = 180; 
     
     let svgContent = `<svg width="${size}" height="${size}" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
     
