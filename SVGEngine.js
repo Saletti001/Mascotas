@@ -1,5 +1,5 @@
 // =========================================
-// SVGEngine.js - MOTOR VISUAL HD (TALLO ORGÁNICO Y SIN SOMBRA EN LOGO)
+// SVGEngine.js - MOTOR VISUAL HD (TALLO CON BASE REDONDEADA)
 // =========================================
 
 function generarSvgGeno(genesVisuales) {
@@ -29,10 +29,10 @@ function generarSvgGeno(genesVisuales) {
     const shadowId = `shadow-${rnd}`;
     const bronzeId = `bronze-${rnd}`;
     
-    // TAMAÑO ELEGIDO POR EL USUARIO
+    // TAMAÑO ELEGIDO POR EL USUARIO (190px de altura)
     const size = 190; 
     
-    let svgContent = `<svg width="${size}" height="${size}" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
+    let svgContent = `<svg width="${size}" height="${size}" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">
     
     // 1. SISTEMA DE VIDA (Respiración y Parpadeo)
     svgContent += `
@@ -92,7 +92,7 @@ function generarSvgGeno(genesVisuales) {
             shineD = "M 72 48 L 48 104 Q 56 80 80 56 Z";
             break;
         case "hongo":
-            // TALLO REVISADO: Angosto arriba (72 a 88), se ensancha hacia abajo (58 a 102), curva sutil en la base (bajando hasta 138)
+            // TALLO REVISADO: Se mantiene el tamaño pero con esquinas de la base mucho más redondeadas
             const talloOrganico = "M 72 100 Q 68 120 58 132 Q 80 138 102 132 Q 92 120 88 100 Z";
             svgContent += `<path d="${talloOrganico}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
             svgContent += `<path d="${talloOrganico}" fill="url(#${gradId})" />`;
