@@ -1,5 +1,5 @@
 // =========================================
-// SVGEngine.js - MOTOR VISUAL HD (BRILLOS DISCRETOS)
+// SVGEngine.js - MOTOR VISUAL HD (EXPRESIONES PvZ + BRILLOS DISCRETOS)
 // =========================================
 
 function generarSvgGeno(genesVisuales) {
@@ -22,14 +22,16 @@ function generarSvgGeno(genesVisuales) {
 
     const color = safeData.base_color || "#77DD77";
     const shape = safeData.body_shape || "frijol"; 
-    const face = safeData.face || "cute";
+    
+    // Capturamos la expresión (por defecto "cute")
+    const expressionType = safeData.expression_type || safeData.face || "cute";
 
     const rnd = Math.floor(Math.random() * 100000);
     const gradId = `grad-${shape}-${rnd}`;
     const shadowId = `shadow-${rnd}`;
     const bronzeId = `bronze-${rnd}`;
     
-    // TAMAÑO: 190px
+    // TAMAÑO: 190px (El tamaño perfecto que elegimos)
     const size = 190; 
     
     let svgContent = `<svg width="${size}" height="${size}" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
@@ -46,7 +48,8 @@ function generarSvgGeno(genesVisuales) {
                 97% { transform: scaleY(0.05); }
             }
             .geno-cuerpo { transform-origin: 80px 136px; animation: respirar 3.5s ease-in-out infinite; }
-            .geno-ojos { transform-origin: 80px 85px; animation: parpadear 5s infinite; }
+            /* Se aplica el parpadeo solo a los ojos para no deformar la boca */
+            .geno-ojos-parpado { transform-origin: 80px 85px; animation: parpadear 5s infinite; }
         </style>
     `;
 
@@ -92,30 +95,25 @@ function generarSvgGeno(genesVisuales) {
             shineD = "M 72 48 L 48 104 Q 56 80 80 56 Z";
             break;
         case "hongo":
-            // TALLO RECUPERADO: Largo hacia abajo (Y hasta 150) manteniendo base redondeada
             const talloOrganico = "M 72 100 C 72 120 60 130 55 135 C 50 148 65 150 80 150 C 95 150 110 148 105 135 C 100 130 88 120 88 100 Z";
             svgContent += `<path d="${talloOrganico}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
             svgContent += `<path d="${talloOrganico}" fill="url(#${gradId})" />`;
-            
-            // SOMBRERO
             pathD = "M 15 90 C 15 20, 145 20, 145 90 C 145 110, 120 115, 80 115 C 40 115, 15 110, 15 90 Z";
-            // BRILLO HONGO: Mucho más pequeño y discreto en la zona superior izquierda
             shineD = "M 35 60 Q 45 38 70 38 Q 50 48 35 60 Z";
             break;
         case "frijol":
         default:
             pathD = "M 56 32 C 16 32, 24 112, 56 136 C 88 160, 136 112, 128 72 C 120 32, 96 32, 56 32 Z";
-            // BRILLO FRIJOL: Reducido a una curva sutil abrazando el lado izquierdo
             shineD = "M 42 60 Q 36 75 45 90 Q 42 75 55 55 Z";
             break;
     }
 
-    // 3. RENDERIZADO DE CAPAS DEL CUERPO (Sistema Sólido)
+    // 3. RENDERIZADO DE CAPAS DEL CUERPO
     svgContent += `<path d="${pathD}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round" filter="url(#${shadowId})"/>`;
     svgContent += `<path d="${pathD}" fill="url(#${gradId})" />`;
     svgContent += `<path d="${shineD}" fill="#ffffff" opacity="0.4" />`;
 
-    // 4. DISTINTIVO DE COMUNIDAD (Logo YouTube - SIN SOMBRA)
+    // 4. DISTINTIVO DE COMUNIDAD (Sin Sombra)
     if (shape === "hongo") {
         svgContent += `
             <g transform="translate(100, 75)">
@@ -126,61 +124,87 @@ function generarSvgGeno(genesVisuales) {
         `;
     }
 
-    // 5. CARAS (Parpadeo)
-    svgContent += `<g class="geno-ojos">`;
+    // 5. NUEVO SISTEMA DE EXPRESIONES (Estilo PvZ)
+    const facialExpressions = {
+        cute: { // Base, amigable
+            eyes: `
+                <circle cx="60" cy="88" r="6" fill="#1a2a36"/>
+                <circle cx="100" cy="88" r="6" fill="#1a2a36"/>
+            `,
+            mouth: `<path d="M 67 108 Q 80 124 93 108" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`
+        },
+        mischievous: { // Pícara/Confiada (Ojos con párpados)
+            eyes: `
+                <path d="M 45 85 C 45 95, 60 95, 60 85 L 60 78 L 45 73 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/>
+                <circle cx="55" cy="85" r="4.5" fill="#1a2a36"/>
+                <circle cx="53" cy="83" r="1.5" fill="#ffffff"/>
+                <path d="M 75 85 C 75 95, 90 95, 90 85 L 90 73 L 75 78 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/>
+                <circle cx="80" cy="85" r="4.5" fill="#1a2a36"/>
+                <circle cx="78" cy="83" r="1.5" fill="#ffffff"/>
+            `,
+            mouth: `<path d="M 55 98 Q 70 105 85 93" fill="none" stroke="#1a2a36" stroke-width="3.5" stroke-linecap="round"/>`
+        },
+        shocked: { // Sorprendida/Asustada (Ojos muy abiertos)
+            eyes: `
+                <circle cx="60" cy="85" r="8" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
+                <circle cx="60" cy="85" r="3.5" fill="#1a2a36"/>
+                <circle cx="100" cy="85" r="8" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
+                <circle cx="100" cy="85" r="3.5" fill="#1a2a36"/>
+            `,
+            mouth: `<circle cx="80" cy="110" r="5" fill="#1a2a36"/>`
+        },
+        determination: { // Enojada/Combativa (Ojos en ángulo)
+            eyes: `
+                <line x1="48" y1="76" x2="67" y2="88" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
+                <line x1="112" y1="76" x2="93" y2="88" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
+                <circle cx="60" cy="92" r="6" fill="#1a2a36"/>
+                <circle cx="100" cy="92" r="6" fill="#1a2a36"/>
+            `,
+            mouth: `
+                <path d="M 64 108 Q 80 120 96 108" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
+                <polygon points="67,112 73,112 70,121" fill="#fff" stroke="#1a2a36" stroke-width="2"/>
+            `
+        },
+        derpy: { // Dispereja/Tonta (Un ojo más grande que otro)
+            eyes: `
+                <circle cx="58" cy="84" r="10" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
+                <circle cx="58" cy="84" r="4" fill="#1a2a36"/>
+                <circle cx="102" cy="88" r="6" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
+                <circle cx="102" cy="88" r="2.5" fill="#1a2a36"/>
+            `,
+            mouth: `<path d="M 64 108 Q 80 120 96 108" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`
+        },
+        sleepy: { // Cansada/Dormida
+            eyes: `
+                <line x1="51" y1="88" x2="70" y2="88" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
+                <line x1="109" y1="88" x2="90" y2="88" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
+            `,
+            mouth: `<line x1="72" y1="108" x2="88" y2="108" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`
+        }
+    };
 
-    if (shape === "hongo") {
-        svgContent += `
-            <path d="M 45 85 C 45 95, 60 95, 60 85 L 60 78 L 45 73 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/>
-            <circle cx="55" cy="85" r="4.5" fill="#1a2a36"/>
-            <circle cx="53" cy="83" r="1.5" fill="#ffffff"/>
-            <path d="M 75 85 C 75 95, 90 95, 90 85 L 90 73 L 75 78 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/>
-            <circle cx="80" cy="85" r="4.5" fill="#1a2a36"/>
-            <circle cx="78" cy="83" r="1.5" fill="#ffffff"/>
-        `;
-    } else if (face === "angry") {
-        svgContent += `
-            <line x1="48" y1="76" x2="67" y2="88" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
-            <line x1="112" y1="76" x2="93" y2="88" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
-            <circle cx="60" cy="92" r="6" fill="#1a2a36"/>
-            <circle cx="100" cy="92" r="6" fill="#1a2a36"/>
-        `;
-    } else if (face === "sleepy") {
-        svgContent += `
-            <line x1="51" y1="88" x2="70" y2="88" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
-            <line x1="109" y1="88" x2="90" y2="88" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
-        `;
-    } else if (face === "surprised") {
-        svgContent += `
-            <circle cx="60" cy="88" r="5" fill="#1a2a36"/>
-            <circle cx="100" cy="88" r="5" fill="#1a2a36"/>
-        `;
-    } else { // Cute
-        svgContent += `
-            <circle cx="60" cy="88" r="6" fill="#1a2a36"/>
-            <circle cx="100" cy="88" r="6" fill="#1a2a36"/>
-        `;
-    }
+    // Selector automático de expresión
+    let currentExp = facialExpressions.cute; // Valor por defecto
     
-    svgContent += `</g>`;
+    // Si la carta tiene una expresión definida, la usa. Si no, usa unas por defecto según la forma.
+    if (expressionType === "angry") currentExp = facialExpressions.determination;
+    else if (expressionType === "surprised") currentExp = facialExpressions.shocked;
+    else if (expressionType === "sleepy") currentExp = facialExpressions.sleepy;
+    else if (expressionType === "derpy") currentExp = facialExpressions.derpy;
+    else if (shape === "hongo") currentExp = facialExpressions.mischievous; // Los hongos premium son pícaros
+    else if (shape === "gota") currentExp = facialExpressions.mischievous;  // Conservo la cara que ya tenías en la gota
+    
+    // Inyección de la Expresión en el SVG
+    svgContent += `
+        <g class="geno-ojos-parpado">
+            ${currentExp.eyes}
+        </g>
+        <g class="geno-boca">
+            ${currentExp.mouth}
+        </g>
+    `;
 
-    // BOCA
-    if (shape === "hongo") {
-        svgContent += `<path d="M 55 98 Q 70 105 85 93" fill="none" stroke="#1a2a36" stroke-width="3.5" stroke-linecap="round"/>`;
-    } else if (face === "angry") {
-        svgContent += `
-            <path d="M 64 108 Q 80 120 96 108" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
-            <polygon points="67,112 73,112 70,121" fill="#fff" stroke="#1a2a36" stroke-width="2"/>
-        `;
-    } else if (face === "sleepy") {
-        svgContent += `<line x1="72" y1="108" x2="88" y2="108" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`;
-    } else if (face === "surprised") {
-        svgContent += `<circle cx="80" cy="112" r="8" fill="#1a2a36"/>`;
-    } else { // Cute
-        svgContent += `<path d="M 67 108 Q 80 124 93 108" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`;
-    }
-
-    svgContent += `</g>`;
+    svgContent += `</g>`; // FIN DEL GRUPO RESPIRACIÓN
     svgContent += `</svg>`;
     
     return svgContent;
