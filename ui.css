@@ -12,25 +12,34 @@
     display: flex; justify-content: space-between; gap: 10px;
 }
 
+/* MONEDAS CON BORDES SUPER REDONDEADOS (20px) */
 .currency-badge {
     flex: 1; background: #0d1a24; color: #fff; border: 1px solid #4dd0e1;
-    padding: 8px 10px; border-radius: 8px; font-weight: bold; text-align: center; font-size: 13px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    padding: 8px 10px; border-radius: 20px; font-weight: bold; text-align: center; font-size: 13px; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    display: flex; justify-content: center; align-items: center; gap: 4px;
 }
 .currency-badge.pol { border-color: #8A2BE2; color: #e0b0ff; }
 
+/* BOTONES DE STATS Y ALMACÉN SIMÉTRICOS Y LEGIBLES */
 .action-btn-container { flex: 1; position: relative; }
 .action-btn {
     width: 100%; height: 100%; background: #0d1a24; border: 1px solid #4dd0e1; color: #fff;
-    padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px;
-    display: flex; align-items: center; justify-content: center; gap: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: background 0.2s ease;
+    padding: 8px 5px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px;
+    display: flex; align-items: center; justify-content: center; gap: 6px; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: background 0.2s ease;
 }
 .action-btn:hover { background: #1a2a36; }
 
-/* TRUCO MAGICO: Evitar que el JS rompa el diseño del texto del almacén */
-#slot-counter { font-size: 12px; color: #fff; text-transform: uppercase; white-space: nowrap; }
-#slot-counter br { display: none; } /* Oculta el salto de línea que inyecta JS */
+/* REPARACIÓN DEL TEXTO DEL ALMACÉN ("1/10 SLOTS") */
+#slot-counter {
+    display: flex; flex-direction: column; line-height: 1.1; text-align: left;
+    font-size: 12px; color: #80deea; font-weight: bold; letter-spacing: 1px;
+}
+/* Forzamos al JS a que dibuje el salto de línea para que no se amontone */
+#slot-counter br { display: block; }
 
-/* BOTÓN NEXO (ANCHO Y SIN BUG) */
+/* BOTÓN NEXO (HOLOGRÁFICO Y ANCHO) */
 .fab-btn { 
     position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); 
     width: 70%; max-width: 300px;
@@ -43,8 +52,12 @@
 .fab-btn:hover { background: #1a2a36; box-shadow: 0 0 25px rgba(77, 208, 225, 0.8); }
 .fab-btn:active { transform: translateX(-50%) scale(0.98); }
 
-/* MENÚ DESPLEGABLE (DRAWER) */
-.drawer-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; flex-direction: column; justify-content: flex-end; transition: opacity 0.3s; backdrop-filter: blur(5px);}
+/* MENÚ DESPLEGABLE (MENOS OSCURO: rgba 0.4 + desenfoque de cristal) */
+.drawer-overlay { 
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+    background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+    z-index: 2000; display: flex; flex-direction: column; justify-content: flex-end; transition: opacity 0.3s;
+}
 .drawer-content { background: #0d1a24; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 25px 20px; box-shadow: 0 -5px 30px rgba(77, 208, 225, 0.2); border-top: 1px solid #4dd0e1; animation: slideUp 0.3s ease-out;}
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
@@ -60,8 +73,12 @@
 .drawer-icon { width: 50px; height: 50px; background: #1a2a36; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 8px; border: 1px solid #333; transition: all 0.3s;}
 .drawer-item span { font-size: 11px; font-weight: bold; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px;}
 
-/* ALMACÉN (MODAL) */
-#inventory-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); display: flex; justify-content: center; align-items: center; z-index: 50; }
+/* ALMACÉN MODAL (MENOS OSCURO: rgba 0.4 + desenfoque de cristal) */
+#inventory-modal { 
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+    background-color: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px);
+    display: flex; justify-content: center; align-items: center; z-index: 50; 
+}
 .modal-content { background-color: #0d1a24; width: 85%; max-width: 320px; border-radius: 15px; padding: 20px; box-shadow: 0 0 30px rgba(138, 43, 226, 0.4); border: 1px solid #8A2BE2; color: white;}
 .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
 .modal-header h3 { margin: 0; color: #80deea; text-transform: uppercase; letter-spacing: 1px;}
