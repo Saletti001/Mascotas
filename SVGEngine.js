@@ -1,31 +1,35 @@
 class SVGEngine {
-    static generateGenoSVG(genoData = {}) {
-        // Aumentamos el tamaño base para mayor definición
+    static generateGenoSVG(genoData) {
+        // 1. ESCUDO ANTI-CRASH: Si el juego manda datos nulos, creamos un objeto vacío para evitar errores
+        const safeData = genoData || {};
+        const color = safeData.color || "#77DD77";
+        const shape = safeData.shape || "frijol"; 
+        const face = safeData.face || "cute";
+
+        // ID único para evitar choques visuales cuando haya múltiples Genos en pantalla
+        const rnd = Math.floor(Math.random() * 100000);
+        const gradId = `grad-${shape}-${rnd}`;
+        const shadowId = `shadow-${rnd}`;
+
         const size = 160; 
-        const color = genoData.color || "#77DD77";
-        const shape = genoData.shape || "frijol"; 
         
-        // SOLUCIÓN DEFINITIVA AL BUG: 
-        // 1. Tamaño fijo (160x160)
-        // 2. viewBox ajustado al nuevo tamaño (0 0 160 160)
-        // 3. overflow: visible para que las sombras no se corten
-        let svgContent = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
+        // 2. SVG ADAPTATIVO: 100% de ancho/alto para que encaje en los 140px de tu screens.css
+        let svgContent = `<svg width="100%" height="100%" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
         
-        // 1. DEFINICIÓN DE DEGRADADOS Y SOMBRAS
+        // 3. EFECTOS PREMIUM
         svgContent += `
             <defs>
-                <linearGradient id="grad-${shape}" x1="0%" y1="0%" x2="0%" y2="100%">
+                <linearGradient id="${gradId}" x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%" style="stop-color:${color}; stop-opacity:1" />
                     <stop offset="100%" style="stop-color:#000000; stop-opacity:0.3" /> 
                 </linearGradient>
-                <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+                <filter id="${shadowId}" x="-20%" y="-20%" width="140%" height="140%">
                     <feDropShadow dx="0" dy="8" stdDeviation="4" flood-opacity="0.4" />
                 </filter>
             </defs>
         `;
 
-        // 2. DEFINICIÓN DE LAS FORMAS BASE (Ajustadas a escala 160x160)
-        // Como duplicamos el tamaño (de 80/100 a 160), multiplicamos las coordenadas x1.6 aprox
+        // 4. RUTAS MATEMÁTICAS DE LAS FORMAS
         let pathD = "";
         let shineD = ""; 
         
@@ -47,9 +51,7 @@ class SVGEngine {
                 shineD = "M 72 48 L 48 104 Q 56 80 80 56 Z";
                 break;
             case "hongo":
-                // Tallo
-                svgContent += `<path d="M56 80 L56 128 Q80 152 104 128 L104 80 Z" fill="url(#grad-${shape})" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
-                // Sombrero
+                svgContent += `<path d="M56 80 L56 128 Q80 152 104 128 L104 80 Z" fill="url(#${gradId})" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
                 pathD = "M 16 88 Q 80 8 144 88 Q 152 104 136 104 L 24 104 Q 8 104 16 88 Z";
                 shineD = "M 32 72 Q 64 32 112 40 Q 64 48 32 88 Z";
                 break;
@@ -60,13 +62,11 @@ class SVGEngine {
                 break;
         }
 
-        // 3. DIBUJAR EL CUERPO Y EL BRILLO
-        svgContent += `<path d="${pathD}" fill="url(#grad-${shape})" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round" filter="url(#shadow)"/>`;
+        // 5. DIBUJAR CUERPO Y BRILLO
+        svgContent += `<path d="${pathD}" fill="url(#${gradId})" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round" filter="url(#${shadowId})"/>`;
         svgContent += `<path d="${shineD}" fill="#ffffff" opacity="0.4" />`;
 
-        // 4. DIBUJAR LA CARA (Expresiones - Ajustadas a la nueva escala)
-        const face = genoData.face || "cute";
-        
+        // 6. DIBUJAR CARA
         if (face === "angry") {
             svgContent += `
                 <line x1="48" y1="76" x2="67" y2="88" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
