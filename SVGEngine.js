@@ -1,12 +1,12 @@
 // =========================================
-// SVGEngine.js - MOTOR DE GENERACIÓN VISUAL HD
+// SVGEngine.js - MOTOR DE GENERACIÓN VISUAL HD (FORMAS PERFECTAS)
 // =========================================
 
 function generarSvgGeno(genesVisuales) {
     // 1. ESCUDO ANTI-CRASH
     const safeData = genesVisuales || {};
 
-    // 2. LÓGICA DEL HUEVO (Recuperada de tu código original)
+    // 2. LÓGICA DEL HUEVO
     if (safeData.isEgg) {
         return `
             <svg width="100%" height="100%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">
@@ -16,35 +16,32 @@ function generarSvgGeno(genesVisuales) {
         `;
     }
 
-    // 3. MAPEO DE VARIABLES ORIGINALES AL NUEVO SISTEMA
+    // 3. DATOS DEL GENO
     const color = safeData.base_color || "#77DD77";
     const shape = safeData.body_shape || "frijol"; 
     const face = safeData.face || "cute";
 
-    // ID único para sombras y degradados (evita bugs visuales cuando hay varios Genos)
     const rnd = Math.floor(Math.random() * 100000);
     const gradId = `grad-${shape}-${rnd}`;
     const shadowId = `shadow-${rnd}`;
-
     const size = 160; 
     
-    // 4. INICIO DEL SVG (100% para adaptarse a tu CSS perfecto)
     let svgContent = `<svg width="100%" height="100%" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
     
-    // 5. EFECTOS PREMIUM HD
+    // 4. EFECTOS PREMIUM (Sombra inferior reducida al 15% de opacidad para que no oscurezca el cuerpo)
     svgContent += `
         <defs>
             <linearGradient id="${gradId}" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" style="stop-color:${color}; stop-opacity:1" />
-                <stop offset="100%" style="stop-color:#000000; stop-opacity:0.3" /> 
+                <stop offset="100%" style="stop-color:#000000; stop-opacity:0.15" /> 
             </linearGradient>
             <filter id="${shadowId}" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="8" stdDeviation="4" flood-opacity="0.4" />
+                <feDropShadow dx="0" dy="8" stdDeviation="4" flood-opacity="0.3" />
             </filter>
         </defs>
     `;
 
-    // 6. RUTAS DE LAS FORMAS (Adaptadas a 160x160)
+    // 5. RUTAS MATEMÁTICAS ESTRICTAS (Cero deformaciones)
     let pathD = "";
     let shineD = ""; 
     
@@ -77,11 +74,11 @@ function generarSvgGeno(genesVisuales) {
             break;
     }
 
-    // 7. DIBUJAR CUERPO Y BRILLO
+    // 6. DIBUJAR CUERPO Y BRILLO
     svgContent += `<path d="${pathD}" fill="url(#${gradId})" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round" filter="url(#${shadowId})"/>`;
-    svgContent += `<path d="${shineD}" fill="#ffffff" opacity="0.4" />`;
+    svgContent += `<path d="${shineD}" fill="#ffffff" opacity="0.3" />`;
 
-    // 8. DIBUJAR CARA
+    // 7. DIBUJAR CARA
     if (face === "angry") {
         svgContent += `
             <line x1="48" y1="76" x2="67" y2="88" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
@@ -104,7 +101,7 @@ function generarSvgGeno(genesVisuales) {
             <circle cx="80" cy="112" r="8" fill="#1a2a36"/>
         `;
     } else {
-        // "Cute" por defecto
+        // Cute
         svgContent += `
             <circle cx="60" cy="88" r="6" fill="#1a2a36"/>
             <circle cx="100" cy="88" r="6" fill="#1a2a36"/>
