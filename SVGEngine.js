@@ -1,5 +1,5 @@
 // =========================================
-// SVGEngine.js - MOTOR VISUAL HD (TAMAÑO +25% Y CAPAS SÓLIDAS)
+// SVGEngine.js - MOTOR VISUAL HD (TALLO ORGÁNICO)
 // =========================================
 
 function generarSvgGeno(genesVisuales) {
@@ -29,8 +29,7 @@ function generarSvgGeno(genesVisuales) {
     const shadowId = `shadow-${rnd}`;
     const bronzeId = `bronze-${rnd}`;
     
-    // --- TAMAÑO INCREMENTADO EN UN 25% ---
-    // El tamaño original era 160. 160 * 1.25 = 200.
+    // Tamaño ajustado al valor ideal de 190
     const size = 190; 
     
     let svgContent = `<svg width="${size}" height="${size}" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
@@ -93,9 +92,11 @@ function generarSvgGeno(genesVisuales) {
             shineD = "M 72 48 L 48 104 Q 56 80 80 56 Z";
             break;
         case "hongo":
-            // TALLO (Capa Sólida y Capa de Volumen)
-            svgContent += `<path d="M64 100 L64 136 Q80 148 96 136 L96 100 Z" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
-            svgContent += `<path d="M64 100 L64 136 Q80 148 96 136 L96 100 Z" fill="url(#${gradId})" />`;
+            // TALLO ORGÁNICO: Angosto arriba (X: 70 a 90), ancho y redondeado abajo (X: 54 a 106)
+            const talloOrganico = "M 70 100 Q 66 120 54 136 Q 80 150 106 136 Q 94 120 90 100 Z";
+            svgContent += `<path d="${talloOrganico}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
+            svgContent += `<path d="${talloOrganico}" fill="url(#${gradId})" />`;
+            
             // CÚPULA ANCHA Y RECHONCHA
             pathD = "M 15 90 C 15 20, 145 20, 145 90 C 145 110, 120 115, 80 115 C 40 115, 15 110, 15 90 Z";
             shineD = "M 32 70 C 40 30, 80 35, 110 40 C 70 50, 40 50, 32 70 Z";
@@ -112,7 +113,7 @@ function generarSvgGeno(genesVisuales) {
     svgContent += `<path d="${pathD}" fill="url(#${gradId})" />`;
     svgContent += `<path d="${shineD}" fill="#ffffff" opacity="0.4" />`;
 
-    // 4. DISTINTIVO DE COMUNIDAD (Logo YouTube para el Hongo - Sin la sombra exterior molesta)
+    // 4. DISTINTIVO DE COMUNIDAD (Logo YouTube para el Hongo - Sin sombra)
     if (shape === "hongo") {
         svgContent += `
             <g transform="translate(100, 75)">
