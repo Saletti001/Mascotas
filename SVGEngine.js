@@ -1,5 +1,5 @@
 // =========================================
-// SVGEngine.js - MOTOR VISUAL HD (BASE 100% REDONDEADA)
+// SVGEngine.js - MOTOR VISUAL HD (BASE REDONDEADA Y TALLO LARGO)
 // =========================================
 
 function generarSvgGeno(genesVisuales) {
@@ -92,9 +92,8 @@ function generarSvgGeno(genesVisuales) {
             shineD = "M 72 48 L 48 104 Q 56 80 80 56 Z";
             break;
         case "hongo":
-            // TALLO REVISADO CON CURVAS CÚBICAS: 
-            // Esto elimina matemáticamente los vértices creando una curva continua en las esquinas inferiores.
-            const talloOrganico = "M 72 100 C 72 115 60 120 55 125 C 50 135 65 138 80 138 C 95 138 110 135 105 125 C 100 120 88 115 88 100 Z";
+            // TALLO REVISADO: Estirado hacia abajo (Y bajó de 138 a 150) manteniendo las curvas suaves
+            const talloOrganico = "M 72 100 C 72 120 60 130 55 135 C 50 148 65 150 80 150 C 95 150 110 148 105 135 C 100 130 88 120 88 100 Z";
             svgContent += `<path d="${talloOrganico}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
             svgContent += `<path d="${talloOrganico}" fill="url(#${gradId})" />`;
             
