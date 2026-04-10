@@ -31,17 +31,12 @@
                                 <button id="btn-rename-geno" title="Cambiar Nombre">✏️</button>
                             </h3>
                             <div class="stats-level-badge"><span id="geno-level">Nv. 1</span></div>
-                            <div class="xp-bar-bg">
-                                <div id="geno-xp-fill" class="xp-bar-fill"></div>
-                            </div>
+                            <div class="xp-bar-bg"><div id="geno-xp-fill" class="xp-bar-fill"></div></div>
                             <div class="xp-text"><span id="geno-xp-text">0/100</span> XP</div>
                             <div class="stat-info"><span>Rareza:</span> <span id="geno-rarity">--</span></div>
                             <div class="stat-info"><span>Elem:</span> <span id="geno-element">--</span></div>
                             <hr class="stats-divider">
-                            <div class="stat-header">
-                                <span>Atributos</span>
-                                <span id="stat-points-badge" class="hidden">+0 Pts</span>
-                            </div>
+                            <div class="stat-header"><span>Atributos</span><span id="stat-points-badge" class="hidden">+0 Pts</span></div>
                             <div class="stat-row"><span>❤️ Vit: <span id="stat-hp">10</span></span> <button class="btn-add-stat hidden" data-stat="hp">➕</button></div>
                             <div class="stat-row"><span>⚔️ Fue: <span id="stat-atk">5</span></span> <button class="btn-add-stat hidden" data-stat="atk">➕</button></div>
                             <div class="stat-row"><span>⚡ Agi: <span id="stat-spd">5</span></span> <button class="btn-add-stat hidden" data-stat="spd">➕</button></div>
@@ -52,8 +47,8 @@
                         </div>
                     </div>
 
-                    <div class="action-btn-container">
-                        <button id="backpack-icon" class="action-btn">
+                    <div class="action-btn-container" id="inventory-ui">
+                        <button class="action-btn">
                             💠 <span id="slot-counter">0/10 CAP</span>
                         </button>
                     </div>
@@ -88,14 +83,9 @@
                     <div class="energy-particle" style="left: 80%; animation-duration: 2.8s; animation-delay: 1.5s;"></div>
                     <div class="energy-particle" style="left: 35%; animation-duration: 3.5s; animation-delay: 0.5s;"></div>
                 </div>
-                
                 <div id="geno-container"></div>
-                
-                <div class="pedestal-bottom">
-                    <div class="pedestal-light"></div>
-                </div>
+                <div class="pedestal-bottom"><div class="pedestal-light"></div></div>
             </div>
-
         </div>
 
         <div id="arcade-menu" class="app-screen hidden">

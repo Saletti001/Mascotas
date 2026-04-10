@@ -2,57 +2,45 @@
 /* ui.css - INTERFAZ DE USUARIO Y MENÚS      */
 /* ========================================= */
 
-/* HUD SUPERIOR ORDENADO */
+/* HUD SUPERIOR ORDENADO Y SIMÉTRICO */
 #top-hud {
     position: absolute; top: 15px; left: 15px; right: 15px; z-index: 50;
+    display: flex; flex-direction: column; gap: 10px;
 }
 
-.hud-top-row {
-    display: flex; justify-content: space-between; gap: 10px; margin-bottom: 15px;
+.hud-top-row, .hud-action-row {
+    display: flex; justify-content: space-between; gap: 10px;
 }
+
 .currency-badge {
-    flex: 1; background: #0d1a24; color: white; border: 1px solid #4dd0e1;
-    padding: 8px; border-radius: 8px; font-weight: bold; text-align: center; font-size: 13px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    flex: 1; background: #0d1a24; color: #fff; border: 1px solid #4dd0e1;
+    padding: 8px 10px; border-radius: 8px; font-weight: bold; text-align: center; font-size: 13px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 .currency-badge.pol { border-color: #8A2BE2; color: #e0b0ff; }
 
-.hud-action-row {
-    display: flex; justify-content: space-between; gap: 10px; position: relative;
-}
 .action-btn-container { flex: 1; position: relative; }
 .action-btn {
-    width: 100%; background: #0d1a24; border: 1px solid #4dd0e1; color: #80deea;
+    width: 100%; height: 100%; background: #0d1a24; border: 1px solid #4dd0e1; color: #fff;
     padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px;
-    display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: background 0.2s ease;
+    display: flex; align-items: center; justify-content: center; gap: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: background 0.2s ease;
 }
 .action-btn:hover { background: #1a2a36; }
-.action-btn span { color: #fff; font-size: 11px; }
 
-/* NUEVO BOTÓN NEXO (ANCHO Y SIN BUG) */
+/* TRUCO MAGICO: Evitar que el JS rompa el diseño del texto del almacén */
+#slot-counter { font-size: 12px; color: #fff; text-transform: uppercase; white-space: nowrap; }
+#slot-counter br { display: none; } /* Oculta el salto de línea que inyecta JS */
+
+/* BOTÓN NEXO (ANCHO Y SIN BUG) */
 .fab-btn { 
-    position: absolute; 
-    bottom: 30px; 
-    left: 50%; 
-    transform: translateX(-50%); 
-    width: 70%; /* Más ancho */
-    max-width: 300px;
-    background: #0d1a24; /* Color solido para evitar el glitch */
-    color: #80deea; 
-    padding: 15px 0; 
-    border-radius: 12px; /* Menos redondeado */
-    font-weight: bold; 
-    font-size: 16px;
-    letter-spacing: 2px;
-    cursor: pointer; 
-    z-index: 1000; /* Asegurado por encima de todo */
-    border: 2px solid #4dd0e1;
-    box-shadow: 0 0 15px rgba(77, 208, 225, 0.4);
-    transition: all 0.2s ease;
+    position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); 
+    width: 70%; max-width: 300px;
+    background: #0d1a24; color: #80deea; 
+    padding: 15px 0; border-radius: 12px; 
+    font-weight: bold; font-size: 16px; letter-spacing: 2px;
+    cursor: pointer; z-index: 1000; border: 2px solid #4dd0e1;
+    box-shadow: 0 0 15px rgba(77, 208, 225, 0.4); transition: all 0.2s ease;
 }
-.fab-btn:hover {
-    background: #1a2a36;
-    box-shadow: 0 0 25px rgba(77, 208, 225, 0.8);
-}
+.fab-btn:hover { background: #1a2a36; box-shadow: 0 0 25px rgba(77, 208, 225, 0.8); }
 .fab-btn:active { transform: translateX(-50%) scale(0.98); }
 
 /* MENÚ DESPLEGABLE (DRAWER) */
@@ -89,9 +77,9 @@
 .release-btn.danger { border-color: #d9534f; color: #d9534f; }
 
 /* PANEL DE STATS INTERNO */
-#geno-stats-panel { background: rgba(13, 26, 36, 0.95); border: 1px solid #4dd0e1; color: white; }
+#geno-stats-panel { background: rgba(13, 26, 36, 0.95); border: 1px solid #4dd0e1; color: white; position: absolute; top: 50px; left: 0; width: 190px; padding: 15px; border-radius: 10px; z-index: 60;}
 .close-btn-small { position: absolute; top: 8px; right: 8px; cursor: pointer; font-size: 12px; color: #888; }
-.stats-title { margin: 0 0 5px 0; text-align: center; color: #80deea; display: flex; justify-content: center; align-items: center; gap: 5px; }
+.stats-title { margin: 0 0 5px 0; text-align: center; color: #80deea; display: flex; justify-content: center; align-items: center; gap: 5px; font-size: 15px;}
 #btn-rename-geno { background: none; border: none; cursor: pointer; font-size: 14px; padding: 2px; transition: transform 0.2s; }
 .stats-level-badge { text-align: center; margin-bottom: 5px; }
 #geno-level { font-weight: bold; background: #4dd0e1; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
