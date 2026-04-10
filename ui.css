@@ -2,17 +2,18 @@
 /* ui.css - INTERFAZ DE USUARIO Y MENÚS      */
 /* ========================================= */
 
-/* HUD SUPERIOR ORDENADO Y SIMÉTRICO */
+/* HUD SUPERIOR ORDENADO Y SEPARADO */
 #top-hud {
     position: absolute; top: 15px; left: 15px; right: 15px; z-index: 50;
     display: flex; flex-direction: column; gap: 10px;
 }
 
+/* El padding hace que las cajas se achiquen hacia los lados y queden más separadas */
 .hud-top-row, .hud-action-row {
-    display: flex; justify-content: space-between; gap: 10px;
+    display: flex; justify-content: space-between; gap: 20px; padding: 0 10px;
 }
 
-/* MONEDAS CON BORDES SUPER REDONDEADOS (20px) */
+/* MONEDAS SÚPER REDONDEADAS (20px) */
 .currency-badge {
     flex: 1; background: #0d1a24; color: #fff; border: 1px solid #4dd0e1;
     padding: 8px 10px; border-radius: 20px; font-weight: bold; text-align: center; font-size: 13px; 
@@ -21,38 +22,60 @@
 }
 .currency-badge.pol { border-color: #8A2BE2; color: #e0b0ff; }
 
-/* BOTONES DE STATS Y ALMACÉN SIMÉTRICOS Y LEGIBLES */
+/* HACK: El JS inyecta "✨ 100", nosotros añadimos "EV" con CSS para que no se duplique */
+#vital-essence-amount::after {
+    content: " EV";
+    font-size: 11px; color: #aaa; margin-left: 4px;
+}
+
+/* BOTONES DE STATS Y ALMACÉN SIMÉTRICOS */
 .action-btn-container { flex: 1; position: relative; }
 .action-btn {
-    width: 100%; height: 100%; background: #0d1a24; border: 1px solid #4dd0e1; color: #fff;
+    width: 100%; height: 100%; background: #0d1a24; border: 1px solid #4dd0e1; color: #ffffff;
     padding: 8px 5px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px;
     display: flex; align-items: center; justify-content: center; gap: 6px; 
     box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: background 0.2s ease;
 }
 .action-btn:hover { background: #1a2a36; }
 
-/* REPARACIÓN DEL TEXTO DEL ALMACÉN ("1/10 SLOTS") */
+/* TEXTO DEL ALMACÉN BLANCO BRILLANTE Y LEGIBLE */
 #slot-counter {
-    display: flex; flex-direction: column; line-height: 1.1; text-align: left;
-    font-size: 12px; color: #80deea; font-weight: bold; letter-spacing: 1px;
+    display: block; line-height: 1.1; text-align: left;
+    font-size: 12px; color: #ffffff !important; font-weight: bold; letter-spacing: 1px;
 }
-/* Forzamos al JS a que dibuje el salto de línea para que no se amontone */
-#slot-counter br { display: block; }
 
-/* BOTÓN NEXO (HOLOGRÁFICO Y ANCHO) */
-.fab-btn { 
-    position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); 
-    width: 70%; max-width: 300px;
-    background: #0d1a24; color: #80deea; 
-    padding: 15px 0; border-radius: 12px; 
-    font-weight: bold; font-size: 16px; letter-spacing: 2px;
-    cursor: pointer; z-index: 1000; border: 2px solid #4dd0e1;
-    box-shadow: 0 0 15px rgba(77, 208, 225, 0.4); transition: all 0.2s ease;
+/* BOTÓN NEXO (ANIMACIÓN LUZ NEÓN GIRATORIA) */
+.fab-btn {
+    position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+    width: 70%; max-width: 300px; padding: 2px; /* Grosor del borde neón */
+    border-radius: 14px; cursor: pointer; z-index: 1000; 
+    background: #1a2a36; border: none; overflow: hidden;
+    display: flex; justify-content: center; align-items: center;
+    box-shadow: 0 0 15px rgba(77, 208, 225, 0.4); transition: transform 0.2s;
 }
-.fab-btn:hover { background: #1a2a36; box-shadow: 0 0 25px rgba(77, 208, 225, 0.8); }
+.fab-btn:hover { transform: translateX(-50%) scale(1.05); }
 .fab-btn:active { transform: translateX(-50%) scale(0.98); }
 
-/* MENÚ DESPLEGABLE (MENOS OSCURO: rgba 0.4 + desenfoque de cristal) */
+/* La luz dando vueltas */
+.fab-btn::before {
+    content: ''; position: absolute; width: 200%; height: 500%;
+    background: conic-gradient(transparent, transparent, transparent, #4dd0e1, #8A2BE2, transparent);
+    animation: rotateNeon 5s linear infinite;
+}
+/* El interior oscuro del botón */
+.fab-content {
+    background: #0d1a24; color: #80deea; width: 100%; height: 100%;
+    padding: 13px 0; border-radius: 12px; font-weight: bold; font-size: 16px; letter-spacing: 2px;
+    position: relative; z-index: 1; display: flex; justify-content: center; align-items: center;
+}
+@keyframes rotateNeon {
+    0%, 60% { transform: rotate(0deg); opacity: 0; }
+    65% { opacity: 1; }
+    90% { opacity: 1; transform: rotate(360deg); }
+    95%, 100% { transform: rotate(360deg); opacity: 0; }
+}
+
+/* MENÚ DESPLEGABLE (FONDO SEMI-TRANSPARENTE 40%) */
 .drawer-overlay { 
     position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
     background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
@@ -60,11 +83,9 @@
 }
 .drawer-content { background: #0d1a24; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 25px 20px; box-shadow: 0 -5px 30px rgba(77, 208, 225, 0.2); border-top: 1px solid #4dd0e1; animation: slideUp 0.3s ease-out;}
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-
 .drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 10px; }
 .drawer-header h3 { margin: 0; color: #80deea; text-transform: uppercase; letter-spacing: 1px;}
 #close-drawer { background: none; border: none; font-size: 16px; cursor: pointer; color: white;}
-
 .drawer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 10px; }
 .drawer-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s; }
 .drawer-item:hover .drawer-icon { border-color: #4dd0e1; box-shadow: 0 0 15px rgba(77, 208, 225, 0.3); }
@@ -73,7 +94,7 @@
 .drawer-icon { width: 50px; height: 50px; background: #1a2a36; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 8px; border: 1px solid #333; transition: all 0.3s;}
 .drawer-item span { font-size: 11px; font-weight: bold; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px;}
 
-/* ALMACÉN MODAL (MENOS OSCURO: rgba 0.4 + desenfoque de cristal) */
+/* ALMACÉN MODAL (FONDO SEMI-TRANSPARENTE 40%) */
 #inventory-modal { 
     position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
     background-color: rgba(0, 0, 0, 0.4); backdrop-filter: blur(4px);

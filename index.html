@@ -16,7 +16,7 @@
             
             <div id="top-hud">
                 <div class="hud-top-row">
-                    <div class="currency-badge"><span id="vital-essence-amount">✨ 0</span> <span style="color:#aaa; font-size:11px; margin-left:4px;">EV</span></div>
+                    <div class="currency-badge"><span id="vital-essence-amount">✨ 0</span></div>
                     <div class="currency-badge pol"><span id="pol-amount">🔷 10.0 POL</span></div>
                 </div>
 
@@ -31,17 +31,12 @@
                                 <button id="btn-rename-geno" title="Cambiar Nombre">✏️</button>
                             </h3>
                             <div class="stats-level-badge"><span id="geno-level">Nv. 1</span></div>
-                            <div class="xp-bar-bg">
-                                <div id="geno-xp-fill" class="xp-bar-fill"></div>
-                            </div>
+                            <div class="xp-bar-bg"><div id="geno-xp-fill" class="xp-bar-fill"></div></div>
                             <div class="xp-text"><span id="geno-xp-text">0/100</span> XP</div>
                             <div class="stat-info"><span>Rareza:</span> <span id="geno-rarity">--</span></div>
                             <div class="stat-info"><span>Elem:</span> <span id="geno-element">--</span></div>
                             <hr class="stats-divider">
-                            <div class="stat-header">
-                                <span>Atributos</span>
-                                <span id="stat-points-badge" class="hidden">+0 Pts</span>
-                            </div>
+                            <div class="stat-header"><span>Atributos</span><span id="stat-points-badge" class="hidden">+0 Pts</span></div>
                             <div class="stat-row"><span>❤️ Vit: <span id="stat-hp">10</span></span> <button class="btn-add-stat hidden" data-stat="hp">➕</button></div>
                             <div class="stat-row"><span>⚔️ Fue: <span id="stat-atk">5</span></span> <button class="btn-add-stat hidden" data-stat="atk">➕</button></div>
                             <div class="stat-row"><span>⚡ Agi: <span id="stat-spd">5</span></span> <button class="btn-add-stat hidden" data-stat="spd">➕</button></div>
@@ -52,9 +47,10 @@
                         </div>
                     </div>
 
-                    <div class="action-btn-container">
+                    <div id="inventory-ui" class="action-btn-container">
                         <button id="backpack-icon" class="action-btn">
-                            <span style="font-size: 18px;">💠</span> <span id="slot-counter">0/10</span>
+                            <span style="font-size: 18px; margin-right: 5px;">💠</span> 
+                            <span id="slot-counter">0/10<br>CAP</span>
                         </button>
                     </div>
                 </div>
@@ -88,14 +84,9 @@
                     <div class="energy-particle" style="left: 80%; animation-duration: 2.8s; animation-delay: 1.5s;"></div>
                     <div class="energy-particle" style="left: 35%; animation-duration: 3.5s; animation-delay: 0.5s;"></div>
                 </div>
-                
                 <div id="geno-container"></div>
-                
-                <div class="pedestal-bottom">
-                    <div class="pedestal-light"></div>
-                </div>
+                <div class="pedestal-bottom"><div class="pedestal-light"></div></div>
             </div>
-
         </div>
 
         <div id="arcade-menu" class="app-screen hidden">
@@ -216,7 +207,9 @@
             <button class="back-btn btn-go-home">Volver al Laboratorio</button>
         </div>
 
-        <button id="fab-menu" class="fab-btn">⚙️ NEXO</button>
+        <div id="fab-menu" class="fab-btn">
+            <div class="fab-content">⚙️ NEXO</div>
+        </div>
 
         <div id="drawer-menu" class="drawer-overlay hidden">
             <div class="drawer-content">
