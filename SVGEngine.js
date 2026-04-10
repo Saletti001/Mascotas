@@ -59,15 +59,16 @@ function generarSvgGeno(genesVisuales) {
             shineD = "M 72 48 L 48 104 Q 56 80 80 56 Z";
             break;
         case "hongo":
-            // Tallo ajustado para que baje hasta Y=160 (Igual que el frijol)
-            svgContent += `<path d="M60 120 L60 145 Q80 160 100 145 L100 120 Z" fill="url(#${gradId})" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
-            // Sombrero más grande y profundo para alojar la cara
-            pathD = "M 16 110 Q 80 10 144 110 Q 155 125 136 125 L 24 125 Q 5 125 16 110 Z";
-            shineD = "M 32 75 Q 64 25 112 35 Q 64 45 32 85 Z";
+            // EL HONGO CORREGIDO
+            // Tallo: Ancho moderado, baja hasta Y=136 (el mismo suelo que el frijol)
+            svgContent += `<path d="M64 100 L64 136 Q80 146 96 136 L96 100 Z" fill="url(#${gradId})" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
+            // Sombrero: Más ancho y alto, cubriendo la zona de la cara (Y de 40 a 100)
+            pathD = "M 20 100 Q 80 20 140 100 Q 148 110 130 110 L 30 110 Q 12 110 20 100 Z";
+            shineD = "M 36 80 Q 60 40 108 50 Q 64 60 36 90 Z";
             break;
         case "frijol":
         default:
-            // Frijol de referencia (baja hasta Y=160)
+            // Frijol de referencia (baja hasta Y=136)
             pathD = "M 56 32 C 16 32, 24 112, 56 136 C 88 160, 136 112, 128 72 C 120 32, 96 32, 56 32 Z";
             shineD = "M 40 64 C 32 88, 40 112, 56 128 C 45 104, 48 72, 72 48 C 56 40, 45 48, 40 64 Z";
             break;
