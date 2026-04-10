@@ -106,3 +106,71 @@ document.addEventListener("DOMContentLoaded", () => {
         if (window.miInventario) window.miInventario.addItem({ id: "dna_scanner", name: "Escáner ADN", icon: "🧬", type: "consumible", maxStack: 20 }, 5);
     }, 500);
 });
+
+// =========================================
+// SISTEMA DE PRUEBA: VISOR DE FORMAS BASE
+// =========================================
+document.addEventListener('DOMContentLoaded', () => {
+    const btnShowGenos = document.getElementById('btn-show-genos');
+    const modalSwap = document.getElementById('geno-swap-modal');
+    const btnCloseSwap = document.getElementById('close-swap-modal');
+    const gridSwap = document.getElementById('geno-swap-grid');
+    const pedestal = document.getElementById('geno-container');
+
+    // Las 6 formas base para probar
+    const genosDePrueba = [
+        { shape: "frijol", color: "#77DD77", face: "cute", name: "Frijol Base" },
+        { shape: "gota", color: "#4dd0e1", face: "angry", name: "Gota Agua" },
+        { shape: "circulo", color: "#fdfd96", face: "sleepy", name: "Círculo Luz" },
+        { shape: "cuadrado", color: "#b19cd9", face: "surprised", name: "Cubo Morado" },
+        { shape: "triangulo", color: "#ff6b6b", face: "angry", name: "Triángulo Fuego" },
+        { shape: "hongo", color: "#2E8B57", face: "cute", name: "Hongo Gen-0" } // Deep Teal
+    ];
+
+    // Abrir el modal
+    if(btnShowGenos) {
+        btnShowGenos.addEventListener('click', () => {
+            modalSwap.classList.remove('hidden');
+            gridSwap.innerHTML = ''; // Limpiar
+
+            // Crear las tarjetas para cada Geno
+            genosDePrueba.forEach(geno => {
+                const card = document.createElement('div');
+                card.style.cssText = "background: #1a2a36; border: 1px solid #4dd0e1; border-radius: 10px; padding: 10px; cursor: pointer; text-align: center; transition: transform 0.2s;";
+                
+                // Generar el SVG usando nuestro motor
+                const svgCode = generarSvgGeno({
+                    body_shape: geno.shape,
+                    base_color: geno.color,
+                    face: geno.face
+                });
+
+                card.innerHTML = `
+                    <div style="width: 80px; height: 80px; margin: 0 auto;">${svgCode}</div>
+                    <div style="font-size: 11px; font-weight: bold; margin-top: 5px; color: #fff;">${geno.name}</div>
+                `;
+
+                // Al hacer clic, cambiar el Geno principal
+                card.addEventListener('click', () => {
+                    // Ponerlo en el pedestal central
+                    pedestal.innerHTML = `<div class="geno-idle">${svgCode}</div>`;
+                    // Cambiar el nombre en los Stats
+                    document.getElementById('geno-name').innerText = geno.name;
+                    // Cerrar modal
+                    modalSwap.classList.add('hidden');
+                });
+                
+                // Efecto hover
+                card.addEventListener('mouseover', () => card.style.transform = 'scale(1.05)');
+                card.addEventListener('mouseout', () => card.style.transform = 'scale(1)');
+
+                gridSwap.appendChild(card);
+            });
+        });
+    }
+
+    // Cerrar modal
+    if(btnCloseSwap) {
+        btnCloseSwap.addEventListener('click', () => modalSwap.classList.add('hidden'));
+    }
+});
