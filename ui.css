@@ -2,41 +2,109 @@
 /* ui.css - INTERFAZ DE USUARIO Y MENÚS      */
 /* ========================================= */
 
-/* NUEVO BOTÓN NEXO (HOLOGRÁFICO) */
+/* HUD SUPERIOR ORDENADO */
+#top-hud {
+    position: absolute; top: 15px; left: 15px; right: 15px; z-index: 50;
+}
+
+.hud-top-row {
+    display: flex; justify-content: space-between; gap: 10px; margin-bottom: 15px;
+}
+.currency-badge {
+    flex: 1; background: #0d1a24; color: white; border: 1px solid #4dd0e1;
+    padding: 8px; border-radius: 8px; font-weight: bold; text-align: center; font-size: 13px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+.currency-badge.pol { border-color: #8A2BE2; color: #e0b0ff; }
+
+.hud-action-row {
+    display: flex; justify-content: space-between; gap: 10px; position: relative;
+}
+.action-btn-container { flex: 1; position: relative; }
+.action-btn {
+    width: 100%; background: #0d1a24; border: 1px solid #4dd0e1; color: #80deea;
+    padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px;
+    display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: background 0.2s ease;
+}
+.action-btn:hover { background: #1a2a36; }
+.action-btn span { color: #fff; font-size: 11px; }
+
+/* NUEVO BOTÓN NEXO (ANCHO Y SIN BUG) */
 .fab-btn { 
     position: absolute; 
     bottom: 30px; 
     left: 50%; 
     transform: translateX(-50%); 
-    background: linear-gradient(135deg, #0d1a24, #1a2a36);
+    width: 70%; /* Más ancho */
+    max-width: 300px;
+    background: #0d1a24; /* Color solido para evitar el glitch */
     color: #80deea; 
-    padding: 12px 30px; 
-    border-radius: 30px; 
+    padding: 15px 0; 
+    border-radius: 12px; /* Menos redondeado */
     font-weight: bold; 
-    font-size: 15px;
+    font-size: 16px;
     letter-spacing: 2px;
     cursor: pointer; 
-    z-index: 100; 
+    z-index: 1000; /* Asegurado por encima de todo */
     border: 2px solid #4dd0e1;
-    /* Efecto de brillo constante */
-    box-shadow: 0 0 15px rgba(77, 208, 225, 0.4), inset 0 0 10px rgba(77, 208, 225, 0.2);
-    text-shadow: 0 0 5px #80deea;
-    animation: nexoPulse 2s infinite ease-in-out;
-    transition: all 0.3s ease;
+    box-shadow: 0 0 15px rgba(77, 208, 225, 0.4);
+    transition: all 0.2s ease;
 }
-
 .fab-btn:hover {
-    transform: translateX(-50%) scale(1.05);
     background: #1a2a36;
-    box-shadow: 0 0 25px rgba(77, 208, 225, 0.8), inset 0 0 15px rgba(77, 208, 225, 0.5);
+    box-shadow: 0 0 25px rgba(77, 208, 225, 0.8);
 }
+.fab-btn:active { transform: translateX(-50%) scale(0.98); }
 
-.fab-btn:active { transform: translateX(-50%) scale(0.95); }
+/* MENÚ DESPLEGABLE (DRAWER) */
+.drawer-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; flex-direction: column; justify-content: flex-end; transition: opacity 0.3s; backdrop-filter: blur(5px);}
+.drawer-content { background: #0d1a24; border-top-left-radius: 20px; border-top-right-radius: 20px; padding: 25px 20px; box-shadow: 0 -5px 30px rgba(77, 208, 225, 0.2); border-top: 1px solid #4dd0e1; animation: slideUp 0.3s ease-out;}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-@keyframes nexoPulse {
-    0% { box-shadow: 0 0 15px rgba(77, 208, 225, 0.4), inset 0 0 10px rgba(77, 208, 225, 0.2); }
-    50% { box-shadow: 0 0 25px rgba(77, 208, 225, 0.6), inset 0 0 15px rgba(77, 208, 225, 0.4); border-color: #fff; color: #fff;}
-    100% { box-shadow: 0 0 15px rgba(77, 208, 225, 0.4), inset 0 0 10px rgba(77, 208, 225, 0.2); }
-}
+.drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+.drawer-header h3 { margin: 0; color: #80deea; text-transform: uppercase; letter-spacing: 1px;}
+#close-drawer { background: none; border: none; font-size: 16px; cursor: pointer; color: white;}
 
-/* ... Mantén el resto de tu ui.css igual (drawer, modal, etc.) ... */
+.drawer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 10px; }
+.drawer-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s; }
+.drawer-item:hover .drawer-icon { border-color: #4dd0e1; box-shadow: 0 0 15px rgba(77, 208, 225, 0.3); }
+.drawer-item:active { transform: scale(0.9); }
+.drawer-item.locked { opacity: 0.4; cursor: not-allowed; }
+.drawer-icon { width: 50px; height: 50px; background: #1a2a36; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 8px; border: 1px solid #333; transition: all 0.3s;}
+.drawer-item span { font-size: 11px; font-weight: bold; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px;}
+
+/* ALMACÉN (MODAL) */
+#inventory-modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); display: flex; justify-content: center; align-items: center; z-index: 50; }
+.modal-content { background-color: #0d1a24; width: 85%; max-width: 320px; border-radius: 15px; padding: 20px; box-shadow: 0 0 30px rgba(138, 43, 226, 0.4); border: 1px solid #8A2BE2; color: white;}
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+.modal-header h3 { margin: 0; color: #80deea; text-transform: uppercase; letter-spacing: 1px;}
+#close-inventory { background: none; border: none; cursor: pointer; font-size: 16px; color: white; }
+#inventory-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.inventory-slot { aspect-ratio: 1; background-color: #1a2a36; border: 1px dashed #4dd0e1; border-radius: 8px; display: flex; justify-content: center; align-items: center; font-size: 24px; position: relative; cursor: pointer;}
+.inventory-slot.selected { border: 2px solid #8A2BE2; background-color: rgba(138, 43, 226, 0.2); }
+.item-count { position: absolute; bottom: 2px; right: 4px; font-size: 11px; font-weight: bold; background: #8A2BE2; color: white; padding: 1px 4px; border-radius: 4px; }
+#item-actions { margin-top: 15px; padding-top: 15px; border-top: 1px solid #333; text-align: center; }
+#selected-item-info { font-weight: bold; color: #80deea; margin-bottom: 10px; }
+.action-buttons { display: flex; justify-content: center; gap: 10px; }
+.release-btn { padding: 8px 12px; border: none; border-radius: 6px; background: #1a2a36; border: 1px solid #f0ad4e; color: #f0ad4e; font-weight: bold; cursor: pointer; }
+.release-btn.danger { border-color: #d9534f; color: #d9534f; }
+
+/* PANEL DE STATS INTERNO */
+#geno-stats-panel { background: rgba(13, 26, 36, 0.95); border: 1px solid #4dd0e1; color: white; }
+.close-btn-small { position: absolute; top: 8px; right: 8px; cursor: pointer; font-size: 12px; color: #888; }
+.stats-title { margin: 0 0 5px 0; text-align: center; color: #80deea; display: flex; justify-content: center; align-items: center; gap: 5px; }
+#btn-rename-geno { background: none; border: none; cursor: pointer; font-size: 14px; padding: 2px; transition: transform 0.2s; }
+.stats-level-badge { text-align: center; margin-bottom: 5px; }
+#geno-level { font-weight: bold; background: #4dd0e1; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+.xp-bar-bg { width: 100%; background: #1a2a36; border-radius: 4px; height: 8px; margin-bottom: 5px; overflow: hidden; position: relative; }
+.xp-bar-fill { width: 0%; background: #4CAF50; height: 100%; transition: width 0.3s ease-out; }
+.xp-text { text-align: center; font-size: 10px; margin-bottom: 10px; color: #aaa; }
+.stat-info { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 13px; }
+.stats-divider { margin: 8px 0; border: 1px solid #333; }
+.stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 12px; color: #80deea; font-weight: bold; }
+#stat-points-badge { background: #ffcc00; color: #333; font-size: 10px; padding: 2px 5px; border-radius: 4px; font-weight: bold; }
+.stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 13px; color: #fff; }
+.btn-add-stat { background: #4CAF50; color: white; border: none; border-radius: 4px; width: 22px; height: 22px; font-size: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center; padding: 0; transition: transform 0.1s, background 0.2s;}
+.btn-add-stat:hover { background: #3e8e41; }
+.btn-add-stat:active { transform: scale(0.9); }
+.recessive-text { font-weight: bold; color: #8A2BE2; }
+.btn-scanner { width: 100%; margin-top: 8px; background: rgba(138, 43, 226, 0.2); color: #e0b0ff; border: 1px solid #8A2BE2; padding: 6px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; transition: background 0.3s; }

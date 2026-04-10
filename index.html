@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Proyecto Genos</title>
-    
     <link rel="stylesheet" href="base.css">
     <link rel="stylesheet" href="ui.css">
     <link rel="stylesheet" href="screens.css">
@@ -15,49 +14,48 @@
         
         <div id="room-area" class="app-screen">
             
-            <div id="top-hud" style="position: absolute; top: 15px; left: 15px; right: 15px; z-index: 20;">
-                <div id="currency-ui" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <span id="vital-essence-amount" style="background: rgba(13, 26, 36, 0.9); color: white; border: 1px solid #4dd0e1; padding: 6px 12px; border-radius: 20px; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.5);">✨ 0</span>
-                    <span id="pol-amount" style="background: rgba(13, 26, 36, 0.9); border: 1px solid #8A2BE2; padding: 6px 12px; border-radius: 20px; color: #e0b0ff; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.5);">🔷 10 POL</span>
+            <div id="top-hud">
+                <div class="hud-top-row">
+                    <div class="currency-badge">✨ <span id="vital-essence-amount">0 EV</span></div>
+                    <div class="currency-badge pol">🔷 <span id="pol-amount">10.0 POL</span></div>
                 </div>
 
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; position: relative;">
-                    <div>
-                        <button id="btn-show-stats" style="background: rgba(76, 175, 80, 0.2); color: #81c784; border: 1px solid #4CAF50; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">📊 Stats</button>
+                <div class="hud-action-row">
+                    <div class="action-btn-container">
+                        <button id="btn-show-stats" class="action-btn">📊 Stats</button>
                         
-                        <div id="geno-stats-panel" class="hidden" style="position: absolute; top: 45px; left: 0; background: rgba(255,255,255,0.95); padding: 15px; border-radius: 10px; border: 2px solid #ccc; width: 190px; font-size: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 30;">
-                            <span id="close-stats-btn" style="position: absolute; top: 8px; right: 8px; cursor: pointer; font-size: 12px; color: #888;">❌</span>
-                            <h3 style="margin: 0 0 5px 0; text-align: center; color: #333; display: flex; justify-content: center; align-items: center; gap: 5px;">
+                        <div id="geno-stats-panel" class="hidden">
+                            <span id="close-stats-btn" class="close-btn-small">❌</span>
+                            <h3 class="stats-title">
                                 <span id="geno-name">Geno Base</span> 
-                                <button id="btn-rename-geno" style="background: none; border: none; cursor: pointer; font-size: 14px; padding: 2px; transition: transform 0.2s;" title="Cambiar Nombre">✏️</button>
+                                <button id="btn-rename-geno" title="Cambiar Nombre">✏️</button>
                             </h3>
-                            <div style="text-align: center; margin-bottom: 5px;">
-                                <span id="geno-level" style="font-weight: bold; background: #333; color: white; padding: 2px 6px; border-radius: 4px; font-size: 12px;">Nv. 1</span>
+                            <div class="stats-level-badge"><span id="geno-level">Nv. 1</span></div>
+                            <div class="xp-bar-bg">
+                                <div id="geno-xp-fill" class="xp-bar-fill"></div>
                             </div>
-                            <div style="width: 100%; background: #ddd; border-radius: 4px; height: 8px; margin-bottom: 5px; overflow: hidden; position: relative;">
-                                <div id="geno-xp-fill" style="width: 0%; background: #4CAF50; height: 100%; transition: width 0.3s ease-out;"></div>
+                            <div class="xp-text"><span id="geno-xp-text">0/100</span> XP</div>
+                            <div class="stat-info"><span>Rareza:</span> <span id="geno-rarity">--</span></div>
+                            <div class="stat-info"><span>Elem:</span> <span id="geno-element">--</span></div>
+                            <hr class="stats-divider">
+                            <div class="stat-header">
+                                <span>Atributos</span>
+                                <span id="stat-points-badge" class="hidden">+0 Pts</span>
                             </div>
-                            <div style="text-align: center; font-size: 10px; margin-bottom: 10px; color: #666;"><span id="geno-xp-text">0/100</span> XP</div>
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 2px;"><span>Rareza:</span> <span id="geno-rarity" style="font-weight: bold;">--</span></div>
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><span>Elem:</span> <span id="geno-element" style="font-weight: bold;">--</span></div>
-                            <hr style="margin: 8px 0; border: 1px solid #eee;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <span style="font-size: 12px; color: #777; font-weight: bold;">Atributos</span>
-                                <span id="stat-points-badge" class="hidden" style="background: #ffcc00; color: #333; font-size: 10px; padding: 2px 5px; border-radius: 4px; font-weight: bold;">+0 Pts</span>
-                            </div>
-                            <div class="stat-row"><span>❤️ Vit: <span id="stat-hp" style="font-weight: bold;">10</span></span> <button class="btn-add-stat hidden" data-stat="hp">➕</button></div>
-                            <div class="stat-row"><span>⚔️ Fue: <span id="stat-atk" style="font-weight: bold;">5</span></span> <button class="btn-add-stat hidden" data-stat="atk">➕</button></div>
-                            <div class="stat-row"><span>⚡ Agi: <span id="stat-spd" style="font-weight: bold;">5</span></span> <button class="btn-add-stat hidden" data-stat="spd">➕</button></div>
-                            <div class="stat-row"><span>🍀 Sue: <span id="stat-luk" style="font-weight: bold;">5</span></span> <button class="btn-add-stat hidden" data-stat="luk">➕</button></div>
-                            <hr style="margin: 8px 0; border: 1px solid #eee;">
-                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px;"><span>🧬 Gen Oculto:</span> <span id="geno-recessive" style="font-weight: bold; color: #8B5CF6;">???</span></div>
-                            <button id="btn-use-scanner" style="width: 100%; margin-top: 8px; background: #8B5CF6; color: white; border: none; padding: 6px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; transition: background 0.3s;">Usar Escáner 🧬</button>
+                            <div class="stat-row"><span>❤️ Vit: <span id="stat-hp">10</span></span> <button class="btn-add-stat hidden" data-stat="hp">➕</button></div>
+                            <div class="stat-row"><span>⚔️ Fue: <span id="stat-atk">5</span></span> <button class="btn-add-stat hidden" data-stat="atk">➕</button></div>
+                            <div class="stat-row"><span>⚡ Agi: <span id="stat-spd">5</span></span> <button class="btn-add-stat hidden" data-stat="spd">➕</button></div>
+                            <div class="stat-row"><span>🍀 Sue: <span id="stat-luk">5</span></span> <button class="btn-add-stat hidden" data-stat="luk">➕</button></div>
+                            <hr class="stats-divider">
+                            <div class="stat-info"><span>🧬 Gen Oculto:</span> <span id="geno-recessive" class="recessive-text">???</span></div>
+                            <button id="btn-use-scanner" class="btn-scanner">Usar Escáner 🧬</button>
                         </div>
                     </div>
 
-                    <div id="inventory-ui" style="background: rgba(13, 26, 36, 0.9); padding: 8px 12px; border-radius: 10px; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border: 1px solid #4dd0e1;">
-                        <div id="backpack-icon" title="Abrir Almacén" style="font-size: 24px; color: #80deea;">💠</div>
-                        <div id="slot-counter" style="font-size: 11px; font-weight: bold; line-height: 1.2; color: #80deea; text-align: center;">0/10<br>CAP.</div>
+                    <div class="action-btn-container">
+                        <button id="backpack-icon" class="action-btn">
+                            💠 <span id="slot-counter">0/10 CAP</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -80,8 +78,6 @@
             </div>
 
             <div id="lab-machinery">
-                <div class="server-rack left"><div class="server-lights"></div></div>
-                <div class="server-rack right"><div class="server-lights" style="animation-delay: 0.5s;"></div></div>
                 <div class="holo-ring"></div>
             </div>
 
@@ -118,7 +114,7 @@
 
         <div id="sanctuary-screen" class="app-screen hidden">
             <h2 class="screen-title" style="color: #4CAF50;">Santuario Genético</h2>
-            <p style="text-align: center; color: #666; font-size: 14px; padding: 0 20px; margin-bottom: 5px;">Libera Genos en la naturaleza para obtener ✨ Esencia Vital.</p>
+            <p style="text-align: center; color: #666; font-size: 14px; padding: 0 20px; margin-bottom: 5px;">Libera Genos en la naturaleza para obtener ✨ EV.</p>
             <div style="text-align: center; font-weight: bold; color: #d9534f; margin-bottom: 15px;">Límite diario: <span id="daily-release-count">0</span>/3</div>
             <div id="sanctuary-grid" class="sanctuary-grid"></div>
             <button class="back-btn btn-go-home">Volver al Laboratorio</button>
@@ -220,7 +216,7 @@
             <button class="back-btn btn-go-home">Volver al Laboratorio</button>
         </div>
 
-        <div id="fab-menu" class="fab-btn"><span>⚙️ NEXO</span></div>
+        <button id="fab-menu" class="fab-btn">⚙️ NEXO</button>
 
         <div id="drawer-menu" class="drawer-overlay hidden">
             <div class="drawer-content">

@@ -7,7 +7,6 @@
 body {
     margin: 0; padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    /* Azul marino profundo en lugar de negro */
     background-color: #0b1a2e; 
     background-image: 
         radial-gradient(circle at 15% 50%, rgba(77, 208, 225, 0.15) 0%, transparent 50%),
