@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // =========================================
-// SISTEMA DE COLECCIÓN DE GENOS (ALINEACIÓN PERFECTA)
+// SISTEMA DE COLECCIÓN DE GENOS (ALINEACIÓN PERFECTA Y ESCALADO)
 // =========================================
 document.addEventListener('DOMContentLoaded', () => {
     const btnShowGenos = document.getElementById('btn-show-genos');
@@ -203,14 +203,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 const card = document.createElement('div');
                 card.style.cssText = "background: #1a2a36; border: 1px solid #4dd0e1; border-radius: 10px; padding: 10px; cursor: pointer; text-align: center; transition: transform 0.2s;";
                 
-                const svgCodeMenu = generarSvgGeno({
+                let svgCodeMenu = generarSvgGeno({
                     body_shape: geno.shape,
                     base_color: geno.color,
                     face: geno.face
                 });
 
+                // ¡LA MAGIA ESTÁ AQUÍ! 
+                // Forzamos la etiqueta principal del SVG a usar el 100% del contenedor en lugar de los 190px fijos.
+                svgCodeMenu = svgCodeMenu.replace(/<svg width="\d+" height="\d+"/, '<svg width="100%" height="100%"');
+
                 card.innerHTML = `
-                    <div style="width: 80px; height: 80px; margin: 0 auto;">${svgCodeMenu}</div>
+                    <div style="width: 80px; height: 80px; margin: 0 auto; display: flex; align-items: center; justify-content: center;">${svgCodeMenu}</div>
                     <div style="font-size: 11px; font-weight: bold; margin-top: 8px; color: #fff;">${geno.name}</div>
                 `;
 
@@ -221,8 +225,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         face: geno.face
                     });
 
-                    // --- LA SOLUCIÓN ESTÁ AQUÍ ---
-                    // Añadimos top: 50%, left: 50% y flexbox para contrarrestar el tirón de la animación
                     if(pedestal) pedestal.innerHTML = `<div class="geno-idle" style="top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${svgCodePedestal}</div>`;
                     
                     const nameEl = document.getElementById('geno-name');
