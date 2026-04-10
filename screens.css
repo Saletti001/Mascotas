@@ -29,10 +29,22 @@
 .energy-particle { position: absolute; bottom: 0; width: 3px; height: 12px; background: rgba(255, 255, 255, 0.9); border-radius: 10px; box-shadow: 0 0 10px #fff, 0 0 20px #80deea; animation: floatEnergy infinite ease-in; }
 @keyframes floatEnergy { 0% { transform: translateY(0) scale(1); opacity: 0; } 20% { opacity: 1; } 80% { opacity: 0.8; transform: translateY(-180px) scale(0.6); } 100% { transform: translateY(-220px) scale(0); opacity: 0; } }
 
-#geno-container { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); z-index: 10; display: flex; justify-content: center; align-items: center; }
-.geno-idle { animation: floatIdle 4s ease-in-out infinite; position: absolute; cursor: pointer; z-index: 10; }
+/* LA SOLUCIÓN AL GENO INVISIBLE: Darle un tamaño explícito al contenedor */
+#geno-container { 
+    position: absolute; 
+    top: 40%; 
+    left: 50%; 
+    transform: translate(-50%, -50%); 
+    z-index: 10; 
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    /* Estas dos líneas son la clave: fuerzan un tamaño físico de 140x140px */
+    width: 140px; 
+    height: 140px;
+}
+.geno-idle { animation: floatIdle 4s ease-in-out infinite; position: absolute; cursor: pointer; z-index: 10; width: 100%; height: 100%;}
 @keyframes floatIdle { 0%, 100% { transform: translate(-50%, -50%); } 50% { transform: translate(-50%, -60px); } }
-
 /* 2. ARCADE */
 .arcade-grid { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
 .arcade-card { background: #0d1a24; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; border: 1px solid #4dd0e1; cursor: pointer; color: white;}
