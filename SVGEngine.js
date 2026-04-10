@@ -1,5 +1,5 @@
 // =========================================
-// SVGEngine.js - MOTOR VISUAL HD (CON SISTEMA DE VIDA Y ALTA FIDELIDAD)
+// SVGEngine.js - MOTOR VISUAL HD (TAMAÑO INCREMENTADO Y CAPAS SÓLIDAS)
 // =========================================
 
 function generarSvgGeno(genesVisuales) {
@@ -28,11 +28,16 @@ function generarSvgGeno(genesVisuales) {
     const gradId = `grad-${shape}-${rnd}`;
     const shadowId = `shadow-${rnd}`;
     const bronzeId = `bronze-${rnd}`;
-    const size = 160; 
     
-    let svgContent = `<svg width="100%" height="100%" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
+    // --- TAMAÑO INCREMENTADO EN UN 35% ---
+    // El tamaño original era 160. 160 * 1.35 = 216.
+    // Mantenemos el viewBox en 160x160 para no tener que recalcular todos los trazados,
+    // pero el tamaño de renderizado (width/height) se incrementa.
+    const size = 216; 
     
-    // 1. SISTEMA DE VIDA (CSS interno para Respiración y Parpadeo)
+    let svgContent = `<svg width="${size}" height="${size}" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
+    
+    // 1. SISTEMA DE VIDA (Animaciones de Respiración y Parpadeo)
     svgContent += `
         <style>
             @keyframes respirar {
@@ -53,7 +58,7 @@ function generarSvgGeno(genesVisuales) {
         <defs>
             <linearGradient id="${gradId}" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stop-color="#000000" stop-opacity="0" />
-                <stop offset="100%" stop-color="#000000" stop-opacity="0.3" /> 
+                <stop offset="100%" stop-color="#000000" stop-opacity="0.25" /> 
             </linearGradient>
             <linearGradient id="${bronzeId}" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="#c58f65" />
@@ -90,10 +95,10 @@ function generarSvgGeno(genesVisuales) {
             shineD = "M 72 48 L 48 104 Q 56 80 80 56 Z";
             break;
         case "hongo":
-            // TALLO
-            svgContent += `<path d="M60 100 L60 136 Q80 148 100 136 L100 100 Z" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
-            svgContent += `<path d="M60 100 L60 136 Q80 148 100 136 L100 100 Z" fill="url(#${gradId})" />`;
-            // CÚPULA ANCHA Y RECHONCHA (Estilo Airdrop Premium)
+            // TALLO (Capa Sólida y Capa de Volumen)
+            svgContent += `<path d="M64 100 L64 136 Q80 148 96 136 L96 100 Z" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
+            svgContent += `<path d="M64 100 L64 136 Q80 148 96 136 L96 100 Z" fill="url(#${gradId})" />`;
+            // CÚPULA ANCHA Y RECHONCHA (Estilo Premium)
             pathD = "M 15 90 C 15 20, 145 20, 145 90 C 145 110, 120 115, 80 115 C 40 115, 15 110, 15 90 Z";
             shineD = "M 32 70 C 40 30, 80 35, 110 40 C 70 50, 40 50, 32 70 Z";
             break;
@@ -104,12 +109,15 @@ function generarSvgGeno(genesVisuales) {
             break;
     }
 
-    // RENDERIZADO DE CAPAS DEL CUERPO
+    // 3. RENDERIZADO DE CAPAS DEL CUERPO (Sistema Sólido)
+    // Capa Base Sólida (Opaca)
     svgContent += `<path d="${pathD}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round" filter="url(#${shadowId})"/>`;
+    // Capa de Volumen (Sombra inferior suave)
     svgContent += `<path d="${pathD}" fill="url(#${gradId})" />`;
+    // Capa de Brillo
     svgContent += `<path d="${shineD}" fill="#ffffff" opacity="0.4" />`;
 
-    // 3. DISTINTIVO DE COMUNIDAD (Solo para el Hongo Airdrop)
+    // 4. DISTINTIVO DE COMUNIDAD (Logo YouTube para el Hongo)
     if (shape === "hongo") {
         svgContent += `
             <g transform="translate(100, 75)">
@@ -120,11 +128,11 @@ function generarSvgGeno(genesVisuales) {
         `;
     }
 
-    // 4. CARAS (Con Parpadeo Animado)
+    // 5. CARAS (Con Parpadeo Animado)
     svgContent += `<g class="geno-ojos">`;
 
     if (shape === "hongo") {
-        // CARA DE ALTA FIDELIDAD (Específica del Hongo de la imagen)
+        // CARA DE ALTA FIDELIDAD (Específica del Hongo Premium)
         svgContent += `
             <path d="M 45 85 C 45 95, 60 95, 60 85 L 60 78 L 45 73 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/>
             <circle cx="55" cy="85" r="4.5" fill="#1a2a36"/>
@@ -159,7 +167,7 @@ function generarSvgGeno(genesVisuales) {
     
     svgContent += `</g>`; // FIN DEL GRUPO OJOS (Parpadeo)
 
-    // BOCA (Fuera del grupo de ojos para que la boca no parpadee)
+    // BOCA (Fuera del grupo de ojos)
     if (shape === "hongo") {
         // Sonrisa pícara de lado
         svgContent += `<path d="M 55 98 Q 70 105 85 93" fill="none" stroke="#1a2a36" stroke-width="3.5" stroke-linecap="round"/>`;
