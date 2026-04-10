@@ -1,5 +1,5 @@
 // =========================================
-// SVGEngine.js - MOTOR VISUAL HD (GOTAS Y HONGOS CORREGIDOS)
+// SVGEngine.js - MOTOR VISUAL HD (BRILLOS DISCRETOS)
 // =========================================
 
 function generarSvgGeno(genesVisuales) {
@@ -76,9 +76,7 @@ function generarSvgGeno(genesVisuales) {
     
     switch (shape) {
         case "gota":
-            // GOTA: Base ensanchada (Radio A52)
             pathD = "M 80 24 Q 28 80 28 108 A 52 52 0 0 0 132 108 Q 132 80 80 24 Z";
-            // BRILLO CORREGIDO: Mucho más pequeño, sutil y contenido en el borde izquierdo
             shineD = "M 65 50 Q 55 65 58 80 Q 62 70 70 55 Z";
             break;
         case "circulo":
@@ -101,12 +99,14 @@ function generarSvgGeno(genesVisuales) {
             
             // SOMBRERO
             pathD = "M 15 90 C 15 20, 145 20, 145 90 C 145 110, 120 115, 80 115 C 40 115, 15 110, 15 90 Z";
-            shineD = "M 32 70 C 40 30, 80 35, 110 40 C 70 50, 40 50, 32 70 Z";
+            // BRILLO HONGO: Mucho más pequeño y discreto en la zona superior izquierda
+            shineD = "M 35 60 Q 45 38 70 38 Q 50 48 35 60 Z";
             break;
         case "frijol":
         default:
             pathD = "M 56 32 C 16 32, 24 112, 56 136 C 88 160, 136 112, 128 72 C 120 32, 96 32, 56 32 Z";
-            shineD = "M 40 64 C 32 88, 40 112, 56 128 C 45 104, 48 72, 72 48 C 56 40, 45 48, 40 64 Z";
+            // BRILLO FRIJOL: Reducido a una curva sutil abrazando el lado izquierdo
+            shineD = "M 42 60 Q 36 75 45 90 Q 42 75 55 55 Z";
             break;
     }
 
