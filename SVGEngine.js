@@ -1,17 +1,18 @@
 class SVGEngine {
     static generateGenoSVG(genoData) {
         const size = 100;
+        // Si no se especifica color, usa el verde por defecto. Si no hay forma, usa frijol.
         const color = genoData.color || "#77DD77";
         const shape = genoData.shape || "frijol"; 
         
         let svgContent = `<svg width="100%" height="100%" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">`;
         
-        // 1. DEFINICIÓN DE DEGRADADOS Y BRILLOS (ESTILO PREMIUM)
+        // --- 1. DEFINICIÓN DE EFECTOS PREMIUM (Degradados y Sombras) ---
         svgContent += `
             <defs>
                 <linearGradient id="grad-${shape}" x1="0%" y1="0%" x2="0%" y2="100%">
                     <stop offset="0%" style="stop-color:${color}; stop-opacity:1" />
-                    <stop offset="100%" style="stop-color:#000000; stop-opacity:0.3" />
+                    <stop offset="100%" style="stop-color:#000000; stop-opacity:0.3" /> 
                 </linearGradient>
                 <filter id="shadow">
                     <feDropShadow dx="0" dy="5" stdDeviation="3" flood-opacity="0.3" />
@@ -19,9 +20,9 @@ class SVGEngine {
             </defs>
         `;
 
-        // 2. FORMAS BASE (KIT GEN-0 + HONGO)
+        // --- 2. DEFINICIÓN DE LAS FORMAS BASE ---
         let pathD = "";
-        let shineD = ""; // Reflejo de luz curvo
+        let shineD = ""; // Este es el trazado del reflejo de luz brillante
         
         switch (shape) {
             case "gota":
@@ -41,6 +42,7 @@ class SVGEngine {
                 shineD = "M 45 30 L 30 65 Q 35 50 50 35 Z";
                 break;
             case "hongo":
+                // El hongo tiene dos partes: Tallo y Sombrero
                 // Tallo
                 svgContent += `<path d="M35 50 L35 80 Q50 95 65 80 L65 50 Z" fill="url(#grad-${shape})" stroke="#222" stroke-width="3" stroke-linejoin="round"/>`;
                 // Sombrero
@@ -49,22 +51,24 @@ class SVGEngine {
                 break;
             case "frijol":
             default:
+                // Forma por defecto si no se especifica otra
                 pathD = "M 35 20 C 10 20, 15 70, 35 85 C 55 100, 85 70, 80 45 C 75 20, 60 20, 35 20 Z";
                 shineD = "M 25 40 C 20 55, 25 70, 35 80 C 28 65, 30 45, 45 30 C 35 25, 28 30, 25 40 Z";
                 break;
         }
 
-        // 3. RENDERIZADO DEL CUERPO (Con degradado y borde grueso)
+        // --- 3. DIBUJAR EL CUERPO Y EL BRILLO ---
+        // Dibuja el cuerpo principal con el degradado y un borde oscuro grueso
         svgContent += `<path d="${pathD}" fill="url(#grad-${shape})" stroke="#1a2a36" stroke-width="4" stroke-linejoin="round" filter="url(#shadow)"/>`;
         
-        // 4. RENDERIZADO DEL BRILLO (Estilo Premium)
+        // Dibuja el brillo encima (blanco semitransparente)
         svgContent += `<path d="${shineD}" fill="#ffffff" opacity="0.4" />`;
 
-        // 5. RENDERIZADO DE CARAS (Ojos y Boca)
+        // --- 4. DIBUJAR LA CARA (Expresiones) ---
         const face = genoData.face || "cute";
         
         if (face === "angry") {
-            // Ojos enojados y colmillo
+            // Enojado: Cejas fruncidas y pequeño colmillo
             svgContent += `
                 <line x1="30" y1="48" x2="42" y2="55" stroke="#1a2a36" stroke-width="3" stroke-linecap="round"/>
                 <line x1="70" y1="48" x2="58" y2="55" stroke="#1a2a36" stroke-width="3" stroke-linecap="round"/>
@@ -74,21 +78,21 @@ class SVGEngine {
                 <polygon points="42,70 46,70 44,76" fill="#fff" stroke="#1a2a36" stroke-width="1"/>
             `;
         } else if (face === "sleepy") {
-            // Ojos cerrados y boca recta
+            // Dormido: Ojos cerrados y boca recta
             svgContent += `
                 <line x1="32" y1="55" x2="44" y2="55" stroke="#1a2a36" stroke-width="3" stroke-linecap="round"/>
                 <line x1="68" y1="55" x2="56" y2="55" stroke="#1a2a36" stroke-width="3" stroke-linecap="round"/>
                 <line x1="45" y1="68" x2="55" y2="68" stroke="#1a2a36" stroke-width="3" stroke-linecap="round"/>
             `;
         } else if (face === "surprised") {
-            // Ojos puntos y boca redonda
+            // Sorprendido: Ojos pequeños y boca abierta
             svgContent += `
                 <circle cx="38" cy="55" r="3" fill="#1a2a36"/>
                 <circle cx="62" cy="55" r="3" fill="#1a2a36"/>
                 <circle cx="50" cy="70" r="5" fill="#1a2a36"/>
             `;
         } else {
-            // Cute por defecto
+            // Cute (Por defecto): Ojos normales y sonrisa
             svgContent += `
                 <circle cx="38" cy="55" r="4" fill="#1a2a36"/>
                 <circle cx="62" cy="55" r="4" fill="#1a2a36"/>
