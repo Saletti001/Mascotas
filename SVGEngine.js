@@ -1,11 +1,15 @@
 class SVGEngine {
     static generateGenoSVG(genoData = {}) {
-        const size = 100;
+        // Aumentamos el tamaño base para mayor definición
+        const size = 160; 
         const color = genoData.color || "#77DD77";
         const shape = genoData.shape || "frijol"; 
         
-        // SOLUCIÓN AL BUG: Tamaño fijo en píxeles (160x160) en lugar de porcentajes
-        let svgContent = `<svg width="160" height="160" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
+        // SOLUCIÓN DEFINITIVA AL BUG: 
+        // 1. Tamaño fijo (160x160)
+        // 2. viewBox ajustado al nuevo tamaño (0 0 160 160)
+        // 3. overflow: visible para que las sombras no se corten
+        let svgContent = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
         
         // 1. DEFINICIÓN DE DEGRADADOS Y SOMBRAS
         svgContent += `
@@ -15,77 +19,81 @@ class SVGEngine {
                     <stop offset="100%" style="stop-color:#000000; stop-opacity:0.3" /> 
                 </linearGradient>
                 <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feDropShadow dx="0" dy="5" stdDeviation="3" flood-opacity="0.3" />
+                    <feDropShadow dx="0" dy="8" stdDeviation="4" flood-opacity="0.4" />
                 </filter>
             </defs>
         `;
 
-        // 2. DEFINICIÓN DE LAS FORMAS BASE
+        // 2. DEFINICIÓN DE LAS FORMAS BASE (Ajustadas a escala 160x160)
+        // Como duplicamos el tamaño (de 80/100 a 160), multiplicamos las coordenadas x1.6 aprox
         let pathD = "";
         let shineD = ""; 
         
         switch (shape) {
             case "gota":
-                pathD = "M50 10 Q20 50 20 75 A30 30 0 0 0 80 75 Q80 50 50 10 Z";
-                shineD = "M40 25 Q28 45 28 65 A20 20 0 0 1 35 30 Z";
+                pathD = "M80 16 Q32 80 32 120 A48 48 0 0 0 128 120 Q128 80 80 16 Z";
+                shineD = "M64 40 Q45 72 45 104 A32 32 0 0 1 56 48 Z";
                 break;
             case "circulo":
-                pathD = "M 15 55 A 35 35 0 1 0 85 55 A 35 35 0 1 0 15 55 Z";
-                shineD = "M 25 45 A 25 25 0 0 1 55 25 A 30 30 0 0 0 25 60 Z";
+                pathD = "M 24 88 A 56 56 0 1 0 136 88 A 56 56 0 1 0 24 88 Z";
+                shineD = "M 40 72 A 40 40 0 0 1 88 40 A 48 48 0 0 0 40 96 Z";
                 break;
             case "cuadrado":
-                pathD = "M 20 30 Q 20 20 30 20 L 70 20 Q 80 20 80 30 L 80 70 Q 80 80 70 80 L 30 80 Q 20 80 20 70 Z";
-                shineD = "M 28 30 Q 28 28 35 28 L 60 28 Q 40 40 28 55 Z";
+                pathD = "M 32 48 Q 32 32 48 32 L 112 32 Q 128 32 128 48 L 128 112 Q 128 128 112 128 L 48 128 Q 32 128 32 112 Z";
+                shineD = "M 45 48 Q 45 45 56 45 L 96 45 Q 64 64 45 88 Z";
                 break;
             case "triangulo":
-                pathD = "M 50 15 Q 55 15 60 25 L 85 75 Q 90 85 75 85 L 25 85 Q 10 85 15 75 L 40 25 Q 45 15 50 15 Z";
-                shineD = "M 45 30 L 30 65 Q 35 50 50 35 Z";
+                pathD = "M 80 24 Q 88 24 96 40 L 136 120 Q 144 136 120 136 L 40 136 Q 16 136 24 120 L 64 40 Q 72 24 80 24 Z";
+                shineD = "M 72 48 L 48 104 Q 56 80 80 56 Z";
                 break;
             case "hongo":
-                svgContent += `<path d="M35 50 L35 80 Q50 95 65 80 L65 50 Z" fill="url(#grad-${shape})" stroke="#1a2a36" stroke-width="4" stroke-linejoin="round"/>`;
-                pathD = "M 10 55 Q 50 5 90 55 Q 95 65 85 65 L 15 65 Q 5 65 10 55 Z";
-                shineD = "M 20 45 Q 40 20 70 25 Q 40 30 20 55 Z";
+                // Tallo
+                svgContent += `<path d="M56 80 L56 128 Q80 152 104 128 L104 80 Z" fill="url(#grad-${shape})" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
+                // Sombrero
+                pathD = "M 16 88 Q 80 8 144 88 Q 152 104 136 104 L 24 104 Q 8 104 16 88 Z";
+                shineD = "M 32 72 Q 64 32 112 40 Q 64 48 32 88 Z";
                 break;
             case "frijol":
             default:
-                pathD = "M 35 20 C 10 20, 15 70, 35 85 C 55 100, 85 70, 80 45 C 75 20, 60 20, 35 20 Z";
-                shineD = "M 25 40 C 20 55, 25 70, 35 80 C 28 65, 30 45, 45 30 C 35 25, 28 30, 25 40 Z";
+                pathD = "M 56 32 C 16 32, 24 112, 56 136 C 88 160, 136 112, 128 72 C 120 32, 96 32, 56 32 Z";
+                shineD = "M 40 64 C 32 88, 40 112, 56 128 C 45 104, 48 72, 72 48 C 56 40, 45 48, 40 64 Z";
                 break;
         }
 
         // 3. DIBUJAR EL CUERPO Y EL BRILLO
-        svgContent += `<path d="${pathD}" fill="url(#grad-${shape})" stroke="#1a2a36" stroke-width="4" stroke-linejoin="round" filter="url(#shadow)"/>`;
+        svgContent += `<path d="${pathD}" fill="url(#grad-${shape})" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round" filter="url(#shadow)"/>`;
         svgContent += `<path d="${shineD}" fill="#ffffff" opacity="0.4" />`;
 
-        // 4. DIBUJAR LA CARA (Expresiones)
+        // 4. DIBUJAR LA CARA (Expresiones - Ajustadas a la nueva escala)
         const face = genoData.face || "cute";
         
         if (face === "angry") {
             svgContent += `
-                <line x1="30" y1="48" x2="42" y2="55" stroke="#1a2a36" stroke-width="3" stroke-linecap="round"/>
-                <line x1="70" y1="48" x2="58" y2="55" stroke="#1a2a36" stroke-width="3" stroke-linecap="round"/>
-                <circle cx="38" cy="58" r="4" fill="#1a2a36"/>
-                <circle cx="62" cy="58" r="4" fill="#1a2a36"/>
-                <path d="M 40 68 Q 50 75 60 68" fill="none" stroke="#1a2a36" stroke-width="3" stroke-linecap="round"/>
-                <polygon points="42,70 46,70 44,76" fill="#fff" stroke="#1a2a36" stroke-width="1"/>
+                <line x1="48" y1="76" x2="67" y2="88" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
+                <line x1="112" y1="76" x2="93" y2="88" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
+                <circle cx="60" cy="92" r="6" fill="#1a2a36"/>
+                <circle cx="100" cy="92" r="6" fill="#1a2a36"/>
+                <path d="M 64 108 Q 80 120 96 108" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
+                <polygon points="67,112 73,112 70,121" fill="#fff" stroke="#1a2a36" stroke-width="2"/>
             `;
         } else if (face === "sleepy") {
             svgContent += `
-                <line x1="32" y1="55" x2="44" y2="55" stroke="#1a2a36" stroke-width="3" stroke-linecap="round"/>
-                <line x1="68" y1="55" x2="56" y2="55" stroke="#1a2a36" stroke-width="3" stroke-linecap="round"/>
-                <line x1="45" y1="68" x2="55" y2="68" stroke="#1a2a36" stroke-width="3" stroke-linecap="round"/>
+                <line x1="51" y1="88" x2="70" y2="88" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
+                <line x1="109" y1="88" x2="90" y2="88" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
+                <line x1="72" y1="108" x2="88" y2="108" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
             `;
         } else if (face === "surprised") {
             svgContent += `
-                <circle cx="38" cy="55" r="3" fill="#1a2a36"/>
-                <circle cx="62" cy="55" r="3" fill="#1a2a36"/>
-                <circle cx="50" cy="70" r="5" fill="#1a2a36"/>
+                <circle cx="60" cy="88" r="5" fill="#1a2a36"/>
+                <circle cx="100" cy="88" r="5" fill="#1a2a36"/>
+                <circle cx="80" cy="112" r="8" fill="#1a2a36"/>
             `;
         } else {
+            // "Cute" por defecto
             svgContent += `
-                <circle cx="38" cy="55" r="4" fill="#1a2a36"/>
-                <circle cx="62" cy="55" r="4" fill="#1a2a36"/>
-                <path d="M 42 68 Q 50 78 58 68" fill="none" stroke="#1a2a36" stroke-width="3" stroke-linecap="round"/>
+                <circle cx="60" cy="88" r="6" fill="#1a2a36"/>
+                <circle cx="100" cy="88" r="6" fill="#1a2a36"/>
+                <path d="M 67 108 Q 80 124 93 108" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
             `;
         }
 
