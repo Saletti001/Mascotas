@@ -1,5 +1,5 @@
 // =========================================
-// SVGEngine.js - MOTOR VISUAL HD (SINTAXIS CORREGIDA)
+// SVGEngine.js - MOTOR VISUAL HD (BASE 100% REDONDEADA)
 // =========================================
 
 function generarSvgGeno(genesVisuales) {
@@ -29,10 +29,9 @@ function generarSvgGeno(genesVisuales) {
     const shadowId = `shadow-${rnd}`;
     const bronzeId = `bronze-${rnd}`;
     
-    // TAMAÑO ELEGIDO POR EL USUARIO (190px de altura)
+    // TAMAÑO: 190px
     const size = 190; 
     
-    // ¡AQUÍ ESTABA EL ERROR! Faltaba cerrar esta línea correctamente. Ya está arreglado.
     let svgContent = `<svg width="${size}" height="${size}" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
     
     // 1. SISTEMA DE VIDA (Respiración y Parpadeo)
@@ -93,8 +92,9 @@ function generarSvgGeno(genesVisuales) {
             shineD = "M 72 48 L 48 104 Q 56 80 80 56 Z";
             break;
         case "hongo":
-            // TALLO REVISADO: Curvas suavizadas en la base para un look orgánico y sin puntas.
-            const talloOrganico = "M 72 100 Q 68 120 58 132 Q 80 138 102 132 Q 92 120 88 100 Z";
+            // TALLO REVISADO CON CURVAS CÚBICAS: 
+            // Esto elimina matemáticamente los vértices creando una curva continua en las esquinas inferiores.
+            const talloOrganico = "M 72 100 C 72 115 60 120 55 125 C 50 135 65 138 80 138 C 95 138 110 135 105 125 C 100 120 88 115 88 100 Z";
             svgContent += `<path d="${talloOrganico}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
             svgContent += `<path d="${talloOrganico}" fill="url(#${gradId})" />`;
             
