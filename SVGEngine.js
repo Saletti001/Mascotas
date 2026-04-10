@@ -1,5 +1,5 @@
 // =========================================
-// SVGEngine.js - MOTOR VISUAL HD (BASE REDONDEADA Y TALLO LARGO)
+// SVGEngine.js - MOTOR VISUAL HD (GOTA CORREGIDA)
 // =========================================
 
 function generarSvgGeno(genesVisuales) {
@@ -29,7 +29,7 @@ function generarSvgGeno(genesVisuales) {
     const shadowId = `shadow-${rnd}`;
     const bronzeId = `bronze-${rnd}`;
     
-    // TAMAÑO: 190px
+    // TAMAÑO ELEGIDO POR EL USUARIO (190px de altura)
     const size = 190; 
     
     let svgContent = `<svg width="${size}" height="${size}" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
@@ -76,8 +76,9 @@ function generarSvgGeno(genesVisuales) {
     
     switch (shape) {
         case "gota":
-            pathD = "M80 16 Q32 80 32 120 A48 48 0 0 0 128 120 Q128 80 80 16 Z";
-            shineD = "M64 40 Q45 72 45 104 A32 32 0 0 1 56 48 Z";
+            // GOTA REVISADA: Base ensanchada y brillo interior contenido
+            pathD = "M 80 24 Q 28 80 28 108 A 52 52 0 0 0 132 108 Q 132 80 80 24 Z";
+            shineD = "M 60 45 Q 38 75 40 105 Q 46 80 66 55 Z";
             break;
         case "circulo":
             pathD = "M 24 88 A 56 56 0 1 0 136 88 A 56 56 0 1 0 24 88 Z";
@@ -92,8 +93,8 @@ function generarSvgGeno(genesVisuales) {
             shineD = "M 72 48 L 48 104 Q 56 80 80 56 Z";
             break;
         case "hongo":
-            // TALLO REVISADO: Estirado hacia abajo (Y bajó de 138 a 150) manteniendo las curvas suaves
-            const talloOrganico = "M 72 100 C 72 120 60 130 55 135 C 50 148 65 150 80 150 C 95 150 110 148 105 135 C 100 130 88 120 88 100 Z";
+            // TALLO CÚBICO ORGÁNICO
+            const talloOrganico = "M 72 100 C 72 115 60 120 55 125 C 50 135 65 138 80 138 C 95 138 110 135 105 125 C 100 120 88 115 88 100 Z";
             svgContent += `<path d="${talloOrganico}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
             svgContent += `<path d="${talloOrganico}" fill="url(#${gradId})" />`;
             
