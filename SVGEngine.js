@@ -1,5 +1,5 @@
 // =========================================
-// SVGEngine.js - MOTOR VISUAL HD (SISTEMA MODULAR ALEATORIO)
+// SVGEngine.js - MOTOR VISUAL HD (EXPRESIONES IMPONENTES ESTILO PvZ)
 // =========================================
 
 function generarSvgGeno(genesVisuales) {
@@ -28,7 +28,7 @@ function generarSvgGeno(genesVisuales) {
     const shadowId = `shadow-${rnd}`;
     const bronzeId = `bronze-${rnd}`;
     
-    // TAMAÑO: 190px
+    // TAMAÑO EXACTO: 190px
     const size = 190; 
     
     let svgContent = `<svg width="${size}" height="${size}" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
@@ -74,7 +74,7 @@ function generarSvgGeno(genesVisuales) {
     let shineD = ""; 
     
     switch (shape) {
-        case "gota":
+        case "gota": 
             pathD = "M 80 24 Q 28 80 28 108 A 52 52 0 0 0 132 108 Q 132 80 80 24 Z";
             shineD = "M 65 50 Q 55 65 58 80 Q 62 70 70 55 Z";
             break;
@@ -90,14 +90,14 @@ function generarSvgGeno(genesVisuales) {
             pathD = "M 80 24 Q 88 24 96 40 L 136 120 Q 144 136 120 136 L 40 136 Q 16 136 24 120 L 64 40 Q 72 24 80 24 Z";
             shineD = "M 72 48 L 48 104 Q 56 80 80 56 Z";
             break;
-        case "hongo":
+        case "hongo": 
             const talloOrganico = "M 72 100 C 72 120 60 130 55 135 C 50 148 65 150 80 150 C 95 150 110 148 105 135 C 100 130 88 120 88 100 Z";
             svgContent += `<path d="${talloOrganico}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/>`;
             svgContent += `<path d="${talloOrganico}" fill="url(#${gradId})" />`;
             pathD = "M 15 90 C 15 20, 145 20, 145 90 C 145 110, 120 115, 80 115 C 40 115, 15 110, 15 90 Z";
             shineD = "M 35 60 Q 45 38 70 38 Q 50 48 35 60 Z";
             break;
-        case "frijol":
+        case "frijol": 
         default:
             pathD = "M 56 32 C 16 32, 24 112, 56 136 C 88 160, 136 112, 128 72 C 120 32, 96 32, 56 32 Z";
             shineD = "M 42 60 Q 36 75 45 90 Q 42 75 55 55 Z";
@@ -109,7 +109,7 @@ function generarSvgGeno(genesVisuales) {
     svgContent += `<path d="${pathD}" fill="url(#${gradId})" />`;
     svgContent += `<path d="${shineD}" fill="#ffffff" opacity="0.4" />`;
 
-    // 4. DISTINTIVO DE COMUNIDAD
+    // 4. DISTINTIVO DE COMUNIDAD 
     if (shape === "hongo") {
         svgContent += `
             <g transform="translate(100, 75)">
@@ -121,44 +121,113 @@ function generarSvgGeno(genesVisuales) {
     }
 
     // ==========================================
-    // 5. SISTEMA MODULAR DE RASGOS (PIEZAS DE LEGO)
+    // 5. SISTEMA MODULAR IMPONENTE (NIVEL PvZ)
     // ==========================================
     
     const dicOjos = {
-        base: `<circle cx="60" cy="85" r="6" fill="#1a2a36"/><circle cx="100" cy="85" r="6" fill="#1a2a36"/>`,
-        feliz: `<path d="M 50 85 Q 60 75 70 85" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/><path d="M 90 85 Q 100 75 110 85" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
-        enojado: `<line x1="48" y1="75" x2="67" y2="86" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/><circle cx="60" cy="90" r="4.5" fill="#1a2a36"/><line x1="112" y1="75" x2="93" y2="86" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/><circle cx="100" cy="90" r="4.5" fill="#1a2a36"/>`,
-        sorprendido: `<circle cx="60" cy="85" r="8" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/><circle cx="60" cy="85" r="3" fill="#1a2a36"/><circle cx="100" cy="85" r="8" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/><circle cx="100" cy="85" r="3" fill="#1a2a36"/>`,
-        derpy: `<circle cx="56" cy="85" r="9" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/><circle cx="56" cy="85" r="4" fill="#1a2a36"/><circle cx="104" cy="88" r="5" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/><circle cx="104" cy="88" r="2" fill="#1a2a36"/>`,
-        cansado: `<line x1="51" y1="85" x2="70" y2="85" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/><line x1="109" y1="85" x2="90" y2="85" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
-        picaro: `<path d="M 45 85 C 45 95, 60 95, 60 85 L 60 78 L 45 73 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/><circle cx="55" cy="85" r="4" fill="#1a2a36"/><path d="M 75 85 C 75 95, 90 95, 90 85 L 90 73 L 75 78 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/><circle cx="80" cy="85" r="4" fill="#1a2a36"/>`,
-        cejas_gruesas: `<line x1="50" y1="72" x2="70" y2="72" stroke="#1a2a36" stroke-width="6" stroke-linecap="round"/><circle cx="60" cy="86" r="5" fill="#1a2a36"/><line x1="90" y1="72" x2="110" y2="72" stroke="#1a2a36" stroke-width="6" stroke-linecap="round"/><circle cx="100" cy="86" r="5" fill="#1a2a36"/>`,
-        puntos: `<circle cx="60" cy="85" r="3" fill="#1a2a36"/><circle cx="100" cy="85" r="3" fill="#1a2a36"/>`
+        // Base mejorada con brillo
+        atento: `<circle cx="60" cy="85" r="7" fill="#1a2a36"/><circle cx="61.5" cy="83.5" r="2.5" fill="#fff"/><circle cx="100" cy="85" r="7" fill="#1a2a36"/><circle cx="101.5" cy="83.5" r="2.5" fill="#fff"/>`,
+        
+        // Estilo Lanzaguisantes (Grandes y decididos)
+        tirador: `
+            <circle cx="55" cy="83" r="11" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
+            <circle cx="58" cy="83" r="5" fill="#1a2a36"/>
+            <circle cx="59.5" cy="81.5" r="2" fill="#ffffff"/>
+            <circle cx="105" cy="83" r="11" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
+            <circle cx="102" cy="83" r="5" fill="#1a2a36"/>
+            <circle cx="100.5" cy="81.5" r="2" fill="#ffffff"/>
+        `,
+        
+        // Estilo Nuez (Ligeramente bizcos y asimétricos)
+        defensor: `
+            <circle cx="58" cy="85" r="9" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
+            <circle cx="60" cy="87" r="4.5" fill="#1a2a36"/>
+            <circle cx="61" cy="86" r="1.5" fill="#ffffff"/>
+            <circle cx="102" cy="83" r="8" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
+            <circle cx="100" cy="84" r="4" fill="#1a2a36"/>
+            <circle cx="101" cy="83" r="1.5" fill="#ffffff"/>
+        `,
+        
+        // Estilo Repetidora/Jalapeño (Esclerótica cortada por ceño fruncido)
+        feroz: `
+            <path d="M 48 84 A 10 10 0 0 0 68 84 L 68 76 L 46 80 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/>
+            <circle cx="58" cy="85" r="4" fill="#1a2a36"/>
+            <circle cx="59" cy="84" r="1.5" fill="#ffffff"/>
+            <line x1="42" y1="78" x2="72" y2="72" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
+            
+            <path d="M 92 84 A 10 10 0 0 0 112 84 L 114 80 L 92 76 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/>
+            <circle cx="102" cy="85" r="4" fill="#1a2a36"/>
+            <circle cx="103" cy="84" r="1.5" fill="#ffffff"/>
+            <line x1="88" y1="72" x2="118" y2="78" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
+        `,
+        
+        // Estilo Seta Hipnótica (Espirales concéntricas)
+        hipnotico: `
+            <circle cx="60" cy="85" r="10" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
+            <circle cx="60" cy="85" r="6" fill="none" stroke="#e834eb" stroke-width="2.5"/>
+            <circle cx="60" cy="85" r="2" fill="#e834eb"/>
+            
+            <circle cx="100" cy="85" r="10" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
+            <circle cx="100" cy="85" r="6" fill="none" stroke="#e834eb" stroke-width="2.5"/>
+            <circle cx="100" cy="85" r="2" fill="#e834eb"/>
+        `,
+
+        // Pícaro (Párpados a la mitad)
+        picaro: `
+            <path d="M 48 85 A 11 11 0 0 0 70 85 L 70 82 L 48 82 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
+            <circle cx="59" cy="86" r="4" fill="#1a2a36"/>
+            <circle cx="60" cy="85" r="1.5" fill="#ffffff"/>
+            <line x1="45" y1="81" x2="73" y2="81" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/>
+            
+            <path d="M 90 85 A 11 11 0 0 0 112 85 L 112 82 L 90 82 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
+            <circle cx="101" cy="86" r="4" fill="#1a2a36"/>
+            <circle cx="102" cy="85" r="1.5" fill="#ffffff"/>
+            <line x1="87" y1="81" x2="115" y2="81" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/>
+        `
     };
 
     const dicBocas = {
-        sonrisa: `<path d="M 67 105 Q 80 120 93 105" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
-        abierta: `<path d="M 67 105 Q 80 125 93 105 Z" fill="#1a2a36" stroke="#1a2a36" stroke-width="2" stroke-linejoin="round"/>`,
-        serio: `<line x1="72" y1="108" x2="88" y2="108" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
-        triste: `<path d="M 68 112 Q 80 100 92 112" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
-        sorpresa: `<circle cx="80" cy="110" r="5" fill="#1a2a36"/>`,
-        vampiro: `<path d="M 65 105 Q 80 115 95 105" fill="none" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/><polygon points="70,108 75,109 72.5,116" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/><polygon points="90,108 85,109 87.5,116" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/>`,
-        gato: `<path d="M 70 105 Q 75 112 80 105 Q 85 112 90 105" fill="none" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/>`,
-        torcida: `<path d="M 65 110 L 95 102" fill="none" stroke="#1a2a36" stroke-width="4.5" stroke-linecap="round"/>`,
-        diente: `<line x1="68" y1="105" x2="92" y2="105" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/><rect x="76" y="105" width="8" height="8" fill="#fff" stroke="#1a2a36" stroke-width="2"/>`
+        base: `<path d="M 67 108 Q 80 124 93 108" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
+        
+        // Estilo Lanzaguisantes (Círculo con profundidad negra)
+        canon: `
+            <ellipse cx="80" cy="112" rx="10" ry="10" fill="#1a2a36" stroke="#1a2a36" stroke-width="2"/>
+            <ellipse cx="80" cy="112" rx="6" ry="6" fill="#000000"/>
+        `,
+        
+        // Estilo Girasol (Boca muy grande con lengua roja)
+        radiante: `
+            <path d="M 62 102 C 62 125, 98 125, 98 102 Z" fill="#1a2a36" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M 70 112 C 70 122, 90 122, 90 112 Z" fill="#ff6b6b"/>
+        `,
+        
+        // Estilo Planta Carnívora (Superposición de dientes afilados)
+        depredador: `
+            <path d="M 52 105 Q 80 118 108 105" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
+            <polygon points="60,107 65,116 70,109" fill="#fff" stroke="#1a2a36" stroke-width="2.5" stroke-linejoin="round"/>
+            <polygon points="75,110 80,119 85,111" fill="#fff" stroke="#1a2a36" stroke-width="2.5" stroke-linejoin="round"/>
+            <polygon points="90,109 95,116 100,107" fill="#fff" stroke="#1a2a36" stroke-width="2.5" stroke-linejoin="round"/>
+        `,
+        
+        // Estilo Nuez (Línea ondulada de tensión)
+        tenso: `
+            <path d="M 65 112 Q 72 105 80 112 Q 88 105 95 112" fill="none" stroke="#1a2a36" stroke-width="4.5" stroke-linecap="round"/>
+        `,
+        
+        // Mueca ladeada
+        torcida: `
+            <path d="M 65 112 L 95 104" fill="none" stroke="#1a2a36" stroke-width="4.5" stroke-linecap="round"/>
+        `
     };
 
-    // --- LÓGICA DE ALEATORIEDAD GENÉTICA ---
-    // Extrae todos los nombres de los rasgos disponibles
+    // --- ALEATORIEDAD GEN-0 SEGURA ---
     const nombresOjos = Object.keys(dicOjos);
     const nombresBocas = Object.keys(dicBocas);
 
-    // Si el Geno trae los genes "eye_type" y "mouth_type" guardados, los usa.
-    // Si NO los trae (es un Gen-0 recién nacido), escoge uno al azar de la lista.
     const ojoSeleccionado = safeData.eye_type ? dicOjos[safeData.eye_type] : dicOjos[nombresOjos[Math.floor(Math.random() * nombresOjos.length)]];
     const bocaSeleccionada = safeData.mouth_type ? dicBocas[safeData.mouth_type] : dicBocas[nombresBocas[Math.floor(Math.random() * nombresBocas.length)]];
 
-    // Inyección de los Rasgos en el SVG
+    // Inyectamos todo en el SVG
     svgContent += `
         <g class="geno-ojos-parpado">
             ${ojoSeleccionado}
