@@ -1,5 +1,5 @@
 // =========================================
-// SVGEngine.js - MOTOR VISUAL HD (EXPRESIONES PvZ + BRILLOS DISCRETOS)
+// SVGEngine.js - MOTOR VISUAL HD (SISTEMA MODULAR ALEATORIO)
 // =========================================
 
 function generarSvgGeno(genesVisuales) {
@@ -22,16 +22,13 @@ function generarSvgGeno(genesVisuales) {
 
     const color = safeData.base_color || "#77DD77";
     const shape = safeData.body_shape || "frijol"; 
-    
-    // Capturamos la expresión (por defecto "cute")
-    const expressionType = safeData.expression_type || safeData.face || "cute";
 
     const rnd = Math.floor(Math.random() * 100000);
     const gradId = `grad-${shape}-${rnd}`;
     const shadowId = `shadow-${rnd}`;
     const bronzeId = `bronze-${rnd}`;
     
-    // TAMAÑO: 190px (El tamaño perfecto que elegimos)
+    // TAMAÑO: 190px
     const size = 190; 
     
     let svgContent = `<svg width="${size}" height="${size}" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
@@ -48,7 +45,6 @@ function generarSvgGeno(genesVisuales) {
                 97% { transform: scaleY(0.05); }
             }
             .geno-cuerpo { transform-origin: 80px 136px; animation: respirar 3.5s ease-in-out infinite; }
-            /* Se aplica el parpadeo solo a los ojos para no deformar la boca */
             .geno-ojos-parpado { transform-origin: 80px 85px; animation: parpadear 5s infinite; }
         </style>
     `;
@@ -113,7 +109,7 @@ function generarSvgGeno(genesVisuales) {
     svgContent += `<path d="${pathD}" fill="url(#${gradId})" />`;
     svgContent += `<path d="${shineD}" fill="#ffffff" opacity="0.4" />`;
 
-    // 4. DISTINTIVO DE COMUNIDAD (Sin Sombra)
+    // 4. DISTINTIVO DE COMUNIDAD
     if (shape === "hongo") {
         svgContent += `
             <g transform="translate(100, 75)">
@@ -124,83 +120,51 @@ function generarSvgGeno(genesVisuales) {
         `;
     }
 
-    // 5. NUEVO SISTEMA DE EXPRESIONES (Estilo PvZ)
-    const facialExpressions = {
-        cute: { // Base, amigable
-            eyes: `
-                <circle cx="60" cy="88" r="6" fill="#1a2a36"/>
-                <circle cx="100" cy="88" r="6" fill="#1a2a36"/>
-            `,
-            mouth: `<path d="M 67 108 Q 80 124 93 108" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`
-        },
-        mischievous: { // Pícara/Confiada (Ojos con párpados)
-            eyes: `
-                <path d="M 45 85 C 45 95, 60 95, 60 85 L 60 78 L 45 73 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/>
-                <circle cx="55" cy="85" r="4.5" fill="#1a2a36"/>
-                <circle cx="53" cy="83" r="1.5" fill="#ffffff"/>
-                <path d="M 75 85 C 75 95, 90 95, 90 85 L 90 73 L 75 78 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/>
-                <circle cx="80" cy="85" r="4.5" fill="#1a2a36"/>
-                <circle cx="78" cy="83" r="1.5" fill="#ffffff"/>
-            `,
-            mouth: `<path d="M 55 98 Q 70 105 85 93" fill="none" stroke="#1a2a36" stroke-width="3.5" stroke-linecap="round"/>`
-        },
-        shocked: { // Sorprendida/Asustada (Ojos muy abiertos)
-            eyes: `
-                <circle cx="60" cy="85" r="8" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
-                <circle cx="60" cy="85" r="3.5" fill="#1a2a36"/>
-                <circle cx="100" cy="85" r="8" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
-                <circle cx="100" cy="85" r="3.5" fill="#1a2a36"/>
-            `,
-            mouth: `<circle cx="80" cy="110" r="5" fill="#1a2a36"/>`
-        },
-        determination: { // Enojada/Combativa (Ojos en ángulo)
-            eyes: `
-                <line x1="48" y1="76" x2="67" y2="88" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
-                <line x1="112" y1="76" x2="93" y2="88" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
-                <circle cx="60" cy="92" r="6" fill="#1a2a36"/>
-                <circle cx="100" cy="92" r="6" fill="#1a2a36"/>
-            `,
-            mouth: `
-                <path d="M 64 108 Q 80 120 96 108" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
-                <polygon points="67,112 73,112 70,121" fill="#fff" stroke="#1a2a36" stroke-width="2"/>
-            `
-        },
-        derpy: { // Dispereja/Tonta (Un ojo más grande que otro)
-            eyes: `
-                <circle cx="58" cy="84" r="10" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
-                <circle cx="58" cy="84" r="4" fill="#1a2a36"/>
-                <circle cx="102" cy="88" r="6" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/>
-                <circle cx="102" cy="88" r="2.5" fill="#1a2a36"/>
-            `,
-            mouth: `<path d="M 64 108 Q 80 120 96 108" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`
-        },
-        sleepy: { // Cansada/Dormida
-            eyes: `
-                <line x1="51" y1="88" x2="70" y2="88" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
-                <line x1="109" y1="88" x2="90" y2="88" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>
-            `,
-            mouth: `<line x1="72" y1="108" x2="88" y2="108" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`
-        }
+    // ==========================================
+    // 5. SISTEMA MODULAR DE RASGOS (PIEZAS DE LEGO)
+    // ==========================================
+    
+    const dicOjos = {
+        base: `<circle cx="60" cy="85" r="6" fill="#1a2a36"/><circle cx="100" cy="85" r="6" fill="#1a2a36"/>`,
+        feliz: `<path d="M 50 85 Q 60 75 70 85" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/><path d="M 90 85 Q 100 75 110 85" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
+        enojado: `<line x1="48" y1="75" x2="67" y2="86" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/><circle cx="60" cy="90" r="4.5" fill="#1a2a36"/><line x1="112" y1="75" x2="93" y2="86" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/><circle cx="100" cy="90" r="4.5" fill="#1a2a36"/>`,
+        sorprendido: `<circle cx="60" cy="85" r="8" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/><circle cx="60" cy="85" r="3" fill="#1a2a36"/><circle cx="100" cy="85" r="8" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/><circle cx="100" cy="85" r="3" fill="#1a2a36"/>`,
+        derpy: `<circle cx="56" cy="85" r="9" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/><circle cx="56" cy="85" r="4" fill="#1a2a36"/><circle cx="104" cy="88" r="5" fill="#ffffff" stroke="#1a2a36" stroke-width="3"/><circle cx="104" cy="88" r="2" fill="#1a2a36"/>`,
+        cansado: `<line x1="51" y1="85" x2="70" y2="85" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/><line x1="109" y1="85" x2="90" y2="85" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
+        picaro: `<path d="M 45 85 C 45 95, 60 95, 60 85 L 60 78 L 45 73 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/><circle cx="55" cy="85" r="4" fill="#1a2a36"/><path d="M 75 85 C 75 95, 90 95, 90 85 L 90 73 L 75 78 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/><circle cx="80" cy="85" r="4" fill="#1a2a36"/>`,
+        cejas_gruesas: `<line x1="50" y1="72" x2="70" y2="72" stroke="#1a2a36" stroke-width="6" stroke-linecap="round"/><circle cx="60" cy="86" r="5" fill="#1a2a36"/><line x1="90" y1="72" x2="110" y2="72" stroke="#1a2a36" stroke-width="6" stroke-linecap="round"/><circle cx="100" cy="86" r="5" fill="#1a2a36"/>`,
+        puntos: `<circle cx="60" cy="85" r="3" fill="#1a2a36"/><circle cx="100" cy="85" r="3" fill="#1a2a36"/>`
     };
 
-    // Selector automático de expresión
-    let currentExp = facialExpressions.cute; // Valor por defecto
-    
-    // Si la carta tiene una expresión definida, la usa. Si no, usa unas por defecto según la forma.
-    if (expressionType === "angry") currentExp = facialExpressions.determination;
-    else if (expressionType === "surprised") currentExp = facialExpressions.shocked;
-    else if (expressionType === "sleepy") currentExp = facialExpressions.sleepy;
-    else if (expressionType === "derpy") currentExp = facialExpressions.derpy;
-    else if (shape === "hongo") currentExp = facialExpressions.mischievous; // Los hongos premium son pícaros
-    else if (shape === "gota") currentExp = facialExpressions.mischievous;  // Conservo la cara que ya tenías en la gota
-    
-    // Inyección de la Expresión en el SVG
+    const dicBocas = {
+        sonrisa: `<path d="M 67 105 Q 80 120 93 105" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
+        abierta: `<path d="M 67 105 Q 80 125 93 105 Z" fill="#1a2a36" stroke="#1a2a36" stroke-width="2" stroke-linejoin="round"/>`,
+        serio: `<line x1="72" y1="108" x2="88" y2="108" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
+        triste: `<path d="M 68 112 Q 80 100 92 112" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
+        sorpresa: `<circle cx="80" cy="110" r="5" fill="#1a2a36"/>`,
+        vampiro: `<path d="M 65 105 Q 80 115 95 105" fill="none" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/><polygon points="70,108 75,109 72.5,116" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/><polygon points="90,108 85,109 87.5,116" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/>`,
+        gato: `<path d="M 70 105 Q 75 112 80 105 Q 85 112 90 105" fill="none" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/>`,
+        torcida: `<path d="M 65 110 L 95 102" fill="none" stroke="#1a2a36" stroke-width="4.5" stroke-linecap="round"/>`,
+        diente: `<line x1="68" y1="105" x2="92" y2="105" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/><rect x="76" y="105" width="8" height="8" fill="#fff" stroke="#1a2a36" stroke-width="2"/>`
+    };
+
+    // --- LÓGICA DE ALEATORIEDAD GENÉTICA ---
+    // Extrae todos los nombres de los rasgos disponibles
+    const nombresOjos = Object.keys(dicOjos);
+    const nombresBocas = Object.keys(dicBocas);
+
+    // Si el Geno trae los genes "eye_type" y "mouth_type" guardados, los usa.
+    // Si NO los trae (es un Gen-0 recién nacido), escoge uno al azar de la lista.
+    const ojoSeleccionado = safeData.eye_type ? dicOjos[safeData.eye_type] : dicOjos[nombresOjos[Math.floor(Math.random() * nombresOjos.length)]];
+    const bocaSeleccionada = safeData.mouth_type ? dicBocas[safeData.mouth_type] : dicBocas[nombresBocas[Math.floor(Math.random() * nombresBocas.length)]];
+
+    // Inyección de los Rasgos en el SVG
     svgContent += `
         <g class="geno-ojos-parpado">
-            ${currentExp.eyes}
+            ${ojoSeleccionado}
         </g>
         <g class="geno-boca">
-            ${currentExp.mouth}
+            ${bocaSeleccionada}
         </g>
     `;
 
