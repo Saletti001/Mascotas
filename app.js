@@ -174,3 +174,84 @@ document.addEventListener('DOMContentLoaded', () => {
         btnCloseSwap.addEventListener('click', () => modalSwap.classList.add('hidden'));
     }
 });
+
+// =========================================
+// SISTEMA DE COLECCIÓN DE GENOS (EL NUEVO BOTÓN)
+// =========================================
+document.addEventListener('DOMContentLoaded', () => {
+    const btnShowGenos = document.getElementById('btn-show-genos');
+    const modalSwap = document.getElementById('geno-swap-modal');
+    const btnCloseSwap = document.getElementById('close-swap-modal');
+    const gridSwap = document.getElementById('geno-swap-grid');
+    const pedestal = document.getElementById('geno-container');
+
+    // Aquí están definidos los 6 modelos de prueba para tu colección
+    const genosDePrueba = [
+        { shape: "frijol", color: "#77DD77", face: "cute", name: "Frijol Base" },
+        { shape: "gota", color: "#4dd0e1", face: "angry", name: "Gota Agua" },
+        { shape: "circulo", color: "#fdfd96", face: "sleepy", name: "Círculo Luz" },
+        { shape: "cuadrado", color: "#b19cd9", face: "surprised", name: "Cubo Morado" },
+        { shape: "triangulo", color: "#ff6b6b", face: "angry", name: "Triángulo Fuego" },
+        { shape: "hongo", color: "#2E8B57", face: "cute", name: "Hongo Gen-0" } 
+    ];
+
+    // Acción para abrir la galería al pulsar el botón
+    if(btnShowGenos && modalSwap) {
+        btnShowGenos.addEventListener('click', () => {
+            modalSwap.classList.remove('hidden');
+            gridSwap.innerHTML = ''; // Limpiamos por si había algo antes
+
+            // Por cada Geno en la lista, creamos una tarjeta
+            genosDePrueba.forEach(geno => {
+                const card = document.createElement('div');
+                card.style.cssText = "background: #1a2a36; border: 1px solid #4dd0e1; border-radius: 10px; padding: 10px; cursor: pointer; text-align: center; transition: transform 0.2s;";
+                
+                // Le pedimos al SVGEngine que nos dibuje este Geno en miniatura
+                const svgCode = generarSvgGeno({
+                    body_shape: geno.shape,
+                    base_color: geno.color,
+                    face: geno.face
+                });
+
+                // Metemos el dibujo y el nombre en la tarjeta
+                card.innerHTML = `
+                    <div style="width: 80px; height: 80px; margin: 0 auto;">${svgCode}</div>
+                    <div style="font-size: 11px; font-weight: bold; margin-top: 8px; color: #fff;">${geno.name}</div>
+                `;
+
+                // LA MAGIA: Al hacer clic en la tarjeta, lo equipamos en el centro
+                card.addEventListener('click', () => {
+                    // 1. Reemplaza el Geno del pedestal
+                    if(pedestal) pedestal.innerHTML = `<div class="geno-idle">${svgCode}</div>`;
+                    
+                    // 2. Actualiza el nombre en el botón de Stats
+                    const nameEl = document.getElementById('geno-name');
+                    if(nameEl) nameEl.innerText = geno.name;
+                    
+                    // 3. Cierra la galería
+                    modalSwap.classList.add('hidden');
+                });
+                
+                // Efecto visual al pasar el ratón por encima
+                card.addEventListener('mouseover', () => {
+                    card.style.transform = 'scale(1.05)';
+                    card.style.borderColor = '#fff';
+                });
+                card.addEventListener('mouseout', () => {
+                    card.style.transform = 'scale(1)';
+                    card.style.borderColor = '#4dd0e1';
+                });
+
+                // Añadimos la tarjeta completa a la cuadrícula visual
+                gridSwap.appendChild(card);
+            });
+        });
+    }
+
+    // Acción para cerrar la galería con la "X" roja
+    if(btnCloseSwap && modalSwap) {
+        btnCloseSwap.addEventListener('click', () => {
+            modalSwap.classList.add('hidden');
+        });
+    }
+});
