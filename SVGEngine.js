@@ -1,5 +1,5 @@
 // =========================================
-// SVGEngine.js - VERSIÓN PREMIUM RECUPERADA Y CORREGIDA
+// SVGEngine.js - MOTOR VISUAL HD (16x16 PREMIUM - RECUPERADO)
 // =========================================
 
 function generarSvgGeno(genesVisuales) {
@@ -51,27 +51,52 @@ function generarSvgGeno(genesVisuales) {
         svgContent += `<g transform="translate(100, 75)"><rect x="0" y="0" width="34" height="24" rx="8" fill="url(#${bronzeId})" stroke="#1a2a36" stroke-width="2.5"/><polygon points="12,6 12,18 24,12" fill="#1a2a36" stroke="#1a2a36" stroke-width="1.5" stroke-linejoin="round"/><polygon points="13,7 13,17 22,12" fill="#ffffff" opacity="0.3"/></g>`;
     }
 
+    // ==========================================
+    // 5. DICCIONARIO 16x16 (CALIDAD PREMIUM PvZ)
+    // ==========================================
+    
     const dicOjos = {
+        // ORIGINALES RECUPERADOS (Con Brillos y Blancos)
         atento: `<circle cx="60" cy="85" r="7" fill="#1a2a36"/><circle cx="61.5" cy="83.5" r="2.5" fill="#fff"/><circle cx="100" cy="85" r="7" fill="#1a2a36"/><circle cx="101.5" cy="83.5" r="2.5" fill="#fff"/>`,
-        guisante: `<circle cx="55" cy="85" r="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="55" cy="85" r="4.5" fill="#1a2a36"/><circle cx="53" cy="83" r="1.5" fill="#ffffff"/><circle cx="105" cy="85" r="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="105" cy="85" r="4.5" fill="#1a2a36"/><circle cx="103" cy="83" r="1.5" fill="#ffffff"/>`,
+        guisante: `<circle cx="55" cy="85" r="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="55" cy="85" r="4.5" fill="#1a2a36"/><circle cx="105" cy="85" r="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="105" cy="85" r="4.5" fill="#1a2a36"/>`,
         nuez: `<circle cx="58" cy="85" r="8" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="60" cy="87" r="4.5" fill="#1a2a36"/><circle cx="102" cy="85" r="8" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="100" cy="86" r="4" fill="#1a2a36"/>`,
-        feroz: `<line x1="42" y1="78" x2="72" y2="72" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/><path d="M 48 84 A 10 10 0 0 0 68 84 L 68 80 L 48 80 Z" fill="#fff"/><circle cx="58" cy="85" r="4" fill="#1a2a36"/><line x1="88" y1="72" x2="118" y2="78" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/><path d="M 92 84 A 10 10 0 0 0 112 84 L 112 80 L 92 80 Z" fill="#fff"/><circle cx="102" cy="85" r="4" fill="#1a2a36"/>`,
-        picaro: `<path d="M 45 85 C 45 95, 60 95, 60 85 L 60 78 L 45 73 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/><circle cx="55" cy="85" r="4.5" fill="#1a2a36"/><circle cx="53" cy="83" r="1.5" fill="#ffffff"/><path d="M 75 85 C 75 95, 90 95, 90 85 L 90 73 L 75 78 Z" fill="#ffffff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/><circle cx="80" cy="85" r="4.5" fill="#1a2a36"/><circle cx="78" cy="83" r="1.5" fill="#ffffff"/>`,
+        feroz: `<path d="M 46 80 L 68 76 L 68 84 A 10 10 0 0 1 48 84 Z" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="58" cy="85" r="4" fill="#1a2a36"/><line x1="42" y1="78" x2="72" y2="72" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/><path d="M 114 80 L 92 76 L 92 84 A 10 10 0 0 0 112 84 Z" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="102" cy="85" r="4" fill="#1a2a36"/><line x1="88" y1="72" x2="118" y2="78" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
+        picaro: `<path d="M 48 82 L 70 82 L 70 85 A 11 11 0 0 1 48 85 Z" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="59" cy="86" r="4" fill="#1a2a36"/><line x1="45" y1="81" x2="73" y2="81" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/><path d="M 90 82 L 112 82 L 112 85 A 11 11 0 0 1 90 85 Z" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="101" cy="86" r="4" fill="#1a2a36"/><line x1="87" y1="81" x2="115" y2="81" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/>`,
         derpy: `<circle cx="56" cy="85" r="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="56" cy="85" r="4" fill="#1a2a36"/><circle cx="104" cy="88" r="6" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="104" cy="88" r="2.5" fill="#1a2a36"/>`,
         furia: `<circle cx="58" cy="88" r="10" fill="#ff4d4d" stroke="#1a2a36" stroke-width="3"/><circle cx="58" cy="88" r="4" fill="#1a2a36"/><line x1="45" y1="70" x2="70" y2="80" stroke="#1a2a36" stroke-width="6" stroke-linecap="round"/><circle cx="102" cy="88" r="10" fill="#ff4d4d" stroke="#1a2a36" stroke-width="3"/><circle cx="102" cy="88" r="4" fill="#1a2a36"/><line x1="115" y1="70" x2="90" y2="80" stroke="#1a2a36" stroke-width="6" stroke-linecap="round"/>`,
         cicatriz: `<line x1="48" y1="88" x2="72" y2="88" stroke="#1a2a36" stroke-width="6" stroke-linecap="round"/><line x1="52" y1="82" x2="68" y2="94" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/><circle cx="102" cy="85" r="9" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="102" cy="85" r="4" fill="#1a2a36"/><line x1="85" y1="72" x2="115" y2="80" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
-        gafas: `<circle cx="60" cy="85" r="12" fill="#fff" fill-opacity="0.3" stroke="#1a2a36" stroke-width="3"/><circle cx="60" cy="85" r="4" fill="#1a2a36"/><circle cx="100" cy="85" r="12" fill="#fff" fill-opacity="0.3" stroke="#1a2a36" stroke-width="3"/><circle cx="100" cy="85" r="4" fill="#1a2a36"/><line x1="72" y1="85" x2="88" y2="85" stroke="#1a2a36" stroke-width="3"/>`,
-        monoculo: `<circle cx="60" cy="85" r="12" fill="none" stroke="#d4af37" stroke-width="4"/><line x1="60" y1="73" x2="60" y2="60" stroke="#d4af37" stroke-width="2"/><circle cx="100" cy="85" r="8" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="100" cy="85" r="4" fill="#1a2a36"/><circle cx="100" cy="85" r="1.5" fill="#ff4d4d"/>`,
-        felino: `<ellipse cx="60" cy="85" rx="8" ry="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><rect x="59" y="80" width="2" height="10" fill="#1a2a36"/><ellipse cx="100" cy="85" rx="8" ry="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><rect x="99" y="80" width="2" height="10" fill="#1a2a36"/>`
+        
+        // NUEVOS EXTRAS (Siguiendo calidad Premium)
+        ojo_X: `<g stroke="#1a2a36" stroke-width="5" stroke-linecap="round"><line x1="52" y1="80" x2="68" y2="96"/><line x1="52" y1="96" x2="68" y2="80"/><line x1="92" y1="80" x2="108" y2="96"/><line x1="92" y1="96" x2="108" y2="80"/></g>`,
+        cyber: `<rect x="45" y="80" width="70" height="12" fill="#00ffff" opacity="0.6"/><rect x="45" y="80" width="25" height="12" fill="#fff" stroke="#1a2a36" stroke-width="3"/><rect x="90" y="80" width="25" height="12" fill="#fff" stroke="#1a2a36" stroke-width="3"/>`,
+        ninja: `<rect x="25" y="75" width="110" height="20" fill="#1a2a36" rx="5"/><circle cx="60" cy="85" r="6" fill="#fff"/><circle cx="60" cy="85" r="3" fill="#1a2a36"/><circle cx="100" cy="85" r="6" fill="#fff"/><circle cx="100" cy="85" r="3" fill="#1a2a36"/>`,
+        triste_pvz: `<path d="M 50 90 Q 60 75 70 90" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/><circle cx="60" cy="95" r="3" fill="#00ffff"/><path d="M 90 90 Q 100 75 110 90" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/><circle cx="100" cy="95" r="3" fill="#00ffff"/>`,
+        gafas: `<circle cx="60" cy="85" r="12" fill="none" stroke="#1a2a36" stroke-width="4"/><circle cx="100" cy="85" r="12" fill="none" stroke="#1a2a36" stroke-width="4"/><line x1="72" y1="85" x2="88" y2="85" stroke="#1a2a36" stroke-width="4"/>`,
+        monoculo: `<circle cx="60" cy="85" r="12" fill="none" stroke="#d4af37" stroke-width="4"/><line x1="60" y1="73" x2="60" y2="60" stroke="#d4af37" stroke-width="2"/><circle cx="100" cy="85" r="7" fill="#1a2a36"/><circle cx="101.5" cy="83.5" r="2.5" fill="#fff"/>`,
+        felino: `<ellipse cx="60" cy="85" rx="8" ry="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><rect x="59" y="80" width="2" height="10" fill="#1a2a36"/><ellipse cx="100" cy="85" rx="8" ry="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><rect x="99" y="80" width="2" height="10" fill="#1a2a36"/>`,
+        hipnotico: `<circle cx="60" cy="85" r="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="60" cy="85" r="6" fill="none" stroke="#e834eb" stroke-width="2"/><circle cx="100" cy="85" r="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="100" cy="85" r="6" fill="none" stroke="#e834eb" stroke-width="2"/>`
     };
 
     const dicBocas = {
+        // ORIGINALES RECUPERADOS (Con Lenguas y Dientes Integrados)
         base: `<path d="M 67 108 Q 80 124 93 108" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
         canon: `<ellipse cx="80" cy="112" rx="10" ry="10" fill="#1a2a36"/><ellipse cx="80" cy="112" rx="6" ry="6" fill="#000"/>`,
         radiante: `<path d="M 62 102 C 62 125, 98 125, 98 102 Z" fill="#1a2a36" stroke="#1a2a36" stroke-width="3"/><path d="M 70 112 C 70 122, 90 122, 90 112 Z" fill="#ff6b6b"/>`,
         depredador: `<path d="M 52 105 Q 80 118 108 105" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/><polygon points="60,105 65,114 70,107" fill="#fff" stroke="#1a2a36" stroke-width="2"/><polygon points="75,108 80,117 85,109" fill="#fff" stroke="#1a2a36" stroke-width="2"/><polygon points="90,107 95,114 100,105" fill="#fff" stroke="#1a2a36" stroke-width="2"/>`,
         grunido: `<path d="M 60 102 Q 80 118 100 102 Z" fill="#1a2a36"/><polygon points="65,103 70,111 75,104" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/><polygon points="95,103 90,111 85,104" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/>`,
-        vampiro_3_corregida: `<path d="M 62 108 L 98 108" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/><polygon points="68,108 72,116 76,108" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/><polygon points="78,108 82,118 86,108" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/><polygon points="88,108 92,116 96,108" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/>`
+        apretado: `<rect x="65" y="105" width="30" height="10" rx="3" fill="#fff" stroke="#1a2a36" stroke-width="3"/><line x1="65" y1="110" x2="95" y2="110" stroke="#1a2a36" stroke-width="1.5"/><line x1="75" y1="105" x2="75" y2="115" stroke="#1a2a36" stroke-width="1.5"/><line x1="85" y1="105" x2="85" y2="115" stroke="#1a2a36" stroke-width="1.5"/>`,
+        torcida: `<path d="M 65 112 L 95 104" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
+        vampiro_3: `<path d="M 62 108 L 98 108" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/><polygon points="68,108 72,116 76,108" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/><polygon points="78,108 82,118 86,108" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/><polygon points="88,108 92,116 96,108" fill="#fff" stroke="#1a2a36" stroke-width="1.5"/>`,
+
+        // NUEVOS EXTRAS
+        O_sorpresa: `<circle cx="80" cy="110" r="6" fill="none" stroke="#1a2a36" stroke-width="4"/>`,
+        mueca_cat: `<path d="M 70 108 Q 75 115 80 108 Q 85 115 90 108" fill="none" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/>`,
+        recta_seria: `<line x1="70" y1="110" x2="90" y2="110" stroke="#1a2a36" stroke-width="7" stroke-linecap="round"/>`,
+        boca_X: `<line x1="75" y1="105" x2="85" y2="115" stroke="#1a2a36" stroke-width="4"/><line x1="85" y1="105" x2="75" y2="115" stroke="#1a2a36" stroke-width="4"/>`,
+        labios: `<path d="M 70 110 Q 80 102 90 110 Q 80 118 70 110" fill="#ff6b6b" stroke="#1a2a36" stroke-width="2"/>`,
+        diente_unico: `<path d="M 70 108 H 90" stroke="#1a2a36" stroke-width="4"/><rect x="76" y="108" width="8" height="7" fill="#fff" stroke="#1a2a36" stroke-width="2"/>`,
+        triste_pvz: `<path d="M 68 115 Q 80 103 92 115" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
+        barba: `<path d="M 65 105 Q 80 125 95 105" fill="#1a2a36" opacity="0.8"/>`
     };
 
     const nombresOjos = Object.keys(dicOjos);
