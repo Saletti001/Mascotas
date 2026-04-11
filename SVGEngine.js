@@ -10,7 +10,7 @@ function generarSvgGeno(genesVisuales) {
     }
 
     const color = safeData.base_color || "#77DD77";
-    const shape = safeData.body_shape || "frijol"; 
+    const shape = safeData.body_shape || "hongo"; // Puse "hongo" por defecto para pruebas
     const rnd = Math.floor(Math.random() * 100000);
     const gradId = `grad-${shape}-${rnd}`;
     const shadowId = `shadow-${rnd}`;
@@ -59,32 +59,38 @@ function generarSvgGeno(genesVisuales) {
         case "hongo": 
             const talloOrganico = "M 72 100 C 72 120 60 130 55 135 C 50 148 65 150 80 150 C 95 150 110 148 105 135 C 100 130 88 120 88 100 Z";
             svgContent += `<path d="${talloOrganico}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/><path d="${talloOrganico}" fill="url(#${gradId})" />`;
+            // Sombrero del hongo
             pathD = "M 15 90 C 15 20, 145 20, 145 90 C 145 110, 120 115, 80 115 C 40 115, 15 110, 15 90 Z"; 
-            // Reflejo ajustado (más pequeño y alejado del borde)
+            // Reflejo de luz corregido (no toca el borde)
             shineD = "M 40 55 Q 50 40 70 40 Q 55 48 40 55 Z"; 
             break;
         case "circulo": pathD = "M 24 88 A 56 56 0 1 0 136 88 A 56 56 0 1 0 24 88 Z"; shineD = "M 40 72 A 40 40 0 0 1 88 40 A 48 48 0 0 0 40 96 Z"; break;
         case "cuadrado": pathD = "M 32 48 Q 32 32 48 32 L 112 32 Q 128 32 128 48 L 128 112 Q 128 128 112 128 L 48 128 Q 32 128 32 112 Z"; shineD = "M 45 48 Q 45 45 56 45 L 96 45 Q 64 64 45 88 Z"; break;
         case "triangulo": pathD = "M 80 24 Q 88 24 96 40 L 136 120 Q 144 136 120 136 L 40 136 Q 16 136 24 120 L 64 40 Q 72 24 80 24 Z"; shineD = "M 72 48 L 48 104 Q 56 80 80 56 Z"; break;
         default: 
-            // Forma de Frijol Premium (más suave, orgánica y redondita)
+            // Forma de Frijol Premium
             pathD = "M 65 25 C 110 20, 135 50, 135 85 C 135 125, 105 145, 75 145 C 35 145, 25 115, 35 75 C 40 50, 35 30, 65 25 Z"; 
             shineD = "M 45 48 Q 60 38 75 40 Q 55 52 50 75 Q 40 60 45 48 Z"; 
             break;
     }
 
+    // Se dibuja el cuerpo principal
     svgContent += `<path d="${pathD}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round" filter="url(#${shadowId})"/><path d="${pathD}" fill="url(#${gradId})" /><path d="${shineD}" fill="#ffffff" opacity="0.4" />`;
 
     if (shape === "hongo") {
-        // Manchas orgánicas de hongo (reemplaza el antiguo logo de YT)
+        // Manchas orgánicas de hongo (ahora completamente dentro de los bordes)
         svgContent += `
             <g fill="#d5d0a9" opacity="0.6">
-                <circle cx="35" cy="85" r="6" />
-                <ellipse cx="48" cy="65" rx="8" ry="5" transform="rotate(-20 48 65)" />
-                <ellipse cx="115" cy="45" rx="12" ry="8" transform="rotate(15 115 45)" />
-                <circle cx="130" cy="70" r="5" />
-                <ellipse cx="118" cy="90" rx="7" ry="4" transform="rotate(-10 118 90)" />
-                <circle cx="95" cy="30" r="5" />
+                <ellipse cx="32" cy="75" rx="7" ry="5" transform="rotate(-15 32 75)" />
+                <circle cx="45" cy="62" r="6" />
+                <circle cx="38" cy="90" r="4.5" />
+                
+                <ellipse cx="120" cy="55" rx="10" ry="6" transform="rotate(25 120 55)" />
+                <ellipse cx="128" cy="75" rx="6" ry="8" transform="rotate(-10 128 75)" />
+                <circle cx="108" cy="40" r="5" />
+                <circle cx="112" cy="88" r="4" />
+                
+                <ellipse cx="85" cy="35" rx="8" ry="4" transform="rotate(-5 85 35)" />
             </g>
         `;
     }
@@ -399,6 +405,6 @@ furia_ceno_boca_premium: `<path d="M 60 102 Q 80 118 100 102 Z" fill="#1a2a36" s
 
     svgContent += `</g></svg>`;
     
-    // AHORA DEVOLVEMOS UN OBJETO CON EL SVG Y LOS NOMBRES
+    // Retorno para producción
     return svgContent;
 }
