@@ -57,11 +57,12 @@ function generarSvgGeno(genesVisuales) {
             .anim-flotar { animation: respirar 3s ease-in-out infinite; }
         </style>
         
-        <g class="g-cuerpo" transform="translate(80, ${safeAnclaje.espaldaY})">
-            ${wing}
-        </g>
-
         <g class="g-cuerpo">
+            
+            <g transform="translate(${safeAnclaje.espaldaX}, ${safeAnclaje.espaldaY})">
+                ${wing}
+            </g>
+
             ${extras}
             <path d="${pathD}" fill="${color}" stroke="#1a2a36" stroke-width="5"/>
             <path d="${pathD}" fill="url(#${gradId})"/>
@@ -69,6 +70,7 @@ function generarSvgGeno(genesVisuales) {
             <g class="g-ojos">${ojo}</g>
             <g class="g-boca">${boca}</g>
             <g transform="translate(${safeAnclaje.cabezaX}, ${safeAnclaje.cabezaY})">${hat}</g>
+            
         </g>
     </svg>`;
 }
