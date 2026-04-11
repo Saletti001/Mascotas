@@ -9,12 +9,10 @@ function generarSvgGeno(genesVisuales) {
     const rnd = Math.floor(Math.random() * 100000);
     const gradId = `grad-${rnd}`;
 
-    // 1. Cargamos el anclaje base del diccionario
     let safeAnclaje = (typeof anclajes !== 'undefined' && anclajes[shape]) 
         ? {...anclajes[shape]} 
         : { cabezaX: 80, cabezaY: 25, espaldaX: 80, espaldaY: 80 };
 
-    // 2. MAGIA GENÉTICA: Los mutantes sobrescriben el anclaje con su ADN
     if (safeData.mutated_espaldaX) safeAnclaje.espaldaX = safeData.mutated_espaldaX;
     if (safeData.mutated_espaldaY) safeAnclaje.espaldaY = safeData.mutated_espaldaY;
     if (safeData.mutated_cabezaX) safeAnclaje.cabezaX = safeData.mutated_cabezaX;
@@ -63,9 +61,12 @@ function generarSvgGeno(genesVisuales) {
         <style>
             @keyframes respirar { 0%, 100% { transform: scale(1); } 50% { transform: scaleY(0.97) scaleX(1.02); } }
             @keyframes parpadear { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(0.05); } }
+            @keyframes propulsor { 0% { transform: scaleY(1); opacity: 0.9; } 100% { transform: scaleY(1.5); opacity: 1; } }
+            
             .g-cuerpo { transform-origin: 80px 136px; animation: respirar 3.5s ease-in-out infinite; }
             .g-ojos { transform-origin: 80px 85px; animation: parpadear 5s infinite; }
             .anim-flotar { animation: respirar 3s ease-in-out infinite; }
+            .anim-fuego { animation: propulsor 0.1s infinite alternate ease-in-out; }
         </style>
         
         <g class="g-cuerpo">

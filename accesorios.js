@@ -3,7 +3,6 @@
 // =========================================
 
 const anclajes = {
-    // Al frijol le sumamos +8 en X para compensar su asimetría hacia la derecha
     frijol:    { cabezaX: 80, cabezaY: 25, espaldaX: 88, espaldaY: 80 }, 
     hongo:     { cabezaX: 80, cabezaY: 45, espaldaX: 80, espaldaY: 90 }, 
     gota:      { cabezaX: 80, cabezaY: 35, espaldaX: 80, espaldaY: 85 }, 
@@ -21,26 +20,29 @@ const dicSombreros = {
 
 const dicAlas = {
     ninguno: ``,
-    
     alas_murcielago: `
         <path d="M 0 -5 C -20 -8, -35 -10, -50 -10 Q -70 -40 -90 -50 Q -75 -15 -95 0 Q -70 0 -85 20 Q -60 10 -50 10 C -35 10, -20 8, 0 5 Z" fill="#4a5568" stroke="#0f172a" stroke-width="3"/>
-        
         <path d="M 0 -5 C 20 -8, 35 -10, 50 -10 Q 70 -40 90 -50 Q 75 -15 95 0 Q 70 0 85 20 Q 60 10 50 10 C 35 10, 20 8, 0 5 Z" fill="#2d3748" stroke="#0f172a" stroke-width="3" opacity="0.8"/>
     `,
-    
     jetpack: `
         <rect x="-60" y="-10" width="120" height="20" rx="5" fill="#4a5568" stroke="#1a2a36" stroke-width="3"/>
         
         <g transform="translate(-75, -15)">
             <rect width="25" height="40" rx="4" fill="#718096" stroke="#1a2a36" stroke-width="3"/>
             <rect x="7" y="5" width="11" height="8" rx="2" fill="#ef4444"/>
-            <path d="M 5 40 L 12 55 L 20 40 Z" fill="#f97316" class="anim-flotar"/>
+            <g class="anim-fuego" style="transform-origin: 12px 40px;">
+                <path d="M 5 40 L 12 55 L 20 40 Z" fill="#f97316"/>
+                <path d="M 8 40 L 12 50 L 16 40 Z" fill="#facc15"/>
+            </g>
         </g>
         
         <g transform="translate(50, -15)">
             <rect width="25" height="40" rx="4" fill="#718096" stroke="#1a2a36" stroke-width="3"/>
             <rect x="7" y="5" width="11" height="8" rx="2" fill="#ef4444"/>
-            <path d="M 5 40 L 12 55 L 20 40 Z" fill="#f97316" class="anim-flotar"/>
+            <g class="anim-fuego" style="transform-origin: 12px 40px;">
+                <path d="M 5 40 L 12 55 L 20 40 Z" fill="#f97316"/>
+                <path d="M 8 40 L 12 50 L 16 40 Z" fill="#facc15"/>
+            </g>
         </g>
     `
 };
