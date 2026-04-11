@@ -19,7 +19,33 @@ function generarSvgGeno(genesVisuales) {
     
     let svgContent = `<svg width="${size}" height="${size}" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
     
-    svgContent += `<style>@keyframes respirar { 0%, 100% { transform: scaleY(1) scaleX(1); } 50% { transform: scaleY(0.97) scaleX(1.02); } }@keyframes parpadear { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(0.05); } }.geno-cuerpo { transform-origin: 80px 136px; animation: respirar 3.5s ease-in-out infinite; }.geno-ojos-parpado { transform-origin: 80px 85px; animation: parpadear 5s infinite; }</style>`;
+    svgContent += `
+        <style>
+            @keyframes respirar { 0%, 100% { transform: scaleY(1) scaleX(1); } 50% { transform: scaleY(0.97) scaleX(1.02); } }
+            @keyframes parpadear { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(0.05); } }
+            
+            /* NUEVAS ANIMACIONES DE BOCA */
+            @keyframes hablar { 
+                0%, 100% { transform: scaleY(1) translateY(0); } 
+                50% { transform: scaleY(1.3) translateY(2px); } 
+            }
+            @keyframes rugir { 
+                0%, 100% { transform: scale(1) translateX(0); } 
+                25% { transform: scale(1.05) translateX(-1px); }
+                75% { transform: scale(1.05) translateX(1px); }
+            }
+
+            .geno-cuerpo { transform-origin: 80px 136px; animation: respirar 3.5s ease-in-out infinite; }
+            .geno-ojos-parpado { transform-origin: 80px 85px; animation: parpadear 5s infinite; }
+            
+            /* El transform-origin (80px 110px) es el centro exacto de donde suelen estar las bocas */
+            .geno-boca { transform-origin: 80px 110px; }
+            
+            /* Clases que activan las animaciones */
+            .boca-hablando { animation: hablar 0.2s infinite; }
+            .boca-rugiendo { animation: rugir 0.1s infinite; }
+        </style>
+    `;
 
     svgContent += `<defs><linearGradient id="${gradId}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#000000" stop-opacity="0" /><stop offset="100%" stop-color="#000000" stop-opacity="0.25" /></linearGradient><linearGradient id="${bronzeId}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#c58f65" /><stop offset="50%" stop-color="#e8cba5" /><stop offset="100%" stop-color="#8b5735" /></linearGradient><filter id="${shadowId}" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="8" stdDeviation="4" flood-opacity="0.3" /></filter></defs>`;
 
