@@ -59,7 +59,10 @@ function generarSvgGeno(genesVisuales) {
         case "hongo": 
             const talloOrganico = "M 72 100 C 72 120 60 130 55 135 C 50 148 65 150 80 150 C 95 150 110 148 105 135 C 100 130 88 120 88 100 Z";
             svgContent += `<path d="${talloOrganico}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/><path d="${talloOrganico}" fill="url(#${gradId})" />`;
-            pathD = "M 15 90 C 15 20, 145 20, 145 90 C 145 110, 120 115, 80 115 C 40 115, 15 110, 15 90 Z"; shineD = "M 35 60 Q 45 38 70 38 Q 50 48 35 60 Z"; break;
+            pathD = "M 15 90 C 15 20, 145 20, 145 90 C 145 110, 120 115, 80 115 C 40 115, 15 110, 15 90 Z"; 
+            // Reflejo ajustado (más pequeño y alejado del borde)
+            shineD = "M 40 55 Q 50 40 70 40 Q 55 48 40 55 Z"; 
+            break;
         case "circulo": pathD = "M 24 88 A 56 56 0 1 0 136 88 A 56 56 0 1 0 24 88 Z"; shineD = "M 40 72 A 40 40 0 0 1 88 40 A 48 48 0 0 0 40 96 Z"; break;
         case "cuadrado": pathD = "M 32 48 Q 32 32 48 32 L 112 32 Q 128 32 128 48 L 128 112 Q 128 128 112 128 L 48 128 Q 32 128 32 112 Z"; shineD = "M 45 48 Q 45 45 56 45 L 96 45 Q 64 64 45 88 Z"; break;
         case "triangulo": pathD = "M 80 24 Q 88 24 96 40 L 136 120 Q 144 136 120 136 L 40 136 Q 16 136 24 120 L 64 40 Q 72 24 80 24 Z"; shineD = "M 72 48 L 48 104 Q 56 80 80 56 Z"; break;
@@ -73,7 +76,17 @@ function generarSvgGeno(genesVisuales) {
     svgContent += `<path d="${pathD}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round" filter="url(#${shadowId})"/><path d="${pathD}" fill="url(#${gradId})" /><path d="${shineD}" fill="#ffffff" opacity="0.4" />`;
 
     if (shape === "hongo") {
-        svgContent += `<g transform="translate(100, 75)"><rect x="0" y="0" width="34" height="24" rx="8" fill="url(#${bronzeId})" stroke="#1a2a36" stroke-width="2.5"/><polygon points="12,6 12,18 24,12" fill="#1a2a36" stroke="#1a2a36" stroke-width="1.5" stroke-linejoin="round"/><polygon points="13,7 13,17 22,12" fill="#ffffff" opacity="0.3"/></g>`;
+        // Manchas orgánicas de hongo (reemplaza el antiguo logo de YT)
+        svgContent += `
+            <g fill="#d5d0a9" opacity="0.6">
+                <circle cx="35" cy="85" r="6" />
+                <ellipse cx="48" cy="65" rx="8" ry="5" transform="rotate(-20 48 65)" />
+                <ellipse cx="115" cy="45" rx="12" ry="8" transform="rotate(15 115 45)" />
+                <circle cx="130" cy="70" r="5" />
+                <ellipse cx="118" cy="90" rx="7" ry="4" transform="rotate(-10 118 90)" />
+                <circle cx="95" cy="30" r="5" />
+            </g>
+        `;
     }
 
     // ==========================================
