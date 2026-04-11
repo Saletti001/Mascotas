@@ -53,19 +53,22 @@ function generarSvgGeno(genesVisuales) {
         <style>
             @keyframes respirar { 0%, 100% { transform: scale(1); } 50% { transform: scaleY(0.97) scaleX(1.02); } }
             @keyframes parpadear { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(0.05); } }
-            @keyframes flotar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
             .g-cuerpo { transform-origin: 80px 136px; animation: respirar 3.5s ease-in-out infinite; }
             .g-ojos { transform-origin: 80px 85px; animation: parpadear 5s infinite; }
-            .anim-flotar { animation: flotar 3s ease-in-out infinite; }
+            .anim-flotar { animation: respirar 3s ease-in-out infinite; }
         </style>
-        <g class="g-cuerpo" transform="translate(${safeAnclaje.espaldaX}, ${safeAnclaje.espaldaY})">${wing}</g>
+        
+        <g class="g-cuerpo" transform="translate(80, ${safeAnclaje.espaldaY})">
+            ${wing}
+        </g>
+
         <g class="g-cuerpo">
             ${extras}
             <path d="${pathD}" fill="${color}" stroke="#1a2a36" stroke-width="5"/>
             <path d="${pathD}" fill="url(#${gradId})"/>
             <path d="${shineD}" fill="#fff" opacity="0.4"/>
             <g class="g-ojos">${ojo}</g>
-            ${boca}
+            <g class="g-boca">${boca}</g>
             <g transform="translate(${safeAnclaje.cabezaX}, ${safeAnclaje.cabezaY})">${hat}</g>
         </g>
     </svg>`;
