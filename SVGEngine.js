@@ -10,7 +10,7 @@ function generarSvgGeno(genesVisuales) {
     }
 
     const color = safeData.base_color || "#77DD77";
-    const formasPosibles = ["hongo", "frijol", "gota"];
+    const formasPosibles = ["hongo", "frijol", "gota", "triangulo", "circulo", "cuadrado"];
     const shape = safeData.body_shape || formasPosibles[Math.floor(Math.random() * formasPosibles.length)];
     
     const rnd = Math.floor(Math.random() * 100000);
@@ -19,8 +19,11 @@ function generarSvgGeno(genesVisuales) {
     const bronzeId = `bronze-${rnd}`;
     const size = 190; 
 
-    // Leemos del diccionario de anclajes (que vive en diccionarios.js)
-    const anclajeActual = (typeof anclajes !== 'undefined' && anclajes[shape]) ? anclajes[shape] : { cabezaX: 80, cabezaY: 25, espaldaX: 35, espaldaY: 80 };
+    // 1. LEER ANCLAJES (Desde diccionarios.js o fallback de seguridad)
+    // Se ajustaron los valores Y de gota y triangulo para que el sombrero baje un poco
+    const anclajeActual = (typeof anclajes !== 'undefined' && anclajes[shape]) 
+        ? anclajes[shape] 
+        : { cabezaX: 80, cabezaY: 25, espaldaX: 35, espaldaY: 80 };
     
     let svgContent = `<svg width="${size}" height="${size}" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">`;
     
@@ -43,7 +46,7 @@ function generarSvgGeno(genesVisuales) {
 
     svgContent += `<defs><linearGradient id="${gradId}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#000000" stop-opacity="0" /><stop offset="100%" stop-color="#000000" stop-opacity="0.25" /></linearGradient><linearGradient id="${bronzeId}" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#c58f65" /><stop offset="50%" stop-color="#e8cba5" /><stop offset="100%" stop-color="#8b5735" /></linearGradient><filter id="${shadowId}" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="8" stdDeviation="4" flood-opacity="0.3" /></filter></defs>`;
 
-    // SORTEO DE PIEZAS (Verificamos que los diccionarios existan)
+    // 2. SORTEO DE PIEZAS (Usando los diccionarios cargados en el index)
     const safeOjos = (typeof dicOjos !== 'undefined') ? dicOjos : { base: `<circle cx="60" cy="85" r="5"/><circle cx="100" cy="85" r="5"/>` };
     const safeBocas = (typeof dicBocas !== 'undefined') ? dicBocas : { base: `<path d="M 70 110 H 90" stroke="#000" stroke-width="3"/>` };
     const safeSombreros = (typeof dicSombreros !== 'undefined') ? dicSombreros : { ninguno: `` };
@@ -77,7 +80,8 @@ function generarSvgGeno(genesVisuales) {
     let pathD = ""; let shineD = ""; 
     switch (shape) {
         case "gota": 
-            pathD = "M 80 24 Q 28 80 28 108 A 52 52 0 0 0 132 108 Q 132 80 80 24 Z"; shineD = "M 65 50 Q 55 65 58 80 Q 62 70 70 55 Z"; break;
+            pathD = "M 80 24 Q 28 80 28 108 A 52 52 0 0 0 132 108 Q 132 80 80 24 Z"; 
+            shineD = "M 65 50 Q 55 65 58 80 Q 62 70 70 55 Z"; break;
         case "hongo": 
             const talloOrganico = "M 72 100 C 72 120 60 130 55 135 C 50 148 65 150 80 150 C 95 150 110 148 105 135 C 100 130 88 120 88 100 Z";
             svgContent += `<path d="${talloOrganico}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round"/><path d="${talloOrganico}" fill="url(#${gradId})" />`;
@@ -88,7 +92,6 @@ function generarSvgGeno(genesVisuales) {
         case "cuadrado": pathD = "M 32 48 Q 32 32 48 32 L 112 32 Q 128 32 128 48 L 128 112 Q 128 128 112 128 L 48 128 Q 32 128 32 112 Z"; shineD = "M 45 48 Q 45 45 56 45 L 96 45 Q 64 64 45 88 Z"; break;
         case "triangulo": pathD = "M 80 24 Q 88 24 96 40 L 136 120 Q 144 136 120 136 L 40 136 Q 16 136 24 120 L 64 40 Q 72 24 80 24 Z"; shineD = "M 72 48 L 48 104 Q 56 80 80 56 Z"; break;
         default: 
-            // Frijol Premium curvo
             pathD = "M 65 25 C 110 20, 135 50, 135 85 C 135 125, 105 145, 75 145 C 35 145, 25 115, 35 75 C 40 50, 35 30, 65 25 Z"; 
             shineD = "M 45 48 Q 60 38 75 40 Q 55 52 50 75 Q 40 60 45 48 Z"; 
             break;
@@ -96,14 +99,12 @@ function generarSvgGeno(genesVisuales) {
 
     svgContent += `<path d="${pathD}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round" filter="url(#${shadowId})"/><path d="${pathD}" fill="url(#${gradId})" /><path d="${shineD}" fill="#ffffff" opacity="0.4" />`;
 
-    // Manchas del hongo
+    // Manchas del hongo (Corregidas: solo 5 y dentro)
     if (shape === "hongo") {
         svgContent += `
             <g fill="#d5d0a9" opacity="0.6">
-                <circle cx="40" cy="70" r="6" />
-                <ellipse cx="60" cy="45" rx="7" ry="4" transform="rotate(-20 60 45)" />
-                <circle cx="100" cy="50" r="7" />
-                <ellipse cx="120" cy="75" rx="5" ry="8" transform="rotate(15 120 75)" />
+                <circle cx="40" cy="70" r="6" /><ellipse cx="60" cy="45" rx="7" ry="4" transform="rotate(-20 60 45)" />
+                <circle cx="100" cy="50" r="7" /><ellipse cx="120" cy="75" rx="5" ry="8" transform="rotate(15 120 75)" />
                 <circle cx="50" cy="90" r="4" />
             </g>
         `;
@@ -115,7 +116,9 @@ function generarSvgGeno(genesVisuales) {
         <g class="geno-boca">${bocaSeleccionada}</g>
     `;
 
-    // CAPA 4: FRENTE (Sombreros/Coronas)
+    // CAPA 4: FRENTE (Sombreros/Coronas/Cuernos)
+    // El transform-origin del grupo 'geno-accesorio-cabeza' se hereda de 'geno-cuerpo' 
+    // para que se mueva al respirar.
     svgContent += `
         <g class="geno-accesorio-cabeza" transform="translate(${anclajeActual.cabezaX}, ${anclajeActual.cabezaY})">
             ${sombreroSeleccionado}
@@ -123,7 +126,6 @@ function generarSvgGeno(genesVisuales) {
     `;
 
     svgContent += `</g>`; // Cierra geno-cuerpo
-
     svgContent += `</svg>`;
     
     return svgContent;

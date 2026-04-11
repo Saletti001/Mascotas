@@ -1,27 +1,35 @@
-// =========================================
-// diccionarios.js - Base de Datos Genética de Genos
-// =========================================
-
 // ==========================================
 // 1. EL MAPA DE ANCLAJES (Sockets)
 // ==========================================
 const anclajes = {
     frijol:    { cabezaX: 80, cabezaY: 25, espaldaX: 35, espaldaY: 80 },
     hongo:     { cabezaX: 80, cabezaY: 20, espaldaX: 20, espaldaY: 90 },
-    gota:      { cabezaX: 80, cabezaY: 24, espaldaX: 30, espaldaY: 85 },
+    // AJUSTE: Bajamos el punto magnético (Y) de la gota y triangulo para
+    // que el accesorio se "entierre" un poco y no flote precariamente
+    gota:      { cabezaX: 80, cabezaY: 28, espaldaX: 30, espaldaY: 85 }, // Y de 24 a 28
+    triangulo: { cabezaX: 80, cabezaY: 28, espaldaX: 45, espaldaY: 90 }, // Y de 24 a 28
+    
     circulo:   { cabezaX: 80, cabezaY: 32, espaldaX: 24, espaldaY: 88 },
-    cuadrado:  { cabezaX: 80, cabezaY: 32, espaldaX: 32, espaldaY: 80 },
-    triangulo: { cabezaX: 80, cabezaY: 24, espaldaX: 45, espaldaY: 90 }
+    cuadrado:  { cabezaX: 80, cabezaY: 32, espaldaX: 32, espaldaY: 80 }
 };
 
 // ==========================================
 // 2. DICCIONARIOS DE ACCESORIOS (Base en 0,0)
 // ==========================================
+// ==========================================
+// 2. DICCIONARIOS DE ACCESORIOS (Base en 0,0)
+// ==========================================
 const dicSombreros = {
     ninguno: ``,
+    
+    // Corona: Bajará un poco en las puntas gracias al anclaje
     corona_rey: `<path d="M -18 0 L -24 -28 L -6 -16 L 0 -34 L 6 -16 L 24 -28 L 18 0 Z" fill="#facc15" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/><circle cx="-24" cy="-28" r="3.5" fill="#ef4444"/><circle cx="0" cy="-34" r="3.5" fill="#06b6d4"/><circle cx="24" cy="-28" r="3.5" fill="#ef4444"/><rect x="-18" y="-6" width="36" height="6" fill="#ca8a04"/>`,
-    cuerno_mutante: `<path d="M -10 0 Q -20 -30 10 -45 Q 8 -20 10 0 Z" fill="#f8fafc" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/><path d="M -3 0 Q -8 -30 14 -38 Q 10 -15 10 0 Z" fill="#cbd5e1"/>`,
-    halo_neon: `<ellipse cx="0" cy="-25" rx="22" ry="7" fill="none" stroke="#22d3ee" stroke-width="4" filter="drop-shadow(0 0 5px #00ffff)" class="anim-flotar"/>`
+    
+    // AJUSTE: Nuevo cuerno de unicornio central, mucho mejor para formas puntiagudas
+    cuerno_unicornio: `<path d="M -8 0 Q -3 -45 0 -50 Q 3 -45 8 0 Z" fill="#fff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/><path d="M -5 0 Q -2 -25 0 -28 Q 2 -25 5 0 Z" fill="#e2e8f0"/>`,
+    
+    // AJUSTE: Halo de color ROJO para que resalte
+    halo_neon: `<ellipse cx="0" cy="-25" rx="22" ry="7" fill="none" stroke="#ef4444" stroke-width="4" filter="drop-shadow(0 0 5px #ff0000)" class="anim-flotar"/>`
 };
 
 const dicAlas = {
