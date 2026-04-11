@@ -1,17 +1,20 @@
 function generarSvgGeno(genesVisuales) {
     const safeData = genesVisuales || {};
-    if (safeData.isEgg) return `<svg>...</svg>`; // (Tu código de huevo)
+    if (safeData.isEgg) {
+        return `<svg width="100%" height="100%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;"><style>@keyframes huevoFlota { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }.huevo-anim { animation: huevoFlota 3s ease-in-out infinite; }</style><g class="huevo-anim"><ellipse cx="50" cy="55" rx="30" ry="40" fill="#fffacd" stroke="#d4af37" stroke-width="3" stroke-dasharray="4,4"/><text x="50" y="62" font-size="28" text-anchor="middle" font-family="sans-serif">❓</text></g></svg>`;
+    }
 
     const color = safeData.base_color || "#77DD77";
     const shape = safeData.body_shape || "frijol";
     const rnd = Math.floor(Math.random() * 100000);
     const gradId = `grad-${rnd}`;
 
-    // SEGURIDAD: Si los archivos externos no cargaron, evitamos que el código explote
-    const safeAnclaje = (typeof anclajes !== 'undefined' && anclajes[shape]) ? anclajes[shape] : { cabezaX: 80, cabezaY: 25, espaldaX: 35, espaldaY: 80 };
+    // Seguridad: Cargar anclajes o usar fallback
+    const safeAnclaje = (typeof anclajes !== 'undefined' && anclajes[shape]) ? anclajes[shape] : { cabezaX: 80, cabezaY: 25, espaldaX: 80, espaldaY: 80 };
     
+    // Función para elegir pieza de los diccionarios cargados en el index
     const obtenerPieza = (dic, gen) => {
-        if (typeof dic === 'undefined') return '';
+        if (typeof dic === 'undefined' || Object.keys(dic).length === 0) return '';
         return gen ? (dic[gen] || '') : dic[Object.keys(dic)[Math.floor(Math.random() * Object.keys(dic).length)]];
     };
 
