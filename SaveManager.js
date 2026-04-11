@@ -12,8 +12,23 @@ document.addEventListener("DOMContentLoaded", () => {
             const data = JSON.parse(dataString);
 
             // Restaurar BBDD de Genos y el Geno Principal
-            if (data.misGenos) window.misGenos = data.misGenos;
-            if (data.miMascota) window.miMascota = data.miMascota;
+            if (data.misGenos) {
+                window.misGenos = data.misGenos;
+                // 🔥 LA SOLUCIÓN: Recalcular los dibujos de TODOS los Genos cargados
+                window.misGenos.forEach(geno => {
+                    if (typeof generarSvgGeno === 'function') {
+                        geno.svg = generarSvgGeno(geno);
+                    }
+                });
+            }
+            
+            if (data.miMascota) {
+                window.miMascota = data.miMascota;
+                // 🔥 LA SOLUCIÓN: Recalcular el dibujo de tu mascota actual
+                if (typeof generarSvgGeno === 'function') {
+                    window.miMascota.svg = generarSvgGeno(window.miMascota);
+                }
+            }
 
             // Esperamos un segundo para que carguen los demás scripts y restauramos el dinero
             setTimeout(() => {
@@ -32,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if(window.actualizarPanelRPG) window.actualizarPanelRPG();
                 if(window.renderizarIncubadora) window.renderizarIncubadora();
                 
-                console.log("💾 Progreso cargado con éxito.");
+                console.log("💾 Progreso cargado con éxito y SVGs actualizados.");
             }, 800); 
             
             return true;
