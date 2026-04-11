@@ -24,10 +24,8 @@ const dicAlas = {
     ninguno: ``,
     // CORRECCIÓN: Ajustado el translate(80, 0) para que el ala simétrica salga por la derecha
     alas_murcielago: `
-        <g transform="translate(80, 0) scale(-1, 1)">
-            <path d="M 0 0 Q 25 -35 50 -45 Q 30 -10 55 10 Q 25 10 40 30 Q 15 20 0 0 Z" fill="#2d3748" stroke="#0f172a" stroke-width="3" opacity="0.8"/>
-        </g>
-        <path d="M 0 0 Q -25 -35 -50 -45 Q -30 -10 -55 10 Q -25 10 -40 30 Q -15 20 0 0 Z" fill="#334155" stroke="#0f172a" stroke-width="3" stroke-linejoin="round"/>
+        <path d="M 10 0 Q 35 -35 60 -45 Q 40 -10 65 10 Q 35 10 50 30 Q 25 20 10 0 Z" fill="#2d3748" stroke="#0f172a" stroke-width="3" opacity="0.8"/>
+        <path d="M -10 0 Q -35 -35 -60 -45 Q -40 -10 -65 10 Q -35 10 -50 30 Q -25 20 -10 0 Z" fill="#4a5568" stroke="#0f172a" stroke-width="3"/>
     `,
     jetpack: `
         <g transform="translate(45, 10) scale(0.9)">
