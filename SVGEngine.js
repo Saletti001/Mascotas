@@ -78,19 +78,18 @@ function generarSvgGeno(genesVisuales) {
     svgContent += `<path d="${pathD}" fill="${color}" stroke="#1a2a36" stroke-width="5" stroke-linejoin="round" filter="url(#${shadowId})"/><path d="${pathD}" fill="url(#${gradId})" /><path d="${shineD}" fill="#ffffff" opacity="0.4" />`;
 
     if (shape === "hongo") {
-        // Manchas orgánicas de hongo (ahora completamente dentro de los bordes)
+        // Manchas orgánicas de hongo (Limitadas a 5 y estrictamente dentro de los bordes)
         svgContent += `
             <g fill="#d5d0a9" opacity="0.6">
-                <ellipse cx="32" cy="75" rx="7" ry="5" transform="rotate(-15 32 75)" />
-                <circle cx="45" cy="62" r="6" />
-                <circle cx="38" cy="90" r="4.5" />
+                <circle cx="40" cy="70" r="6" />
                 
-                <ellipse cx="120" cy="55" rx="10" ry="6" transform="rotate(25 120 55)" />
-                <ellipse cx="128" cy="75" rx="6" ry="8" transform="rotate(-10 128 75)" />
-                <circle cx="108" cy="40" r="5" />
-                <circle cx="112" cy="88" r="4" />
+                <ellipse cx="60" cy="45" rx="7" ry="4" transform="rotate(-20 60 45)" />
                 
-                <ellipse cx="85" cy="35" rx="8" ry="4" transform="rotate(-5 85 35)" />
+                <circle cx="100" cy="50" r="7" />
+                
+                <ellipse cx="120" cy="75" rx="5" ry="8" transform="rotate(15 120 75)" />
+                
+                <circle cx="50" cy="90" r="4" />
             </g>
         `;
     }
