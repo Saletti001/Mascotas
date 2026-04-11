@@ -28,7 +28,7 @@ const dicAlas = {
             <path d="M 5 35 L 10 48 L 15 35 Z" fill="#f97316" class="anim-flotar"/>
         </g>
         
-        <g transform="translate(55, -15)">
+        <g transform="translate(95, -15)">
             <rect width="20" height="35" rx="4" fill="#718096" stroke="#1a2a36" stroke-width="3"/>
             <rect x="5" y="5" width="10" height="6" rx="1" fill="#ef4444"/>
             <path d="M 5 35 L 10 48 L 15 35 Z" fill="#f97316" class="anim-flotar"/>
