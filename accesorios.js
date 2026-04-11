@@ -22,12 +22,13 @@ const dicAlas = {
         <path d="M -15 0 Q -40 -35 -60 -45 Q -45 -10 -70 10 Q -40 10 -55 30 Q -30 20 -15 0 Z" fill="#4a5568" stroke="#0f172a" stroke-width="3"/>
     `,
     jetpack: `
-        <g transform="translate(-55, -15)">
+        <g transform="translate(-75, -15)">
             <rect width="20" height="35" rx="4" fill="#718096" stroke="#1a2a36" stroke-width="3"/>
             <rect x="5" y="5" width="10" height="6" rx="1" fill="#ef4444"/>
             <path d="M 5 35 L 10 48 L 15 35 Z" fill="#f97316" class="anim-flotar"/>
         </g>
-        <g transform="translate(35, -15)">
+        
+        <g transform="translate(55, -15)">
             <rect width="20" height="35" rx="4" fill="#718096" stroke="#1a2a36" stroke-width="3"/>
             <rect x="5" y="5" width="10" height="6" rx="1" fill="#ef4444"/>
             <path d="M 5 35 L 10 48 L 15 35 Z" fill="#f97316" class="anim-flotar"/>
