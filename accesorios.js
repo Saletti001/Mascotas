@@ -21,20 +21,26 @@ const dicSombreros = {
 
 const dicAlas = {
     ninguno: ``,
+    
     alas_murcielago: `
-        <path d="M 0 0 Q -45 -45 -95 -55 Q -60 -15 -85 15 Q -40 10 -60 40 Q -20 20 0 0 Z" fill="#4a5568" stroke="#0f172a" stroke-width="3"/>
+        <path d="M 0 -5 C -20 -8, -35 -10, -50 -10 Q -70 -40 -90 -50 Q -75 -15 -95 0 Q -70 0 -85 20 Q -60 10 -50 10 C -35 10, -20 8, 0 5 Z" fill="#4a5568" stroke="#0f172a" stroke-width="3"/>
         
-        <path d="M 0 0 Q 45 -45 95 -55 Q 60 -15 85 15 Q 40 10 60 40 Q 20 20 0 0 Z" fill="#2d3748" stroke="#0f172a" stroke-width="3" opacity="0.8"/>
+        <path d="M 0 -5 C 20 -8, 35 -10, 50 -10 Q 70 -40 90 -50 Q 75 -15 95 0 Q 70 0 85 20 Q 60 10 50 10 C 35 10, 20 8, 0 5 Z" fill="#2d3748" stroke="#0f172a" stroke-width="3" opacity="0.8"/>
     `,
+    
     jetpack: `
         <rect x="-60" y="-10" width="120" height="20" rx="5" fill="#4a5568" stroke="#1a2a36" stroke-width="3"/>
         
-        <rect x="-70" y="-20" width="25" height="40" rx="4" fill="#718096" stroke="#1a2a36" stroke-width="3"/>
-        <rect x="-63" y="-15" width="11" height="8" rx="2" fill="#ef4444"/>
-        <path d="M -65 20 L -57 40 L -50 20 Z" fill="#f97316" class="anim-flotar"/>
+        <g transform="translate(-75, -15)">
+            <rect width="25" height="40" rx="4" fill="#718096" stroke="#1a2a36" stroke-width="3"/>
+            <rect x="7" y="5" width="11" height="8" rx="2" fill="#ef4444"/>
+            <path d="M 5 40 L 12 55 L 20 40 Z" fill="#f97316" class="anim-flotar"/>
+        </g>
         
-        <rect x="45" y="-20" width="25" height="40" rx="4" fill="#718096" stroke="#1a2a36" stroke-width="3"/>
-        <rect x="52" y="-15" width="11" height="8" rx="2" fill="#ef4444"/>
-        <path d="M 50 20 L 57 40 L 65 20 Z" fill="#f97316" class="anim-flotar"/>
+        <g transform="translate(50, -15)">
+            <rect width="25" height="40" rx="4" fill="#718096" stroke="#1a2a36" stroke-width="3"/>
+            <rect x="7" y="5" width="11" height="8" rx="2" fill="#ef4444"/>
+            <path d="M 5 40 L 12 55 L 20 40 Z" fill="#f97316" class="anim-flotar"/>
+        </g>
     `
 };
