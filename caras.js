@@ -1,46 +1,7 @@
-// ==========================================
-// 1. EL MAPA DE ANCLAJES (Sockets)
-// ==========================================
-const anclajes = {
-    frijol:    { cabezaX: 80, cabezaY: 25, espaldaX: 35, espaldaY: 80 },
-    hongo:     { cabezaX: 80, cabezaY: 20, espaldaX: 20, espaldaY: 90 },
-    // AJUSTE: Bajamos el punto magnético (Y) de la gota y triangulo para
-    // que el accesorio se "entierre" un poco y no flote precariamente
-    gota:      { cabezaX: 80, cabezaY: 28, espaldaX: 30, espaldaY: 85 }, // Y de 24 a 28
-    triangulo: { cabezaX: 80, cabezaY: 28, espaldaX: 45, espaldaY: 90 }, // Y de 24 a 28
-    
-    circulo:   { cabezaX: 80, cabezaY: 32, espaldaX: 24, espaldaY: 88 },
-    cuadrado:  { cabezaX: 80, cabezaY: 32, espaldaX: 32, espaldaY: 80 }
-};
+// =========================================
+// caras.js - Solo Rostros (51 ojos, 30 bocas)
+// =========================================
 
-// ==========================================
-// 2. DICCIONARIOS DE ACCESORIOS (Base en 0,0)
-// ==========================================
-// ==========================================
-// 2. DICCIONARIOS DE ACCESORIOS (Base en 0,0)
-// ==========================================
-const dicSombreros = {
-    ninguno: ``,
-    
-    // Corona: Bajará un poco en las puntas gracias al anclaje
-    corona_rey: `<path d="M -18 0 L -24 -28 L -6 -16 L 0 -34 L 6 -16 L 24 -28 L 18 0 Z" fill="#facc15" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/><circle cx="-24" cy="-28" r="3.5" fill="#ef4444"/><circle cx="0" cy="-34" r="3.5" fill="#06b6d4"/><circle cx="24" cy="-28" r="3.5" fill="#ef4444"/><rect x="-18" y="-6" width="36" height="6" fill="#ca8a04"/>`,
-    
-    // AJUSTE: Nuevo cuerno de unicornio central, mucho mejor para formas puntiagudas
-    cuerno_unicornio: `<path d="M -8 0 Q -3 -45 0 -50 Q 3 -45 8 0 Z" fill="#fff" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/><path d="M -5 0 Q -2 -25 0 -28 Q 2 -25 5 0 Z" fill="#e2e8f0"/>`,
-    
-    // AJUSTE: Halo de color ROJO para que resalte
-    halo_neon: `<ellipse cx="0" cy="-25" rx="22" ry="7" fill="none" stroke="#ef4444" stroke-width="4" filter="drop-shadow(0 0 5px #ff0000)" class="anim-flotar"/>`
-};
-
-const dicAlas = {
-    ninguno: ``,
-    alas_murcielago: `<path d="M 0 0 Q -25 -35 -50 -45 Q -30 -10 -55 10 Q -25 10 -40 30 Q -15 20 0 0 Z" fill="#334155" stroke="#0f172a" stroke-width="3" stroke-linejoin="round"/><path d="M 0 0 Q -20 -25 -45 -40" fill="none" stroke="#0f172a" stroke-width="2"/><path d="M 0 0 Q -25 -5 -48 5" fill="none" stroke="#0f172a" stroke-width="2"/>`,
-    jetpack: `<rect x="-35" y="-20" width="25" height="40" rx="5" fill="#94a3b8" stroke="#1a2a36" stroke-width="3"/><rect x="-30" y="-15" width="15" height="10" rx="2" fill="#ef4444"/><path d="M -28 20 L -22 35 L -16 20 Z" fill="#f97316" class="anim-flotar"/><path d="M -25 20 L -22 28 L -19 20 Z" fill="#fef08a" class="anim-flotar"/>`
-};
-
-// ==========================================
-// 3. MEGA DICCIONARIO: OJOS (51 variantes)
-// ==========================================
 const dicOjos = {
     base_brillo: `<circle cx="60" cy="85" r="7" fill="#1a2a36"/><circle cx="61.5" cy="83.5" r="2.5" fill="#fff"/><circle cx="100" cy="85" r="7" fill="#1a2a36"/><circle cx="101.5" cy="83.5" r="2.5" fill="#fff"/>`,
     guisante_clasico: `<circle cx="55" cy="85" r="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="55" cy="85" r="4.5" fill="#1a2a36"/><circle cx="53" cy="83" r="1.5" fill="#ffffff"/><circle cx="105" cy="85" r="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="105" cy="85" r="4.5" fill="#1a2a36"/><circle cx="103" cy="83" r="1.5" fill="#ffffff"/>`,
@@ -85,7 +46,6 @@ const dicOjos = {
     hex_optico: `<polygon points="60,73 70,79 70,91 60,97 50,91 50,79" fill="#0f172a" stroke="#a855f7" stroke-width="3"/><circle cx="60" cy="85" r="3" fill="#a855f7" filter="drop-shadow(0 0 3px #d8b4fe)"/><polygon points="100,73 110,79 110,91 100,97 90,91 90,79" fill="#0f172a" stroke="#a855f7" stroke-width="3"/><circle cx="100" cy="85" r="3" fill="#a855f7" filter="drop-shadow(0 0 3px #d8b4fe)"/>`,
     ojos_cosidos: `<ellipse cx="60" cy="85" rx="12" ry="5" fill="#4ade80" opacity="0.6" filter="blur(2px)"/><path d="M 45 85 Q 60 92 75 85" fill="none" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/><line x1="50" y1="80" x2="52" y2="90" stroke="#1a2a36" stroke-width="2"/><line x1="60" y1="81" x2="58" y2="92" stroke="#1a2a36" stroke-width="2"/><line x1="70" y1="80" x2="72" y2="90" stroke="#1a2a36" stroke-width="2"/><ellipse cx="100" cy="85" rx="12" ry="5" fill="#4ade80" opacity="0.6" filter="blur(2px)"/><path d="M 85 85 Q 100 92 115 85" fill="none" stroke="#1a2a36" stroke-width="4" stroke-linecap="round"/><line x1="90" y1="80" x2="92" y2="90" stroke="#1a2a36" stroke-width="2"/><line x1="100" y1="81" x2="98" y2="92" stroke="#1a2a36" stroke-width="2"/><line x1="110" y1="80" x2="112" y2="90" stroke="#1a2a36" stroke-width="2"/>`,
     vacio_oscuro: `<circle cx="60" cy="85" r="12" fill="#020617" stroke="#1a2a36" stroke-width="2"/><circle cx="60" cy="85" r="2" fill="#eab308" filter="drop-shadow(0 0 2px #fef08a)"/><path d="M 56 97 Q 60 110 64 97 Z" fill="#020617" opacity="0.8"/><circle cx="100" cy="85" r="12" fill="#020617" stroke="#1a2a36" stroke-width="2"/><circle cx="100" cy="85" r="2" fill="#eab308" filter="drop-shadow(0 0 2px #fef08a)"/><path d="M 96 97 Q 100 110 104 97 Z" fill="#020617" opacity="0.8"/>`,
-    cyborg_implante: `<circle cx="58" cy="85" r="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><circle cx="58" cy="85" r="4" fill="#22d3ee"/><circle cx="59.5" cy="83.5" r="1.5" fill="#fff"/><rect x="88" y="75" width="24" height="20" rx="3" fill="#334155" stroke="#1a2a36" stroke-width="3"/><circle cx="100" cy="85" r="5" fill="#ef4444"/><line x1="112" y1="85" x2="118" y2="85" stroke="#1a2a36" stroke-width="3" stroke-linecap="round"/><line x1="100" y1="75" x2="100" y2="70" stroke="#1a2a36" stroke-width="3" stroke-linecap="round"/>`,
     agujeros_negros: `<circle cx="60" cy="85" r="14" fill="#020617" filter="drop-shadow(0 0 5px #c084fc)"/><circle cx="60" cy="85" r="8" fill="#1e1b4b"/><circle cx="60" cy="85" r="3" fill="#000"/><circle cx="100" cy="85" r="14" fill="#020617" filter="drop-shadow(0 0 5px #c084fc)"/><circle cx="100" cy="85" r="8" fill="#1e1b4b"/><circle cx="100" cy="85" r="3" fill="#000"/>`,
     mosca_mutante: `<ellipse cx="55" cy="85" rx="14" ry="18" fill="#14532d" stroke="#a3e635" stroke-width="2"/><circle cx="55" cy="85" r="2" fill="#a3e635" opacity="0.5"/><circle cx="50" cy="80" r="1" fill="#a3e635" opacity="0.5"/><circle cx="60" cy="90" r="1" fill="#a3e635" opacity="0.5"/><ellipse cx="105" cy="85" rx="14" ry="18" fill="#14532d" stroke="#a3e635" stroke-width="2"/><circle cx="105" cy="85" r="2" fill="#a3e635" opacity="0.5"/><circle cx="100" cy="80" r="1" fill="#a3e635" opacity="0.5"/><circle cx="110" cy="90" r="1" fill="#a3e635" opacity="0.5"/>`,
     error_fatal: `<rect x="45" y="75" width="28" height="20" fill="#ef4444"/><text x="47" y="90" font-family="monospace" font-size="12" font-weight="bold" fill="#fff">ERR</text><rect x="87" y="75" width="28" height="20" fill="#ef4444"/><text x="89" y="90" font-family="monospace" font-size="12" font-weight="bold" fill="#fff">404</text><line x1="40" y1="85" x2="120" y2="85" stroke="#fff" stroke-width="1" opacity="0.5"/>`,
@@ -97,10 +57,8 @@ const dicOjos = {
     sangre_bioluminiscente: `<circle cx="58" cy="88" r="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><path d="M 48 88 Q 53 84 58 88" stroke="#a855f7" stroke-width="1.5" fill="none"/><path d="M 68 88 Q 63 92 58 88" stroke="#a855f7" stroke-width="1.5" fill="none"/><circle cx="58" cy="88" r="4" fill="#a855f7" filter="drop-shadow(0 0 2px #d8b4fe)"/><circle cx="102" cy="88" r="10" fill="#fff" stroke="#1a2a36" stroke-width="3"/><path d="M 112 88 Q 107 84 102 88" stroke="#a855f7" stroke-width="1.5" fill="none"/><path d="M 92 88 Q 97 92 102 88" stroke="#a855f7" stroke-width="1.5" fill="none"/><circle cx="102" cy="88" r="4" fill="#a855f7" filter="drop-shadow(0 0 2px #d8b4fe)"/>`,
     tres_ojos: `<circle cx="60" cy="85" r="7" fill="#fff" stroke="#1a2a36" stroke-width="2.5"/><circle cx="60" cy="85" r="3" fill="#1a2a36"/><circle cx="100" cy="85" r="7" fill="#fff" stroke="#1a2a36" stroke-width="2.5"/><circle cx="100" cy="85" r="3" fill="#1a2a36"/><circle cx="80" cy="72" r="6" fill="#fff" stroke="#1a2a36" stroke-width="2.5"/><circle cx="80" cy="72" r="2.5" fill="#ef4444"/>`
 };
+  
 
-// ==========================================
-// 4. MEGA DICCIONARIO: BOCAS (30 variantes)
-// ==========================================
 const dicBocas = {
     base: `<path d="M 67 108 Q 80 124 93 108" fill="none" stroke="#1a2a36" stroke-width="5" stroke-linecap="round"/>`,
     abierta_feliz: `<path d="M 62 102 C 62 125, 98 125, 98 102 Z" fill="#1a2a36" stroke="#1a2a36" stroke-width="3"/><path d="M 70 112 C 70 122, 90 122, 90 112 Z" fill="#ff6b6b"/>`,
