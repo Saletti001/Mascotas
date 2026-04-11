@@ -25,12 +25,16 @@ const dicAlas = {
         <path d="M -15 0 Q -40 -35 -60 -45 Q -45 -10 -70 10 Q -40 10 -55 30 Q -30 20 -15 0 Z" fill="#4a5568" stroke="#0f172a" stroke-width="3"/>
     `,
     jetpack: `
-        <rect x="-45" y="-15" width="20" height="35" rx="4" fill="#718096" stroke="#1a2a36" stroke-width="3"/>
-        <rect x="-40" y="-10" width="10" height="6" rx="1" fill="#ef4444"/>
-        <path d="M -40 20 L -35 35 L -30 20 Z" fill="#f97316" class="anim-flotar"/>
+        <g transform="translate(-60, -15)">
+            <rect x="0" y="0" width="22" height="35" rx="5" fill="#718096" stroke="#1a2a36" stroke-width="3"/>
+            <rect x="4" y="5" width="14" height="8" rx="2" fill="#ef4444" opacity="0.8"/>
+            <path d="M 5 35 L 11 50 L 17 35 Z" fill="#f97316" class="anim-flotar"/>
+        </g>
         
-        <rect x="25" y="-15" width="20" height="35" rx="4" fill="#718096" stroke="#1a2a36" stroke-width="3"/>
-        <rect x="30" y="-10" width="10" height="6" rx="1" fill="#ef4444"/>
-        <path d="M 30 20 L 35 35 L 40 20 Z" fill="#f97316" class="anim-flotar"/>
-    `
+        <g transform="translate(40, -15)">
+            <rect x="0" y="0" width="22" height="35" rx="5" fill="#94a3b8" stroke="#1a2a36" stroke-width="3"/>
+            <rect x="4" y="5" width="14" height="8" rx="2" fill="#ef4444" opacity="0.8"/>
+            <path d="M 5 35 L 11 50 L 17 35 Z" fill="#f97316" class="anim-flotar"/>
+        </g>
+    `,
 };

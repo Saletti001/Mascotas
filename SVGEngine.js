@@ -45,8 +45,7 @@ function generarSvgGeno(genesVisuales) {
             pathD = "M 65 25 C 110 20, 135 50, 135 85 C 135 125, 105 145, 75 145 C 35 145, 25 115, 35 75 C 40 50, 35 30, 65 25 Z"; 
             shineD = "M 45 48 Q 60 38 75 40 Q 55 52 50 75 Q 40 60 45 48 Z"; break;
     }
-
-    return `
+return `
     <svg width="190" height="190" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">
         <defs>
             <linearGradient id="${gradId}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity="0.25"/></linearGradient>
@@ -59,14 +58,17 @@ function generarSvgGeno(genesVisuales) {
             .anim-flotar { animation: respirar 3s ease-in-out infinite; }
         </style>
         
-        <g class="g-cuerpo" transform="translate(80, ${safeAnclaje.espaldaY})">${wing}</g>
+        <g class="g-cuerpo" transform="translate(80, ${safeAnclaje.espaldaY})">
+            ${wing}
+        </g>
+
         <g class="g-cuerpo">
             ${extras}
             <path d="${pathD}" fill="${color}" stroke="#1a2a36" stroke-width="5"/>
             <path d="${pathD}" fill="url(#${gradId})"/>
             <path d="${shineD}" fill="#fff" opacity="0.4"/>
             <g class="g-ojos">${ojo}</g>
-            <g class="g-boca">${boca}</g>
+            ${boca}
             <g transform="translate(${safeAnclaje.cabezaX}, ${safeAnclaje.cabezaY})">${hat}</g>
         </g>
     </svg>`;
