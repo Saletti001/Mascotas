@@ -383,9 +383,5 @@ furia_ceno_boca_premium: `<path d="M 60 102 Q 80 118 100 102 Z" fill="#1a2a36" s
     svgContent += `</g></svg>`;
     
     // AHORA DEVOLVEMOS UN OBJETO CON EL SVG Y LOS NOMBRES
-    return {
-        svg: svgContent,
-        ojoUsado: nombreOjoElegido,
-        bocaUsada: nombreBocaElegida
-    };
+    return svgContent;
 }
