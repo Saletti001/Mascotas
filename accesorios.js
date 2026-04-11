@@ -1,4 +1,7 @@
-// accesorios.js
+// =========================================
+// accesorios.js - Anclajes y Complementos
+// =========================================
+
 const anclajes = {
     frijol:    { cabezaX: 80, cabezaY: 25, espaldaX: 80, espaldaY: 80 },
     hongo:     { cabezaX: 80, cabezaY: 45, espaldaX: 80, espaldaY: 90 }, 
@@ -18,17 +21,21 @@ const dicSombreros = {
 const dicAlas = {
     ninguno: ``,
     alas_murcielago: `
-        <path d="M 15 0 Q 40 -35 65 -45 Q 45 -10 70 10 Q 40 10 55 30 Q 30 20 15 0 Z" fill="#2d3748" stroke="#0f172a" stroke-width="3" opacity="0.8"/>
-        <path d="M -15 0 Q -40 -35 -60 -45 Q -45 -10 -70 10 Q -40 10 -55 30 Q -30 20 -15 0 Z" fill="#4a5568" stroke="#0f172a" stroke-width="3"/>
+        <g transform="translate(-45, -10) rotate(-10)">
+            <path d="M 0 0 Q -25 -35 -50 -45 Q -30 -10 -55 10 Q -25 10 -40 30 Q -15 20 0 0 Z" fill="#4a5568" stroke="#0f172a" stroke-width="3"/>
+        </g>
+        <g transform="translate(45, -10) rotate(10)">
+            <path d="M 0 0 Q 25 -35 50 -45 Q 30 -10 55 10 Q 25 10 40 30 Q 15 20 0 0 Z" fill="#2d3748" stroke="#0f172a" stroke-width="3" opacity="0.8"/>
+        </g>
     `,
     jetpack: `
-        <g transform="translate(-95, -15)">
+        <g transform="translate(-85, -15)">
             <rect width="20" height="35" rx="4" fill="#718096" stroke="#1a2a36" stroke-width="3"/>
             <rect x="5" y="5" width="10" height="6" rx="1" fill="#ef4444"/>
             <path d="M 5 35 L 10 48 L 15 35 Z" fill="#f97316" class="anim-flotar"/>
         </g>
         
-        <g transform="translate(95, -15)">
+        <g transform="translate(65, -15)">
             <rect width="20" height="35" rx="4" fill="#718096" stroke="#1a2a36" stroke-width="3"/>
             <rect x="5" y="5" width="10" height="6" rx="1" fill="#ef4444"/>
             <path d="M 5 35 L 10 48 L 15 35 Z" fill="#f97316" class="anim-flotar"/>
