@@ -1,14 +1,11 @@
-// =========================================
-// accesorios.js - Anclajes y Complementos
-// =========================================
-
+// accesorios.js
 const anclajes = {
-    frijol:    { cabezaX: 80, cabezaY: 25, espaldaX: 80, espaldaY: 85 },
-    hongo:     { cabezaX: 80, cabezaY: 45, espaldaX: 80, espaldaY: 95 }, 
-    gota:      { cabezaX: 80, cabezaY: 35, espaldaX: 80, espaldaY: 90 }, 
-    triangulo: { cabezaX: 80, cabezaY: 35, espaldaX: 80, espaldaY: 95 }, 
-    circulo:   { cabezaX: 80, cabezaY: 32, espaldaX: 80, espaldaY: 93 },
-    cuadrado:  { cabezaX: 80, cabezaY: 32, espaldaX: 80, espaldaY: 85 }
+    frijol:    { cabezaX: 80, cabezaY: 25, espaldaX: 80, espaldaY: 80 },
+    hongo:     { cabezaX: 80, cabezaY: 45, espaldaX: 80, espaldaY: 90 }, 
+    gota:      { cabezaX: 80, cabezaY: 35, espaldaX: 80, espaldaY: 85 }, 
+    triangulo: { cabezaX: 80, cabezaY: 35, espaldaX: 80, espaldaY: 90 }, 
+    circulo:   { cabezaX: 80, cabezaY: 32, espaldaX: 80, espaldaY: 88 },
+    cuadrado:  { cabezaX: 80, cabezaY: 32, espaldaX: 80, espaldaY: 80 }
 };
 
 const dicSombreros = {
@@ -25,16 +22,15 @@ const dicAlas = {
         <path d="M -15 0 Q -40 -35 -60 -45 Q -45 -10 -70 10 Q -40 10 -55 30 Q -30 20 -15 0 Z" fill="#4a5568" stroke="#0f172a" stroke-width="3"/>
     `,
     jetpack: `
-        <g transform="translate(-60, -15)">
-            <rect x="0" y="0" width="22" height="35" rx="5" fill="#718096" stroke="#1a2a36" stroke-width="3"/>
-            <rect x="4" y="5" width="14" height="8" rx="2" fill="#ef4444" opacity="0.8"/>
-            <path d="M 5 35 L 11 50 L 17 35 Z" fill="#f97316" class="anim-flotar"/>
+        <g transform="translate(-55, -15)">
+            <rect width="20" height="35" rx="4" fill="#718096" stroke="#1a2a36" stroke-width="3"/>
+            <rect x="5" y="5" width="10" height="6" rx="1" fill="#ef4444"/>
+            <path d="M 5 35 L 10 48 L 15 35 Z" fill="#f97316" class="anim-flotar"/>
         </g>
-        
-        <g transform="translate(40, -15)">
-            <rect x="0" y="0" width="22" height="35" rx="5" fill="#94a3b8" stroke="#1a2a36" stroke-width="3"/>
-            <rect x="4" y="5" width="14" height="8" rx="2" fill="#ef4444" opacity="0.8"/>
-            <path d="M 5 35 L 11 50 L 17 35 Z" fill="#f97316" class="anim-flotar"/>
+        <g transform="translate(35, -15)">
+            <rect width="20" height="35" rx="4" fill="#718096" stroke="#1a2a36" stroke-width="3"/>
+            <rect x="5" y="5" width="10" height="6" rx="1" fill="#ef4444"/>
+            <path d="M 5 35 L 10 48 L 15 35 Z" fill="#f97316" class="anim-flotar"/>
         </g>
-    `,
+    `
 };

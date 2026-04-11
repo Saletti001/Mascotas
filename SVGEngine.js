@@ -1,8 +1,6 @@
 function generarSvgGeno(genesVisuales) {
     const safeData = genesVisuales || {};
-    if (safeData.isEgg) {
-        return `<svg width="100%" height="100%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;"><style>@keyframes huevoFlota { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }.huevo-anim { animation: huevoFlota 3s ease-in-out infinite; }</style><g class="huevo-anim"><ellipse cx="50" cy="55" rx="30" ry="40" fill="#fffacd" stroke="#d4af37" stroke-width="3" stroke-dasharray="4,4"/><text x="50" y="62" font-size="28" text-anchor="middle" font-family="sans-serif">❓</text></g></svg>`;
-    }
+    if (safeData.isEgg) return `<svg>...</svg>`;
 
     const color = safeData.base_color || "#77DD77";
     const shape = safeData.body_shape || "frijol";
@@ -45,7 +43,8 @@ function generarSvgGeno(genesVisuales) {
             pathD = "M 65 25 C 110 20, 135 50, 135 85 C 135 125, 105 145, 75 145 C 35 145, 25 115, 35 75 C 40 50, 35 30, 65 25 Z"; 
             shineD = "M 45 48 Q 60 38 75 40 Q 55 52 50 75 Q 40 60 45 48 Z"; break;
     }
-return `
+
+    return `
     <svg width="190" height="190" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">
         <defs>
             <linearGradient id="${gradId}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity="0.25"/></linearGradient>
@@ -68,7 +67,7 @@ return `
             <path d="${pathD}" fill="url(#${gradId})"/>
             <path d="${shineD}" fill="#fff" opacity="0.4"/>
             <g class="g-ojos">${ojo}</g>
-            ${boca}
+            <g class="g-boca">${boca}</g>
             <g transform="translate(${safeAnclaje.cabezaX}, ${safeAnclaje.cabezaY})">${hat}</g>
         </g>
     </svg>`;
