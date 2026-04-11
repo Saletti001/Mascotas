@@ -1,9 +1,10 @@
 // =========================================
-// accesorios.js - Anclajes y Complementos
+// accesorios.js - Anclajes y Complementos definitivos
 // =========================================
 
 const anclajes = {
-    frijol:    { cabezaX: 80, cabezaY: 25, espaldaX: 80, espaldaY: 80 },
+    // Al frijol le sumamos +8 en X para compensar su asimetría hacia la derecha
+    frijol:    { cabezaX: 80, cabezaY: 25, espaldaX: 88, espaldaY: 80 }, 
     hongo:     { cabezaX: 80, cabezaY: 45, espaldaX: 80, espaldaY: 90 }, 
     gota:      { cabezaX: 80, cabezaY: 35, espaldaX: 80, espaldaY: 85 }, 
     triangulo: { cabezaX: 80, cabezaY: 35, espaldaX: 80, espaldaY: 90 }, 

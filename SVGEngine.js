@@ -9,7 +9,16 @@ function generarSvgGeno(genesVisuales) {
     const rnd = Math.floor(Math.random() * 100000);
     const gradId = `grad-${rnd}`;
 
-    const safeAnclaje = (typeof anclajes !== 'undefined' && anclajes[shape]) ? anclajes[shape] : { cabezaX: 80, cabezaY: 25, espaldaX: 80, espaldaY: 80 };
+    // 1. Cargamos el anclaje base del diccionario
+    let safeAnclaje = (typeof anclajes !== 'undefined' && anclajes[shape]) 
+        ? {...anclajes[shape]} 
+        : { cabezaX: 80, cabezaY: 25, espaldaX: 80, espaldaY: 80 };
+
+    // 2. MAGIA GENÉTICA: Los mutantes sobrescriben el anclaje con su ADN
+    if (safeData.mutated_espaldaX) safeAnclaje.espaldaX = safeData.mutated_espaldaX;
+    if (safeData.mutated_espaldaY) safeAnclaje.espaldaY = safeData.mutated_espaldaY;
+    if (safeData.mutated_cabezaX) safeAnclaje.cabezaX = safeData.mutated_cabezaX;
+    if (safeData.mutated_cabezaY) safeAnclaje.cabezaY = safeData.mutated_cabezaY;
     
     const obtenerPieza = (dic, gen) => {
         if (typeof dic === 'undefined' || Object.keys(dic).length === 0) return '';
