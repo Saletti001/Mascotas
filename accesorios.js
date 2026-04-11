@@ -3,12 +3,12 @@
 // =========================================
 
 const anclajes = {
-    frijol:    { cabezaX: 80, cabezaY: 25, espaldaX: 80, espaldaY: 80 },
-    hongo:     { cabezaX: 80, cabezaY: 45, espaldaX: 80, espaldaY: 90 }, 
-    gota:      { cabezaX: 80, cabezaY: 35, espaldaX: 80, espaldaY: 85 }, 
-    triangulo: { cabezaX: 80, cabezaY: 35, espaldaX: 80, espaldaY: 90 }, 
-    circulo:   { cabezaX: 80, cabezaY: 32, espaldaX: 80, espaldaY: 88 },
-    cuadrado:  { cabezaX: 80, cabezaY: 32, espaldaX: 80, espaldaY: 80 }
+    frijol:    { cabezaX: 80, cabezaY: 25, espaldaX: 80, espaldaY: 85 },
+    hongo:     { cabezaX: 80, cabezaY: 45, espaldaX: 80, espaldaY: 95 }, 
+    gota:      { cabezaX: 80, cabezaY: 35, espaldaX: 80, espaldaY: 90 }, 
+    triangulo: { cabezaX: 80, cabezaY: 35, espaldaX: 80, espaldaY: 95 }, 
+    circulo:   { cabezaX: 80, cabezaY: 32, espaldaX: 80, espaldaY: 93 },
+    cuadrado:  { cabezaX: 80, cabezaY: 32, espaldaX: 80, espaldaY: 85 }
 };
 
 const dicSombreros = {
@@ -25,11 +25,12 @@ const dicAlas = {
         <path d="M -15 0 Q -40 -35 -60 -45 Q -45 -10 -70 10 Q -40 10 -55 30 Q -30 20 -15 0 Z" fill="#4a5568" stroke="#0f172a" stroke-width="3"/>
     `,
     jetpack: `
-        <rect x="10" y="-20" width="22" height="35" rx="5" fill="#718096" stroke="#1a2a36" stroke-width="3"/>
-        <path d="M 15 15 L 21 30 L 27 15 Z" fill="#f97316" class="anim-flotar"/>
-        <rect x="-32" y="-20" width="22" height="35" rx="5" fill="#94a3b8" stroke="#1a2a36" stroke-width="3"/>
-        <path d="M -27 15 L -21 30 L -15 15 Z" fill="#f97316" class="anim-flotar"/>
-        <rect x="14" y="-15" width="14" height="8" rx="2" fill="#ef4444" opacity="0.8"/>
-        <rect x="-28" y="-15" width="14" height="8" rx="2" fill="#ef4444" opacity="0.8"/>
+        <rect x="-45" y="-15" width="20" height="35" rx="4" fill="#718096" stroke="#1a2a36" stroke-width="3"/>
+        <rect x="-40" y="-10" width="10" height="6" rx="1" fill="#ef4444"/>
+        <path d="M -40 20 L -35 35 L -30 20 Z" fill="#f97316" class="anim-flotar"/>
+        
+        <rect x="25" y="-15" width="20" height="35" rx="4" fill="#718096" stroke="#1a2a36" stroke-width="3"/>
+        <rect x="30" y="-10" width="10" height="6" rx="1" fill="#ef4444"/>
+        <path d="M 30 20 L 35 35 L 40 20 Z" fill="#f97316" class="anim-flotar"/>
     `
 };
