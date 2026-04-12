@@ -184,3 +184,15 @@
     justify-content: flex-end !important; 
     transition: opacity 0.3s !important;
 }
+
+/* ========================================= */
+/* FIX: ROTACIÓN PERFECTA DE LUZ NEÓN        */
+/* ========================================= */
+.fab-btn::before {
+    width: 800px !important;    /* Forzamos a que sea un cuadrado gigante */
+    height: 800px !important;
+    top: 50% !important;        /* Lo anclamos exactamente al centro */
+    left: 50% !important;
+    margin-top: -400px !important;  /* Retrocedemos la mitad para centrarlo */
+    margin-left: -400px !important;
+}
