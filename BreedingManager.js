@@ -1,6 +1,50 @@
 // =========================================
-// BreedingManager.js - INTERFAZ E INCUBADORA
+// BreedingManager.js - ALGORITMO GENÉTICO E INCUBADORA
 // =========================================
+
+// --- BASE DE DATOS MAESTRA DE GENES ---
+const GenomaBBDD = {
+    cuerpo: ["frijol", "hongo", "gota", "triangulo", "circulo", "cuadrado"],
+    ojos: ["estandar", "visor_mecha", "ojos_araña", "hipno_espiral"],
+    boca: ["colmillos", "fauces_anilladas", "babeo_acido", "rejilla"],
+    espalda: ["ninguno", "alas_murcielago", "jetpack", "tentaculos", "tubos_quimicos"],
+    cabeza: ["ninguno", "corona_rey", "halo_neon", "cuerno_mutante", "cerebro_expuesto", "hongo_parasito"],
+    afinidad: ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"]
+};
+
+function randomFrom(array) { 
+    return array[Math.floor(Math.random() * array.length)]; 
+}
+
+function heredarRasgo(padreA, padreB, categoria) {
+    const roll = Math.random() * 100;
+    
+    const getGenSeguro = (padre, cat, tipo) => {
+        if (padre.genes && padre.genes[cat] && padre.genes[cat][tipo]) {
+            return padre.genes[cat][tipo]; 
+        }
+        if (tipo === 'dom') {
+            if (cat === 'cuerpo') return padre.shape || padre.visual_genes?.body_shape || padre.body_shape || "gota";
+            if (cat === 'ojos') return padre.eye_type || "estandar";
+            if (cat === 'boca') return padre.mouth_type || "colmillos";
+            if (cat === 'espalda') return padre.wing_type || "ninguno";
+            if (cat === 'cabeza') return padre.hat_type || "ninguno";
+            if (cat === 'afinidad') return padre.element || "Biomutante";
+        }
+        return randomFrom(GenomaBBDD[cat]); 
+    };
+
+    if (roll <= 70) return Math.random() > 0.5 ? getGenSeguro(padreA, categoria, 'dom') : getGenSeguro(padreB, categoria, 'dom');
+    else if (roll <= 95) return Math.random() > 0.5 ? getGenSeguro(padreA, categoria, 'rec') : getGenSeguro(padreB, categoria, 'rec');
+    else return randomFrom(GenomaBBDD[categoria]); 
+}
+
+function calcularIVs(statsA, statsB) {
+    const sA = statsA || { hp: 50, atk: 15, spd: 15, luk: 15 };
+    const sB = statsB || { hp: 50, atk: 15, spd: 15, luk: 15 };
+    const calc = (a, b) => Math.max(1, Math.min(31, Math.floor((a + b) / 2) + (Math.floor(Math.random() * 7) - 2)));
+    return { hp: calc(sA.hp, sB.hp), atk: calc(sA.atk, sB.atk), spd: calc(sA.spd, sB.spd), luk: calc(sA.luk, sB.luk) };
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     
@@ -58,22 +102,35 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 const svg = slot.querySelector("svg");
                 if(svg) { svg.style.width = "50px"; svg.style.height = "50px"; }
-                slot.style.border = "2px solid #E91E63";
-                slot.style.background = "#fce4ec";
+                
+                // Estilo cuando HAY un Geno (Tema oscuro/cian)
+                slot.style.border = "2px solid #00d2ff";
+                slot.style.background = "#0f172a";
+                slot.style.boxShadow = "0 0 15px rgba(0, 210, 255, 0.2)";
             } else {
-                slot.innerHTML = '<span style="color: #E91E63; font-size: 24px;">+</span>';
-                slot.style.border = "2px dashed #E91E63";
-                slot.style.background = "#fff";
+                // Estilo cuando está VACÍO (Tema oscuro)
+                slot.innerHTML = '<span style="color: #00d2ff; font-size: 28px;">+</span>';
+                slot.style.border = "2px dashed #00d2ff";
+                slot.style.background = "#1e293b";
+                slot.style.boxShadow = "inset 0 0 10px rgba(0,210,255,0.1)";
             }
         });
 
-        // ARREGLO DEL BOTÓN: Validamos de forma segura
         let tieneEsencia = true; 
         if (window.miInventario && typeof window.miInventario.vitalEssence !== 'undefined') {
             tieneEsencia = window.miInventario.vitalEssence >= 500;
         }
 
-        if(btnBreeding) btnBreeding.disabled = !(padre1 && padre2 && tieneEsencia);
+        if(btnBreeding) {
+            btnBreeding.disabled = !(padre1 && padre2 && tieneEsencia);
+            if(!btnBreeding.disabled) {
+                btnBreeding.style.opacity = "1";
+                btnBreeding.style.cursor = "pointer";
+            } else {
+                btnBreeding.style.opacity = "0.5";
+                btnBreeding.style.cursor = "not-allowed";
+            }
+        }
     }
 
     function abrirSelector(numPadre) {
@@ -92,26 +149,30 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         if (genosValidos.length === 0) {
-            if(listContainer) listContainer.innerHTML = '<div style="font-size: 11px; color: #d9534f; width:100%; text-align:center;">No hay Genos aptos (Requiere Nivel 10+ y crías disponibles).</div>';
+            if(listContainer) listContainer.innerHTML = '<div style="font-size: 11px; color: #ef4444; width:100%; text-align:center;">No hay Genos aptos en la base de datos.</div>';
             return;
         }
 
         genosValidos.forEach(geno => {
             const btn = document.createElement("div");
-            btn.style = "padding: 5px; border: 1px solid #ccc; border-radius: 5px; cursor: pointer; background: #fafafa; font-size: 11px; display: flex; flex-direction: column; align-items: center; width: 60px;";
+            // Tarjetas de Genos oscuras
+            btn.style = "padding: 8px; border: 1px solid #334155; border-radius: 8px; cursor: pointer; background: #1e293b; font-size: 11px; display: flex; flex-direction: column; align-items: center; width: 65px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.3);";
             
+            btn.onmouseover = () => btn.style.borderColor = "#00d2ff";
+            btn.onmouseout = () => btn.style.borderColor = "#334155";
+
             const pColor = geno.color || geno.visual_genes?.base_color || geno.base_color || "#ccc";
             const pShape = (geno.genes && geno.genes.cuerpo) ? geno.genes.cuerpo.dom : (geno.shape || geno.visual_genes?.body_shape || geno.body_shape || "gota");
             const pWing = (geno.genes && geno.genes.espalda) ? geno.genes.espalda.dom : (geno.wing_type || "ninguno");
 
             btn.innerHTML = `
                 ${typeof generarSvgGeno === 'function' ? generarSvgGeno({ body_shape: pShape, base_color: pColor, wing_type: pWing, isEgg: false }) : ''}
-                <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-align: center;">Lv.${geno.level}</span>
-                <span style="color: #E91E63;">${7 - (geno.breedCount||0)} crías</span>
+                <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-align: center; color: #fff; margin-top: 4px;">Lv.${geno.level}</span>
+                <span style="color: #00d2ff; font-weight: bold;">${7 - (geno.breedCount||0)} crías</span>
             `;
             
             const svg = btn.querySelector("svg");
-            if(svg) { svg.style.width = "30px"; svg.style.height = "30px"; }
+            if(svg) { svg.style.width = "35px"; svg.style.height = "35px"; }
 
             btn.addEventListener("click", () => {
                 if(seleccionandoPara === 1) padre1 = geno;
@@ -138,19 +199,23 @@ document.addEventListener("DOMContentLoaded", () => {
             padre2.breedCount++;
 
             btnBreeding.disabled = true;
-            btnBreeding.innerText = "Incubando...";
+            btnBreeding.innerText = "Secuenciando ADN...";
             
             let toggle = false;
             const anim = setInterval(() => {
                 toggle = !toggle;
                 slot1.style.transform = toggle ? "scale(1.1)" : "scale(0.9)";
                 slot2.style.transform = !toggle ? "scale(1.1)" : "scale(0.9)";
+                slot1.style.borderColor = toggle ? "#8b5cf6" : "#00d2ff";
+                slot2.style.borderColor = !toggle ? "#8b5cf6" : "#00d2ff";
             }, 150);
 
             setTimeout(() => {
                 clearInterval(anim);
                 slot1.style.transform = "scale(1)";
                 slot2.style.transform = "scale(1)";
+                slot1.style.borderColor = "#00d2ff";
+                slot2.style.borderColor = "#00d2ff";
 
                 const genHijo = Math.max(padre1.generation || 0, padre2.generation || 0) + 1;
                 
@@ -164,9 +229,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 };
 
                 const statsHijo = calcularIVs(padre1.stats, padre2.stats);
-                
-                const pColor1 = padre1.color || padre1.base_color || "#aaa";
-                const pColor2 = padre2.color || padre2.base_color || "#bbb";
+                const pColor1 = padre1.color || padre1.base_color || "#77DD77";
+                const pColor2 = padre2.color || padre2.base_color || "#77DD77";
                 const colorHijo = Math.random() > 0.5 ? pColor1 : pColor2;
 
                 const hijo = {
@@ -179,10 +243,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     level: 1,
                     xp: 0,
                     xpNeeded: 100,
-                    
                     genes: genesHijo,
                     stats: statsHijo,
-                    
                     body_shape: genesHijo.cuerpo.dom,
                     eye_type: genesHijo.ojos.dom,
                     mouth_type: genesHijo.boca.dom,
@@ -191,7 +253,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     element: genesHijo.afinidad.dom,
                     base_color: colorHijo,
                     color: colorHijo,
-                    
                     reward: 100
                 };
 
@@ -201,7 +262,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if(!window.misGenos) window.misGenos = [];
                 window.misGenos.push(hijo);
-                btnBreeding.innerText = "Iniciar Crianza";
+                btnBreeding.innerText = "Iniciar Secuencia";
                 window.iniciarSelectorCrianza(); 
             }, 2000);
         });
@@ -215,22 +276,23 @@ document.addEventListener("DOMContentLoaded", () => {
         grid.innerHTML = "";
 
         if(huevos.length === 0) {
-            grid.innerHTML = '<div style="margin: auto; color: #999; font-size: 12px; font-style: italic;">La incubadora está vacía.</div>';
+            grid.innerHTML = '<div style="margin: auto; color: #64748b; font-size: 12px; font-style: italic;">La incubadora está vacía.</div>';
             return;
         }
 
         huevos.forEach(huevo => {
             const card = document.createElement("div");
-            card.style = "min-width: 90px; background: #fff; border: 1px solid #f8bbd0; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); position: relative;";
+            // Tarjetas de huevos oscuras y brillantes
+            card.style = "min-width: 95px; background: #1e293b; border: 1px solid #3b82f6; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); position: relative;";
             
             card.innerHTML = `
                 ${typeof generarSvgGeno === 'function' ? generarSvgGeno(huevo) : '<span>Huevo</span>'}
-                <div id="timer-${huevo.id}" style="font-size: 11px; font-weight: bold; color: #d81b60; margin-top: 5px;">Calculando...</div>
-                <button id="btn-skip-${huevo.id}" style="margin-top: 5px; font-size: 10px; background: #8A2BE2; color: white; border: none; border-radius: 4px; padding: 3px 6px; cursor: pointer;">⚡ 0.5 POL</button>
+                <div id="timer-${huevo.id}" style="font-size: 12px; font-weight: bold; color: #00d2ff; margin-top: 8px; letter-spacing: 1px;">Calc...</div>
+                <button id="btn-skip-${huevo.id}" style="margin-top: 8px; font-size: 10px; background: linear-gradient(135deg, #8b5cf6, #3b82f6); color: white; border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4); text-transform: uppercase;">⚡ 0.5 POL</button>
             `;
             
             const svg = card.querySelector("svg");
-            if(svg) { svg.style.width = "40px"; svg.style.height = "40px"; }
+            if(svg) { svg.style.width = "45px"; svg.style.height = "45px"; }
 
             const btnSkip = card.querySelector(`#btn-skip-${huevo.id}`);
             if(btnSkip) {
@@ -242,7 +304,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         huevo.isEgg = false;
                         if (typeof generarSvgGeno === 'function') huevo.svg = generarSvgGeno(huevo); 
                         
-                        alert(`⚡ ¡Acelerador Activado!\nEl Huevo eclosionó instantáneamente.\nBienvenido al mundo: [Gen ${huevo.generation}].\nForma: ${huevo.body_shape}`);
+                        alert(`⚡ ¡Sobrecarga Activada!\nEl Huevo eclosionó instantáneamente.\nBienvenido al mundo: [Gen ${huevo.generation}].\nForma: ${huevo.body_shape}`);
                         window.renderizarIncubadora();
                         if(window.actualizarPanelRPG) window.actualizarPanelRPG();
                     } else {
@@ -272,7 +334,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 if(label) {
                     const min = Math.floor(restante / 60000);
                     const sec = Math.floor((restante % 60000) / 1000);
-                    label.innerText = `${min}m ${sec}s`;
+                    // Formato 00:00
+                    const secStr = sec < 10 ? "0" + sec : sec;
+                    label.innerText = `${min}:${secStr}`;
                 }
             }
         });
