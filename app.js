@@ -253,3 +253,62 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// =========================================
+// GESTOR DE NAVEGACIÓN Y CIERRE DE MENÚ
+// =========================================
+
+/**
+ * Función maestra para cambiar de pantalla
+ * Cierra el menú automáticamente y muestra la pantalla deseada
+ */
+window.navegarA = function(idPantalla) {
+    // 1. Ocultar todas las pantallas
+    const pantallas = document.querySelectorAll('.app-screen');
+    pantallas.forEach(p => p.classList.add('hidden'));
+
+    // 2. Mostrar la pantalla elegida
+    const destino = document.getElementById(idPantalla);
+    if (destino) destino.classList.remove('hidden');
+
+    // 3. CERRAR EL MENÚ NEXO AUTOMÁTICAMENTE
+    const menuNexo = document.getElementById('drawer-menu');
+    if (menuNexo) menuNexo.classList.add('hidden');
+};
+
+// --- ARREGLO DEL BOTÓN "X" ---
+document.addEventListener("DOMContentLoaded", () => {
+    const btnCerrarNexo = document.getElementById("close-drawer");
+    const menuNexo = document.getElementById("drawer-menu");
+
+    if (btnCerrarNexo && menuNexo) {
+        btnCerrarNexo.onclick = function(e) {
+            e.preventDefault(); // Evita cualquier comportamiento extraño
+            menuNexo.classList.add("hidden");
+        };
+    }
+
+    // --- VINCULAR BOTONES DEL MENÚ ---
+    // Mapeamos los IDs de tus botones con las funciones de navegación
+    const botonesNexo = {
+        'btn-sanctuary': 'sanctuary-screen',
+        'btn-alchemy': 'alchemy-screen',
+        'btn-breeding': 'breeding-screen',
+        'btn-arcade': 'arcade-menu',
+        'btn-coliseum': 'coliseum-screen',
+        'btn-market': 'market-screen'
+    };
+
+    for (const [btnId, pantallaId] of Object.entries(botonesNexo)) {
+        const btn = document.getElementById(btnId);
+        if (btn) {
+            btn.onclick = () => navegarA(pantallaId);
+        }
+    }
+
+    // Botón para volver al laboratorio (Home)
+    const botonesHome = document.querySelectorAll('.btn-go-home');
+    botonesHome.forEach(btn => {
+        btn.onclick = () => navegarA('room-area');
+    });
+});
