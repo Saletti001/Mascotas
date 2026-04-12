@@ -128,10 +128,18 @@
     z-index: 1;
 }
 
-/* 4. Oscurecemos el título "CENTRO DE CRIANZA" para que se pueda leer sobre el fondo claro */
-#breeding-screen h3, 
-#breeding-screen > p {
-    color: #0d1a24 !important; /* Mismo azul oscuro de tu menú */
-    text-shadow: none !important;
+/* 4. Damos volumen y profundidad al texto (Adiós al texto plano) */
+#breeding-screen h3 {
+    color: #0d1a24 !important; 
     font-weight: 900 !important;
+    letter-spacing: 3px !important;
+    /* Doble sombra: una difuminada para separar del fondo y una nítida para darle estilo */
+    text-shadow: 0px 5px 10px rgba(0, 0, 0, 0.4), 1px 2px 0px rgba(0, 0, 0, 0.3) !important;
+}
+
+#breeding-screen > p {
+    color: #1a2a36 !important; 
+    font-weight: 800 !important;
+    /* Sombra más suave para que el texto pequeño no se manche pero gane relieve */
+    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25) !important;
 }
