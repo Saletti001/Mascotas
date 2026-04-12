@@ -2,50 +2,6 @@
 // BreedingManager.js - ALGORITMO GENÉTICO E INCUBADORA
 // =========================================
 
-// --- BASE DE DATOS MAESTRA DE GENES ---
-const GenomaBBDD = {
-    cuerpo: ["frijol", "hongo", "gota", "triangulo", "circulo", "cuadrado"],
-    ojos: ["estandar", "visor_mecha", "ojos_araña", "hipno_espiral"],
-    boca: ["colmillos", "fauces_anilladas", "babeo_acido", "rejilla"],
-    espalda: ["ninguno", "alas_murcielago", "jetpack", "tentaculos", "tubos_quimicos"],
-    cabeza: ["ninguno", "corona_rey", "halo_neon", "cuerno_mutante", "cerebro_expuesto", "hongo_parasito"],
-    afinidad: ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"]
-};
-
-function randomFrom(array) { 
-    return array[Math.floor(Math.random() * array.length)]; 
-}
-
-function heredarRasgo(padreA, padreB, categoria) {
-    const roll = Math.random() * 100;
-    
-    const getGenSeguro = (padre, cat, tipo) => {
-        if (padre.genes && padre.genes[cat] && padre.genes[cat][tipo]) {
-            return padre.genes[cat][tipo]; 
-        }
-        if (tipo === 'dom') {
-            if (cat === 'cuerpo') return padre.shape || padre.visual_genes?.body_shape || padre.body_shape || "gota";
-            if (cat === 'ojos') return padre.eye_type || "estandar";
-            if (cat === 'boca') return padre.mouth_type || "colmillos";
-            if (cat === 'espalda') return padre.wing_type || "ninguno";
-            if (cat === 'cabeza') return padre.hat_type || "ninguno";
-            if (cat === 'afinidad') return padre.element || "Biomutante";
-        }
-        return randomFrom(GenomaBBDD[cat]); 
-    };
-
-    if (roll <= 70) return Math.random() > 0.5 ? getGenSeguro(padreA, categoria, 'dom') : getGenSeguro(padreB, categoria, 'dom');
-    else if (roll <= 95) return Math.random() > 0.5 ? getGenSeguro(padreA, categoria, 'rec') : getGenSeguro(padreB, categoria, 'rec');
-    else return randomFrom(GenomaBBDD[categoria]); 
-}
-
-function calcularIVs(statsA, statsB) {
-    const sA = statsA || { hp: 50, atk: 15, spd: 15, luk: 15 };
-    const sB = statsB || { hp: 50, atk: 15, spd: 15, luk: 15 };
-    const calc = (a, b) => Math.max(1, Math.min(31, Math.floor((a + b) / 2) + (Math.floor(Math.random() * 7) - 2)));
-    return { hp: calc(sA.hp, sB.hp), atk: calc(sA.atk, sB.atk), spd: calc(sA.spd, sB.spd), luk: calc(sA.luk, sB.luk) };
-}
-
 document.addEventListener("DOMContentLoaded", () => {
     
     let padre1 = null;
@@ -103,12 +59,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 const svg = slot.querySelector("svg");
                 if(svg) { svg.style.width = "50px"; svg.style.height = "50px"; }
                 
-                // Estilo cuando HAY un Geno (Tema oscuro/cian)
+                // Estilo "Tech" cuando HAY un Geno
                 slot.style.border = "2px solid #00d2ff";
                 slot.style.background = "#0f172a";
                 slot.style.boxShadow = "0 0 15px rgba(0, 210, 255, 0.2)";
             } else {
-                // Estilo cuando está VACÍO (Tema oscuro)
+                // Estilo "Tech" cuando está VACÍO
                 slot.innerHTML = '<span style="color: #00d2ff; font-size: 28px;">+</span>';
                 slot.style.border = "2px dashed #00d2ff";
                 slot.style.background = "#1e293b";
@@ -155,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         genosValidos.forEach(geno => {
             const btn = document.createElement("div");
-            // Tarjetas de Genos oscuras
+            // Tarjetas de selección oscuras
             btn.style = "padding: 8px; border: 1px solid #334155; border-radius: 8px; cursor: pointer; background: #1e293b; font-size: 11px; display: flex; flex-direction: column; align-items: center; width: 65px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.3);";
             
             btn.onmouseover = () => btn.style.borderColor = "#00d2ff";
@@ -201,6 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
             btnBreeding.disabled = true;
             btnBreeding.innerText = "Secuenciando ADN...";
             
+            // Animación Cyan/Morada
             let toggle = false;
             const anim = setInterval(() => {
                 toggle = !toggle;
@@ -282,7 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         huevos.forEach(huevo => {
             const card = document.createElement("div");
-            // Tarjetas de huevos oscuras y brillantes
+            // Tarjetas de huevos oscuras
             card.style = "min-width: 95px; background: #1e293b; border: 1px solid #3b82f6; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); position: relative;";
             
             card.innerHTML = `
@@ -334,7 +291,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 if(label) {
                     const min = Math.floor(restante / 60000);
                     const sec = Math.floor((restante % 60000) / 1000);
-                    // Formato 00:00
                     const secStr = sec < 10 ? "0" + sec : sec;
                     label.innerText = `${min}:${secStr}`;
                 }
