@@ -15,7 +15,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const listContainer = document.getElementById("breeding-list");
     const closeSelectorBtn = document.getElementById("close-breeding-selector");
 
-    // LÓGICA DEL BOTÓN "X" PARA CERRAR EL MODAL
     if(closeSelectorBtn) {
         closeSelectorBtn.addEventListener("click", () => {
             if(selectorContainer) selectorContainer.classList.add("hidden");
@@ -98,7 +97,13 @@ document.addEventListener("DOMContentLoaded", () => {
     function abrirSelector(numPadre) {
         seleccionandoPara = numPadre;
         if(selectorContainer) selectorContainer.classList.remove("hidden");
-        if(listContainer) listContainer.innerHTML = "";
+        
+        if(listContainer) {
+            listContainer.innerHTML = "";
+            listContainer.style.display = "flex";
+            listContainer.style.flexDirection = "column";
+            listContainer.style.gap = "12px";
+        }
 
         const todosMisGenos = [];
         if(window.miMascota) todosMisGenos.push(window.miMascota);
@@ -110,15 +115,13 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         todosMisGenos.forEach(geno => {
-            if(!geno || geno.isEgg) return; // Ocultamos los huevos
+            if(!geno || geno.isEgg) return;
 
-            // Validaciones
             const yaSeleccionado = (padre1 && padre1.id === geno.id) || (padre2 && padre2.id === geno.id);
             const cumpleRequisitos = (geno.level >= 10) && ((geno.breedCount || 0) < 7) && !yaSeleccionado;
 
             const btn = document.createElement("div");
             
-            // ESTILO DE TARJETA HORIZONTAL
             let styleStr = "padding: 12px; border-radius: 14px; display: flex; align-items: center; text-align: left; box-shadow: 0 4px 10px rgba(0,0,0,0.4); transition: 0.2s;";
 
             if(cumpleRequisitos) {
@@ -137,7 +140,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             let svgContent = typeof generarSvgGeno === 'function' ? generarSvgGeno({ body_shape: pShape, base_color: pColor, wing_type: pWing, isEgg: false }) : '<span>Geno</span>';
 
-            // Textos de estado
             let statusText = `<span style="color: #00d2ff; font-weight: bold; font-size: 11px;">${7 - (geno.breedCount||0)} crías disponibles</span>`;
             if(yaSeleccionado) statusText = `<span style="color: #f0ad4e; font-weight: bold; font-size: 11px;">⚠️ Ya está seleccionado</span>`;
             else if(geno.level < 10) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Requiere Nivel 10</span>`;
@@ -154,7 +156,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
             `;
 
-            // HACEMOS LA IMAGEN MÁS GRANDE
             const svg = btn.querySelector("svg");
             if(svg) { svg.style.width = "65px"; svg.style.height = "65px"; } 
 
