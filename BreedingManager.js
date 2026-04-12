@@ -99,14 +99,21 @@ document.addEventListener("DOMContentLoaded", () => {
     function abrirSelector(numPadre) {
         seleccionandoPara = numPadre;
         if(selectorContainer) selectorContainer.classList.remove("hidden");
-        if(listContainer) listContainer.innerHTML = "";
+        
+        // FORZAMOS DISEÑO DE LISTA VERTICAL (Adiós a la cuadrícula pequeña)
+        if(listContainer) {
+            listContainer.innerHTML = "";
+            listContainer.style.display = "flex";
+            listContainer.style.flexDirection = "column";
+            listContainer.style.gap = "12px";
+        }
 
         const todosMisGenos = [];
         if(window.miMascota) todosMisGenos.push(window.miMascota);
         if(window.misGenos) todosMisGenos.push(...window.misGenos);
 
         if (todosMisGenos.length === 0) {
-            if(listContainer) listContainer.innerHTML = '<div style="font-size: 12px; color: #ef4444; width:100%; text-align:center; grid-column: span 2;">No tienes ningún Geno.</div>';
+            if(listContainer) listContainer.innerHTML = '<div style="font-size: 12px; color: #ef4444; width:100%; text-align:center; padding: 20px;">La base de datos está vacía.</div>';
             return;
         }
 
@@ -119,17 +126,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const btn = document.createElement("div");
             
-            // Estilo base de tarjeta
-            let styleStr = "padding: 10px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; font-size: 11px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.2s;";
+            // ESTILO DE TARJETA HORIZONTAL (Imagen a la izq, texto a la der)
+            let styleStr = "padding: 12px; border-radius: 14px; display: flex; align-items: center; gap: 15px; text-align: left; box-shadow: 0 4px 10px rgba(0,0,0,0.4); transition: 0.2s;";
 
             if(cumpleRequisitos) {
                 // Estilo Activo
                 styleStr += " border: 1px solid #4dd0e1; background: #1a2a36; cursor: pointer;";
-                btn.onmouseover = () => btn.style.boxShadow = "0 0 15px rgba(77, 208, 225, 0.4)";
-                btn.onmouseout = () => btn.style.boxShadow = "0 4px 6px rgba(0,0,0,0.3)";
+                btn.onmouseover = () => btn.style.boxShadow = "0 0 20px rgba(77, 208, 225, 0.4)";
+                btn.onmouseout = () => btn.style.boxShadow = "0 4px 10px rgba(0,0,0,0.4)";
             } else {
                 // Estilo Deshabilitado
-                styleStr += " border: 1px solid #555; background: #0a1118; opacity: 0.5; cursor: not-allowed;";
+                styleStr += " border: 1px solid #555; background: #0a1118; opacity: 0.6; cursor: not-allowed;";
             }
 
             btn.style = styleStr;
@@ -140,20 +147,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
             let svgContent = typeof generarSvgGeno === 'function' ? generarSvgGeno({ body_shape: pShape, base_color: pColor, wing_type: pWing, isEgg: false }) : '<span>Geno</span>';
 
-            // Etiqueta de estado
-            let statusText = `<span style="color: #00d2ff; font-weight: bold; margin-top: 5px;">${7 - (geno.breedCount||0)} crías</span>`;
-            if(yaSeleccionado) statusText = `<span style="color: #f0ad4e; font-weight: bold; margin-top: 5px;">Seleccionado</span>`;
-            else if(geno.level < 10) statusText = `<span style="color: #d9534f; font-weight: bold; margin-top: 5px;">Requiere Nivel 10</span>`;
-            else if((geno.breedCount||0) >= 7) statusText = `<span style="color: #d9534f; font-weight: bold; margin-top: 5px;">Límite alcanzado</span>`;
+            // Textos de estado detallados
+            let statusText = `<span style="color: #00d2ff; font-weight: bold; font-size: 12px;">${7 - (geno.breedCount||0)} crías disponibles</span>`;
+            if(yaSeleccionado) statusText = `<span style="color: #f0ad4e; font-weight: bold; font-size: 12px;">⚠️ Ya está en la incubadora</span>`;
+            else if(geno.level < 10) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 12px;">🔒 Bloqueado: Requiere Nivel 10</span>`;
+            else if((geno.breedCount||0) >= 7) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 12px;">🔒 Bloqueado: Límite de crías</span>`;
 
+            // Construcción del HTML interno de la tarjeta
             btn.innerHTML = `
-                ${svgContent}
-                <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; color: #fff; margin-top: 8px; font-weight: bold;">Nv. ${geno.level || 1}</span>
-                ${statusText}
+                <div style="width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #333; flex-shrink: 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                    ${svgContent}
+                </div>
+                <div style="display: flex; flex-direction: column; justify-content: center; width: 100%;">
+                    <span style="color: #fff; font-weight: 900; font-size: 16px; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px;">Especímen Nv. ${geno.level || 1}</span>
+                    <span style="color: #aaa; font-size: 11px; margin-bottom: 6px; text-transform: uppercase;">Base: ${pShape}</span>
+                    ${statusText}
+                </div>
             `;
 
+            // AUMENTAMOS EL TAMAÑO DEL SVG AL DOBLE
             const svg = btn.querySelector("svg");
-            if(svg) { svg.style.width = "45px"; svg.style.height = "45px"; }
+            if(svg) { svg.style.width = "65px"; svg.style.height = "65px"; } 
 
             if(cumpleRequisitos) {
                 btn.addEventListener("click", () => {
@@ -165,96 +179,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             if(listContainer) listContainer.appendChild(btn);
-        });
-    }
-
-    if(slot1) slot1.addEventListener("click", () => abrirSelector(1));
-    if(slot2) slot2.addEventListener("click", () => abrirSelector(2));
-
-    if(btnBreeding) {
-        btnBreeding.addEventListener("click", () => {
-            if(!padre1 || !padre2) return;
-
-            if(window.miInventario && typeof window.miInventario.addEssence === 'function') {
-                window.miInventario.addEssence(-500); 
-            }
-            
-            padre1.breedCount++;
-            padre2.breedCount++;
-
-            btnBreeding.disabled = true;
-            btnBreeding.innerText = "Secuenciando ADN...";
-            
-            let toggle = false;
-            const anim = setInterval(() => {
-                toggle = !toggle;
-                slot1.style.transform = toggle ? "scale(1.1)" : "scale(0.9)";
-                slot2.style.transform = !toggle ? "scale(1.1)" : "scale(0.9)";
-                slot1.style.borderColor = toggle ? "#8b5cf6" : "#4dd0e1";
-                slot2.style.borderColor = !toggle ? "#8b5cf6" : "#4dd0e1";
-            }, 150);
-
-            setTimeout(() => {
-                clearInterval(anim);
-                slot1.style.transform = "scale(1)";
-                slot2.style.transform = "scale(1)";
-                slot1.style.borderColor = "#4dd0e1";
-                slot2.style.borderColor = "#4dd0e1";
-
-                const genHijo = Math.max(padre1.generation || 0, padre2.generation || 0) + 1;
-                
-                let genesHijo, statsHijo;
-                if(typeof heredarRasgo === 'function') {
-                    genesHijo = {
-                        cuerpo: { dom: heredarRasgo(padre1, padre2, 'cuerpo'), rec: heredarRasgo(padre1, padre2, 'cuerpo') },
-                        ojos: { dom: heredarRasgo(padre1, padre2, 'ojos'), rec: heredarRasgo(padre1, padre2, 'ojos') },
-                        boca: { dom: heredarRasgo(padre1, padre2, 'boca'), rec: heredarRasgo(padre1, padre2, 'boca') },
-                        espalda: { dom: heredarRasgo(padre1, padre2, 'espalda'), rec: heredarRasgo(padre1, padre2, 'espalda') },
-                        cabeza: { dom: heredarRasgo(padre1, padre2, 'cabeza'), rec: heredarRasgo(padre1, padre2, 'cabeza') },
-                        afinidad: { dom: heredarRasgo(padre1, padre2, 'afinidad'), rec: heredarRasgo(padre1, padre2, 'afinidad') }
-                    };
-                    statsHijo = calcularIVs(padre1.stats, padre2.stats);
-                } else {
-                    genesHijo = { cuerpo: {dom:"gota", rec:"gota"}, ojos: {dom:"estandar", rec:"estandar"}, boca: {dom:"colmillos", rec:"colmillos"}, espalda: {dom:"ninguno", rec:"ninguno"}, cabeza: {dom:"ninguno", rec:"ninguno"}, afinidad: {dom:"Biomutante", rec:"Biomutante"} };
-                    statsHijo = {hp: 50, atk: 15, spd: 15, luk: 15};
-                }
-
-                const pColor1 = padre1.color || padre1.base_color || "#77DD77";
-                const pColor2 = padre2.color || padre2.base_color || "#77DD77";
-                const colorHijo = Math.random() > 0.5 ? pColor1 : pColor2;
-
-                const hijo = {
-                    id: Date.now(),
-                    name: "Huevo Misterioso",
-                    isEgg: true, 
-                    hatchTime: Date.now() + 120000, 
-                    generation: genHijo,
-                    breedCount: 0,
-                    level: 1,
-                    xp: 0,
-                    xpNeeded: 100,
-                    genes: genesHijo,
-                    stats: statsHijo,
-                    body_shape: genesHijo.cuerpo.dom,
-                    eye_type: genesHijo.ojos.dom,
-                    mouth_type: genesHijo.boca.dom,
-                    wing_type: genesHijo.espalda.dom,
-                    hat_type: genesHijo.cabeza.dom,
-                    element: genesHijo.afinidad.dom,
-                    base_color: colorHijo,
-                    color: colorHijo,
-                    reward: 100
-                };
-
-                if (typeof generarSvgGeno === 'function') {
-                    hijo.svg = generarSvgGeno(hijo);
-                }
-
-                if(!window.misGenos) window.misGenos = [];
-                window.misGenos.push(hijo);
-                btnBreeding.innerText = "INICIAR SECUENCIA";
-                window.iniciarSelectorCrianza(); 
-            }, 2000);
         });
     }
 
