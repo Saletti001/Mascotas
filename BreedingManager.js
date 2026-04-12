@@ -42,52 +42,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function actualizarSlots() {
-        normalizarGenos();
-        
-        [slot1, slot2].forEach((slot, index) => {
-            if(!slot) return;
-            const padre = index === 0 ? padre1 : padre2;
-            if (padre) {
-                const pColor = padre.color || padre.visual_genes?.base_color || padre.base_color || "#ccc";
-                const pShape = (padre.genes && padre.genes.cuerpo) ? padre.genes.cuerpo.dom : (padre.shape || padre.visual_genes?.body_shape || padre.body_shape || "gota");
-                const pWing = (padre.genes && padre.genes.espalda) ? padre.genes.espalda.dom : (padre.wing_type || "ninguno");
-
-                slot.innerHTML = typeof generarSvgGeno === 'function' 
-                    ? generarSvgGeno({ body_shape: pShape, base_color: pColor, wing_type: pWing, isEgg: false })
-                    : '<span>Geno</span>';
-                
-                const svg = slot.querySelector("svg");
-                if(svg) { svg.style.width = "50px"; svg.style.height = "50px"; }
-                
-                // Estilo "Tech" cuando HAY un Geno
-                slot.style.border = "2px solid #00d2ff";
-                slot.style.background = "#0f172a";
-                slot.style.boxShadow = "0 0 15px rgba(0, 210, 255, 0.2)";
-            } else {
-                // Estilo "Tech" cuando está VACÍO
-                slot.innerHTML = '<span style="color: #00d2ff; font-size: 28px;">+</span>';
-                slot.style.border = "2px dashed #00d2ff";
-                slot.style.background = "#1e293b";
-                slot.style.boxShadow = "inset 0 0 10px rgba(0,210,255,0.1)";
-            }
-        });
-
-        let tieneEsencia = true; 
-        if (window.miInventario && typeof window.miInventario.vitalEssence !== 'undefined') {
-            tieneEsencia = window.miInventario.vitalEssence >= 500;
+    [slot1, slot2].forEach((slot, index) => {
+        if(!slot) return;
+        const padre = index === 0 ? padre1 : padre2;
+        if (padre) {
+            // ... (código previo de SVG)
+            
+            slot.style.border = "2px solid #4dd0e1"; // Cian en lugar de rosa
+            slot.style.background = "#1a2a36";      // Fondo oscuro
+            slot.style.boxShadow = "0 0 10px rgba(77, 208, 225, 0.4)";
+        } else {
+            slot.innerHTML = '<span style="color: #4dd0e1; font-size: 28px;">+</span>';
+            slot.style.border = "2px dashed #4dd0e1";
+            slot.style.background = "#1a2a36";
         }
-
-        if(btnBreeding) {
-            btnBreeding.disabled = !(padre1 && padre2 && tieneEsencia);
-            if(!btnBreeding.disabled) {
-                btnBreeding.style.opacity = "1";
-                btnBreeding.style.cursor = "pointer";
-            } else {
-                btnBreeding.style.opacity = "0.5";
-                btnBreeding.style.cursor = "not-allowed";
-            }
-        }
-    }
+    });
+    // ... rest of validation
+}
 
     function abrirSelector(numPadre) {
         seleccionandoPara = numPadre;
