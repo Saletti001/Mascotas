@@ -74,3 +74,27 @@
 .btn-fuse { background: rgba(138, 43, 226, 0.2); color: #e0b0ff; border: 1px solid #8A2BE2; padding: 12px 20px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; width: 100%; transition: all 0.3s;}
 .btn-fuse:hover { background: rgba(138, 43, 226, 0.4); box-shadow: 0 0 15px rgba(138, 43, 226, 0.4);}
 .btn-fuse:disabled { border-color: #555; color: #555; cursor: not-allowed; }
+
+/* ========================================= */
+/* AJUSTES GLOBALES RED NEXO                 */
+/* ========================================= */
+
+/* 1. Fuerza el fondo azul oscuro en todas las pantallas (Crianza, Arcade, etc.) */
+.app-screen {
+    background-color: #0d1a24 !important; /* El color exacto de tu menú Nexo */
+    min-height: 100vh; /* Asegura que cubra toda la pantalla hacia abajo */
+}
+
+/* 2. Formato de Títulos idéntico a "RED NEXO" */
+.screen-title {
+    text-align: center; 
+    color: #80deea !important; /* El cian característico de Nexo */
+    margin-top: 25px; 
+    text-transform: uppercase !important; /* Fuerza las mayúsculas */
+    letter-spacing: 2px !important; /* Separa las letras para darle toque Tech */
+    font-size: 20px !important;
+    font-weight: bold;
+    text-shadow: 0 0 15px rgba(128, 222, 234, 0.4) !important; /* Brillo neón sutil */
+    border-bottom: 1px solid rgba(128, 222, 234, 0.2); /* Línea sutil debajo del título */
+    padding-bottom: 15px;
+}
