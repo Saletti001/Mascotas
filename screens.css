@@ -143,3 +143,21 @@
     /* Sombra más suave para que el texto pequeño no se manche pero gane relieve */
     text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.25) !important;
 }
+
+/* ========================================= */
+/* FIX: EVITAR SELECCIÓN AL ACARICIAR GENOS  */
+/* ========================================= */
+#geno-container, .geno-idle, svg {
+    /* Quita el destello/recuadro de color al tocar en el celular */
+    -webkit-tap-highlight-color: transparent !important;
+    tap-highlight-color: transparent !important;
+    
+    /* Evita que el celular intente "seleccionar" la imagen al tocar rápido */
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+    
+    /* Evita el borde de enfoque (focus) */
+    outline: none !important;
+}
