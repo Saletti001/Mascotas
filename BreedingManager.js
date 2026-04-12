@@ -14,6 +14,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const selectorContainer = document.getElementById("breeding-selector");
     const listContainer = document.getElementById("breeding-list");
 
+    // --- LÓGICA DEL BOTÓN CERRAR MODAL ---
+    const closeSelectorBtn = document.getElementById("close-breeding-selector");
+    if(closeSelectorBtn) {
+        closeSelectorBtn.addEventListener("click", () => {
+            if(selectorContainer) selectorContainer.classList.add("hidden");
+        });
+    }
+
     function actualizarPolUI() {
         const polText = document.getElementById("pol-amount");
         if(polText && window.miWallet) {
@@ -42,23 +50,51 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function actualizarSlots() {
-    [slot1, slot2].forEach((slot, index) => {
-        if(!slot) return;
-        const padre = index === 0 ? padre1 : padre2;
-        if (padre) {
-            // ... (código previo de SVG)
-            
-            slot.style.border = "2px solid #4dd0e1"; // Cian en lugar de rosa
-            slot.style.background = "#1a2a36";      // Fondo oscuro
-            slot.style.boxShadow = "0 0 10px rgba(77, 208, 225, 0.4)";
-        } else {
-            slot.innerHTML = '<span style="color: #4dd0e1; font-size: 28px;">+</span>';
-            slot.style.border = "2px dashed #4dd0e1";
-            slot.style.background = "#1a2a36";
+        normalizarGenos();
+
+        [slot1, slot2].forEach((slot, index) => {
+            if(!slot) return;
+            const padre = index === 0 ? padre1 : padre2;
+            if (padre) {
+                const pColor = padre.color || padre.visual_genes?.base_color || padre.base_color || "#ccc";
+                const pShape = (padre.genes && padre.genes.cuerpo) ? padre.genes.cuerpo.dom : (padre.shape || padre.visual_genes?.body_shape || padre.body_shape || "gota");
+                const pWing = (padre.genes && padre.genes.espalda) ? padre.genes.espalda.dom : (padre.wing_type || "ninguno");
+
+                slot.innerHTML = typeof generarSvgGeno === 'function' 
+                    ? generarSvgGeno({ body_shape: pShape, base_color: pColor, wing_type: pWing, isEgg: false })
+                    : '<span>Geno</span>';
+                
+                const svg = slot.querySelector("svg");
+                if(svg) { svg.style.width = "50px"; svg.style.height = "50px"; }
+                
+                slot.style.border = "2px solid #4dd0e1"; 
+                slot.style.background = "#1a2a36";      
+                slot.style.boxShadow = "0 0 10px rgba(77, 208, 225, 0.4)";
+            } else {
+                slot.innerHTML = '<span style="color: #4dd0e1; font-size: 28px;">+</span>';
+                slot.style.border = "2px dashed #4dd0e1";
+                slot.style.background = "#0d1a24";
+                slot.style.boxShadow = "none";
+            }
+        });
+
+        // Validación para encender el botón de Iniciar Secuencia
+        let tieneEsencia = true; 
+        if (window.miInventario && typeof window.miInventario.vitalEssence !== 'undefined') {
+            tieneEsencia = window.miInventario.vitalEssence >= 500;
         }
-    });
-    // ... rest of validation
-}
+
+        if(btnBreeding) {
+            btnBreeding.disabled = !(padre1 && padre2 && tieneEsencia);
+            if(!btnBreeding.disabled) {
+                btnBreeding.style.opacity = "1";
+                btnBreeding.style.cursor = "pointer";
+            } else {
+                btnBreeding.style.opacity = "0.5";
+                btnBreeding.style.cursor = "not-allowed";
+            }
+        }
+    }
 
     function abrirSelector(numPadre) {
         seleccionandoPara = numPadre;
@@ -68,44 +104,66 @@ document.addEventListener("DOMContentLoaded", () => {
         const todosMisGenos = [];
         if(window.miMascota) todosMisGenos.push(window.miMascota);
         if(window.misGenos) todosMisGenos.push(...window.misGenos);
-        
-        const genosValidos = todosMisGenos.filter(g => {
-            if(!g) return false;
-            const yaSeleccionado = (padre1 && padre1.id === g.id) || (padre2 && padre2.id === g.id);
-            return g.level >= 10 && g.breedCount < 7 && !yaSeleccionado && !g.isEgg;
-        });
 
-        if (genosValidos.length === 0) {
-            if(listContainer) listContainer.innerHTML = '<div style="font-size: 11px; color: #ef4444; width:100%; text-align:center;">No hay Genos aptos en la base de datos.</div>';
+        if (todosMisGenos.length === 0) {
+            if(listContainer) listContainer.innerHTML = '<div style="font-size: 12px; color: #ef4444; width:100%; text-align:center; grid-column: span 2;">No tienes ningún Geno.</div>';
             return;
         }
 
-        genosValidos.forEach(geno => {
+        todosMisGenos.forEach(geno => {
+            if(!geno || geno.isEgg) return; // Ocultamos los huevos
+
+            // Validaciones
+            const yaSeleccionado = (padre1 && padre1.id === geno.id) || (padre2 && padre2.id === geno.id);
+            const cumpleRequisitos = (geno.level >= 10) && ((geno.breedCount || 0) < 7) && !yaSeleccionado;
+
             const btn = document.createElement("div");
-            btn.style = "padding: 8px; border: 1px solid #334155; border-radius: 8px; cursor: pointer; background: #1e293b; font-size: 11px; display: flex; flex-direction: column; align-items: center; width: 65px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.3);";
             
-            btn.onmouseover = () => btn.style.borderColor = "#00d2ff";
-            btn.onmouseout = () => btn.style.borderColor = "#334155";
+            // Estilo base de tarjeta
+            let styleStr = "padding: 10px; border-radius: 12px; display: flex; flex-direction: column; align-items: center; text-align: center; font-size: 11px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: 0.2s;";
+
+            if(cumpleRequisitos) {
+                // Estilo Activo
+                styleStr += " border: 1px solid #4dd0e1; background: #1a2a36; cursor: pointer;";
+                btn.onmouseover = () => btn.style.boxShadow = "0 0 15px rgba(77, 208, 225, 0.4)";
+                btn.onmouseout = () => btn.style.boxShadow = "0 4px 6px rgba(0,0,0,0.3)";
+            } else {
+                // Estilo Deshabilitado
+                styleStr += " border: 1px solid #555; background: #0a1118; opacity: 0.5; cursor: not-allowed;";
+            }
+
+            btn.style = styleStr;
 
             const pColor = geno.color || geno.visual_genes?.base_color || geno.base_color || "#ccc";
             const pShape = (geno.genes && geno.genes.cuerpo) ? geno.genes.cuerpo.dom : (geno.shape || geno.visual_genes?.body_shape || geno.body_shape || "gota");
             const pWing = (geno.genes && geno.genes.espalda) ? geno.genes.espalda.dom : (geno.wing_type || "ninguno");
 
-            btn.innerHTML = `
-                ${typeof generarSvgGeno === 'function' ? generarSvgGeno({ body_shape: pShape, base_color: pColor, wing_type: pWing, isEgg: false }) : ''}
-                <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; text-align: center; color: #fff; margin-top: 4px;">Lv.${geno.level}</span>
-                <span style="color: #00d2ff; font-weight: bold;">${7 - (geno.breedCount||0)} crías</span>
-            `;
-            
-            const svg = btn.querySelector("svg");
-            if(svg) { svg.style.width = "35px"; svg.style.height = "35px"; }
+            let svgContent = typeof generarSvgGeno === 'function' ? generarSvgGeno({ body_shape: pShape, base_color: pColor, wing_type: pWing, isEgg: false }) : '<span>Geno</span>';
 
-            btn.addEventListener("click", () => {
-                if(seleccionandoPara === 1) padre1 = geno;
-                if(seleccionandoPara === 2) padre2 = geno;
-                if(selectorContainer) selectorContainer.classList.add("hidden");
-                actualizarSlots();
-            });
+            // Etiqueta de estado
+            let statusText = `<span style="color: #00d2ff; font-weight: bold; margin-top: 5px;">${7 - (geno.breedCount||0)} crías</span>`;
+            if(yaSeleccionado) statusText = `<span style="color: #f0ad4e; font-weight: bold; margin-top: 5px;">Seleccionado</span>`;
+            else if(geno.level < 10) statusText = `<span style="color: #d9534f; font-weight: bold; margin-top: 5px;">Requiere Nivel 10</span>`;
+            else if((geno.breedCount||0) >= 7) statusText = `<span style="color: #d9534f; font-weight: bold; margin-top: 5px;">Límite alcanzado</span>`;
+
+            btn.innerHTML = `
+                ${svgContent}
+                <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; color: #fff; margin-top: 8px; font-weight: bold;">Nv. ${geno.level || 1}</span>
+                ${statusText}
+            `;
+
+            const svg = btn.querySelector("svg");
+            if(svg) { svg.style.width = "45px"; svg.style.height = "45px"; }
+
+            if(cumpleRequisitos) {
+                btn.addEventListener("click", () => {
+                    if(seleccionandoPara === 1) padre1 = geno;
+                    if(seleccionandoPara === 2) padre2 = geno;
+                    if(selectorContainer) selectorContainer.classList.add("hidden");
+                    actualizarSlots();
+                });
+            }
+
             if(listContainer) listContainer.appendChild(btn);
         });
     }
@@ -132,20 +190,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 toggle = !toggle;
                 slot1.style.transform = toggle ? "scale(1.1)" : "scale(0.9)";
                 slot2.style.transform = !toggle ? "scale(1.1)" : "scale(0.9)";
-                slot1.style.borderColor = toggle ? "#8b5cf6" : "#00d2ff";
-                slot2.style.borderColor = !toggle ? "#8b5cf6" : "#00d2ff";
+                slot1.style.borderColor = toggle ? "#8b5cf6" : "#4dd0e1";
+                slot2.style.borderColor = !toggle ? "#8b5cf6" : "#4dd0e1";
             }, 150);
 
             setTimeout(() => {
                 clearInterval(anim);
                 slot1.style.transform = "scale(1)";
                 slot2.style.transform = "scale(1)";
-                slot1.style.borderColor = "#00d2ff";
-                slot2.style.borderColor = "#00d2ff";
+                slot1.style.borderColor = "#4dd0e1";
+                slot2.style.borderColor = "#4dd0e1";
 
                 const genHijo = Math.max(padre1.generation || 0, padre2.generation || 0) + 1;
                 
-                // Si la función de heredar está en otro archivo (motorGenetico.js), la usamos:
                 let genesHijo, statsHijo;
                 if(typeof heredarRasgo === 'function') {
                     genesHijo = {
@@ -158,7 +215,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     };
                     statsHijo = calcularIVs(padre1.stats, padre2.stats);
                 } else {
-                    // Fallback seguro por si no cargó el motor
                     genesHijo = { cuerpo: {dom:"gota", rec:"gota"}, ojos: {dom:"estandar", rec:"estandar"}, boca: {dom:"colmillos", rec:"colmillos"}, espalda: {dom:"ninguno", rec:"ninguno"}, cabeza: {dom:"ninguno", rec:"ninguno"}, afinidad: {dom:"Biomutante", rec:"Biomutante"} };
                     statsHijo = {hp: 50, atk: 15, spd: 15, luk: 15};
                 }
@@ -196,7 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if(!window.misGenos) window.misGenos = [];
                 window.misGenos.push(hijo);
-                btnBreeding.innerText = "Iniciar Secuencia";
+                btnBreeding.innerText = "INICIAR SECUENCIA";
                 window.iniciarSelectorCrianza(); 
             }, 2000);
         });
