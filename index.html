@@ -147,53 +147,56 @@
             <button class="back-btn btn-go-home">Volver al Laboratorio</button>
         </div>
 
-        <div id="breeding-screen" class="app-screen hidden" style="background: #0d1a24; position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow-y: auto; padding-bottom: 90px; box-sizing: border-box;">
+        <div id="breeding-screen" class="app-screen hidden" style="background: #0d1a24; position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; box-sizing: border-box;">
             
-            <div class="alchemy-panel" style="background: #1a2a36; border: 1px solid #333; border-radius: 16px; padding: 20px; margin: 25px 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+            <div style="width: 100%; height: 100%; overflow-y: auto; padding-bottom: 100px;">
                 
-                <div class="drawer-header" style="justify-content: center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px;">
-                    <h3 style="font-size: 16px; color: #80deea; text-transform: uppercase; letter-spacing: 2px; margin: 0; font-weight: bold;">CENTRO DE CRIANZA</h3>
-                </div>
-                
-                <p style="text-align: center; color: #aaa; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; padding: 0; margin-bottom: 25px;">
-                    Combina el ADN de dos especímenes (Nv. 10+) para iniciar la secuencia. Costo: 500 ✨
-                </p>
-                
-                <div style="display: flex; justify-content: space-around; width: 100%; margin-bottom: 20px; position: relative; align-items: center;">
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                        <div id="slot-parent-1" style="width: 75px; height: 75px; border: 2px dashed #4dd0e1; border-radius: 12px; display: flex; justify-content: center; align-items: center; background: #0d1a24; cursor: pointer; transition: 0.2s;">
-                            <span style="color: #4dd0e1; font-size: 28px;">+</span>
+                <div class="alchemy-panel" style="background: #1a2a36; border: 1px solid #333; border-radius: 16px; padding: 20px; margin: 25px 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                    
+                    <div class="drawer-header" style="justify-content: center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px;">
+                        <h3 style="font-size: 16px !important; color: #80deea !important; text-transform: uppercase !important; letter-spacing: 1px !important; margin: 0 !important; font-weight: bold !important; text-shadow: none !important;">CENTRO DE CRIANZA</h3>
+                    </div>
+                    
+                    <p style="text-align: center; color: #aaa !important; font-size: 10px !important; text-transform: uppercase !important; letter-spacing: 1px !important; padding: 0 !important; margin-bottom: 25px !important; text-shadow: none !important;">
+                        Combina el ADN de dos especímenes (Nv. 10+) para iniciar la secuencia. Costo: 500 ✨
+                    </p>
+                    
+                    <div style="display: flex; justify-content: space-around; width: 100%; margin-bottom: 20px; position: relative; align-items: center;">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                            <div id="slot-parent-1" style="width: 75px; height: 75px; border: 2px dashed #4dd0e1; border-radius: 12px; display: flex; justify-content: center; align-items: center; background: #0d1a24; cursor: pointer; transition: 0.2s;">
+                                <span style="color: #4dd0e1; font-size: 28px;">+</span>
+                            </div>
+                            <span style="font-size: 11px; font-weight: bold; color: #4dd0e1; letter-spacing: 1px;">SUJETO A</span>
                         </div>
-                        <span style="font-size: 11px; font-weight: bold; color: #4dd0e1; letter-spacing: 1px;">SUJETO A</span>
+
+                        <div style="font-size: 24px; color: #8A2BE2; filter: drop-shadow(0 0 8px #8A2BE2);">🧬</div>
+
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                            <div id="slot-parent-2" style="width: 75px; height: 75px; border: 2px dashed #4dd0e1; border-radius: 12px; display: flex; justify-content: center; align-items: center; background: #0d1a24; cursor: pointer; transition: 0.2s;">
+                                <span style="color: #4dd0e1; font-size: 28px;">+</span>
+                            </div>
+                            <span style="font-size: 11px; font-weight: bold; color: #4dd0e1; letter-spacing: 1px;">SUJETO B</span>
+                        </div>
                     </div>
 
-                    <div style="font-size: 24px; color: #8A2BE2; filter: drop-shadow(0 0 8px #8A2BE2);">🧬</div>
-
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                        <div id="slot-parent-2" style="width: 75px; height: 75px; border: 2px dashed #4dd0e1; border-radius: 12px; display: flex; justify-content: center; align-items: center; background: #0d1a24; cursor: pointer; transition: 0.2s;">
-                            <span style="color: #4dd0e1; font-size: 28px;">+</span>
-                        </div>
-                        <span style="font-size: 11px; font-weight: bold; color: #4dd0e1; letter-spacing: 1px;">SUJETO B</span>
+                    <div id="breeding-selector" class="hidden" style="width: 100%; background: #0d1a24; border: 1px solid #333; border-radius: 8px; padding: 12px; margin-bottom: 15px; max-height: 160px; overflow-y: auto;">
+                        <div style="font-size: 11px; margin-bottom: 10px; color: #80deea; text-align: center; text-transform: uppercase; letter-spacing: 1px;">Base de Datos Genética</div>
+                        <div id="breeding-list" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;"></div>
                     </div>
-                </div>
 
-                <div id="breeding-selector" class="hidden" style="width: 100%; background: #0d1a24; border: 1px solid #333; border-radius: 8px; padding: 12px; margin-bottom: 15px; max-height: 160px; overflow-y: auto;">
-                    <div style="font-size: 11px; margin-bottom: 10px; color: #80deea; text-align: center; text-transform: uppercase; letter-spacing: 1px;">Base de Datos Genética</div>
-                    <div id="breeding-list" style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center;"></div>
-                </div>
-
-                <button id="btn-start-breeding" class="btn-fuse" style="background: linear-gradient(90deg, #4dd0e1, #8A2BE2); color: #fff; font-weight: bold; border: none; padding: 14px; border-radius: 10px; width: 100%; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;" disabled>
-                    INICIAR SECUENCIA
-                </button>
-                
-                <hr style="margin: 20px 0; border: none; border-top: 1px solid #333; width: 100%;">
-                
-                <h3 style="text-align: center; color: #80deea; margin-top: 0; font-size: 12px; text-transform: uppercase; letter-spacing: 2px;">Incubadora Térmica</h3>
-                <div id="incubator-grid" style="display: flex; gap: 10px; overflow-x: auto; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 12px; min-height: 120px; width: 100%; box-sizing: border-box; align-items: center; border: 1px solid #333;">
+                    <button id="btn-start-breeding" class="btn-fuse" style="background: linear-gradient(90deg, #4dd0e1, #8A2BE2); color: #fff; font-weight: bold; border: none; padding: 14px; border-radius: 10px; width: 100%; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;" disabled>
+                        INICIAR SECUENCIA
+                    </button>
+                    
+                    <hr style="margin: 20px 0; border: none; border-top: 1px solid #333; width: 100%;">
+                    
+                    <h3 style="text-align: center; color: #80deea !important; margin-top: 0; font-size: 12px !important; text-transform: uppercase !important; letter-spacing: 2px !important; text-shadow: none !important;">Incubadora Térmica</h3>
+                    <div id="incubator-grid" style="display: flex; gap: 10px; overflow-x: auto; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 12px; min-height: 120px; width: 100%; box-sizing: border-box; align-items: center; border: 1px solid #333;">
+                    </div>
                 </div>
             </div>
 
-            <div class="fab-btn btn-go-home" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 70%; max-width: 300px; z-index: 100;">
+            <div class="fab-btn btn-go-home" style="position: absolute !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; width: 70% !important; max-width: 300px !important; z-index: 100 !important;">
                 <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0;">VOLVER AL LABORATORIO</div>
             </div>
 
