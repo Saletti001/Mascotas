@@ -42,23 +42,6 @@
 }
 #slot-counter br { display: block; }
 
-/* ... (MANTÉN EL RESTO DE TU UI.CSS IGUAL: fab-btn, modales, stats, etc.) ... */
-
-/* MONEDAS SÚPER REDONDEADAS (20px) */
-.currency-badge {
-    flex: 1; background: #0d1a24; color: #fff; border: 1px solid #4dd0e1;
-    padding: 8px 10px; border-radius: 20px; font-weight: bold; text-align: center; font-size: 13px; 
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    display: flex; justify-content: center; align-items: center; gap: 4px;
-}
-.currency-badge.pol { border-color: #8A2BE2; color: #e0b0ff; }
-
-/* HACK: El JS inyecta "✨ 100", nosotros añadimos "EV" con CSS para que no se duplique */
-#vital-essence-amount::after {
-    content: " EV";
-    font-size: 11px; color: #aaa; margin-left: 4px;
-}
-
 /* BOTONES DE STATS Y ALMACÉN SIMÉTRICOS */
 .action-btn-container { flex: 1; position: relative; }
 .action-btn {
@@ -165,3 +148,24 @@
 .btn-add-stat:active { transform: scale(0.9); }
 .recessive-text { font-weight: bold; color: #8A2BE2; }
 .btn-scanner { width: 100%; margin-top: 8px; background: rgba(138, 43, 226, 0.2); color: #e0b0ff; border: 1px solid #8A2BE2; padding: 6px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 12px; transition: background 0.3s; }
+
+/* --- CANDADO PARA RED NEXO --- */
+#game-container {
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.drawer-overlay { 
+    position: absolute !important; 
+    top: 0 !important; 
+    left: 0 !important; 
+    width: 100% !important; 
+    height: 100% !important; 
+    background: rgba(0,0,0,0.6) !important; 
+    backdrop-filter: blur(4px) !important;
+    z-index: 2000 !important; 
+    display: flex !important; 
+    flex-direction: column !important; 
+    justify-content: flex-end !important; 
+    transition: opacity 0.3s !important;
+}

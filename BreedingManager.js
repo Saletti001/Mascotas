@@ -111,7 +111,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         genosValidos.forEach(geno => {
             const btn = document.createElement("div");
-            // Tarjetas de selección oscuras
             btn.style = "padding: 8px; border: 1px solid #334155; border-radius: 8px; cursor: pointer; background: #1e293b; font-size: 11px; display: flex; flex-direction: column; align-items: center; width: 65px; transition: 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.3);";
             
             btn.onmouseover = () => btn.style.borderColor = "#00d2ff";
@@ -157,7 +156,6 @@ document.addEventListener("DOMContentLoaded", () => {
             btnBreeding.disabled = true;
             btnBreeding.innerText = "Secuenciando ADN...";
             
-            // Animación Cyan/Morada
             let toggle = false;
             const anim = setInterval(() => {
                 toggle = !toggle;
@@ -176,16 +174,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const genHijo = Math.max(padre1.generation || 0, padre2.generation || 0) + 1;
                 
-                const genesHijo = {
-                    cuerpo: { dom: heredarRasgo(padre1, padre2, 'cuerpo'), rec: heredarRasgo(padre1, padre2, 'cuerpo') },
-                    ojos: { dom: heredarRasgo(padre1, padre2, 'ojos'), rec: heredarRasgo(padre1, padre2, 'ojos') },
-                    boca: { dom: heredarRasgo(padre1, padre2, 'boca'), rec: heredarRasgo(padre1, padre2, 'boca') },
-                    espalda: { dom: heredarRasgo(padre1, padre2, 'espalda'), rec: heredarRasgo(padre1, padre2, 'espalda') },
-                    cabeza: { dom: heredarRasgo(padre1, padre2, 'cabeza'), rec: heredarRasgo(padre1, padre2, 'cabeza') },
-                    afinidad: { dom: heredarRasgo(padre1, padre2, 'afinidad'), rec: heredarRasgo(padre1, padre2, 'afinidad') }
-                };
+                // Si la función de heredar está en otro archivo (motorGenetico.js), la usamos:
+                let genesHijo, statsHijo;
+                if(typeof heredarRasgo === 'function') {
+                    genesHijo = {
+                        cuerpo: { dom: heredarRasgo(padre1, padre2, 'cuerpo'), rec: heredarRasgo(padre1, padre2, 'cuerpo') },
+                        ojos: { dom: heredarRasgo(padre1, padre2, 'ojos'), rec: heredarRasgo(padre1, padre2, 'ojos') },
+                        boca: { dom: heredarRasgo(padre1, padre2, 'boca'), rec: heredarRasgo(padre1, padre2, 'boca') },
+                        espalda: { dom: heredarRasgo(padre1, padre2, 'espalda'), rec: heredarRasgo(padre1, padre2, 'espalda') },
+                        cabeza: { dom: heredarRasgo(padre1, padre2, 'cabeza'), rec: heredarRasgo(padre1, padre2, 'cabeza') },
+                        afinidad: { dom: heredarRasgo(padre1, padre2, 'afinidad'), rec: heredarRasgo(padre1, padre2, 'afinidad') }
+                    };
+                    statsHijo = calcularIVs(padre1.stats, padre2.stats);
+                } else {
+                    // Fallback seguro por si no cargó el motor
+                    genesHijo = { cuerpo: {dom:"gota", rec:"gota"}, ojos: {dom:"estandar", rec:"estandar"}, boca: {dom:"colmillos", rec:"colmillos"}, espalda: {dom:"ninguno", rec:"ninguno"}, cabeza: {dom:"ninguno", rec:"ninguno"}, afinidad: {dom:"Biomutante", rec:"Biomutante"} };
+                    statsHijo = {hp: 50, atk: 15, spd: 15, luk: 15};
+                }
 
-                const statsHijo = calcularIVs(padre1.stats, padre2.stats);
                 const pColor1 = padre1.color || padre1.base_color || "#77DD77";
                 const pColor2 = padre2.color || padre2.base_color || "#77DD77";
                 const colorHijo = Math.random() > 0.5 ? pColor1 : pColor2;
@@ -239,7 +245,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         huevos.forEach(huevo => {
             const card = document.createElement("div");
-            // Tarjetas de huevos oscuras
             card.style = "min-width: 95px; background: #1e293b; border: 1px solid #3b82f6; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); position: relative;";
             
             card.innerHTML = `
