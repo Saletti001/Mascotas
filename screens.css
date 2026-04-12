@@ -102,3 +102,36 @@
     border-bottom: 1px solid rgba(128, 222, 234, 0.2); /* Línea sutil debajo del título */
     padding-bottom: 15px;
 }
+
+/* ========================================= */
+/* FONDO CIAN PARA EL CENTRO DE CRIANZA      */
+/* ========================================= */
+
+/* 1. Aplicamos el mismo degradado cian de la pantalla principal */
+#breeding-screen {
+    background: linear-gradient(180deg, #4dd0e1 0%, #26c6da 100%) !important;
+}
+
+/* 2. Añadimos el efecto de líneas de monitor (scanlines) */
+#breeding-screen::before {
+    content: ""; 
+    position: absolute; 
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 2px, transparent 2px, transparent 8px);
+    pointer-events: none; 
+    z-index: 0; 
+}
+
+/* 3. Aseguramos que la caja oscura y los botones no queden detrás de las líneas */
+#breeding-screen > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* 4. Oscurecemos el título "CENTRO DE CRIANZA" para que se pueda leer sobre el fondo claro */
+#breeding-screen h3, 
+#breeding-screen > p {
+    color: #0d1a24 !important; /* Mismo azul oscuro de tu menú */
+    text-shadow: none !important;
+    font-weight: 900 !important;
+}
