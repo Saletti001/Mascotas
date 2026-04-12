@@ -1,71 +1,6 @@
 // =========================================
-// BreedingManager.js - ALGORITMO GENÉTICO E INCUBADORA
+// BreedingManager.js - INTERFAZ E INCUBADORA
 // =========================================
-
-// --- BASE DE DATOS MAESTRA DE GENES ---
-const GenomaBBDD = {
-    cuerpo: ["frijol", "hongo", "gota", "triangulo", "circulo", "cuadrado"],
-    ojos: ["estandar", "visor_mecha", "ojos_araña", "hipno_espiral"],
-    boca: ["colmillos", "fauces_anilladas", "babeo_acido", "rejilla"],
-    espalda: ["ninguno", "alas_murcielago", "jetpack", "tentaculos", "tubos_quimicos"],
-    cabeza: ["ninguno", "corona_rey", "halo_neon", "cuerno_mutante", "cerebro_expuesto", "hongo_parasito"],
-    afinidad: ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"]
-};
-
-// --- FUNCIONES MATEMÁTICAS DE HERENCIA ---
-function randomFrom(array) {
-    return array[Math.floor(Math.random() * array.length)];
-}
-
-function heredarRasgo(padreA, padreB, categoria) {
-    const roll = Math.random() * 100;
-    
-    // Función auxiliar para leer con seguridad los genes antiguos o nuevos
-    const getGenSeguro = (padre, cat, tipo) => {
-        if (padre.genes && padre.genes[cat] && padre.genes[cat][tipo]) {
-            return padre.genes[cat][tipo]; // Formato Nuevo
-        }
-        // Compatibilidad con Genos Antiguos (Generación 0)
-        if (tipo === 'dom') {
-            if (cat === 'cuerpo') return padre.shape || padre.visual_genes?.body_shape || "gota";
-            if (cat === 'ojos') return padre.eye_type || "estandar";
-            if (cat === 'boca') return padre.mouth_type || "colmillos";
-            if (cat === 'espalda') return padre.wing_type || "ninguno";
-            if (cat === 'cabeza') return padre.hat_type || "ninguno";
-            if (cat === 'afinidad') return padre.element || "Biomutante";
-        }
-        // Si no tienen gen recesivo, asumen uno al azar de su categoría
-        return randomFrom(GenomaBBDD[cat]); 
-    };
-
-    if (roll <= 70) {
-        return Math.random() > 0.5 ? getGenSeguro(padreA, categoria, 'dom') : getGenSeguro(padreB, categoria, 'dom');
-    } else if (roll <= 95) {
-        return Math.random() > 0.5 ? getGenSeguro(padreA, categoria, 'rec') : getGenSeguro(padreB, categoria, 'rec');
-    } else {
-        return randomFrom(GenomaBBDD[categoria]); // MUTACIÓN 5%
-    }
-}
-
-function calcularIVs(statsA, statsB) {
-    const sA = statsA || { hp: 50, atk: 15, spd: 15, luk: 15 };
-    const sB = statsB || { hp: 50, atk: 15, spd: 15, luk: 15 };
-    
-    const calcularStat = (a, b) => {
-        let final = Math.floor((a + b) / 2) + (Math.floor(Math.random() * 7) - 2);
-        if (final < 1) final = 1;
-        if (final > 31) final = 31;
-        return final;
-    };
-
-    return {
-        hp: calcularStat(sA.hp, sB.hp),
-        atk: calcularStat(sA.atk, sB.atk),
-        spd: calcularStat(sA.spd, sB.spd),
-        luk: calcularStat(sA.luk, sB.luk)
-    };
-}
-
 
 document.addEventListener("DOMContentLoaded", () => {
     
@@ -79,7 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const selectorContainer = document.getElementById("breeding-selector");
     const listContainer = document.getElementById("breeding-list");
 
-    // Función para actualizar la UI de POL
     function actualizarPolUI() {
         const polText = document.getElementById("pol-amount");
         if(polText && window.miWallet) {
@@ -114,7 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if(!slot) return;
             const padre = index === 0 ? padre1 : padre2;
             if (padre) {
-                // Compatibilidad con ambos formatos para renderizar en los slots
                 const pColor = padre.color || padre.visual_genes?.base_color || padre.base_color || "#ccc";
                 const pShape = (padre.genes && padre.genes.cuerpo) ? padre.genes.cuerpo.dom : (padre.shape || padre.visual_genes?.body_shape || padre.body_shape || "gota");
                 const pWing = (padre.genes && padre.genes.espalda) ? padre.genes.espalda.dom : (padre.wing_type || "ninguno");
@@ -134,7 +67,12 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        const tieneEsencia = window.miInventario && window.miInventario.vitalEssence >= 500;
+        // ARREGLO DEL BOTÓN: Validamos de forma segura
+        let tieneEsencia = true; 
+        if (window.miInventario && typeof window.miInventario.vitalEssence !== 'undefined') {
+            tieneEsencia = window.miInventario.vitalEssence >= 500;
+        }
+
         if(btnBreeding) btnBreeding.disabled = !(padre1 && padre2 && tieneEsencia);
     }
 
@@ -192,7 +130,10 @@ document.addEventListener("DOMContentLoaded", () => {
         btnBreeding.addEventListener("click", () => {
             if(!padre1 || !padre2) return;
 
-            window.miInventario.addEssence(-500); 
+            if(window.miInventario && typeof window.miInventario.addEssence === 'function') {
+                window.miInventario.addEssence(-500); 
+            }
+            
             padre1.breedCount++;
             padre2.breedCount++;
 
@@ -213,7 +154,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const genHijo = Math.max(padre1.generation || 0, padre2.generation || 0) + 1;
                 
-                // === LA MAGIA OCURRE AQUÍ: CALCULAR EL ADN DEL HIJO ===
                 const genesHijo = {
                     cuerpo: { dom: heredarRasgo(padre1, padre2, 'cuerpo'), rec: heredarRasgo(padre1, padre2, 'cuerpo') },
                     ojos: { dom: heredarRasgo(padre1, padre2, 'ojos'), rec: heredarRasgo(padre1, padre2, 'ojos') },
@@ -225,28 +165,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const statsHijo = calcularIVs(padre1.stats, padre2.stats);
                 
-                // Mezcla simple para el color base
                 const pColor1 = padre1.color || padre1.base_color || "#aaa";
                 const pColor2 = padre2.color || padre2.base_color || "#bbb";
                 const colorHijo = Math.random() > 0.5 ? pColor1 : pColor2;
 
-                // CREAR EL HUEVO CON ESTRUCTURA MODERNA
                 const hijo = {
                     id: Date.now(),
                     name: "Huevo Misterioso",
                     isEgg: true, 
-                    hatchTime: Date.now() + 120000, // 2 Minutos para pruebas
+                    hatchTime: Date.now() + 120000, 
                     generation: genHijo,
                     breedCount: 0,
                     level: 1,
                     xp: 0,
                     xpNeeded: 100,
                     
-                    // Nueva Estructura Genética
                     genes: genesHijo,
                     stats: statsHijo,
                     
-                    // Variables directas para facilitar lectura rápida a SVGEngine
                     body_shape: genesHijo.cuerpo.dom,
                     eye_type: genesHijo.ojos.dom,
                     mouth_type: genesHijo.boca.dom,
@@ -259,7 +195,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     reward: 100
                 };
 
-                // Si ya está eclosionado (para depuración, aunque nace como huevo)
                 if (typeof generarSvgGeno === 'function') {
                     hijo.svg = generarSvgGeno(hijo);
                 }
@@ -272,9 +207,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ==========================================
-    // SISTEMA DE INCUBADORA Y MICROPAGOS
-    // ==========================================
     window.renderizarIncubadora = function() {
         const grid = document.getElementById("incubator-grid");
         if(!grid) return;
@@ -308,11 +240,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         actualizarPolUI();
                         
                         huevo.isEgg = false;
-                        if (typeof generarSvgGeno === 'function') huevo.svg = generarSvgGeno(huevo); // Recalcular SVG tras eclosionar
+                        if (typeof generarSvgGeno === 'function') huevo.svg = generarSvgGeno(huevo); 
                         
                         alert(`⚡ ¡Acelerador Activado!\nEl Huevo eclosionó instantáneamente.\nBienvenido al mundo: [Gen ${huevo.generation}].\nForma: ${huevo.body_shape}`);
                         window.renderizarIncubadora();
-                        // Actualizar UI general si es necesario
                         if(window.actualizarPanelRPG) window.actualizarPanelRPG();
                     } else {
                         alert("No tienes suficiente POL en tu billetera conectada.");
@@ -334,7 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
             
             if (restante <= 0) {
                 huevo.isEgg = false;
-                if (typeof generarSvgGeno === 'function') huevo.svg = generarSvgGeno(huevo); // Recalcular SVG
+                if (typeof generarSvgGeno === 'function') huevo.svg = generarSvgGeno(huevo); 
                 requiereActualizacion = true;
                 alert(`🐣 ¡Atención!\nUn huevo acaba de eclosionar.\nForma resultante: ${huevo.body_shape}`);
             } else {
