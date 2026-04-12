@@ -80,9 +80,13 @@
 /* ========================================= */
 
 /* 1. Fuerza el fondo azul oscuro en todas las pantallas (Crianza, Arcade, etc.) */
+/* MODO OSCURO PARA TODAS LAS PANTALLAS */
 .app-screen {
-    background-color: #0d1a24 !important; /* El color exacto de tu menú Nexo */
-    min-height: 100vh; /* Asegura que cubra toda la pantalla hacia abajo */
+    background-color: #0d1a24 !important; 
+    color: #fff !important; 
+    min-height: 100vh;
+    position: relative; /* ¡Esta es el ancla para el botón! */
+    overflow: hidden;
 }
 
 /* 2. Formato de Títulos idéntico a "RED NEXO" */
