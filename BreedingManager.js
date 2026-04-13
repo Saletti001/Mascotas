@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // --- NUEVA FUNCIÓN: LLENAR LA TARJETA DE IDENTIFICACIÓN ---
+    // --- LÓGICA DE LA TARJETA DE IDENTIFICACIÓN CIENTÍFICA ---
     function mostrarTarjetaGeno(g) {
         if(!idCardModal) return;
 
@@ -124,19 +124,22 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("id-card-rarity").innerText = g.rarity || "Común";
         document.getElementById("id-card-element").innerText = (g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal");
         
+        // Crías restantes
+        const criasEl = document.getElementById("id-card-breeds");
+        if(criasEl) criasEl.innerText = `${7 - (g.breedCount || 0)} de 7`;
+
         document.getElementById("id-card-hp").innerText = Math.floor(g.stats?.hp || 50);
         document.getElementById("id-card-atk").innerText = Math.floor(g.stats?.atk || 15);
         document.getElementById("id-card-spd").innerText = Math.floor(g.stats?.spd || 15);
         document.getElementById("id-card-luk").innerText = Math.floor(g.stats?.luk || 15);
 
-        // Calcular Calidad
+        // Veredicto de Calidad
         const qualityEl = document.getElementById("id-card-quality");
         if(qualityEl) {
             let rango = "D"; let pct = 0; let color = "#aaa";
             if (g.stats && g.stats.rango && g.stats.calidadPorcentaje !== undefined) {
                 rango = g.stats.rango; pct = g.stats.calidadPorcentaje;
             } else {
-                // Cálculo para Genos viejos
                 const limites = (typeof ESCALA_RAREZAS !== 'undefined' && ESCALA_RAREZAS[g.rarity]) ? ESCALA_RAREZAS[g.rarity] : { hp: [35, 55], atk: [10, 22], spd: [8, 25], luk: [5, 15] };
                 let tMin = limites.hp[0] + limites.atk[0] + limites.spd[0] + limites.luk[0];
                 let tMax = limites.hp[1] + limites.atk[1] + limites.spd[1] + limites.luk[1];
@@ -157,6 +160,64 @@ document.addEventListener("DOMContentLoaded", () => {
             qualityEl.innerText = `${rango} (${pct}%)`;
             qualityEl.style.color = color;
             qualityEl.style.textShadow = rango === "S" ? "0 0 10px rgba(255, 204, 0, 0.8)" : "none";
+        }
+
+        // LÓGICA DEL GEN OCULTO (Escáner Molecular)
+        const secretGeneContainer = document.getElementById("id-card-secret-gene");
+        const scanBtn = document.getElementById("btn-id-scan");
+        const lockedText = document.getElementById("id-card-locked-text");
+        const domText = document.getElementById("id-card-dom");
+        const recText = document.getElementById("id-card-rec");
+
+        if (secretGeneContainer) {
+            if (g.scanned) {
+                // Ya está escaneado: Mostramos la info
+                if (scanBtn) scanBtn.classList.add("hidden");
+                if (lockedText) lockedText.classList.add("hidden");
+                
+                if (domText) {
+                    domText.innerHTML = `🧬 Dom: <span style="color:#fff;">${(g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal")}</span>`;
+                    domText.classList.remove("hidden");
+                }
+                if (recText) {
+                    recText.innerHTML = `🔬 Rec: <span style="color:#80deea;">${(g.genes && g.genes.afinidad) ? g.genes.afinidad.rec : "Normal"}</span>`;
+                    recText.classList.remove("hidden");
+                }
+            } else {
+                // No está escaneado: Mostramos el botón
+                if (scanBtn) {
+                    scanBtn.classList.remove("hidden");
+                    // Limpiamos eventos viejos clonando el botón
+                    const newBtn = scanBtn.cloneNode(true);
+                    scanBtn.parentNode.replaceChild(newBtn, scanBtn);
+                    
+                    newBtn.addEventListener("click", () => {
+                        // Aquí verificamos si tiene el ítem Escáner o POL
+                        if (window.miWallet && window.miWallet.pol >= 0.25) {
+                            window.miWallet.pol -= 0.25;
+                            actualizarPolUI();
+                            
+                            g.scanned = true; // Guardamos permanentemente que fue escaneado
+                            if(window.guardarJuego) window.guardarJuego(); // Guardamos el progreso
+                            
+                            // Efecto visual de revelado
+                            newBtn.innerText = "ESCANEANDO...";
+                            newBtn.style.background = "#fff";
+                            newBtn.style.color = "#000";
+                            
+                            setTimeout(() => {
+                                mostrarTarjetaGeno(g); // Recargamos la tarjeta para mostrar la info
+                            }, 1000);
+
+                        } else {
+                            alert("No tienes suficiente POL (0.25) para usar el Escáner Molecular.");
+                        }
+                    });
+                }
+                if (lockedText) lockedText.classList.remove("hidden");
+                if (domText) domText.classList.add("hidden");
+                if (recText) recText.classList.add("hidden");
+            }
         }
 
         idCardModal.classList.remove("hidden");
@@ -214,7 +275,6 @@ document.addEventListener("DOMContentLoaded", () => {
             else if(geno.level < 10) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Requiere Nivel 10</span>`;
             else if((geno.breedCount||0) >= 7) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Límite de crías</span>`;
 
-            // Construcción HTML interna de la tarjeta (¡Aquí agregamos el botón de INFO!)
             btn.innerHTML = `
                 <div style="width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #333; flex-shrink: 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
                     ${svgContent}
@@ -230,16 +290,14 @@ document.addEventListener("DOMContentLoaded", () => {
             const svg = btn.querySelector("svg");
             if(svg) { svg.style.width = "65px"; svg.style.height = "65px"; } 
 
-            // EVENTO 1: Ver Info (ElstopPropagation evita que se seleccione el geno)
             const infoBtn = btn.querySelector('.btn-info-geno');
             if(infoBtn) {
                 infoBtn.addEventListener("click", (e) => {
-                    e.stopPropagation(); // ¡CLAVE! Detiene el clic para que no seleccione al padre
+                    e.stopPropagation(); 
                     mostrarTarjetaGeno(geno);
                 });
             }
 
-            // EVENTO 2: Seleccionar al Geno
             if(cumpleRequisitos) {
                 btn.addEventListener("click", () => {
                     if(seleccionandoPara === 1) padre1 = geno;
@@ -252,6 +310,37 @@ document.addEventListener("DOMContentLoaded", () => {
             if(listContainer) listContainer.appendChild(btn);
         });
     }
+
+    // ==========================================
+    // MOTOR GENÉTICO MENDELIANO
+    // ==========================================
+    function heredarAlelo(rasgo) {
+        return Math.random() < 0.7 ? rasgo.dom : rasgo.rec;
+    }
+
+    function cruzarRasgo(rasgoP1, rasgoP2, tipoDefault) {
+        const p1 = rasgoP1 || { dom: tipoDefault, rec: tipoDefault };
+        const p2 = rasgoP2 || { dom: tipoDefault, rec: tipoDefault };
+        
+        const alelo1 = heredarAlelo(p1);
+        const alelo2 = heredarAlelo(p2);
+        
+        if (Math.random() < 0.5) {
+            return { dom: alelo1, rec: alelo2 };
+        } else {
+            return { dom: alelo2, rec: alelo1 };
+        }
+    }
+
+    function heredarStat(stat1, stat2) {
+        let base = Math.floor((stat1 + stat2) / 2);
+        let mutacion = Math.floor(base * 0.05); 
+        if (mutacion < 1) mutacion = 1; 
+        
+        let resultado = base + (Math.floor(Math.random() * (mutacion * 2 + 1)) - mutacion);
+        return Math.max(1, resultado); 
+    }
+    // ==========================================
 
     if(slot1) slot1.addEventListener("click", () => abrirSelector(1));
     if(slot2) slot2.addEventListener("click", () => abrirSelector(2));
@@ -345,7 +434,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     id: Date.now(),
                     name: "Huevo Misterioso",
                     isEgg: true, 
-                    hatchTime: Date.now() + 120000,
+                    hatchTime: Date.now() + 120000, 
                     generation: genHijo,
                     breedCount: 0,
                     level: 1,
