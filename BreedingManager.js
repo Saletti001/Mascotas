@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function normalizarGenos() {
         if(!window.misGenos) window.misGenos = [];
         window.misGenos.forEach(g => {
-            if(!g.level) g.level = 10; 
+            if(!g.level) g.level = 1; // Normalizado a nivel 1 por defecto
             if(g.breedCount === undefined) g.breedCount = 0;
             if(g.generation === undefined) g.generation = 0;
             if(!g.stats) g.stats = { hp: 50, atk: 15, spd: 15, luk: 15 };
@@ -173,7 +173,9 @@ document.addEventListener("DOMContentLoaded", () => {
         todosMisGenos.forEach(geno => {
             if(!geno || geno.isEgg) return;
             const yaSeleccionado = (padre1 && padre1.id === geno.id) || (padre2 && padre2.id === geno.id);
-            const cumpleRequisitos = (geno.level >= 10) && ((geno.breedCount || 0) < 7) && !yaSeleccionado;
+            
+            // 🔥 MODIFICACIÓN MODO DEV: Se ha quitado "(geno.level >= 10)" para permitir criar a Nivel 1 temporalmente.
+            const cumpleRequisitos = ((geno.breedCount || 0) < 7) && !yaSeleccionado;
 
             const btn = document.createElement("div");
             let styleStr = "padding: 12px; border-radius: 14px; display: flex; align-items: center; text-align: left; box-shadow: 0 4px 10px rgba(0,0,0,0.4); transition: 0.2s;";
@@ -191,7 +193,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             let statusText = `<span style="color: #00d2ff; font-weight: bold; font-size: 11px;">${7 - (geno.breedCount||0)} crías disponibles</span>`;
             if(yaSeleccionado) statusText = `<span style="color: #f0ad4e; font-weight: bold; font-size: 11px;">⚠️ Ya está seleccionado</span>`;
-            else if(geno.level < 10) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Requiere Nivel 10</span>`;
+            // 🔥 MODIFICACIÓN MODO DEV: Se ha comentado la alerta visual del nivel 10
+            // else if(geno.level < 10) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Requiere Nivel 10</span>`;
             else if((geno.breedCount||0) >= 7) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Límite de crías</span>`;
 
             btn.innerHTML = `
