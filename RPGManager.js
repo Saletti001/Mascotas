@@ -149,7 +149,9 @@ document.addEventListener("DOMContentLoaded", () => {
             addBtns.forEach(b => b.classList.add("hidden"));
         }
         
-        window.guardarJuego();
+        if (typeof window.guardarJuego === 'function') {
+    window.guardarJuego();
+}
     };
 
     window.ganarXP = function(cantidad) {
