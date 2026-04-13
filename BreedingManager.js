@@ -14,10 +14,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const selectorContainer = document.getElementById("breeding-selector");
     const listContainer = document.getElementById("breeding-list");
     const closeSelectorBtn = document.getElementById("close-breeding-selector");
+    
+    // Elementos de la Tarjeta de Identificación
+    const idCardModal = document.getElementById("geno-id-card-modal");
+    const closeIdCardBtn = document.getElementById("close-id-card");
 
     if(closeSelectorBtn) {
         closeSelectorBtn.addEventListener("click", () => {
             if(selectorContainer) selectorContainer.classList.add("hidden");
+        });
+    }
+
+    if(closeIdCardBtn) {
+        closeIdCardBtn.addEventListener("click", () => {
+            if(idCardModal) idCardModal.classList.add("hidden");
         });
     }
 
@@ -26,8 +36,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if(polText && window.miWallet) {
             polText.innerText = `🔷 ${window.miWallet.pol.toFixed(1)} POL`;
         }
-        
-        // También actualizamos la Esencia en la UI para feedback visual
         const essenceText = document.getElementById("vital-essence-amount");
         if(essenceText && window.miInventario) {
             essenceText.innerText = `✨ ${window.miInventario.vitalEssence || 0}`;
@@ -83,8 +91,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        // Activamos el botón SOLAMENTE verificando que haya 2 padres. 
-        // La validación de la Esencia se hará al hacer clic para poder avisar al jugador.
         if(btnBreeding) {
             btnBreeding.disabled = !(padre1 && padre2);
             if(!btnBreeding.disabled) {
@@ -98,6 +104,64 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     }
+
+    // --- NUEVA FUNCIÓN: LLENAR LA TARJETA DE IDENTIFICACIÓN ---
+    function mostrarTarjetaGeno(g) {
+        if(!idCardModal) return;
+
+        const pColor = g.color || g.visual_genes?.base_color || g.base_color || "#ccc";
+        const pShape = (g.genes && g.genes.cuerpo) ? g.genes.cuerpo.dom : (g.shape || g.visual_genes?.body_shape || g.body_shape || "gota");
+        const pWing = (g.genes && g.genes.espalda) ? g.genes.espalda.dom : (g.wing_type || "ninguno");
+
+        const svgContainer = document.getElementById("id-card-svg");
+        if(svgContainer) {
+            svgContainer.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno({ body_shape: pShape, base_color: pColor, wing_type: pWing, isEgg: false }) : '';
+            const svg = svgContainer.querySelector("svg");
+            if(svg) { svg.style.width = "90px"; svg.style.height = "90px"; }
+        }
+
+        document.getElementById("id-card-name").innerText = g.name || `Sujeto Nv. ${g.level}`;
+        document.getElementById("id-card-rarity").innerText = g.rarity || "Común";
+        document.getElementById("id-card-element").innerText = (g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal");
+        
+        document.getElementById("id-card-hp").innerText = Math.floor(g.stats?.hp || 50);
+        document.getElementById("id-card-atk").innerText = Math.floor(g.stats?.atk || 15);
+        document.getElementById("id-card-spd").innerText = Math.floor(g.stats?.spd || 15);
+        document.getElementById("id-card-luk").innerText = Math.floor(g.stats?.luk || 15);
+
+        // Calcular Calidad
+        const qualityEl = document.getElementById("id-card-quality");
+        if(qualityEl) {
+            let rango = "D"; let pct = 0; let color = "#aaa";
+            if (g.stats && g.stats.rango && g.stats.calidadPorcentaje !== undefined) {
+                rango = g.stats.rango; pct = g.stats.calidadPorcentaje;
+            } else {
+                // Cálculo para Genos viejos
+                const limites = (typeof ESCALA_RAREZAS !== 'undefined' && ESCALA_RAREZAS[g.rarity]) ? ESCALA_RAREZAS[g.rarity] : { hp: [35, 55], atk: [10, 22], spd: [8, 25], luk: [5, 15] };
+                let tMin = limites.hp[0] + limites.atk[0] + limites.spd[0] + limites.luk[0];
+                let tMax = limites.hp[1] + limites.atk[1] + limites.spd[1] + limites.luk[1];
+                let ptInvertidos = ((g.level||1) - 1) * 3;
+                let tObt = ((g.stats?.hp||50) + (g.stats?.atk||15) + (g.stats?.spd||15) + (g.stats?.luk||15)) - ptInvertidos;
+                
+                pct = Math.round(((tObt - tMin) / (tMax - tMin)) * 100);
+                if (pct > 100) pct = 100; if (pct < 0) pct = 0;
+
+                if (pct >= 95) rango = "S"; else if (pct >= 80) rango = "A";
+                else if (pct >= 50) rango = "B"; else if (pct >= 20) rango = "C"; else rango = "D";
+            }
+
+            if (rango === "S") color = "#ffcc00"; else if (rango === "A") color = "#4dd0e1";
+            else if (rango === "B") color = "#4CAF50"; else if (rango === "C") color = "#f0ad4e";
+            else color = "#d9534f";
+
+            qualityEl.innerText = `${rango} (${pct}%)`;
+            qualityEl.style.color = color;
+            qualityEl.style.textShadow = rango === "S" ? "0 0 10px rgba(255, 204, 0, 0.8)" : "none";
+        }
+
+        idCardModal.classList.remove("hidden");
+    }
+    // --------------------------------------------------------
 
     function abrirSelector(numPadre) {
         seleccionandoPara = numPadre;
@@ -146,24 +210,36 @@ document.addEventListener("DOMContentLoaded", () => {
             let svgContent = typeof generarSvgGeno === 'function' ? generarSvgGeno({ body_shape: pShape, base_color: pColor, wing_type: pWing, isEgg: false }) : '<span>Geno</span>';
 
             let statusText = `<span style="color: #00d2ff; font-weight: bold; font-size: 11px;">${7 - (geno.breedCount||0)} crías disponibles</span>`;
-            if(yaSeleccionado) statusText = `<span style="color: #f0ad4e; font-weight: bold; font-size: 11px;">⚠️ Ya está en la incubadora</span>`;
+            if(yaSeleccionado) statusText = `<span style="color: #f0ad4e; font-weight: bold; font-size: 11px;">⚠️ Ya está seleccionado</span>`;
             else if(geno.level < 10) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Requiere Nivel 10</span>`;
-            else if((geno.breedCount||0) >= 7) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Límite de crías alcanzado</span>`;
+            else if((geno.breedCount||0) >= 7) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Límite de crías</span>`;
 
+            // Construcción HTML interna de la tarjeta (¡Aquí agregamos el botón de INFO!)
             btn.innerHTML = `
                 <div style="width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #333; flex-shrink: 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
                     ${svgContent}
                 </div>
-                <div style="display: flex; flex-direction: column; justify-content: center; width: 100%; padding-left: 15px;">
+                <div style="display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-left: 15px;">
                     <span style="color: #fff; font-weight: 900; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px;">Sujeto Nv. ${geno.level || 1}</span>
                     <span style="color: #aaa; font-size: 10px; margin-bottom: 6px; text-transform: uppercase;">Base: ${pShape}</span>
                     ${statusText}
                 </div>
+                <button class="btn-info-geno" style="background: transparent; border: 1px solid #8A2BE2; color: #e0b0ff; width: 40px; height: 40px; border-radius: 8px; font-size: 18px; cursor: pointer; flex-shrink: 0; display: flex; justify-content: center; align-items: center; margin-left: 10px; transition: 0.2s;" title="Ver Stats">📊</button>
             `;
 
             const svg = btn.querySelector("svg");
             if(svg) { svg.style.width = "65px"; svg.style.height = "65px"; } 
 
+            // EVENTO 1: Ver Info (ElstopPropagation evita que se seleccione el geno)
+            const infoBtn = btn.querySelector('.btn-info-geno');
+            if(infoBtn) {
+                infoBtn.addEventListener("click", (e) => {
+                    e.stopPropagation(); // ¡CLAVE! Detiene el clic para que no seleccione al padre
+                    mostrarTarjetaGeno(geno);
+                });
+            }
+
+            // EVENTO 2: Seleccionar al Geno
             if(cumpleRequisitos) {
                 btn.addEventListener("click", () => {
                     if(seleccionandoPara === 1) padre1 = geno;
@@ -177,37 +253,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ==========================================
-    // MOTOR GENÉTICO MENDELIANO
-    // ==========================================
-    function heredarAlelo(rasgo) {
-        // 70% de heredar el gen dominante, 30% el recesivo
-        return Math.random() < 0.7 ? rasgo.dom : rasgo.rec;
-    }
-
-    function cruzarRasgo(rasgoP1, rasgoP2, tipoDefault) {
-        const p1 = rasgoP1 || { dom: tipoDefault, rec: tipoDefault };
-        const p2 = rasgoP2 || { dom: tipoDefault, rec: tipoDefault };
-        
-        const alelo1 = heredarAlelo(p1);
-        const alelo2 = heredarAlelo(p2);
-        
-        // Sorteamos cuál de los dos alelos heredados se vuelve el dominante del hijo
-        if (Math.random() < 0.5) {
-            return { dom: alelo1, rec: alelo2 };
-        } else {
-            return { dom: alelo2, rec: alelo1 };
-        }
-    }
-
-    function heredarStat(stat1, stat2) {
-        let base = (stat1 + stat2) / 2;
-        let mutacion = base * 0.1; // 10% de variación genética
-        let resultado = base + (Math.random() * mutacion * 2 - mutacion);
-        return Math.round(resultado);
-    }
-    // ==========================================
-
     if(slot1) slot1.addEventListener("click", () => abrirSelector(1));
     if(slot2) slot2.addEventListener("click", () => abrirSelector(2));
 
@@ -215,12 +260,11 @@ document.addEventListener("DOMContentLoaded", () => {
         btnBreeding.addEventListener("click", () => {
             if(!padre1 || !padre2) return;
 
-            // Validación clara de la Esencia
             let esenciaActual = 0;
             if (window.miInventario && typeof window.miInventario.vitalEssence !== 'undefined') {
                 esenciaActual = window.miInventario.vitalEssence;
             } else {
-                esenciaActual = 9999; // Modo de prueba si el inventario no está listo
+                esenciaActual = 9999; 
             }
 
             if (esenciaActual < 500) {
@@ -228,17 +272,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // Consumir la esencia
             if(window.miInventario && typeof window.miInventario.addEssence === 'function') {
                 window.miInventario.addEssence(-500); 
                 actualizarPolUI();
             }
             
-            // Restar usos a los padres
             padre1.breedCount = (padre1.breedCount || 0) + 1;
             padre2.breedCount = (padre2.breedCount || 0) + 1;
 
-            // Estado de carga del botón
             btnBreeding.disabled = true;
             btnBreeding.innerText = "SECUENCIANDO ADN...";
             btnBreeding.style.background = "#8A2BE2";
@@ -262,7 +303,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const genHijo = Math.max(padre1.generation || 0, padre2.generation || 0) + 1;
                 
-                // Extraer genes de los padres o usar fallbacks si no tienen
                 const p1Genes = padre1.genes || { 
                     cuerpo: {dom: padre1.body_shape||"gota", rec: padre1.body_shape||"gota"},
                     ojos: {dom: padre1.eye_type||"estandar", rec: padre1.eye_type||"estandar"},
@@ -281,7 +321,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     afinidad: {dom: padre2.element||"Normal", rec: padre2.element||"Normal"}
                 };
                 
-                // Aplicar el Motor Genético de cruce
                 const genesHijo = {
                     cuerpo: cruzarRasgo(p1Genes.cuerpo, p2Genes.cuerpo, "gota"),
                     ojos: cruzarRasgo(p1Genes.ojos, p2Genes.ojos, "estandar"),
@@ -291,7 +330,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     afinidad: cruzarRasgo(p1Genes.afinidad, p2Genes.afinidad, "Normal")
                 };
 
-                // Heredar Stats
                 const statsHijo = {
                     hp: heredarStat(padre1.stats?.hp || 50, padre2.stats?.hp || 50),
                     atk: heredarStat(padre1.stats?.atk || 15, padre2.stats?.atk || 15),
@@ -299,7 +337,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     luk: heredarStat(padre1.stats?.luk || 15, padre2.stats?.luk || 15)
                 };
 
-                // Color aleatorio entre los dos padres
                 const pColor1 = padre1.color || padre1.base_color || "#77DD77";
                 const pColor2 = padre2.color || padre2.base_color || "#77DD77";
                 const colorHijo = Math.random() > 0.5 ? pColor1 : pColor2;
@@ -308,7 +345,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     id: Date.now(),
                     name: "Huevo Misterioso",
                     isEgg: true, 
-                    hatchTime: Date.now() + 120000, // 2 minutos de incubación
+                    hatchTime: Date.now() + 120000,
                     generation: genHijo,
                     breedCount: 0,
                     level: 1,
@@ -334,7 +371,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 if(!window.misGenos) window.misGenos = [];
                 window.misGenos.push(hijo);
                 
-                // Restaurar botón
                 btnBreeding.innerText = "INICIAR SECUENCIA";
                 window.iniciarSelectorCrianza(); 
             }, 2000);
