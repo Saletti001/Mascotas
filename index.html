@@ -207,42 +207,45 @@
                 </div>
             </div>
 
-            <div id="geno-id-card-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
-                <div class="modal-content" style="background: #1a2a36; border: 2px solid #4dd0e1; box-shadow: 0 10px 30px rgba(77, 208, 225, 0.4); width: 85%; max-width: 320px; border-radius: 12px; padding: 20px; box-sizing: border-box; position: relative;">
-                    <button id="close-id-card" style="position: absolute; top: 10px; right: 15px; background: transparent; border: none; font-size: 18px; color: #fff; cursor: pointer;">❌</button>
-                    
-                    <h3 style="margin: 0 0 15px 0; color: #80deea; text-transform: uppercase; font-size: 14px; letter-spacing: 2px; text-align: center; border-bottom: 1px solid #4dd0e1; padding-bottom: 10px;">Análisis Genético</h3>
-                    
+            <div id="geno-id-card-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.15); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(2px);">
+                
+                <div class="modal-content" style="background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border: 2px solid #00d2ff; box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3); width: 85%; max-width: 320px; border-radius: 12px; padding: 20px; box-sizing: border-box; position: relative;">
+                    <button id="close-id-card" style="position: absolute; top: 10px; right: 15px; background: transparent; border: none; font-size: 18px; color: #fff; cursor: pointer; text-shadow: 0 0 5px #000;">❌</button>
+
+                    <h3 style="margin: 0 0 15px 0; color: #00d2ff; text-transform: uppercase; font-size: 16px; font-weight: 900; letter-spacing: 2px; text-align: center; border-bottom: 1px solid rgba(0, 210, 255, 0.3); padding-bottom: 10px; text-shadow: 0 0 10px rgba(0, 210, 255, 0.6);">Análisis Genético</h3>
+
                     <div style="display: flex; flex-direction: column; align-items: center;">
-                        <div id="id-card-svg" style="width: 110px; height: 110px; background: rgba(0,0,0,0.4); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px dashed #80deea; margin-bottom: 15px; box-shadow: inset 0 0 15px rgba(0,0,0,0.8);"></div>
-                        
-                        <h2 id="id-card-name" style="margin: 0 0 5px 0; color: #fff; font-size: 18px; text-transform: uppercase;">--</h2>
-                        
-                        <div style="display: flex; gap: 10px; margin-bottom: 15px; font-size: 11px; font-weight: bold; text-transform: uppercase; align-items: center;">
-                            <span id="id-card-rarity" style="color: #aaa;">--</span> |
-                            <span id="id-card-element" style="color: #4dd0e1;">--</span> |
+                        <div id="id-card-svg" style="width: 110px; height: 110px; background: rgba(0, 0, 0, 0.5); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px dashed #00d2ff; margin-bottom: 15px; box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 210, 255, 0.2);"></div>
+
+                        <h2 style="margin: 0 0 5px 0; color: #fff; font-size: 18px; text-transform: uppercase; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
+                            <span id="id-card-name">--</span> <span id="id-card-level" style="color: #00d2ff; font-size: 14px; margin-left: 5px;">Nv. --</span>
+                        </h2>
+
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px; font-size: 11px; font-weight: bold; text-transform: uppercase; align-items: center; background: rgba(0,0,0,0.3); padding: 5px 15px; border-radius: 15px; border: 1px solid #333;">
+                            <span id="id-card-rarity" style="color: #aaa;">--</span> <span style="color:#555">|</span>
+                            <span id="id-card-element" style="color: #00d2ff;">--</span> <span style="color:#555">|</span>
                             <span style="color: #f0ad4e;">Crías: <span id="id-card-breeds">--</span></span>
                         </div>
                     </div>
 
-                    <div style="background: rgba(0,0,0,0.5); border-radius: 8px; padding: 10px; margin-bottom: 15px; text-align: center; border: 1px solid #333;">
+                    <div style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px; margin-bottom: 15px; text-align: center; border: 1px solid #333; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
                         <div style="font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px;">Veredicto de Pureza</div>
-                        <div id="id-card-quality" style="font-size: 20px; font-weight: 900; color: #fff;">--</div>
+                        <div id="id-card-quality" style="font-size: 22px; font-weight: 900; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.8);">--</div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 12px; margin-bottom: 15px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; margin-bottom: 15px;">
                         <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333;">❤️ Vit: <span id="id-card-hp" style="float: right; font-weight: bold; color: #fff;">--</span></div>
                         <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333;">⚔️ Fue: <span id="id-card-atk" style="float: right; font-weight: bold; color: #fff;">--</span></div>
                         <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333;">⚡ Agi: <span id="id-card-spd" style="float: right; font-weight: bold; color: #fff;">--</span></div>
                         <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333;">🍀 Sue: <span id="id-card-luk" style="float: right; font-weight: bold; color: #fff;">--</span></div>
                     </div>
 
-                    <div id="id-card-secret-gene" style="background: rgba(138, 43, 226, 0.1); border-radius: 8px; padding: 10px; text-align: center; border: 1px dashed #8A2BE2;">
-                        <div style="font-size: 10px; color: #e0b0ff; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px;">Gen Oculto</div>
+                    <div id="id-card-secret-gene" style="background: rgba(138, 43, 226, 0.15); border-radius: 8px; padding: 12px; text-align: center; border: 1px dashed #8A2BE2;">
+                        <div style="font-size: 10px; color: #e0b0ff; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; font-weight: bold;">Gen Oculto</div>
                         <div id="id-card-locked-text" style="color: #aaa; font-size: 12px; margin-bottom: 10px;">🔒 Secuencia Bloqueada</div>
-                        <div id="id-card-dom" class="hidden" style="font-size: 11px; margin-bottom: 5px; text-align: left; padding: 4px; background: rgba(0,0,0,0.3); border-radius: 4px;"></div>
-                        <div id="id-card-rec" class="hidden" style="font-size: 11px; text-align: left; padding: 4px; background: rgba(0,0,0,0.3); border-radius: 4px;"></div>
-                        <button id="btn-id-scan" style="background: linear-gradient(90deg, #8A2BE2, #4dd0e1); color: white; border: none; padding: 10px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%;">Usar Escáner Molecular</button>
+                        <div id="id-card-dom" class="hidden" style="font-size: 11px; margin-bottom: 5px; text-align: left; padding: 6px; background: rgba(0,0,0,0.4); border-radius: 4px; border-left: 3px solid #80deea;"></div>
+                        <div id="id-card-rec" class="hidden" style="font-size: 11px; text-align: left; padding: 6px; background: rgba(0,0,0,0.4); border-radius: 4px; border-left: 3px solid #8A2BE2;"></div>
+                        <button id="btn-id-scan" style="background: linear-gradient(90deg, #8A2BE2, #00d2ff); color: white; border: none; padding: 10px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%; box-shadow: 0 4px 10px rgba(138, 43, 226, 0.3);">Usar Escáner Molecular</button>
                     </div>
 
                 </div>
