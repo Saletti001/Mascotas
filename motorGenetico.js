@@ -32,8 +32,24 @@ function heredarRasgo(padreA, padreB, categoria) {
 function calcularIVs(statsA, statsB) {
     const sA = statsA || { hp: 50, atk: 15, spd: 15, luk: 15 };
     const sB = statsB || { hp: 50, atk: 15, spd: 15, luk: 15 };
-    const calc = (a, b) => Math.max(1, Math.min(31, Math.floor((a + b) / 2) + (Math.floor(Math.random() * 7) - 2)));
-    return { hp: calc(sA.hp, sB.hp), atk: calc(sA.atk, sB.atk), spd: calc(sA.spd, sB.spd), luk: calc(sA.luk, sB.luk) };
+    
+    const calc = (a, b) => {
+        let base = Math.floor((a + b) / 2);
+        // Mutación de ±5% basada en el poder actual (crece junto con los Genos)
+        let mutacion = Math.floor(base * 0.05); 
+        if (mutacion < 1) mutacion = 1; // Mínimo 1 punto de mutación
+        
+        // El stat final es la base + un número aleatorio entre -mutacion y +mutacion
+        let resultado = base + (Math.floor(Math.random() * (mutacion * 2 + 1)) - mutacion);
+        return Math.max(1, resultado); // Evitamos que un stat baje de 1
+    };
+    
+    return { 
+        hp: calc(sA.hp, sB.hp), 
+        atk: calc(sA.atk, sB.atk), 
+        spd: calc(sA.spd, sB.spd), 
+        luk: calc(sA.luk, sB.luk) 
+    };
 }
 
 // DICCIONARIO DE LÍMITES POR RAREZA (Actualizado con desacople y mayor overlap)
