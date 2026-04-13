@@ -23,7 +23,7 @@
                     <div class="action-btn-container">
                         <button id="btn-show-stats" class="action-btn">📊 Stats</button>
                         
-                        <div id="geno-stats-panel" class="hidden">
+                       <div id="geno-stats-panel" class="hidden">
                             <span id="close-stats-btn" class="close-btn-small">❌</span>
                             <h3 class="stats-title">
                                 <span id="geno-name">Geno Base</span> 
@@ -32,8 +32,15 @@
                             <div class="stats-level-badge"><span id="geno-level">Nv. 1</span></div>
                             <div class="xp-bar-bg"><div id="geno-xp-fill" class="xp-bar-fill"></div></div>
                             <div class="xp-text"><span id="geno-xp-text">0/100</span> XP</div>
+                            
                             <div class="stat-info"><span>Rareza:</span> <span id="geno-rarity">--</span></div>
                             <div class="stat-info"><span>Elem:</span> <span id="geno-element">--</span></div>
+                            
+                            <div class="stat-info" style="margin-top: 5px; padding-top: 5px; border-top: 1px dashed rgba(255,255,255,0.1);">
+                                <span>Calidad:</span> 
+                                <span id="geno-quality-badge" style="font-weight: 900; font-size: 14px; text-shadow: 0 0 5px rgba(255,255,255,0.5);">--</span>
+                            </div>
+
                             <hr class="stats-divider">
                             <div class="stat-header"><span>Atributos</span><span id="stat-points-badge" class="hidden">+0 Pts</span></div>
                             <div class="stat-row"><span>❤️ Vit: <span id="stat-hp">10</span></span> <button class="btn-add-stat hidden" data-stat="hp">➕</button></div>

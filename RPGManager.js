@@ -30,30 +30,126 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnsAddStat = document.querySelectorAll(".btn-add-stat");
 
     window.actualizarPanelRPG = function() {
-        document.getElementById("geno-name").innerText = `${window.miMascota.name} [Gen ${window.miMascota.generation}]`;
-        document.getElementById("geno-rarity").innerText = window.miMascota.rarity;
-        document.getElementById("geno-element").innerText = window.miMascota.element;
+        if(!window.miMascota) return;
+        const g = window.miMascota;
+
+        if(!g.level) g.level = 1;
+        if(g.xp === undefined) g.xp = 0;
+        if(!g.xpNeeded) g.xpNeeded = 100;
+        if(!g.stats) g.stats = { hp: 50, atk: 15, spd: 15, luk: 15 };
+        if(g.statPoints === undefined) g.statPoints = 0;
+
+        // Actualizamos textos básicos
+        const nameEl = document.getElementById("geno-name");
+        if(nameEl) nameEl.innerText = g.name || "Geno";
         
-        document.getElementById("geno-level").innerText = `Nv. ${window.miMascota.level}`;
-        document.getElementById("geno-xp-text").innerText = `${window.miMascota.xp}/${window.miMascota.xpNeeded}`;
-        const xpPorcentaje = Math.min((window.miMascota.xp / window.miMascota.xpNeeded) * 100, 100);
-        document.getElementById("geno-xp-fill").style.width = xpPorcentaje + "%";
+        const lvlEl = document.getElementById("geno-level");
+        if(lvlEl) lvlEl.innerText = `Nv. ${g.level}`;
 
-        document.getElementById("stat-hp").innerText = window.miMascota.stats.hp;
-        document.getElementById("stat-atk").innerText = window.miMascota.stats.atk;
-        document.getElementById("stat-spd").innerText = window.miMascota.stats.spd;
-        document.getElementById("stat-luk").innerText = window.miMascota.stats.luk;
+        const xpText = document.getElementById("geno-xp-text");
+        if(xpText) xpText.innerText = `${Math.floor(g.xp)}/${g.xpNeeded}`;
 
-        if (window.miMascota.statPoints > 0) {
-            badgePuntos.innerText = `+${window.miMascota.statPoints} Pts`;
-            badgePuntos.classList.remove("hidden");
-            btnsAddStat.forEach(btn => btn.classList.remove("hidden"));
-        } else {
-            badgePuntos.classList.add("hidden");
-            btnsAddStat.forEach(btn => btn.classList.add("hidden"));
+        const xpFill = document.getElementById("geno-xp-fill");
+        if(xpFill) {
+            let pct = (g.xp / g.xpNeeded) * 100;
+            if(pct > 100) pct = 100;
+            xpFill.style.width = pct + "%";
         }
 
-        document.getElementById("geno-recessive").innerText = window.miMascota.scanned ? window.miMascota.recessive_gene : "???";
+        const rarityEl = document.getElementById("geno-rarity");
+        if(rarityEl) rarityEl.innerText = g.rarity || "Común";
+
+        const elementEl = document.getElementById("geno-element");
+        if(elementEl) elementEl.innerText = (g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal");
+
+        // --- NUEVA LÓGICA: CALIDAD GENÉTICA ---
+        const qualityBadge = document.getElementById("geno-quality-badge");
+        if (qualityBadge) {
+            let rango = "D";
+            let pct = 0;
+            let color = "#aaa"; // Gris por defecto
+
+            // Si el Geno nació con el nuevo sistema y ya tiene su rango guardado
+            if (g.stats.rango && g.stats.calidadPorcentaje !== undefined) {
+                rango = g.stats.rango;
+                pct = g.stats.calidadPorcentaje;
+            } else {
+                // Si es un Geno antiguo, se lo calculamos al vuelo asumiendo que es Común
+                const limites = { hp: [35, 55], atk: [10, 22], spd: [8, 25], luk: [5, 15] }; // Limites de Común
+                let tMin = limites.hp[0] + limites.atk[0] + limites.spd[0] + limites.luk[0];
+                let tMax = limites.hp[1] + limites.atk[1] + limites.spd[1] + limites.luk[1];
+                
+                // Restamos los puntos ganados por subir de nivel para ver su "stat base real"
+                let puntosInvertidos = (g.level - 1) * 3;
+                let tObt = (g.stats.hp + g.stats.atk + g.stats.spd + g.stats.luk) - puntosInvertidos;
+
+                pct = Math.round(((tObt - tMin) / (tMax - tMin)) * 100);
+                if (pct > 100) pct = 100;
+                if (pct < 0) pct = 0;
+
+                if (pct >= 95) rango = "S";
+                else if (pct >= 80) rango = "A";
+                else if (pct >= 50) rango = "B";
+                else if (pct >= 20) rango = "C";
+                else rango = "D";
+            }
+
+            // Asignamos colores según el rango para que sea MUY visual
+            if (rango === "S") color = "#ffcc00"; // Oro/Amarillo
+            else if (rango === "A") color = "#4dd0e1"; // Cian
+            else if (rango === "B") color = "#4CAF50"; // Verde
+            else if (rango === "C") color = "#f0ad4e"; // Naranja
+            else color = "#d9534f"; // Rojo (Basura)
+
+            qualityBadge.innerText = `${rango} (${pct}%)`;
+            qualityBadge.style.color = color;
+            
+            // Si es S, le ponemos un brillito especial
+            if (rango === "S") {
+                qualityBadge.style.textShadow = "0 0 10px rgba(255, 204, 0, 0.8)";
+            } else {
+                qualityBadge.style.textShadow = "none";
+            }
+        }
+        // ----------------------------------------
+
+        const shp = document.getElementById("stat-hp");
+        if(shp) shp.innerText = Math.floor(g.stats.hp);
+        const satk = document.getElementById("stat-atk");
+        if(satk) satk.innerText = Math.floor(g.stats.atk);
+        const sspd = document.getElementById("stat-spd");
+        if(sspd) sspd.innerText = Math.floor(g.stats.spd);
+        const sluk = document.getElementById("stat-luk");
+        if(sluk) sluk.innerText = Math.floor(g.stats.luk);
+
+        const recEl = document.getElementById("geno-recessive");
+        if(recEl) {
+            if(g.scanned) {
+                recEl.innerText = (g.genes && g.genes.afinidad) ? g.genes.afinidad.rec : "Normal";
+                recEl.style.color = "#80deea";
+                recEl.style.textShadow = "0 0 5px rgba(128,222,234,0.5)";
+            } else {
+                recEl.innerText = "???";
+                recEl.style.color = "#555";
+                recEl.style.textShadow = "none";
+            }
+        }
+
+        const ptsBadge = document.getElementById("stat-points-badge");
+        const addBtns = document.querySelectorAll(".btn-add-stat");
+        
+        if(g.statPoints > 0) {
+            if(ptsBadge) {
+                ptsBadge.innerText = `+${g.statPoints} Pts`;
+                ptsBadge.classList.remove("hidden");
+            }
+            addBtns.forEach(b => b.classList.remove("hidden"));
+        } else {
+            if(ptsBadge) ptsBadge.classList.add("hidden");
+            addBtns.forEach(b => b.classList.add("hidden"));
+        }
+        
+        window.guardarJuego();
     };
 
     window.ganarXP = function(cantidad) {
