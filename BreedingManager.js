@@ -28,6 +28,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if(closeIdCardBtn) {
         closeIdCardBtn.addEventListener("click", () => {
             if(idCardModal) idCardModal.classList.add("hidden");
+            // SOLUCIÓN FONDO NEGRO: Al cerrar la tarjeta, vuelve a mostrar la lista
+            if(selectorContainer) selectorContainer.classList.remove("hidden");
         });
     }
 
@@ -109,6 +111,9 @@ document.addEventListener("DOMContentLoaded", () => {
     function mostrarTarjetaGeno(g) {
         if(!idCardModal) return;
 
+        // SOLUCIÓN FONDO NEGRO: Ocultar la lista de Genos para ver el laboratorio detrás
+        if(selectorContainer) selectorContainer.classList.add("hidden");
+
         const pColor = g.color || g.visual_genes?.base_color || g.base_color || "#ccc";
         const pShape = (g.genes && g.genes.cuerpo) ? g.genes.cuerpo.dom : (g.shape || g.visual_genes?.body_shape || g.body_shape || "gota");
         const pWing = (g.genes && g.genes.espalda) ? g.genes.espalda.dom : (g.wing_type || "ninguno");
@@ -120,7 +125,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if(svg) { svg.style.width = "90px"; svg.style.height = "90px"; }
         }
 
-        document.getElementById("id-card-name").innerText = g.name || `Sujeto Nv. ${g.level}`;
+        // SOLUCIÓN NIVEL: Llenar Nombre y Nivel explícitamente
+        document.getElementById("id-card-name").innerText = g.name || `Sujeto`;
+        const lvlEl = document.getElementById("id-card-level");
+        if(lvlEl) {
+            lvlEl.innerText = `Nv. ${g.level || 1}`;
+        }
+
         document.getElementById("id-card-rarity").innerText = g.rarity || "Común";
         document.getElementById("id-card-element").innerText = (g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal");
         
@@ -275,6 +286,7 @@ document.addEventListener("DOMContentLoaded", () => {
             else if(geno.level < 10) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Requiere Nivel 10</span>`;
             else if((geno.breedCount||0) >= 7) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Límite de crías</span>`;
 
+            // Botón del MICROSCOPIO
             btn.innerHTML = `
                 <div style="width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #333; flex-shrink: 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
                     ${svgContent}
@@ -284,7 +296,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <span style="color: #aaa; font-size: 10px; margin-bottom: 6px; text-transform: uppercase;">Base: ${pShape}</span>
                     ${statusText}
                 </div>
-                <button class="btn-info-geno" style="background: transparent; border: 1px solid #8A2BE2; color: #e0b0ff; width: 40px; height: 40px; border-radius: 8px; font-size: 18px; cursor: pointer; flex-shrink: 0; display: flex; justify-content: center; align-items: center; margin-left: 10px; transition: 0.2s;" title="Ver Stats">📊</button>
+                <button class="btn-info-geno" style="background: rgba(77, 208, 225, 0.1); border: 1px solid #4dd0e1; color: #fff; width: 45px; height: 45px; border-radius: 8px; font-size: 22px; cursor: pointer; flex-shrink: 0; display: flex; justify-content: center; align-items: center; margin-left: 10px; transition: 0.2s; box-shadow: inset 0 0 5px rgba(77, 208, 225, 0.3);" title="Análisis Genético">🔬</button>
             `;
 
             const svg = btn.querySelector("svg");
