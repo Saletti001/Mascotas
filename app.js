@@ -182,10 +182,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (pedestal) {
                         const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
                         
-                        // ✅ EL VERDADERO CÓDIGO ORIGINAL:
-                        // Sin flex, sin position absolute, sin forzar el centrado. 
-                        // Solo tu clase ".geno-idle" y el color. ¡Tu CSS sabe exactamente qué hacer!
-                        pedestal.innerHTML = `<div class="geno-idle" style="color: ${pColor};">${svgPedestal}</div>`;
+                        // 🔙 VOLVEMOS A TU CÓDIGO ORIGINAL:
+                        // Esto le devuelve sus coordenadas al centro exacto sin chocar con la animación de tu CSS
+                        pedestal.innerHTML = `<div class="geno-idle" style="color: ${pColor}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${svgPedestal}</div>`;
                     }
                     
                     const nameEl = document.getElementById('geno-name');
