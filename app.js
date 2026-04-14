@@ -181,14 +181,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (pedestal) {
                         const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
                         
-                        // ✅ EL ENVOLTORIO PERFECTO Y DEFINITIVO
-                        pedestal.innerHTML = `
-                            <div style="position: absolute; left: 0; right: 0; bottom: 40px; display: flex; justify-content: center; pointer-events: none;">
-                                <div class="geno-idle" style="color: ${pColor}; pointer-events: auto;">
-                                    ${svgPedestal}
-                                </div>
-                            </div>
-                        `;
+                        // ✅ SOLUCIÓN DEFINITIVA: 
+                        // left: 0, right: 0 y justify-content: center lo centran perfecto.
+                        // bottom: 60px lo eleva justo a la altura del aro punteado. (Puedes cambiar el 60 si lo quieres más arriba o abajo).
+                        pedestal.innerHTML = `<div class="geno-idle" style="color: ${pColor}; position: absolute; left: 0; right: 0; bottom: 60px; display: flex; justify-content: center;">${svgPedestal}</div>`;
                     }
                     
                     const nameEl = document.getElementById('geno-name');
