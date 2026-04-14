@@ -77,9 +77,11 @@
             min-height: 250px;
         }
         #geno-display {
-            width: 200px; /* Tamaño grande para ver detalles */
-            height: 200px;
-            transition: all 0.3s;
+            width: 250px; 
+            height: 250px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
     </style>
 </head>
@@ -124,19 +126,14 @@
         <div class="viewer">
             <div id="geno-display">
                 </div>
-            <p id="code-output" style="margin-top:20px; font-size:11px; color:#555; text-align:center;">ID Generado: ...</p>
+            <p id="code-output" style="margin-top:20px; font-size:13px; color:#4dd0e1; font-weight: bold; text-align:center;">Cargando...</p>
         </div>
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            // Asegurarnos de que la BBDD cargó
-            if (!window.GenomaBBDD) {
-                document.getElementById("geno-display").innerHTML = "<p style='color:red;'>Error: genoma.js no cargó correctamente.</p>";
-                return;
-            }
-
-            // Referencias a los selectores
+            
+            // Referencias a la UI
             const selForma = document.getElementById("sel-forma");
             const selColor = document.getElementById("sel-color");
             const selOjos = document.getElementById("sel-ojos");
@@ -146,58 +143,73 @@
             const display = document.getElementById("geno-display");
             const codeOutput = document.getElementById("code-output");
 
-            // Rellenar los selectores dinámicamente leyendo tu BBDD real
-            function rellenarOpciones(selectElement, arrayData, isCuerpo = false) {
-                if(!arrayData) return;
+            // 1. Las formas de cuerpo (Están en tu switch de SVGEngine, así que las listamos a mano)
+            const formasCuerpo = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
+
+            // 2. Extraemos los ojos, bocas, etc., leyendo directamente tus variables de genoma.js
+            function obtenerOpciones(dic) {
+                return (typeof dic !== 'undefined' && Object.keys(dic).length > 0) ? Object.keys(dic) : ["ninguno"];
+            }
+
+            const opcionesOjos = obtenerOpciones(typeof dicOjos !== 'undefined' ? dicOjos : undefined);
+            const opcionesBocas = obtenerOpciones(typeof dicBocas !== 'undefined' ? dicBocas : undefined);
+            const opcionesEspaldas = obtenerOpciones(typeof dicAlas !== 'undefined' ? dicAlas : undefined);
+            const opcionesCabezas = obtenerOpciones(typeof dicSombreros !== 'undefined' ? dicSombreros : undefined);
+
+            // 3. Llenar los menús desplegables
+            function rellenarSelect(selectElement, arrayData) {
+                selectElement.innerHTML = "";
                 arrayData.forEach(item => {
                     const option = document.createElement("option");
-                    // Las formas de cuerpo son objetos {id: "gota", svg: "..."}, los demás son strings ["estandar", ...]
-                    option.value = isCuerpo ? item.id : item; 
-                    option.innerText = (isCuerpo ? item.id : item).toUpperCase().replace("_", " ");
+                    option.value = item;
+                    // Ponemos la primera letra en mayúscula para que se vea bonito
+                    option.innerText = item.charAt(0).toUpperCase() + item.slice(1).replace(/_/g, " ");
                     selectElement.appendChild(option);
                 });
             }
 
-            rellenarOpciones(selForma, window.GenomaBBDD.cuerpo, true);
-            rellenarOpciones(selOjos, window.GenomaBBDD.ojos);
-            rellenarOpciones(selBoca, window.GenomaBBDD.boca);
-            rellenarOpciones(selEspalda, window.GenomaBBDD.espalda);
-            rellenarOpciones(selCabeza, window.GenomaBBDD.cabeza);
+            rellenarSelect(selForma, formasCuerpo);
+            rellenarSelect(selOjos, opcionesOjos);
+            rellenarSelect(selBoca, opcionesBocas);
+            rellenarSelect(selEspalda, opcionesEspaldas);
+            rellenarSelect(selCabeza, opcionesCabezas);
 
-            // Función para dibujar
+            // 4. Función principal de Dibujo
             function renderizarGeno() {
-                // Creamos un ADN temporal con lo que haya seleccionado el usuario
+                // Creamos un "ADN de prueba"
                 const adnFalso = {
                     body_shape: selForma.value,
                     base_color: selColor.value,
-                    color: selColor.value, // Por seguridad mandamos ambos
+                    color: selColor.value,
                     eye_type: selOjos.value,
                     mouth_type: selBoca.value,
                     wing_type: selEspalda.value,
                     hat_type: selCabeza.value
                 };
 
-                // Llamamos a TU motor original (SVGEngine.js)
+                // Llamamos a tu motor SVGEngine.js
                 if (typeof generarSvgGeno === 'function') {
                     let svgString = generarSvgGeno(adnFalso);
-                    // Forzamos al 100% para que quepa en el visor
-                    svgString = svgString.replace(/<svg width="\d+" height="\d+"/, '<svg width="100%" height="100%"');
                     
-                    // Coloreamos el div por si usa currentColor
+                    // Forzamos el encuadre para que se vea bien en el laboratorio
+                    svgString = svgString.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+                    
                     display.style.color = selColor.value; 
                     display.innerHTML = svgString;
 
-                    codeOutput.innerText = `Forma: ${selForma.value} | Color: ${selColor.value}`;
+                    codeOutput.innerText = `FORMA: ${selForma.value.toUpperCase()}`;
+                } else {
+                    display.innerHTML = "<p style='color:#ff6b6b; font-weight:bold;'>Error: No se encontró la función generarSvgGeno. Verifica que SVGEngine.js está en la misma carpeta.</p>";
                 }
             }
 
-            // Escuchar cambios en cualquier control
+            // 5. Escuchamos los clics
             [selForma, selColor, selOjos, selBoca, selEspalda, selCabeza].forEach(control => {
                 control.addEventListener("change", renderizarGeno);
             });
 
-            // Dibujo inicial al abrir la página
-            renderizarGeno();
+            // Darle medio segundo a la BBDD para cargar y hacer el primer dibujo
+            setTimeout(renderizarGeno, 100);
         });
     </script>
 </body>
