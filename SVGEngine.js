@@ -53,26 +53,27 @@ function generarSvgGeno(genesVisuales) {
             pathD = "M 32 48 Q 32 32 48 32 L 112 32 Q 128 32 128 48 L 128 112 Q 128 128 112 128 L 48 128 Q 32 128 32 112 Z"; 
             shineD = "M 45 48 Q 45 45 56 45 L 96 45 Q 64 64 45 88 Z"; break;
         
-        // 🎯 FORMAS RE-CENTRADAS A LA COORDENADA X:80 
+        // 🚀 NUEVAS FORMAS INFLADAS AL 100% DE ESCALA
         case "estrella":
-            pathD = "M 80 30 Q 83 30 84 34 L 91 55 L 115 55 Q 119 55 118 59 L 98 73 L 105 95 Q 107 99 103 96 L 80 80 L 57 96 Q 53 99 55 95 L 62 73 L 42 59 Q 41 55 45 55 L 69 55 L 76 34 Q 77 30 80 30 Z";
-            shineD = "M 75 65 L 65 85 Q 70 75 85 75 Z";
+            pathD = "M 80 24 Q 83 24 85 30 L 93 58 L 128 58 Q 134 58 132 63 L 102 85 L 113 120 Q 115 125 109 122 L 80 101 L 51 122 Q 45 125 47 120 L 58 85 L 28 63 Q 26 58 32 58 L 67 58 L 75 30 Q 77 24 80 24 Z";
+            shineD = "M 70 45 L 60 70 Q 70 60 90 60 Z";
             break;
         case "pentagono":
-            pathD = "M 80 35 L 113 59 L 101 98 L 59 98 L 47 59 Z";
-            shineD = "M 75 55 L 60 80 Q 70 70 90 70 Z";
+            pathD = "M 80 25 Q 84 25 86 29 L 132 63 Q 135 66 134 70 L 112 125 Q 110 130 105 130 L 55 130 Q 50 130 48 125 L 26 70 Q 25 66 28 63 L 74 29 Q 76 25 80 25 Z";
+            shineD = "M 70 45 L 45 80 Q 60 70 90 70 Z";
             break;
         case "nube":
-            pathD = "M 55 90 A 15 15 0 0 1 60 60 A 20 20 0 0 1 100 60 A 15 15 0 0 1 105 90 Z";
-            shineD = "M 65 85 Q 80 75 95 85 Q 80 82 65 85 Z";
+            pathD = "M 40 115 C 10 115, 10 70, 45 65 C 50 20, 110 20, 115 65 C 150 70, 150 115, 120 115 Z";
+            shineD = "M 50 65 Q 80 40 110 65 Q 80 50 50 65 Z";
             break;
         case "chili":
-            pathD = "M 80 35 C 65 35, 60 60, 60 75 C 60 100, 80 110, 80 110 C 80 110, 100 100, 100 75 C 100 60, 95 35, 80 35 Z";
-            shineD = "M 65 65 C 60 80, 70 100, 75 120 C 70 100, 65 80, 75 65 Z";
+            // Lo hice más regordete para que quepan las caras
+            pathD = "M 80 20 C 40 20, 30 70, 45 105 C 60 140, 80 145, 80 145 C 80 145, 100 140, 115 105 C 130 70, 120 20, 80 20 Z";
+            shineD = "M 50 60 C 40 90, 60 120, 75 135 C 60 110, 50 80, 65 50 Z";
             break;
         case "rayo":
-            pathD = "M 90 30 L 50 80 L 80 80 L 70 130 L 110 80 L 80 80 Z";
-            shineD = "M 75 50 L 60 75 L 75 75 Z";
+            pathD = "M 95 20 L 35 85 L 85 85 L 65 145 L 125 80 L 75 80 Z";
+            shineD = "M 75 45 L 55 75 L 80 75 Z";
             break;
             
         default: 
