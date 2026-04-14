@@ -55,16 +55,18 @@ function generarSvgGeno(genesVisuales) {
         
         // 🚀 NUEVAS FORMAS INFLADAS AL 100% DE ESCALA
         case "estrella":
-            pathD = "M 80 24 Q 83 24 85 30 L 93 58 L 128 58 Q 134 58 132 63 L 102 85 L 113 120 Q 115 125 109 122 L 80 101 L 51 122 Q 45 125 47 120 L 58 85 L 28 63 Q 26 58 32 58 L 67 58 L 75 30 Q 77 24 80 24 Z";
-            shineD = "M 70 45 L 60 70 Q 70 60 90 60 Z";
+            // 🌟 Estrella rediseñada con el centro más ancho (panzona) para que quepa la cara
+            pathD = "M 80 15 Q 84 15 86 21 L 98 48 L 136 48 Q 142 48 139 54 L 110 78 L 119 122 Q 121 128 115 124 L 80 106 L 45 124 Q 39 128 41 122 L 50 78 L 21 54 Q 18 48 24 48 L 62 48 L 74 21 Q 76 15 80 15 Z";
+            shineD = "M 70 40 L 55 75 Q 75 65 90 60 Z";
             break;
         case "pentagono":
             pathD = "M 80 25 Q 84 25 86 29 L 132 63 Q 135 66 134 70 L 112 125 Q 110 130 105 130 L 55 130 Q 50 130 48 125 L 26 70 Q 25 66 28 63 L 74 29 Q 76 25 80 25 Z";
             shineD = "M 70 45 L 45 80 Q 60 70 90 70 Z";
             break;
         case "nube":
-            pathD = "M 40 115 C 10 115, 10 70, 45 65 C 50 20, 110 20, 115 65 C 150 70, 150 115, 120 115 Z";
-            shineD = "M 50 65 Q 80 40 110 65 Q 80 50 50 65 Z";
+            // ☁️ Nube rediseñada con la base más ancha y baja
+            pathD = "M 35 120 C -5 120, -5 65, 40 65 C 45 15, 115 15, 120 65 C 165 65, 165 120, 125 120 Z";
+            shineD = "M 50 60 Q 80 40 110 65 Q 80 50 50 60 Z";
             break;
         case "chili":
             // Lo hice más regordete para que quepan las caras
