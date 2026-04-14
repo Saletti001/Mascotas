@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🔬 Laboratorio de Pruebas Genos</title>
+    
     <script src="genoma.js"></script>
-    <script src="SVGEngine.js"></script>
+    <script src="caras.js"></script> <script src="SVGEngine.js"></script>
+    <script src="app.js"></script>
+
     <style>
         body {
             background-color: #0a1118;
@@ -88,7 +91,7 @@
 <body>
 
     <h1>🔬 Entorno de Pruebas Morfológicas</h1>
-    <p style="color: #aaa; margin-bottom: 30px;">Ajusta los parámetros para probar cómo renderiza el SVGEngine. Este entorno está desconectado del juego principal.</p>
+    <p style="color: #aaa; margin-bottom: 30px;">Ajusta los parámetros para probar cómo renderiza el SVGEngine.</p>
 
     <div class="lab-container">
         <div class="controls">
@@ -131,9 +134,8 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            
-            // Referencias a la UI
+        // Usamos setTimeout para darle tiempo a que carguen tus otros archivos JS
+        setTimeout(() => {
             const selForma = document.getElementById("sel-forma");
             const selColor = document.getElementById("sel-color");
             const selOjos = document.getElementById("sel-ojos");
@@ -143,18 +145,14 @@
             const display = document.getElementById("geno-display");
             const codeOutput = document.getElementById("code-output");
 
-            // 1. Las formas de cuerpo (Están en tu switch de SVGEngine, así que las listamos a mano)
+            // 1. Las formas principales de cuerpo
             const formasCuerpo = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
 
-            // 2. Extraemos los ojos, bocas, etc., leyendo directamente tus variables de genoma.js
-            function obtenerOpciones(dic) {
-                return (typeof dic !== 'undefined' && Object.keys(dic).length > 0) ? Object.keys(dic) : ["ninguno"];
-            }
-
-            const opcionesOjos = obtenerOpciones(typeof dicOjos !== 'undefined' ? dicOjos : undefined);
-            const opcionesBocas = obtenerOpciones(typeof dicBocas !== 'undefined' ? dicBocas : undefined);
-            const opcionesEspaldas = obtenerOpciones(typeof dicAlas !== 'undefined' ? dicAlas : undefined);
-            const opcionesCabezas = obtenerOpciones(typeof dicSombreros !== 'undefined' ? dicSombreros : undefined);
+            // 2. Ahora sí encontrará tus variables reales de caras.js
+            const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry"];
+            const opcionesBocas = typeof dicBocas !== 'undefined' ? Object.keys(dicBocas) : ["estandar", "feliz", "colmillos"];
+            const opcionesEspaldas = typeof dicAlas !== 'undefined' ? Object.keys(dicAlas) : ["ninguno", "alas_murcielago"];
+            const opcionesCabezas = typeof dicSombreros !== 'undefined' ? Object.keys(dicSombreros) : ["ninguno", "corona"];
 
             // 3. Llenar los menús desplegables
             function rellenarSelect(selectElement, arrayData) {
@@ -162,7 +160,6 @@
                 arrayData.forEach(item => {
                     const option = document.createElement("option");
                     option.value = item;
-                    // Ponemos la primera letra en mayúscula para que se vea bonito
                     option.innerText = item.charAt(0).toUpperCase() + item.slice(1).replace(/_/g, " ");
                     selectElement.appendChild(option);
                 });
@@ -174,9 +171,8 @@
             rellenarSelect(selEspalda, opcionesEspaldas);
             rellenarSelect(selCabeza, opcionesCabezas);
 
-            // 4. Función principal de Dibujo
+            // 4. Función de Dibujo
             function renderizarGeno() {
-                // Creamos un "ADN de prueba"
                 const adnFalso = {
                     body_shape: selForma.value,
                     base_color: selColor.value,
@@ -187,30 +183,27 @@
                     hat_type: selCabeza.value
                 };
 
-                // Llamamos a tu motor SVGEngine.js
                 if (typeof generarSvgGeno === 'function') {
                     let svgString = generarSvgGeno(adnFalso);
-                    
-                    // Forzamos el encuadre para que se vea bien en el laboratorio
+                    // Forzamos tamaño completo para la previsualización
                     svgString = svgString.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
                     
                     display.style.color = selColor.value; 
                     display.innerHTML = svgString;
-
                     codeOutput.innerText = `FORMA: ${selForma.value.toUpperCase()}`;
                 } else {
-                    display.innerHTML = "<p style='color:#ff6b6b; font-weight:bold;'>Error: No se encontró la función generarSvgGeno. Verifica que SVGEngine.js está en la misma carpeta.</p>";
+                    display.innerHTML = "<p style='color:#ff6b6b; font-weight:bold; text-align:center;'>Error: No se encontró el SVGEngine.</p>";
                 }
             }
 
-            // 5. Escuchamos los clics
+            // 5. Escuchamos cambios
             [selForma, selColor, selOjos, selBoca, selEspalda, selCabeza].forEach(control => {
                 control.addEventListener("change", renderizarGeno);
             });
 
-            // Darle medio segundo a la BBDD para cargar y hacer el primer dibujo
-            setTimeout(renderizarGeno, 100);
-        });
+            // Dibujo inicial
+            renderizarGeno();
+        }, 500); 
     </script>
 </body>
 </html>
