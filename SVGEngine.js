@@ -55,9 +55,9 @@ function generarSvgGeno(genesVisuales) {
         
         // 🚀 NUEVAS FORMAS INFLADAS AL 100% DE ESCALA
         case "estrella":
-            // 🌟 Estrella rediseñada con el centro más ancho (panzona) para que quepa la cara
-            pathD = "M 80 15 Q 84 15 86 21 L 98 48 L 136 48 Q 142 48 139 54 L 110 78 L 119 122 Q 121 128 115 124 L 80 106 L 45 124 Q 39 128 41 122 L 50 78 L 21 54 Q 18 48 24 48 L 62 48 L 74 21 Q 76 15 80 15 Z";
-            shineD = "M 70 40 L 55 75 Q 75 65 90 60 Z";
+            // 🌟 Estrella movida exactamente +20px hacia abajo para alinear las puntas con los ojos fijos
+            pathD = "M 80 35 Q 84 35 86 41 L 98 68 L 136 68 Q 142 68 139 74 L 110 98 L 119 142 Q 121 148 115 144 L 80 126 L 45 144 Q 39 148 41 142 L 50 98 L 21 74 Q 18 68 24 68 L 62 68 L 74 41 Q 76 35 80 35 Z";
+            shineD = "M 70 60 L 55 95 Q 75 85 90 80 Z";
             break;
         case "pentagono":
             pathD = "M 80 25 Q 84 25 86 29 L 132 63 Q 135 66 134 70 L 112 125 Q 110 130 105 130 L 55 130 Q 50 130 48 125 L 26 70 Q 25 66 28 63 L 74 29 Q 76 25 80 25 Z";
