@@ -3,9 +3,20 @@
 // =========================================
 
 window.misGenos = [
-    { id: 1, name: "Geno Base 1", rarity: "Común", element: "🦠 Viral", shape: "gota", color: "#FFB6C1", reward: 50 },
-    { id: 2, name: "Geno Base 2", rarity: "Común", element: "🧫 Sintético", shape: "frijol", color: "#ADD8E6", reward: 50 }
+    { id: 1, name: "Gota de Agua", rarity: "Épico", element: "Biomutante", body_shape: "gota", color: "#4dd0e1", base_color: "#4dd0e1", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 },
+    { id: 2, name: "Frijol Base", rarity: "Épico", element: "Biomutante", body_shape: "frijol", color: "#77DD77", base_color: "#77DD77", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 },
+    { id: 3, name: "Círculo Luz", rarity: "Épico", element: "Biomutante", body_shape: "circulo", color: "#fdfd96", base_color: "#fdfd96", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 },
+    { id: 4, name: "Cubo Morado", rarity: "Épico", element: "Biomutante", body_shape: "cuadrado", color: "#b19cd9", base_color: "#b19cd9", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 },
+    { id: 5, name: "Triángulo Fuego", rarity: "Épico", element: "Biomutante", body_shape: "triangulo", color: "#ff6b6b", base_color: "#ff6b6b", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 },
+    { id: 6, name: "Hongo Gen-0", rarity: "Épico", element: "Biomutante", body_shape: "hongo", color: "#2E8B57", base_color: "#2E8B57", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 },
+    { id: 7, name: "Estrella Nova", rarity: "Épico", element: "Biomutante", body_shape: "estrella", color: "#ffeb3b", base_color: "#ffeb3b", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 },
+    { id: 8, name: "Pentágono Geo", rarity: "Épico", element: "Biomutante", body_shape: "pentagono", color: "#e91e63", base_color: "#e91e63", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 },
+    { id: 9, name: "Nube Tóxica", rarity: "Épico", element: "Biomutante", body_shape: "nube", color: "#00bcd4", base_color: "#00bcd4", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 },
+    { id: 10, name: "Chili Picante", rarity: "Épico", element: "Biomutante", body_shape: "chili", color: "#f44336", base_color: "#f44336", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 },
+    { id: 11, name: "Rayo Veloz", rarity: "Épico", element: "Biomutante", body_shape: "rayo", color: "#ff9800", base_color: "#ff9800", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 }
 ];
+
+window.miMascota = window.misGenos[0]; // Fuerza a la Gota a ser tu mascota inicial
 
 document.addEventListener("DOMContentLoaded", () => {
     
