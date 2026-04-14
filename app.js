@@ -164,7 +164,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const pColor = geno.color || geno.base_color || "#ccc";
                 
-                // 🛠️ FIX: Forzamos al SVG a encajar perfectamente en el centro de la tarjeta pequeña
                 let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
                 svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
                 
@@ -176,16 +175,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 `;
                 
                 // Al hacer clic, se actualiza el laboratorio
-                // Al hacer clic, se actualiza el laboratorio
                 card.onclick = () => {
                     window.miMascota = geno;
                     
                     if (pedestal) {
                         const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-                        // ✅ Limpieza total: Solo le pasamos tu clase original y el color. 
-                        // Tu CSS se encargará de centrarlo y animarlo suavemente como al inicio.
-                        // ✅ VERSIÓN LIMPIA: Sin forzar el centro vertical
-                        pedestal.innerHTML = `<div class="geno-idle" style="color: ${pColor}; width: 100%; text-align: center; margin-top: auto;">${svgPedestal}</div>`;
+                        
+                        // ✅ EL ENVOLTORIO PERFECTO Y DEFINITIVO
+                        pedestal.innerHTML = `
+                            <div style="position: absolute; left: 0; right: 0; bottom: 40px; display: flex; justify-content: center; pointer-events: none;">
+                                <div class="geno-idle" style="color: ${pColor}; pointer-events: auto;">
+                                    ${svgPedestal}
+                                </div>
+                            </div>
+                        `;
                     }
                     
                     const nameEl = document.getElementById('geno-name');
