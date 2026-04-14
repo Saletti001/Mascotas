@@ -181,8 +181,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     
                     if (pedestal) {
                         const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-                        // 🛠️ FIX: Devolvemos el anclaje absoluto y el centrado (-50%) para que no flote por fuera
-                        pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center; width: 200px; height: 190px; color: ${pColor};">${svgPedestal}</div>`;
+                        // 🛠️ FIX DEFINITIVO: Separamos el centrado de la animación en dos cajas diferentes
+                        pedestal.innerHTML = `
+                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 190px; display: flex; justify-content: center; align-items: center; color: ${pColor};">
+                                <div class="geno-idle" style="width: 100%; height: 100%;">
+                                    ${svgPedestal}
+                                </div>
+                            </div>
+                        `;
                     }
                     
                     const nameEl = document.getElementById('geno-name');
