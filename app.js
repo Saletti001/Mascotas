@@ -184,7 +184,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
                         // ✅ Limpieza total: Solo le pasamos tu clase original y el color. 
                         // Tu CSS se encargará de centrarlo y animarlo suavemente como al inicio.
-                        pedestal.innerHTML = `<div class="geno-idle" style="color: ${pColor}; display: flex; justify-content: center; align-items: center;">${svgPedestal}</div>`;
+                        // ✅ VERSIÓN LIMPIA: Sin forzar el centro vertical
+                        pedestal.innerHTML = `<div class="geno-idle" style="color: ${pColor}; width: 100%; text-align: center; margin-top: auto;">${svgPedestal}</div>`;
                     }
                     
                     const nameEl = document.getElementById('geno-name');
