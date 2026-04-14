@@ -176,19 +176,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 `;
                 
                 // Al hacer clic, se actualiza el laboratorio
+                // Al hacer clic, se actualiza el laboratorio
                 card.onclick = () => {
                     window.miMascota = geno;
                     
                     if (pedestal) {
                         const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-                        // 🛠️ FIX DEFINITIVO: Separamos el centrado de la animación en dos cajas diferentes
-                        pedestal.innerHTML = `
-                            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 190px; display: flex; justify-content: center; align-items: center; color: ${pColor};">
-                                <div class="geno-idle" style="width: 100%; height: 100%;">
-                                    ${svgPedestal}
-                                </div>
-                            </div>
-                        `;
+                        // ✅ Limpieza total: Solo le pasamos tu clase original y el color. 
+                        // Tu CSS se encargará de centrarlo y animarlo suavemente como al inicio.
+                        pedestal.innerHTML = `<div class="geno-idle" style="color: ${pColor}; display: flex; justify-content: center; align-items: center;">${svgPedestal}</div>`;
                     }
                     
                     const nameEl = document.getElementById('geno-name');
