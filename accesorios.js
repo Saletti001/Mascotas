@@ -10,8 +10,8 @@ const anclajes = {
     circulo:   { cabezaX: 80, cabezaY: 32, espaldaX: 80, espaldaY: 88 },
     cuadrado:  { cabezaX: 80, cabezaY: 32, espaldaX: 80, espaldaY: 80 },
     // ✨ NUEVAS FORMAS AÑADIDAS
-    estrella:  { cabezaX: 80, cabezaY: 49, espaldaX: 80, espaldaY: 88 },
-    nube:      { cabezaX: 80, cabezaY: 45, espaldaX: 80, espaldaY: 85 },
+    estrella:  { cabezaX: 80, cabezaY: 49, espaldaX: 80, espaldaY: 85 },
+    nube:      { cabezaX: 80, cabezaY: 25, espaldaX: 80, espaldaY: 85 },
     pentagono: { cabezaX: 80, cabezaY: 30, espaldaX: 80, espaldaY: 85 },
     chili:     { cabezaX: 80, cabezaY: 25, espaldaX: 80, espaldaY: 90 },
     rayo:      { cabezaX: 80, cabezaY: 30, espaldaX: 80, espaldaY: 85 }

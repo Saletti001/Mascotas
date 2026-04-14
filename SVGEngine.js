@@ -64,9 +64,10 @@ function generarSvgGeno(genesVisuales) {
             shineD = "M 70 45 L 45 80 Q 60 70 90 70 Z";
             break;
         case "nube":
-            // ☁️ Nube rediseñada con la base más ancha y baja
-            pathD = "M 35 120 C -5 120, -5 65, 40 65 C 45 15, 115 15, 120 65 C 165 65, 165 120, 125 120 Z";
-            shineD = "M 50 60 Q 80 40 110 65 Q 80 50 50 60 Z";
+            // ☁️ Nube rediseñada: Más compacta a los lados para que el jetpack no se esconda,
+            // y con la altura perfecta para la cara y los sombreros.
+            pathD = "M 45 115 C 20 115, 20 70, 50 65 C 55 20, 105 20, 110 65 C 140 70, 140 115, 115 115 Z";
+            shineD = "M 60 55 Q 80 35 100 55 Q 80 45 60 55 Z";
             break;
         case "chili":
             // Lo hice más regordete para que quepan las caras
