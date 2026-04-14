@@ -18,9 +18,13 @@ function generarSvgGeno(genesVisuales) {
     if (safeData.mutated_cabezaX) safeAnclaje.cabezaX = safeData.mutated_cabezaX;
     if (safeData.mutated_cabezaY) safeAnclaje.cabezaY = safeData.mutated_cabezaY;
     
+    // 🧠 MEJORA: Cara Inteligente. Si no encuentra el ojo/boca, elige uno al azar.
     const obtenerPieza = (dic, gen) => {
         if (typeof dic === 'undefined' || Object.keys(dic).length === 0) return '';
-        return gen ? (dic[gen] || '') : dic[Object.keys(dic)[Math.floor(Math.random() * Object.keys(dic).length)]];
+        if (gen && dic[gen]) return dic[gen]; // Si existe, lo usa
+        // Si no existe, saca uno aleatorio para que nunca queden sin cara
+        const keys = Object.keys(dic);
+        return dic[keys[Math.floor(Math.random() * keys.length)]];
     };
 
     const ojo = obtenerPieza(typeof dicOjos !== 'undefined' ? dicOjos : {}, safeData.eye_type);
@@ -49,26 +53,26 @@ function generarSvgGeno(genesVisuales) {
             pathD = "M 32 48 Q 32 32 48 32 L 112 32 Q 128 32 128 48 L 128 112 Q 128 128 112 128 L 48 128 Q 32 128 32 112 Z"; 
             shineD = "M 45 48 Q 45 45 56 45 L 96 45 Q 64 64 45 88 Z"; break;
         
-        // --- NUEVAS FORMAS (CENTRADAS CORRECTAMENTE) ---
+        // 🎯 FORMAS RE-CENTRADAS A LA COORDENADA X:80 
         case "estrella":
-            pathD = "M 50 10 Q 53 10 54 14 L 61 35 L 85 35 Q 89 35 88 39 L 68 53 L 75 75 Q 77 79 73 76 L 50 60 L 27 76 Q 23 79 25 75 L 32 53 L 12 39 Q 11 35 15 35 L 39 35 L 46 14 Q 47 10 50 10 Z";
-            shineD = "M 45 45 L 35 65 Q 40 55 55 55 Z";
+            pathD = "M 80 30 Q 83 30 84 34 L 91 55 L 115 55 Q 119 55 118 59 L 98 73 L 105 95 Q 107 99 103 96 L 80 80 L 57 96 Q 53 99 55 95 L 62 73 L 42 59 Q 41 55 45 55 L 69 55 L 76 34 Q 77 30 80 30 Z";
+            shineD = "M 75 65 L 65 85 Q 70 75 85 75 Z";
             break;
         case "pentagono":
-            pathD = "M50 15 L83 39 L71 78 L29 78 L17 39 Z";
-            shineD = "M 45 35 L 30 60 Q 40 50 60 50 Z";
+            pathD = "M 80 35 L 113 59 L 101 98 L 59 98 L 47 59 Z";
+            shineD = "M 75 55 L 60 80 Q 70 70 90 70 Z";
             break;
         case "nube":
-            pathD = "M25 60 A 15 15 0 0 1 30 30 A 20 20 0 0 1 70 30 A 15 15 0 0 1 75 60 Z";
-            shineD = "M 35 55 Q 50 45 65 55 Q 50 52 35 55 Z";
+            pathD = "M 55 90 A 15 15 0 0 1 60 60 A 20 20 0 0 1 100 60 A 15 15 0 0 1 105 90 Z";
+            shineD = "M 65 85 Q 80 75 95 85 Q 80 82 65 85 Z";
             break;
         case "chili":
-            pathD = "M50 15 C35 15, 30 40, 30 55 C30 80, 50 90, 50 90 C50 90, 70 80, 70 55 C70 40, 65 15, 50 15 Z";
-            shineD = "M 35 45 C 30 60, 40 80, 45 100 C 40 80, 35 60, 45 45 Z";
+            pathD = "M 80 35 C 65 35, 60 60, 60 75 C 60 100, 80 110, 80 110 C 80 110, 100 100, 100 75 C 100 60, 95 35, 80 35 Z";
+            shineD = "M 65 65 C 60 80, 70 100, 75 120 C 70 100, 65 80, 75 65 Z";
             break;
         case "rayo":
-            pathD = "M60 10 L30 50 L50 50 L40 90 L70 50 L50 50 Z";
-            shineD = "M 45 40 L 30 65 L 45 65 Z";
+            pathD = "M 90 30 L 50 80 L 80 80 L 70 130 L 110 80 L 80 80 Z";
+            shineD = "M 75 50 L 60 75 L 75 75 Z";
             break;
             
         default: 
