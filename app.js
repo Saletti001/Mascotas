@@ -165,12 +165,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 `;
                 
                 // Al hacer clic, se actualiza el laboratorio
+                // Al hacer clic, se actualiza el laboratorio
                 card.onclick = () => {
                     window.miMascota = geno;
                     
                     if (pedestal) {
                         const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-                        pedestal.innerHTML = `<div class="geno-idle" style="display: flex; justify-content: center; align-items: center; color: ${pColor};">${svgPedestal}</div>`;
+                        // ✅ Volvemos a tu anclaje original perfecto
+                        pedestal.innerHTML = `<div class="geno-idle" style="color: ${pColor};">${svgPedestal}</div>`;
                     }
                     
                     const nameEl = document.getElementById('geno-name');
