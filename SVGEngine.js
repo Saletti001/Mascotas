@@ -49,19 +49,19 @@ function generarSvgGeno(genesVisuales) {
             pathD = "M 32 48 Q 32 32 48 32 L 112 32 Q 128 32 128 48 L 128 112 Q 128 128 112 128 L 48 128 Q 32 128 32 112 Z"; 
             shineD = "M 45 48 Q 45 45 56 45 L 96 45 Q 64 64 45 88 Z"; break;
         case "estrella":
-            cuerpoSvg = `<path d="M 50 10 Q 53 10 54 14 L 61 35 L 85 35 Q 89 35 88 39 L 68 53 L 75 75 Q 77 79 73 76 L 50 60 L 27 76 Q 23 79 25 75 L 32 53 L 12 39 Q 11 35 15 35 L 39 35 L 46 14 Q 47 10 50 10 Z" fill="${baseColor}"/>`;
+            cuerpoSvg = '<path d="M 50 10 Q 53 10 54 14 L 61 35 L 85 35 Q 89 35 88 39 L 68 53 L 75 75 Q 77 79 73 76 L 50 60 L 27 76 Q 23 79 25 75 L 32 53 L 12 39 Q 11 35 15 35 L 39 35 L 46 14 Q 47 10 50 10 Z" fill="currentColor"/>';
             break;
         case "pentagono":
-            cuerpoSvg = `<path d="M50 15 L83 39 L71 78 L29 78 L17 39 Z" fill="${baseColor}"/>`;
+            cuerpoSvg = '<path d="M50 15 L83 39 L71 78 L29 78 L17 39 Z" fill="currentColor"/>';
             break;
         case "nube":
-            cuerpoSvg = `<path d="M25 60 A 15 15 0 0 1 30 30 A 20 20 0 0 1 70 30 A 15 15 0 0 1 75 60 Z" fill="${baseColor}"/>`;
+            cuerpoSvg = '<path d="M25 60 A 15 15 0 0 1 30 30 A 20 20 0 0 1 70 30 A 15 15 0 0 1 75 60 Z" fill="currentColor"/>';
             break;
         case "chili":
-            cuerpoSvg = `<path d="M50 15 C35 15, 30 40, 30 55 C30 80, 50 90, 50 90 C50 90, 70 80, 70 55 C70 40, 65 15, 50 15 Z" fill="${baseColor}"/>`;
+            cuerpoSvg = '<path d="M50 15 C35 15, 30 40, 30 55 C30 80, 50 90, 50 90 C50 90, 70 80, 70 55 C70 40, 65 15, 50 15 Z" fill="currentColor"/>';
             break;
         case "rayo":
-            cuerpoSvg = `<path d="M60 10 L30 50 L50 50 L40 90 L70 50 L50 50 Z" fill="${baseColor}"/>`;
+            cuerpoSvg = '<path d="M60 10 L30 50 L50 50 L40 90 L70 50 L50 50 Z" fill="currentColor"/>';
             break;
         default: 
             pathD = "M 65 25 C 110 20, 135 50, 135 85 C 135 125, 105 145, 75 145 C 35 145, 25 115, 35 75 C 40 50, 35 30, 65 25 Z"; 
