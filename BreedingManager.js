@@ -62,7 +62,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 slot.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno({ body_shape: pShape, base_color: pColor, wing_type: pWing, isEgg: false }) : '<span>Geno</span>';
                 const svg = slot.querySelector("svg");
-                if(svg) { svg.style.width = "50px"; svg.style.height = "50px"; }
+                // 🛠️ FIX: Se añadió svg.style.color = pColor;
+                if(svg) { svg.style.width = "50px"; svg.style.height = "50px"; svg.style.color = pColor; }
                 slot.style.border = "2px solid #4dd0e1"; slot.style.background = "#1a2a36"; slot.style.boxShadow = "0 0 10px rgba(77, 208, 225, 0.4)";
             } else {
                 slot.innerHTML = '<span style="color: #4dd0e1; font-size: 28px;">+</span>';
@@ -93,7 +94,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if(svgContainer) {
             svgContainer.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno({ body_shape: pShape, base_color: pColor, wing_type: pWing, isEgg: false }) : '';
             const svg = svgContainer.querySelector("svg");
-            if(svg) { svg.style.width = "90px"; svg.style.height = "90px"; }
+            // 🛠️ FIX: Se añadió svg.style.color = pColor;
+            if(svg) { svg.style.width = "90px"; svg.style.height = "90px"; svg.style.color = pColor; }
         }
 
         document.getElementById("id-card-name").innerText = g.name || `Sujeto`;
@@ -197,10 +199,11 @@ document.addEventListener("DOMContentLoaded", () => {
             // else if(geno.level < 10) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Requiere Nivel 10</span>`;
             else if((geno.breedCount||0) >= 7) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Límite de crías</span>`;
 
+            // 🛠️ FIX: Se añadió color: ${pColor} en el contenedor SVG y ${geno.name || 'Sujeto'} en el título
             btn.innerHTML = `
-                <div style="width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #333; flex-shrink: 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">${svgContent}</div>
+                <div style="width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #333; flex-shrink: 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); color: ${pColor};">${svgContent}</div>
                 <div style="display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-left: 15px;">
-                    <span style="color: #fff; font-weight: 900; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px;">Sujeto Nv. ${geno.level || 1}</span>
+                    <span style="color: #fff; font-weight: 900; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px;">${geno.name || 'Sujeto'} <span style="color: #00d2ff; font-size: 11px;">Nv.${geno.level || 1}</span></span>
                     <span style="color: #aaa; font-size: 10px; margin-bottom: 6px; text-transform: uppercase;">Base: ${pShape}</span>
                     ${statusText}
                 </div>
@@ -301,8 +304,11 @@ document.addEventListener("DOMContentLoaded", () => {
         huevos.forEach(huevo => {
             const card = document.createElement("div");
             card.style = "min-width: 95px; background: #1e293b; border: 1px solid #3b82f6; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); position: relative;";
+            // 🛠️ FIX: Se añadió el contenedor <div style="color: ..."> alrededor del SVG
             card.innerHTML = `
-                ${typeof generarSvgGeno === 'function' ? generarSvgGeno(huevo) : '<span>Huevo</span>'}
+                <div style="color: ${huevo.color || huevo.base_color || '#ccc'};">
+                    ${typeof generarSvgGeno === 'function' ? generarSvgGeno(huevo) : '<span>Huevo</span>'}
+                </div>
                 <div id="timer-${huevo.id}" style="font-size: 12px; font-weight: bold; color: #00d2ff; margin-top: 8px; letter-spacing: 1px;">Calc...</div>
                 <button id="btn-skip-${huevo.id}" style="margin-top: 8px; font-size: 10px; background: linear-gradient(135deg, #8b5cf6, #3b82f6); color: white; border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4); text-transform: uppercase;">⚡ 0.5 POL</button>
             `;

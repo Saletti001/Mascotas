@@ -312,3 +312,57 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.onclick = () => navegarA('room-area');
     });
 });
+
+// =========================================
+// PARCHE DE SINCRONIZACIÓN - MENÚ PRINCIPAL
+// =========================================
+const btnMisGenosMain = document.getElementById("btn-show-genos");
+
+if (btnMisGenosMain) {
+    // Clonar el botón para eliminar cualquier evento viejo que estuviera fallando
+    const newBtn = btnMisGenosMain.cloneNode(true);
+    btnMisGenosMain.parentNode.replaceChild(newBtn, btnMisGenosMain);
+
+    newBtn.addEventListener("click", () => {
+        const grid = document.getElementById("geno-swap-grid");
+        const modal = document.getElementById("geno-swap-modal");
+        
+        if (!grid || !modal) return;
+        
+        grid.innerHTML = ""; // Limpiamos la cuadrícula vieja
+        
+        // Juntamos a la mascota actual y a los Genos almacenados
+        const todos = [];
+        if (window.miMascota) todos.push(window.miMascota);
+        if (window.misGenos) todos.push(...window.misGenos);
+
+        // Dibujamos una tarjeta por cada Geno
+        todos.forEach(geno => {
+            const card = document.createElement("div");
+            card.style = "background: #1a2a36; border: 1px solid #4dd0e1; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);";
+            
+            card.onmouseover = () => card.style.boxShadow = "0 0 15px rgba(77, 208, 225, 0.4)";
+            card.onmouseout = () => card.style.boxShadow = "0 4px 10px rgba(0,0,0,0.3)";
+
+            const pColor = geno.color || geno.base_color || "#ccc";
+            const pShape = (geno.genes && geno.genes.cuerpo) ? geno.genes.cuerpo.dom : (geno.body_shape || "gota");
+            const svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
+            
+            card.innerHTML = `
+                <div style="width: 60px; height: 60px; color: ${pColor};">${svg}</div>
+                <span style="color: white; font-weight: bold; font-size: 12px; margin-top: 10px;">${geno.name || 'Sujeto'}</span>
+            `;
+            
+            // Al hacer clic, se selecciona como mascota principal
+            card.onclick = () => {
+                window.miMascota = geno;
+                if(typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
+                modal.classList.add("hidden");
+            };
+            
+            grid.appendChild(card);
+        });
+        
+        modal.classList.remove("hidden");
+    });
+}
