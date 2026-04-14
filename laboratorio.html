@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔬 Laboratorio de Pruebas Genos</title>
+    <script src="genoma.js"></script>
+    <script src="SVGEngine.js"></script>
+    <style>
+        body {
+            background-color: #0a1118;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            color: #4dd0e1;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(77, 208, 225, 0.5);
+        }
+        .lab-container {
+            display: flex;
+            gap: 40px;
+            background: #1a2a36;
+            padding: 30px;
+            border-radius: 15px;
+            border: 1px solid #4dd0e1;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            max-width: 800px;
+            width: 100%;
+        }
+        .controls {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        label {
+            font-size: 12px;
+            color: #aaa;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        select, input[type="color"] {
+            padding: 10px;
+            background: #0d1a24;
+            color: #fff;
+            border: 1px solid #333;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            cursor: pointer;
+        }
+        select:focus, input:focus {
+            border-color: #4dd0e1;
+        }
+        .viewer {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #0d1a24;
+            border-radius: 10px;
+            border: 2px dashed #333;
+            padding: 20px;
+            min-height: 250px;
+        }
+        #geno-display {
+            width: 200px; /* Tamaño grande para ver detalles */
+            height: 200px;
+            transition: all 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🔬 Entorno de Pruebas Morfológicas</h1>
+    <p style="color: #aaa; margin-bottom: 30px;">Ajusta los parámetros para probar cómo renderiza el SVGEngine. Este entorno está desconectado del juego principal.</p>
+
+    <div class="lab-container">
+        <div class="controls">
+            <div class="control-group">
+                <label>Forma Base (Cuerpo)</label>
+                <select id="sel-forma"></select>
+            </div>
+            
+            <div class="control-group">
+                <label>Color Base</label>
+                <input type="color" id="sel-color" value="#77DD77">
+            </div>
+
+            <div class="control-group">
+                <label>Ojos</label>
+                <select id="sel-ojos"></select>
+            </div>
+
+            <div class="control-group">
+                <label>Boca</label>
+                <select id="sel-boca"></select>
+            </div>
+
+            <div class="control-group">
+                <label>Espalda / Alas</label>
+                <select id="sel-espalda"></select>
+            </div>
+            
+            <div class="control-group">
+                <label>Accesorio / Cabeza</label>
+                <select id="sel-cabeza"></select>
+            </div>
+        </div>
+
+        <div class="viewer">
+            <div id="geno-display">
+                </div>
+            <p id="code-output" style="margin-top:20px; font-size:11px; color:#555; text-align:center;">ID Generado: ...</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Asegurarnos de que la BBDD cargó
+            if (!window.GenomaBBDD) {
+                document.getElementById("geno-display").innerHTML = "<p style='color:red;'>Error: genoma.js no cargó correctamente.</p>";
+                return;
+            }
+
+            // Referencias a los selectores
+            const selForma = document.getElementById("sel-forma");
+            const selColor = document.getElementById("sel-color");
+            const selOjos = document.getElementById("sel-ojos");
+            const selBoca = document.getElementById("sel-boca");
+            const selEspalda = document.getElementById("sel-espalda");
+            const selCabeza = document.getElementById("sel-cabeza");
+            const display = document.getElementById("geno-display");
+            const codeOutput = document.getElementById("code-output");
+
+            // Rellenar los selectores dinámicamente leyendo tu BBDD real
+            function rellenarOpciones(selectElement, arrayData, isCuerpo = false) {
+                if(!arrayData) return;
+                arrayData.forEach(item => {
+                    const option = document.createElement("option");
+                    // Las formas de cuerpo son objetos {id: "gota", svg: "..."}, los demás son strings ["estandar", ...]
+                    option.value = isCuerpo ? item.id : item; 
+                    option.innerText = (isCuerpo ? item.id : item).toUpperCase().replace("_", " ");
+                    selectElement.appendChild(option);
+                });
+            }
+
+            rellenarOpciones(selForma, window.GenomaBBDD.cuerpo, true);
+            rellenarOpciones(selOjos, window.GenomaBBDD.ojos);
+            rellenarOpciones(selBoca, window.GenomaBBDD.boca);
+            rellenarOpciones(selEspalda, window.GenomaBBDD.espalda);
+            rellenarOpciones(selCabeza, window.GenomaBBDD.cabeza);
+
+            // Función para dibujar
+            function renderizarGeno() {
+                // Creamos un ADN temporal con lo que haya seleccionado el usuario
+                const adnFalso = {
+                    body_shape: selForma.value,
+                    base_color: selColor.value,
+                    color: selColor.value, // Por seguridad mandamos ambos
+                    eye_type: selOjos.value,
+                    mouth_type: selBoca.value,
+                    wing_type: selEspalda.value,
+                    hat_type: selCabeza.value
+                };
+
+                // Llamamos a TU motor original (SVGEngine.js)
+                if (typeof generarSvgGeno === 'function') {
+                    let svgString = generarSvgGeno(adnFalso);
+                    // Forzamos al 100% para que quepa en el visor
+                    svgString = svgString.replace(/<svg width="\d+" height="\d+"/, '<svg width="100%" height="100%"');
+                    
+                    // Coloreamos el div por si usa currentColor
+                    display.style.color = selColor.value; 
+                    display.innerHTML = svgString;
+
+                    codeOutput.innerText = `Forma: ${selForma.value} | Color: ${selColor.value}`;
+                }
+            }
+
+            // Escuchar cambios en cualquier control
+            [selForma, selColor, selOjos, selBoca, selEspalda, selCabeza].forEach(control => {
+                control.addEventListener("change", renderizarGeno);
+            });
+
+            // Dibujo inicial al abrir la página
+            renderizarGeno();
+        });
+    </script>
+</body>
+</html>
