@@ -6,7 +6,8 @@
     <title>🔬 Laboratorio de Pruebas Genos</title>
     
     <script src="genoma.js"></script>
-    <script src="caras.js"></script> <script src="SVGEngine.js"></script>
+    <script src="caras.js"></script> 
+    <script src="accesorios.js"></script> <script src="SVGEngine.js"></script>
     <script src="app.js"></script>
 
     <style>
@@ -73,9 +74,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            background: #0d1a24;
+            background: #90caf9; 
             border-radius: 10px;
-            border: 2px dashed #333;
+            border: 2px dashed #1e88e5; 
             padding: 20px;
             min-height: 250px;
         }
@@ -129,7 +130,7 @@
         <div class="viewer">
             <div id="geno-display">
                 </div>
-            <p id="code-output" style="margin-top:20px; font-size:13px; color:#4dd0e1; font-weight: bold; text-align:center;">Cargando...</p>
+            <p id="code-output" style="margin-top:20px; font-size:13px; color:#1e88e5; font-weight: bold; text-align:center;">Cargando...</p>
         </div>
     </div>
 
@@ -148,11 +149,11 @@
             // 1. Las formas principales de cuerpo
             const formasCuerpo = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
 
-            // 2. Ahora sí encontrará tus variables reales de caras.js
+            // 2. Ahora sí encontrará tus variables reales de caras.js y accesorios.js
             const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry"];
             const opcionesBocas = typeof dicBocas !== 'undefined' ? Object.keys(dicBocas) : ["estandar", "feliz", "colmillos"];
-            const opcionesEspaldas = typeof dicAlas !== 'undefined' ? Object.keys(dicAlas) : ["ninguno", "alas_murcielago"];
-            const opcionesCabezas = typeof dicSombreros !== 'undefined' ? Object.keys(dicSombreros) : ["ninguno", "corona"];
+            const opcionesEspaldas = typeof dicAlas !== 'undefined' ? Object.keys(dicAlas) : ["ninguno"];
+            const opcionesCabezas = typeof dicSombreros !== 'undefined' ? Object.keys(dicSombreros) : ["ninguno"];
 
             // 3. Llenar los menús desplegables
             function rellenarSelect(selectElement, arrayData) {
