@@ -40,23 +40,39 @@ function generarSvgGeno(genesVisuales) {
             pathD = "M 80 24 Q 28 80 28 108 A 52 52 0 0 0 132 108 Q 132 80 80 24 Z"; 
             shineD = "M 65 50 Q 55 65 58 80 Q 62 70 70 55 Z"; break;
         case "hongo": 
-            // 🍄 Hongo Rediseñado (Forma Intermedia + Capas Correctas)
+            // 🍄 Hongo Rediseñado (Forma Intermedia + PARCHE MAESTRO DE CAPAS Y MÁSCARA)
             const tallo = "M 72 110 C 72 120 65 130 60 135 C 50 148 65 150 80 150 C 95 150 110 148 100 135 C 95 130 88 120 88 110 Z";
             pathD = "M 15 90 C 15 20, 145 20, 145 90 C 145 118, 122 122, 80 122 C 38 122, 15 118, 15 90 Z"; 
             shineD = "M 40 55 Q 50 40 70 40 Q 55 48 40 55 Z"; 
 
-            const manchasStr = `
-                <g fill="#ffffff" opacity="0.6">
-                    <circle cx="40" cy="45" r="7"/>
-                    <circle cx="80" cy="40" r="6"/>
-                    <circle cx="110" cy="45" r="7"/>
-                    <circle cx="30" cy="70" r="5"/>
-                    <circle cx="125" cy="70" r="5"/>
-                    <circle cx="45" cy="95" r="4"/>
-                    <circle cx="115" cy="95" r="4"/>
-                    <circle cx="85" cy="65" r="3"/>
-                </g>
-            `;
+            // --- ⚪ SECCIÓN DE MANCHAS REALISTAS Y FIJAS (SEEDED RANDOM) ⚪ ---
+            // 1. Creamos una "semilla" única basada en el ADN de este Geno específico.
+            // Si el Geno tiene un ID único en el juego, lo usamos. Si no, usamos sus colores y partes.
+            let seedStr = (safeData.id || "geno") + color + ojo + boca;
+            let seed = 0;
+            for (let i = 0; i < seedStr.length; i++) {
+                seed = seedStr.charCodeAt(i) + ((seed << 5) - seed);
+            }
+            seed = Math.abs(seed);
+
+            // 2. Generador pseudo-aleatorio. Siempre da el mismo resultado para la misma semilla.
+            const randomFijo = () => {
+                let x = Math.sin(seed++) * 10000;
+                return x - Math.floor(x);
+            };
+
+            let generatedManchas = `<g fill="#ffffff" opacity="0.6">`;
+            const numManchas = 8; 
+            for (let i = 0; i < numManchas; i++) {
+                // Usamos randomFijo() en lugar de Math.random()
+                const cx = 25 + randomFijo() * (135 - 25);
+                const cy = 30 + randomFijo() * (110 - 30);
+                const r = 3 + randomFijo() * (8 - 3);
+                generatedManchas += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}"/>`;
+            }
+            generatedManchas += `</g>`;
+
+            const manchasStr = generatedManchas;
 
             // El tallo va en 'extras' (por DETRÁS del cuerpo)
             extras = `
