@@ -38,13 +38,12 @@ function generarSvgGeno(genesVisuales) {
             pathD = "M 80 24 Q 28 80 28 108 A 52 52 0 0 0 132 108 Q 132 80 80 24 Z"; 
             shineD = "M 65 50 Q 55 65 58 80 Q 62 70 70 55 Z"; break;
        case "hongo": 
-            // 🍄 Hongo Rediseñado (Forma Intermedia + Manchas Realistas):
-            // Mantenemos la forma intermedia que te gustó del paso anterior.
+            // 🍄 Hongo Rediseñado (Forma Intermedia + PARCHE MAESTRO DE CAPAS Y MÁSCARA)
             const tallo = "M 72 110 C 72 120 65 130 60 135 C 50 148 65 150 80 150 C 95 150 110 148 100 135 C 95 130 88 120 88 110 Z";
             pathD = "M 15 90 C 15 20, 145 20, 145 90 C 145 118, 122 122, 80 122 C 38 122, 15 118, 15 90 Z"; 
             shineD = "M 40 55 Q 50 40 70 40 Q 55 48 40 55 Z"; 
 
-            // --- ⚪ NUEVA SECCIÓN DE MANCHAS REALISTAS ⚪ ---
+            // --- ⚪ SECCIÓN DE MANCHAS REALISTAS CON MÁSCARA ⚪ ---
             // Hemos aumentado la cantidad, distribuido mejor y cambiado a blanco puro con opacidad suave
             // para que se vean orgánicas contra el degradado del sombrero.
             const manchasStr = `
@@ -60,12 +59,21 @@ function generarSvgGeno(genesVisuales) {
                 </g>
             `;
 
-            // Construimos los extras: renderizado del tallo + las nuevas manchas.
-            extras = `<path d="${tallo}" fill="${color}" stroke="#1a2a36" stroke-width="5"/><path d="${tallo}" fill="url(#${gradId})"/>${manchasStr}`;
-            break;
-
-            // Construimos los extras: renderizado del tallo + las nuevas manchas.
-            extras = `<path d="${tallo}" fill="${color}" stroke="#1a2a36" stroke-width="5"/><path d="${tallo}" fill="url(#${gradId})"/>${manchasStr}`;
+            // 🛠️ PARCHE 2: Usamos un clipPath (Máscara) para forzar las manchas a quedarse DENTRO del contorno negro.
+            // 🛠️ PARCHE 1: Dibujamos primero el tallo y LUEGO definimos la máscara y el grupo de manchas
+            // dentro de la variable 'extras'. Esto asegura que el cuerpo-patrón se dibuje en el orden correcto.
+            extras = `
+                <path d="${tallo}" fill="${color}" stroke="#1a2a36" stroke-width="5"/>
+                <path d="${tallo}" fill="url(#${gradId})"/>
+                <defs>
+                    <clipPath id="hongoMask-${id}">
+                        <path d="${pathD}"/>
+                    </clipPath>
+                </defs>
+                <g clip-path="url(#hongoMask-${id})">
+                    ${manchasStr}
+                </g>
+            `;
             break;
         case "triangulo": 
             pathD = "M 80 24 Q 88 24 96 40 L 136 120 Q 144 136 120 136 L 40 136 Q 16 136 24 120 L 64 40 Q 72 24 80 24 Z"; 
