@@ -44,8 +44,6 @@ function generarSvgGeno(genesVisuales) {
             shineD = "M 40 55 Q 50 40 70 40 Q 55 48 40 55 Z"; 
 
             // --- ⚪ SECCIÓN DE MANCHAS REALISTAS CON MÁSCARA ⚪ ---
-            // Hemos aumentado la cantidad, distribuido mejor y cambiado a blanco puro con opacidad suave
-            // para que se vean orgánicas contra el degradado del sombrero.
             const manchasStr = `
                 <g fill="#ffffff" opacity="0.6">
                     <circle cx="40" cy="45" r="7"/>
@@ -59,18 +57,16 @@ function generarSvgGeno(genesVisuales) {
                 </g>
             `;
 
-            // 🛠️ PARCHE 2: Usamos un clipPath (Máscara) para forzar las manchas a quedarse DENTRO del contorno negro.
-            // 🛠️ PARCHE 1: Dibujamos primero el tallo y LUEGO definimos la máscara y el grupo de manchas
-            // dentro de la variable 'extras'. Esto asegura que el cuerpo-patrón se dibuje en el orden correcto.
+            // 🛠️ CORRECCIÓN: Usamos ${rnd} en lugar de ${id}
             extras = `
                 <path d="${tallo}" fill="${color}" stroke="#1a2a36" stroke-width="5"/>
                 <path d="${tallo}" fill="url(#${gradId})"/>
                 <defs>
-                    <clipPath id="hongoMask-${id}">
+                    <clipPath id="hongoMask-${rnd}">
                         <path d="${pathD}"/>
                     </clipPath>
                 </defs>
-                <g clip-path="url(#hongoMask-${id})">
+                <g clip-path="url(#hongoMask-${rnd})">
                     ${manchasStr}
                 </g>
             `;
