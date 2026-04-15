@@ -2,24 +2,19 @@
 // app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN
 // =========================================
 
-window.misGenos = [
-    { id: 1, name: "Gota de Agua", rarity: "Épico", element: "Biomutante", body_shape: "gota", color: "#4dd0e1", base_color: "#4dd0e1", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 },
-    { id: 2, name: "Frijol Base", rarity: "Épico", element: "Biomutante", body_shape: "frijol", color: "#77DD77", base_color: "#77DD77", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 },
-    { id: 3, name: "Círculo Luz", rarity: "Épico", element: "Biomutante", body_shape: "circulo", color: "#fdfd96", base_color: "#fdfd96", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 },
-    { id: 4, name: "Cubo Morado", rarity: "Épico", element: "Biomutante", body_shape: "cuadrado", color: "#b19cd9", base_color: "#b19cd9", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 },
-    { id: 5, name: "Triángulo Fuego", rarity: "Épico", element: "Biomutante", body_shape: "triangulo", color: "#ff6b6b", base_color: "#ff6b6b", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 },
-    { id: 6, name: "Hongo Gen-0", rarity: "Épico", element: "Biomutante", body_shape: "hongo", color: "#2E8B57", base_color: "#2E8B57", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 },
-    { id: 7, name: "Estrella Nova", rarity: "Épico", element: "Biomutante", body_shape: "estrella", color: "#ffeb3b", base_color: "#ffeb3b", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 },
-    { id: 8, name: "Pentágono Geo", rarity: "Épico", element: "Biomutante", body_shape: "pentagono", color: "#e91e63", base_color: "#e91e63", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 },
-    { id: 9, name: "Nube Tóxica", rarity: "Épico", element: "Biomutante", body_shape: "nube", color: "#00bcd4", base_color: "#00bcd4", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 },
-    { id: 10, name: "Chili Picante", rarity: "Épico", element: "Biomutante", body_shape: "chili", color: "#f44336", base_color: "#f44336", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 },
-    { id: 11, name: "Rayo Veloz", rarity: "Épico", element: "Biomutante", body_shape: "rayo", color: "#ff9800", base_color: "#ff9800", eye_type: "estandar", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno", level: 10, breedCount: 0 }
-];
-
-window.miMascota = window.misGenos[0]; // Fuerza a la Gota a ser tu mascota inicial
+// 🎒 INVENTARIO VACÍO: Simulamos a un jugador nuevo.
+window.misGenos = []; 
+window.miMascota = null; 
 
 document.addEventListener("DOMContentLoaded", () => {
     
+    // ✨ COMPROBAR JUGADOR NUEVO: Si no tiene Genos, iniciamos la secuencia de ADN
+    setTimeout(() => {
+        if (window.misGenos.length === 0 && !window.miMascota) {
+            iniciarSecuenciaBienvenida();
+        }
+    }, 500);
+
     const fabMenu = document.getElementById("fab-menu");
     const drawerMenu = document.getElementById("drawer-menu");
     const closeDrawer = document.getElementById("close-drawer");
@@ -175,14 +170,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 `;
                 
                 // Al hacer clic, se actualiza el laboratorio
-                // Al hacer clic, se actualiza el laboratorio
                 card.onclick = () => {
                     window.miMascota = geno;
                     
                     if (pedestal) {
                         const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
                         
-                        // 🔙 VOLVEMOS A TU CÓDIGO ORIGINAL:
                         // Esto le devuelve sus coordenadas al centro exacto sin chocar con la animación de tu CSS
                         pedestal.innerHTML = `<div class="geno-idle" style="color: ${pColor}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${svgPedestal}</div>`;
                     }
@@ -207,3 +200,113 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+// =========================================
+// SECUENCIA DE INICIO: LA CÁPSULA DE ADN
+// =========================================
+function iniciarSecuenciaBienvenida() {
+    // 1. DICCIONARIO LIMITADO: Solo las 5 formas base para el primer Geno
+    const formasBase = ["gota", "frijol", "circulo", "cuadrado", "triangulo"];
+    const coloresBase = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77", "#ff9800", "#ffb347", "#a8e6cf"];
+
+    // Función para sacar una cara o boca aleatoria de tus diccionarios globales
+    const obtenerClaveAleatoria = (dic) => {
+        if (!dic || Object.keys(dic).length === 0) return "estandar";
+        const keys = Object.keys(dic);
+        return keys[Math.floor(Math.random() * keys.length)];
+    };
+
+    // 2. CREAMOS EL GENO (Totalmente aleatorio pero legal)
+    const miPrimerGeno = {
+        id: Date.now(), // Usamos la fecha como ID único irrompible
+        name: "Sujeto Alfa", // Nombre por defecto
+        rarity: "Común",
+        element: "Biomutante",
+        body_shape: formasBase[Math.floor(Math.random() * formasBase.length)], // Solo de las 5 base
+        color: coloresBase[Math.floor(Math.random() * coloresBase.length)],
+        base_color: "", 
+        eye_type: obtenerClaveAleatoria(typeof dicOjos !== 'undefined' ? dicOjos : {}),
+        mouth_type: obtenerClaveAleatoria(typeof dicBocas !== 'undefined' ? dicBocas : {}),
+        wing_type: "ninguno", // Un inicial nace sin accesorios
+        hat_type: "ninguno",
+        level: 1,
+        breedCount: 0
+    };
+    miPrimerGeno.base_color = miPrimerGeno.color;
+
+    // 3. CREAMOS LA INTERFAZ VISUAL DE LA CÁPSULA (Pantalla negra por encima de todo)
+    const modalOverlay = document.createElement("div");
+    modalOverlay.id = "dna-startup-modal";
+    modalOverlay.style = "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(10, 20, 30, 0.98); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: white; font-family: sans-serif;";
+
+    modalOverlay.innerHTML = `
+        <div id="dna-capsule" style="font-size: 100px; animation: respirar 2s infinite; cursor: pointer; transition: 0.3s; user-select: none;">🧬</div>
+        <h2 id="dna-text" style="margin-top: 30px; font-weight: bold; color: #4dd0e1; text-align: center; text-transform: uppercase; letter-spacing: 2px;">Código de ADN Encontrado</h2>
+        <p id="dna-subtext" style="color: #aaa; text-align: center; max-width: 350px; line-height: 1.5; margin-top: 10px;">Toca la secuencia para sintetizar a tu primer Geno.</p>
+        
+        <div id="dna-result" style="display: none; flex-direction: column; align-items: center;">
+            <div id="dna-svg-container" style="width: 200px; height: 200px; margin: 20px 0;"></div>
+            <button id="btn-claim-geno" style="background: #4dd0e1; color: #1a2a36; border: none; padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 12px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 15px rgba(77, 208, 225, 0.5); transition: 0.2s;">Integrar al Laboratorio</button>
+        </div>
+    `;
+
+    document.body.appendChild(modalOverlay);
+
+    // 4. LÓGICA DE LA ANIMACIÓN Y EL BOTÓN
+    const capsule = document.getElementById("dna-capsule");
+    const text = document.getElementById("dna-text");
+    const subtext = document.getElementById("dna-subtext");
+    const resultDiv = document.getElementById("dna-result");
+    const svgContainer = document.getElementById("dna-svg-container");
+    const btnClaim = document.getElementById("btn-claim-geno");
+
+    // Efecto hover para el botón
+    btnClaim.onmouseover = () => btnClaim.style.transform = "scale(1.05)";
+    btnClaim.onmouseout = () => btnClaim.style.transform = "scale(1)";
+
+    // Al hacer clic en el ADN
+    capsule.onclick = () => {
+        capsule.onclick = null; // Prevenir doble clic
+        
+        // Animación de "cargando" (reusamos la animación de las llamas de tu SVG)
+        capsule.style.animation = "propulsor 0.1s infinite alternate ease-in-out"; 
+        text.innerText = "Sintetizando...";
+        subtext.innerText = "Combinando biomoléculas...";
+
+        // Esperamos 2 segundos para dar suspenso
+        setTimeout(() => {
+            capsule.style.display = "none";
+            text.innerText = "¡Tu primer Geno ha nacido!";
+            subtext.innerText = "Cuidalo bien y llévalo a la gloria.";
+
+            // Renderizamos al Geno usando tu SVGEngine
+            let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
+            svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+            svgContainer.innerHTML = svg;
+            
+            resultDiv.style.display = "flex"; // Mostramos al Geno
+        }, 2000);
+    };
+
+    // Al hacer clic en "Integrar al Laboratorio"
+    btnClaim.onclick = () => {
+        // 1. Guardamos el Geno en la Base de Datos / Inventario
+        window.misGenos.push(miPrimerGeno);
+        window.miMascota = miPrimerGeno;
+
+        // 2. Lo dibujamos en el Pedestal de tu pantalla principal
+        const pedestal = document.getElementById("geno-container");
+        if (pedestal) {
+            const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
+            pedestal.innerHTML = `<div class="geno-idle" style="color: ${miPrimerGeno.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${svgPedestal}</div>`;
+        }
+        
+        // 3. Actualizamos el nombre en pantalla
+        const nameEl = document.getElementById('geno-name');
+        if (nameEl) nameEl.innerText = miPrimerGeno.name;
+
+        // 4. Destruimos la pantalla de bienvenida y el jugador empieza el juego
+        modalOverlay.remove();
+        if(typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
+    };
+}
