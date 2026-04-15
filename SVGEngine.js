@@ -38,8 +38,11 @@ function generarSvgGeno(genesVisuales) {
             pathD = "M 80 24 Q 28 80 28 108 A 52 52 0 0 0 132 108 Q 132 80 80 24 Z"; 
             shineD = "M 65 50 Q 55 65 58 80 Q 62 70 70 55 Z"; break;
         case "hongo": 
-            const tallo = "M 72 100 C 72 120 60 130 55 135 C 50 148 65 150 80 150 C 95 150 110 148 105 135 C 100 130 88 120 88 100 Z";
-            pathD = "M 15 90 C 15 20, 145 20, 145 90 C 145 110, 120 115, 80 115 C 40 115, 15 110, 15 90 Z"; 
+            // 🍄 Hongo rediseñado: 
+            // 1. El tallo ahora empieza más abajo (Y:115) para esconderse bajo el nuevo sombrero.
+            const tallo = "M 72 115 C 72 125 65 130 60 135 C 50 148 65 150 80 150 C 95 150 110 148 100 135 C 95 130 88 125 88 115 Z";
+            // 2. La curva inferior del sombrero baja hasta Y:130 (antes era 115) para cubrir la boca por completo.
+            pathD = "M 15 90 C 15 20, 145 20, 145 90 C 145 125, 125 130, 80 130 C 35 130, 15 125, 15 90 Z"; 
             shineD = "M 40 55 Q 50 40 70 40 Q 55 48 40 55 Z"; 
             extras = `<path d="${tallo}" fill="${color}" stroke="#1a2a36" stroke-width="5"/><path d="${tallo}" fill="url(#${gradId})"/><g fill="#d5d0a9" opacity="0.6"><circle cx="40" cy="70" r="6"/><circle cx="100" cy="50" r="7"/><circle cx="50" cy="90" r="4"/></g>`;
             break;
