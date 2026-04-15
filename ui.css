@@ -170,21 +170,6 @@
     overflow: hidden !important;
 }
 
-.drawer-overlay { 
-    position: absolute !important; 
-    top: 0 !important; 
-    left: 0 !important; 
-    width: 100% !important; 
-    height: 100% !important; 
-    background: rgba(0,0,0,0.6) !important; 
-    backdrop-filter: blur(4px) !important;
-    z-index: 2000 !important; 
-    display: flex !important; 
-    flex-direction: column !important; 
-    justify-content: flex-end !important; 
-    transition: opacity 0.3s !important;
-}
-
 /* ========================================= */
 /* FIX: ROTACIÓN PERFECTA DE LUZ NEÓN        */
 /* ========================================= */
@@ -195,4 +180,26 @@
     left: 50% !important;
     margin-top: -400px !important;  /* Retrocedemos la mitad para centrarlo */
     margin-left: -400px !important;
+}
+
+/* ========================================= */
+/* VISOR DE GENOS (INVENTARIO MODAL)         */
+/* ========================================= */
+
+/* 1. Ocultar la barra de scroll pero seguir permitiendo deslizar */
+#geno-swap-grid,
+#geno-swap-modal > div {
+    scrollbar-width: none; /* Para Firefox */
+    -ms-overflow-style: none; /* Para Internet Explorer y Edge */
+}
+
+#geno-swap-grid::-webkit-scrollbar,
+#geno-swap-modal > div::-webkit-scrollbar {
+    display: none; /* Para Chrome, Safari y Opera */
+}
+
+/* 2. Truco anti-superposición del Botón NEXO */
+/* Le damos un espacio vacío al final de la lista para que el último Geno suba por encima del botón */
+#geno-swap-grid {
+    padding-bottom: 90px !important; 
 }
