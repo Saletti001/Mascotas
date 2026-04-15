@@ -32,18 +32,19 @@ function generarSvgGeno(genesVisuales) {
     const hat = obtenerPieza(typeof dicSombreros !== 'undefined' ? dicSombreros : {}, safeData.hat_type);
     const wing = obtenerPieza(typeof dicAlas !== 'undefined' ? dicAlas : {}, safeData.wing_type);
 
-    let pathD = "", shineD = "", extras = ""; 
+    // ✨ Declaramos todas las variables de dibujo, incluyendo la nueva de detallesFrente
+    let pathD = "", shineD = "", extras = "", detallesFrente = ""; 
+    
     switch (shape) {
         case "gota": 
             pathD = "M 80 24 Q 28 80 28 108 A 52 52 0 0 0 132 108 Q 132 80 80 24 Z"; 
             shineD = "M 65 50 Q 55 65 58 80 Q 62 70 70 55 Z"; break;
-       case "hongo": 
-            // 🍄 Hongo Rediseñado (Forma Intermedia + PARCHE MAESTRO DE CAPAS Y MÁSCARA)
+        case "hongo": 
+            // 🍄 Hongo Rediseñado (Forma Intermedia + Capas Correctas)
             const tallo = "M 72 110 C 72 120 65 130 60 135 C 50 148 65 150 80 150 C 95 150 110 148 100 135 C 95 130 88 120 88 110 Z";
             pathD = "M 15 90 C 15 20, 145 20, 145 90 C 145 118, 122 122, 80 122 C 38 122, 15 118, 15 90 Z"; 
             shineD = "M 40 55 Q 50 40 70 40 Q 55 48 40 55 Z"; 
 
-            // --- ⚪ SECCIÓN DE MANCHAS REALISTAS CON MÁSCARA ⚪ ---
             const manchasStr = `
                 <g fill="#ffffff" opacity="0.6">
                     <circle cx="40" cy="45" r="7"/>
@@ -57,10 +58,14 @@ function generarSvgGeno(genesVisuales) {
                 </g>
             `;
 
-            // 🛠️ CORRECCIÓN: Usamos ${rnd} en lugar de ${id}
+            // El tallo va en 'extras' (por DETRÁS del cuerpo)
             extras = `
                 <path d="${tallo}" fill="${color}" stroke="#1a2a36" stroke-width="5"/>
                 <path d="${tallo}" fill="url(#${gradId})"/>
+            `;
+            
+            // Las manchas van en 'detallesFrente' (por DELANTE del cuerpo, usando máscara)
+            detallesFrente = `
                 <defs>
                     <clipPath id="hongoMask-${rnd}">
                         <path d="${pathD}"/>
@@ -81,7 +86,7 @@ function generarSvgGeno(genesVisuales) {
             pathD = "M 32 48 Q 32 32 48 32 L 112 32 Q 128 32 128 48 L 128 112 Q 128 128 112 128 L 48 128 Q 32 128 32 112 Z"; 
             shineD = "M 45 48 Q 45 45 56 45 L 96 45 Q 64 64 45 88 Z"; break;
         
-        // 🚀 NUEVAS FORMAS INFLADAS AL 100% DE ESCALA
+        // 🚀 NUEVAS FORMAS
         case "estrella":
             // 🌟 Estrella movida exactamente +20px hacia abajo para alinear las puntas con los ojos fijos
             pathD = "M 80 35 Q 84 35 86 41 L 98 68 L 136 68 Q 142 68 139 74 L 110 98 L 119 142 Q 121 148 115 144 L 80 126 L 45 144 Q 39 148 41 142 L 50 98 L 21 74 Q 18 68 24 68 L 62 68 L 74 41 Q 76 35 80 35 Z";
@@ -92,13 +97,11 @@ function generarSvgGeno(genesVisuales) {
             shineD = "M 70 45 L 45 80 Q 60 70 90 70 Z";
             break;
         case "nube":
-            // ☁️ Nube "Intermedia": La base baja hasta el píxel 130 para que la boca encaje perfecto,
-            // y los lados se ajustan para que el jetpack asome sin quedar flotando.
+            // ☁️ Nube "Intermedia": Base baja hasta Y:130, lados ajustados
             pathD = "M 45 130 C 20 130, 20 75, 50 70 C 55 25, 105 25, 110 70 C 140 75, 140 130, 115 130 Z";
             shineD = "M 55 60 Q 80 40 105 60 Q 80 50 55 60 Z";
             break;
         case "chili":
-            // Lo hice más regordete para que quepan las caras
             pathD = "M 80 20 C 40 20, 30 70, 45 105 C 60 140, 80 145, 80 145 C 80 145, 100 140, 115 105 C 130 70, 120 20, 80 20 Z";
             shineD = "M 50 60 C 40 90, 60 120, 75 135 C 60 110, 50 80, 65 50 Z";
             break;
@@ -133,10 +136,10 @@ function generarSvgGeno(genesVisuales) {
                 ${wing}
             </g>
 
-            ${extras}
-            <path d="${pathD}" fill="${color}" stroke="#1a2a36" stroke-width="5"/>
+            ${extras} <path d="${pathD}" fill="${color}" stroke="#1a2a36" stroke-width="5"/>
             <path d="${pathD}" fill="url(#${gradId})"/>
-            <path d="${shineD}" fill="#fff" opacity="0.4"/>
+            
+            ${detallesFrente} <path d="${shineD}" fill="#fff" opacity="0.4"/>
             <g class="g-ojos">${ojo}</g>
             <g class="g-boca">${boca}</g>
             <g transform="translate(${safeAnclaje.cabezaX}, ${safeAnclaje.cabezaY})">${hat}</g>
