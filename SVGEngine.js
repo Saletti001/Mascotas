@@ -37,15 +37,35 @@ function generarSvgGeno(genesVisuales) {
         case "gota": 
             pathD = "M 80 24 Q 28 80 28 108 A 52 52 0 0 0 132 108 Q 132 80 80 24 Z"; 
             shineD = "M 65 50 Q 55 65 58 80 Q 62 70 70 55 Z"; break;
-        case "hongo": 
-            // 🍄 Hongo rediseñado (Forma Intermedia):
-            // 1. El tallo ahora empieza más arriba (Y:110) para darle más cuerpo y equilibrio.
+       case "hongo": 
+            // 🍄 Hongo Rediseñado (Forma Intermedia + Manchas Realistas):
+            // Mantenemos la forma intermedia que te gustó del paso anterior.
             const tallo = "M 72 110 C 72 120 65 130 60 135 C 50 148 65 150 80 150 C 95 150 110 148 100 135 C 95 130 88 120 88 110 Z";
-            // 2. La curva inferior del sombrero baja hasta Y:122 (un punto medio).
-            // Esto le devuelve la forma redonda al sombrero, pero mantiene la boca dentro del contorno.
             pathD = "M 15 90 C 15 20, 145 20, 145 90 C 145 118, 122 122, 80 122 C 38 122, 15 118, 15 90 Z"; 
             shineD = "M 40 55 Q 50 40 70 40 Q 55 48 40 55 Z"; 
-            extras = `<path d="${tallo}" fill="${color}" stroke="#1a2a36" stroke-width="5"/><path d="${tallo}" fill="url(#${gradId})"/><g fill="#d5d0a9" opacity="0.6"><circle cx="40" cy="70" r="6"/><circle cx="100" cy="50" r="7"/><circle cx="50" cy="90" r="4"/></g>`;
+
+            // --- ⚪ NUEVA SECCIÓN DE MANCHAS REALISTAS ⚪ ---
+            // Hemos aumentado la cantidad, distribuido mejor y cambiado a blanco puro con opacidad suave
+            // para que se vean orgánicas contra el degradado del sombrero.
+            const manchasStr = `
+                <g fill="#ffffff" opacity="0.6">
+                    <circle cx="40" cy="45" r="7"/>
+                    <circle cx="80" cy="40" r="6"/>
+                    <circle cx="110" cy="45" r="7"/>
+                    <circle cx="30" cy="70" r="5"/>
+                    <circle cx="125" cy="70" r="5"/>
+                    <circle cx="45" cy="95" r="4"/>
+                    <circle cx="115" cy="95" r="4"/>
+                    <circle cx="85" cy="65" r="3"/>
+                </g>
+            `;
+
+            // Construimos los extras: renderizado del tallo + las nuevas manchas.
+            extras = `<path d="${tallo}" fill="${color}" stroke="#1a2a36" stroke-width="5"/><path d="${tallo}" fill="url(#${gradId})"/>${manchasStr}`;
+            break;
+
+            // Construimos los extras: renderizado del tallo + las nuevas manchas.
+            extras = `<path d="${tallo}" fill="${color}" stroke="#1a2a36" stroke-width="5"/><path d="${tallo}" fill="url(#${gradId})"/>${manchasStr}`;
             break;
         case "triangulo": 
             pathD = "M 80 24 Q 88 24 96 40 L 136 120 Q 144 136 120 136 L 40 136 Q 16 136 24 120 L 64 40 Q 72 24 80 24 Z"; 
