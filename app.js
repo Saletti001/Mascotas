@@ -304,8 +304,6 @@ function iniciarSecuenciaBienvenida() {
     const gameContainer = document.getElementById("game-container") || document.body;
     gameContainer.appendChild(modalOverlay);
 
-    document.body.appendChild(modalOverlay);
-
     const capsule = document.getElementById("dna-capsule");
     const text = document.getElementById("dna-text");
     const subtext = document.getElementById("dna-subtext");
