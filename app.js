@@ -150,7 +150,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const gridSwap = document.getElementById("geno-swap-grid");
     const pedestal = document.getElementById("geno-container");
 
-    // Función que redibuja el inventario (útil para cuando compramos slots)
     function renderizarInventarioGenos() {
         if (!gridSwap || !modalSwap) return;
         
@@ -160,6 +159,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const todos = [];
         if (window.miMascota) todos.push(window.miMascota);
         if (window.misGenos) todos.push(...window.misGenos);
+
+        const slotsOcupados = todos.length;
+
+        // --- 📊 NUEVO: INDICADOR DE CAPACIDAD ---
+        const infoCard = document.createElement("div");
+        infoCard.style = "grid-column: 1 / -1; text-align: center; margin-bottom: 5px; padding-bottom: 10px; border-bottom: 1px solid #333;";
+        // Se pone rojo si el jugador superó su límite (como en tu caso de prueba)
+        const colorTexto = slotsOcupados > window.maxGenoSlots ? "#ff6b6b" : "#4dd0e1";
+        infoCard.innerHTML = `<span style="color: ${colorTexto}; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Capacidad: ${slotsOcupados} / ${window.maxGenoSlots}</span>`;
+        gridSwap.appendChild(infoCard);
 
         // --- DIBUJAR GENOS OCUPADOS ---
         todos.forEach(geno => {
@@ -199,13 +208,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         // --- DIBUJAR SLOTS VACÍOS ---
-        const slotsOcupados = todos.length;
-        // Si hay más Genos que slots (ej. por tus 15 clones), la matemática no bajará de 0
+        // Usamos Math.max para que si hay sobrecupo (números negativos) no explote y solo dibuje 0.
         const slotsLibres = Math.max(0, window.maxGenoSlots - slotsOcupados);
 
         for (let i = 0; i < slotsLibres; i++) {
             const emptyCard = document.createElement("div");
-            // Estilo transparente y con borde punteado para denotar espacio vacío
             emptyCard.style = "background: rgba(26, 42, 54, 0.5); border: 1px dashed #4dd0e1; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.5;";
             emptyCard.innerHTML = `
                 <div style="width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; font-size: 24px; color: #4dd0e1;">
@@ -217,8 +224,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // --- DIBUJAR BOTÓN DE EXPANSIÓN ($POL) ---
-        // Micropagos bajos: 0.5 POL base + 0.1 POL extra por cada slot que hayas comprado
         const costoExpansion = parseFloat((0.5 + (window.maxGenoSlots - 6) * 0.1).toFixed(2));
+        const siguienteSlot = window.maxGenoSlots + 1; // 📊 NUEVO: Te avisa qué slot vas a comprar
 
         const buyCard = document.createElement("div");
         buyCard.style = "background: rgba(138, 43, 226, 0.1); border: 1px solid #8A2BE2; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;";
@@ -229,21 +236,17 @@ document.addEventListener("DOMContentLoaded", () => {
             <div style="width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; font-size: 30px; color: #e0b0ff;">
                 ➕
             </div>
-            <span style="color: white; font-weight: bold; font-size: 12px; margin-top: 5px; text-align: center;">Expandir</span>
+            <span style="color: white; font-weight: bold; font-size: 12px; margin-top: 5px; text-align: center;">Comprar Slot #${siguienteSlot}</span>
             <span style="color: #e0b0ff; font-weight: bold; font-size: 11px; margin-top: 5px; text-align: center;">${costoExpansion} POL</span>
         `;
 
         buyCard.onclick = () => {
             if (window.miWallet && window.miWallet.pol >= costoExpansion) {
-                // Cobramos el POL y sumamos 1 espacio
                 window.miWallet.pol -= costoExpansion;
                 window.maxGenoSlots += 1;
                 
-                // Actualizar la interfaz de POL si tienes la función (opcional)
-                if(typeof actualizarHUD === 'function') actualizarHUD();
-                
-                // Recargamos el inventario al instante
-                renderizarInventarioGenos();
+                if(typeof window.actualizarHUD === 'function') window.actualizarHUD();
+                renderizarInventarioGenos(); // Se redibuja y verás cómo el contador "Capacidad" cambia
             } else {
                 alert("No tienes suficiente $POL para expandir tu inventario. ¡Consigue más jugando o recargando!");
             }
@@ -252,10 +255,9 @@ document.addEventListener("DOMContentLoaded", () => {
         gridSwap.appendChild(buyCard);
     }
 
-    // Eventos para abrir y cerrar
     if (btnMisGenosMain) {
         btnMisGenosMain.addEventListener("click", () => {
-            renderizarInventarioGenos(); // Construye la lista calculando los espacios al abrir
+            renderizarInventarioGenos(); 
             modalSwap.classList.remove("hidden");
         });
     }
