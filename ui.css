@@ -183,31 +183,34 @@
 }
 
 /* ========================================= */
-/* VISOR DE GENOS (INVENTARIO MODAL)         */
+/* VISOR DE GENOS Y SELECTOR DE CRIANZA      */
 /* ========================================= */
 
-/* 1. Ocultar la barra de scroll pero seguir permitiendo deslizar (Inventario y Crianza) */
+/* 1. Ocultar la barra de scroll en TODAS las ventanas modales */
 #geno-swap-grid,
 #geno-swap-modal > div,
-#breeding-list {
+#breeding-list,
+#breeding-selector,
+#breeding-selector > div {
     scrollbar-width: none !important; /* Para Firefox */
     -ms-overflow-style: none !important; /* Para Internet Explorer y Edge */
 }
 
 #geno-swap-grid::-webkit-scrollbar,
 #geno-swap-modal > div::-webkit-scrollbar,
-#breeding-list::-webkit-scrollbar {
+#breeding-list::-webkit-scrollbar,
+#breeding-selector::-webkit-scrollbar,
+#breeding-selector > div::-webkit-scrollbar {
     display: none !important; /* Para Chrome, Safari y Opera */
 }
 
-/* 2. SEPARAR EL CAJÓN DEL BOTÓN NEXO */
-/* Le damos un margen inferior al cajón y limitamos su altura para que flote sobre el botón */
+/* 2. SEPARAR EL CAJÓN DEL BOTÓN NEXO (Inventario principal) */
 #geno-swap-modal > div {
     margin-bottom: 90px !important; 
-    max-height: 70vh !important; /* Asegura que el cajón no sea más alto que el 70% de la pantalla */
+    max-height: 70vh !important;
 }
 
-/* 3. Como el cajón ya se subió, le quitamos el colchón exagerado a la cuadrícula */
+/* 3. Limpiar el padding del inventario */
 #geno-swap-grid {
     padding-bottom: 15px !important; 
 }
