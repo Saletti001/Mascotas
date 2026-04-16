@@ -2,10 +2,9 @@ function generarSvgGeno(genesVisuales) {
     const safeData = genesVisuales || {};
     
     // =========================================
-    // 🧬 DIBUJO DE CÁPSULA (Bio-Núcleo Arreglado y Ámbar)
+    // 🧬 DIBUJO DE CÁPSULA CON SIMETRÍA PERFECTA
     // =========================================
     if (safeData.isEgg) {
-        // Color heredado para el resplandor de la hélice
         const adnColor = safeData.color || safeData.base_color || "#00d2ff";
         const rndId = safeData.id || Math.floor(Math.random() * 1000);
 
@@ -52,15 +51,16 @@ function generarSvgGeno(genesVisuales) {
 
                 <g clip-path="url(#clip-cristal-${rndId})">
                     <g class="adn-glow">
-                        <path d="M 60 35 C 30 45, 30 55, 60 65 C 90 75, 90 85, 60 95" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 4" opacity="0.5"/>
-                        <path d="M 40 35 C 70 45, 70 55, 40 65 C 10 75, 10 85, 40 95" fill="none" stroke="${adnColor}" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M 60 35 C 30 45, 30 55, 50 65 C 70 75, 70 85, 60 95" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 4" opacity="0.5"/>
+                        <path d="M 40 35 C 70 45, 70 55, 50 65 C 30 75, 30 85, 40 95" fill="none" stroke="${adnColor}" stroke-width="3" stroke-linecap="round"/>
                         
-                        <line x1="45" y1="41" x2="55" y2="41" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
-                        <line x1="40" y1="50" x2="60" y2="50" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
-                        <line x1="45" y1="59" x2="55" y2="59" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
-                        <line x1="45" y1="71" x2="55" y2="71" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
-                        <line x1="40" y1="80" x2="60" y2="80" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
-                        <line x1="45" y1="89" x2="55" y2="89" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="45" y1="35" x2="55" y2="35" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="45" y1="45" x2="55" y2="45" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="45" y1="55" x2="55" y2="55" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="45" y1="65" x2="55" y2="65" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="45" y1="75" x2="55" y2="75" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="45" y1="85" x2="55" y2="85" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="45" y1="95" x2="55" y2="95" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
                     </g>
                     
                     <circle cx="40" cy="85" r="1.5" class="burbuja" style="animation-delay: 0s;"/>
@@ -78,7 +78,7 @@ function generarSvgGeno(genesVisuales) {
     }
 
     // =========================================
-    // 🧬 DIBUJO DE GENOS ADULTOS
+    // 🧬 DIBUJO DE GENOS ADULTOS (Sin cambios)
     // =========================================
     const color = safeData.base_color || "#77DD77";
     const shape = safeData.body_shape || "frijol";
