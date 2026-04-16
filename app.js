@@ -3,8 +3,22 @@
 // =========================================
 
 // 🎒 INVENTARIO VACÍO: Simulamos a un jugador nuevo.
-window.misGenos = []; 
-window.miMascota = null; 
+// 🎒 INVENTARIO DE PRUEBA: Generamos 15 Genos de golpe para probar el scroll
+window.misGenos = [];
+for (let i = 1; i <= 15; i++) {
+    window.misGenos.push({ 
+        id: i, 
+        name: "Clon " + i, 
+        body_shape: "frijol", 
+        color: "#4dd0e1", 
+        base_color: "#4dd0e1",
+        eye_type: "estandar", 
+        mouth_type: "colmillos", 
+        wing_type: "ninguno", 
+        hat_type: "ninguno" 
+    });
+}
+window.miMascota = window.misGenos[0]; // Asignamos el Clon 1 como mascota
 
 document.addEventListener("DOMContentLoaded", () => {
     
