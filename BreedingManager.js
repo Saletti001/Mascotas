@@ -1,5 +1,5 @@
 // =========================================
-// BreedingManager.js - UI DEL CENTRO DE CRIANZA
+// BreedingManager.js - UI DEL CENTRO DE CRIANZA Y BIO-NÚCLEOS
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -17,6 +17,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const idCardModal = document.getElementById("geno-id-card-modal");
     const closeIdCardBtn = document.getElementById("close-id-card");
 
+    // 🔋 NUEVO: UI de Requerimientos Dinámico sobre el botón de crianza
+    let reqDiv = document.getElementById("breeding-requirements");
+    if (!reqDiv && btnBreeding) {
+        reqDiv = document.createElement("div");
+        reqDiv.id = "breeding-requirements";
+        reqDiv.style = "text-align: center; margin-bottom: 10px; font-size: 12px; font-weight: bold; color: #aaa; letter-spacing: 1px;";
+        btnBreeding.parentNode.insertBefore(reqDiv, btnBreeding);
+    }
+
     if(closeSelectorBtn) closeSelectorBtn.addEventListener("click", () => selectorContainer?.classList.add("hidden"));
     if(closeIdCardBtn) closeIdCardBtn.addEventListener("click", () => {
         idCardModal?.classList.add("hidden");
@@ -33,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function normalizarGenos() {
         if(!window.misGenos) window.misGenos = [];
         window.misGenos.forEach(g => {
-            if(!g.level) g.level = 1; // Normalizado a nivel 1 por defecto
+            if(!g.level) g.level = 1;
             if(g.breedCount === undefined) g.breedCount = 0;
             if(g.generation === undefined) g.generation = 0;
             if(!g.stats) g.stats = { hp: 50, atk: 15, spd: 15, luk: 15 };
@@ -62,7 +71,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 slot.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno({ body_shape: pShape, base_color: pColor, wing_type: pWing, isEgg: false }) : '<span>Geno</span>';
                 const svg = slot.querySelector("svg");
-                // 🛠️ FIX: Se añadió svg.style.color = pColor;
                 if(svg) { svg.style.width = "50px"; svg.style.height = "50px"; svg.style.color = pColor; }
                 slot.style.border = "2px solid #4dd0e1"; slot.style.background = "#1a2a36"; slot.style.boxShadow = "0 0 10px rgba(77, 208, 225, 0.4)";
             } else {
@@ -74,10 +82,32 @@ document.addEventListener("DOMContentLoaded", () => {
         if(btnBreeding) {
             btnBreeding.disabled = !(padre1 && padre2);
             if(!btnBreeding.disabled) {
-                btnBreeding.style.background = "linear-gradient(90deg, #4dd0e1, #8A2BE2)";
+                // 🔋 COMPROBACIÓN DE INVENTARIO: ¿Tiene Incubadora Térmica?
+                let countInc = 0;
+                if (window.miInventario && window.miInventario.items) {
+                     const inc = window.miInventario.items.find(i => i.id === "incubator_01");
+                     countInc = inc ? (inc.cantidad || inc.count || 0) : 0;
+                }
+                
+                const colorInc = countInc > 0 ? "#4dd0e1" : "#ff6b6b";
+                if (reqDiv) reqDiv.innerHTML = `COSTE: ✨ 500 Esencia | <span style="color: ${colorInc}">🔋 ${countInc}/1 Incubadora</span>`;
+
+                if (countInc === 0) {
+                    btnBreeding.innerText = "COMPRAR INCUBADORA (0.2 POL)";
+                    btnBreeding.style.background = "linear-gradient(90deg, #ff9800, #ff5722)";
+                    btnBreeding.dataset.action = "buy";
+                } else {
+                    btnBreeding.innerText = "SINTETIZAR BIO-NÚCLEO";
+                    btnBreeding.style.background = "linear-gradient(90deg, #4dd0e1, #8A2BE2)";
+                    btnBreeding.dataset.action = "breed";
+                }
+                
                 btnBreeding.style.opacity = "1"; btnBreeding.style.cursor = "pointer";
             } else {
+                if (reqDiv) reqDiv.innerHTML = "";
+                btnBreeding.innerText = "SELECCIONA SUJETOS";
                 btnBreeding.style.background = "#333"; btnBreeding.style.opacity = "0.5"; btnBreeding.style.cursor = "not-allowed";
+                btnBreeding.dataset.action = "disabled";
             }
         }
     }
@@ -94,7 +124,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if(svgContainer) {
             svgContainer.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno({ body_shape: pShape, base_color: pColor, wing_type: pWing, isEgg: false }) : '';
             const svg = svgContainer.querySelector("svg");
-            // 🛠️ FIX: Se añadió svg.style.color = pColor;
             if(svg) { svg.style.width = "90px"; svg.style.height = "90px"; svg.style.color = pColor; }
         }
 
@@ -113,7 +142,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("id-card-spd").innerText = Math.floor(g.stats?.spd || 15);
         document.getElementById("id-card-luk").innerText = Math.floor(g.stats?.luk || 15);
 
-        // USANDO EL MOTOR GENÉTICO EXTERNO
         const qualityEl = document.getElementById("id-card-quality");
         if(qualityEl && window.calcularCalidad && window.obtenerColorRango) {
             const statsActualizadas = window.calcularCalidad(g.stats, g.rarity || "Común", g.level || 1);
@@ -175,8 +203,6 @@ document.addEventListener("DOMContentLoaded", () => {
         todosMisGenos.forEach(geno => {
             if(!geno || geno.isEgg) return;
             const yaSeleccionado = (padre1 && padre1.id === geno.id) || (padre2 && padre2.id === geno.id);
-            
-            // 🔥 MODIFICACIÓN MODO DEV: Se ha quitado "(geno.level >= 10)" para permitir criar a Nivel 1 temporalmente.
             const cumpleRequisitos = ((geno.breedCount || 0) < 7) && !yaSeleccionado;
 
             const btn = document.createElement("div");
@@ -195,11 +221,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             let statusText = `<span style="color: #00d2ff; font-weight: bold; font-size: 11px;">${7 - (geno.breedCount||0)} crías disponibles</span>`;
             if(yaSeleccionado) statusText = `<span style="color: #f0ad4e; font-weight: bold; font-size: 11px;">⚠️ Ya está seleccionado</span>`;
-            // 🔥 MODIFICACIÓN MODO DEV: Se ha comentado la alerta visual del nivel 10
-            // else if(geno.level < 10) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Requiere Nivel 10</span>`;
             else if((geno.breedCount||0) >= 7) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Límite de crías</span>`;
 
-            // 🛠️ FIX: Se añadió color: ${pColor} en el contenedor SVG y ${geno.name || 'Sujeto'} en el título
             btn.innerHTML = `
                 <div style="width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #333; flex-shrink: 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); color: ${pColor};">${svgContent}</div>
                 <div style="display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-left: 15px;">
@@ -233,13 +256,48 @@ document.addEventListener("DOMContentLoaded", () => {
     if(btnBreeding) {
         btnBreeding.addEventListener("click", () => {
             if(!padre1 || !padre2) return;
-            let esenciaActual = (window.miInventario && typeof window.miInventario.vitalEssence !== 'undefined') ? window.miInventario.vitalEssence : 9999; 
+
+            // 🛒 ACCIÓN 1: COMPRAR INCUBADORA
+            if (btnBreeding.dataset.action === "buy") {
+                const costoIncubadora = 0.2;
+                if (window.miWallet && window.miWallet.pol >= costoIncubadora) {
+                    window.miWallet.pol -= costoIncubadora;
+                    
+                    // Añadir al inventario (Límite Stack 20)
+                    if(window.miInventario && window.miInventario.addItem) {
+                        window.miInventario.addItem({ id: "incubator_01", name: "Incubadora Térmica", icon: "🔋", type: "consumible", maxStack: 20 }, 1);
+                    } else if (window.miInventario) {
+                        if(!window.miInventario.items) window.miInventario.items = [];
+                        window.miInventario.items.push({ id: "incubator_01", name: "Incubadora Térmica", icon: "🔋", type: "consumible", maxStack: 20, count: 1 });
+                    }
+                    actualizarPolUI();
+                    actualizarSlots(); // Refresca el botón para permitir la síntesis
+                } else {
+                    alert("❌ No tienes suficiente $POL (0.2) para comprar una Incubadora Térmica.");
+                }
+                return;
+            }
             
+            // 🧬 ACCIÓN 2: SINTETIZAR BIO-NÚCLEO
+            let esenciaActual = (window.miInventario && typeof window.miInventario.vitalEssence !== 'undefined') ? window.miInventario.vitalEssence : 9999; 
             if (esenciaActual < 500) { alert("⚠️ No tienes suficiente Esencia Vital (✨ 500)."); return; }
-            if(window.miInventario && typeof window.miInventario.addEssence === 'function') { window.miInventario.addEssence(-500); actualizarPolUI(); }
+            
+            // Cobro de recursos:
+            if(window.miInventario && typeof window.miInventario.addEssence === 'function') { window.miInventario.addEssence(-500); }
+            
+            // Consumir la incubadora:
+            if(window.miInventario && typeof window.miInventario.consumeItem === 'function') { 
+                window.miInventario.consumeItem("incubator_01", 1); 
+            } else if (window.miInventario && window.miInventario.items) {
+                const inc = window.miInventario.items.find(i => i.id === "incubator_01");
+                if(inc) inc.count = (inc.count || inc.cantidad) - 1;
+            }
+            
+            actualizarPolUI();
             
             padre1.breedCount = (padre1.breedCount || 0) + 1; padre2.breedCount = (padre2.breedCount || 0) + 1;
-            btnBreeding.disabled = true; btnBreeding.innerText = "SECUENCIANDO ADN..."; btnBreeding.style.background = "#8A2BE2"; btnBreeding.style.cursor = "wait";
+            btnBreeding.disabled = true; btnBreeding.innerText = "PROCESANDO ADN..."; btnBreeding.style.background = "#8A2BE2"; btnBreeding.style.cursor = "wait";
+            if (reqDiv) reqDiv.innerHTML = "Sintetizando nuevo material genético...";
             
             let toggle = false;
             const anim = setInterval(() => {
@@ -257,7 +315,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 const p1Genes = padre1.genes || { cuerpo: {dom: padre1.body_shape||"gota", rec: padre1.body_shape||"gota"}, ojos: {dom: padre1.eye_type||"estandar", rec: padre1.eye_type||"estandar"}, boca: {dom: padre1.mouth_type||"feliz", rec: padre1.mouth_type||"feliz"}, espalda: {dom: padre1.wing_type||"ninguno", rec: padre1.wing_type||"ninguno"}, cabeza: {dom: padre1.hat_type||"ninguno", rec: padre1.hat_type||"ninguno"}, afinidad: {dom: padre1.element||"Normal", rec: padre1.element||"Normal"} };
                 const p2Genes = padre2.genes || { cuerpo: {dom: padre2.body_shape||"gota", rec: padre2.body_shape||"gota"}, ojos: {dom: padre2.eye_type||"estandar", rec: padre2.eye_type||"estandar"}, boca: {dom: padre2.mouth_type||"feliz", rec: padre2.mouth_type||"feliz"}, espalda: {dom: padre2.wing_type||"ninguno", rec: padre2.wing_type||"ninguno"}, cabeza: {dom: padre2.hat_type||"ninguno", rec: padre2.hat_type||"ninguno"}, afinidad: {dom: padre2.element||"Normal", rec: padre2.element||"Normal"} };
                 
-                // USANDO EL MOTOR GENÉTICO EXTERNO
                 const genesHijo = {
                     cuerpo: window.cruzarRasgo(p1Genes.cuerpo, p2Genes.cuerpo, "gota"),
                     ojos: window.cruzarRasgo(p1Genes.ojos, p2Genes.ojos, "estandar"),
@@ -288,7 +345,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (typeof generarSvgGeno === 'function') hijo.svg = generarSvgGeno(hijo);
                 if(!window.misGenos) window.misGenos = []; window.misGenos.push(hijo);
                 
-                btnBreeding.innerText = "INICIAR SECUENCIA"; window.iniciarSelectorCrianza(); 
+                window.iniciarSelectorCrianza(); 
             }, 2000);
         });
     }
@@ -299,20 +356,18 @@ document.addEventListener("DOMContentLoaded", () => {
         const huevos = (window.misGenos || []).filter(g => g.isEgg);
         grid.innerHTML = "";
 
-        if(huevos.length === 0) { grid.innerHTML = '<div style="margin: auto; color: #64748b; font-size: 12px; font-style: italic;">La incubadora está vacía.</div>'; return; }
+        if(huevos.length === 0) { grid.innerHTML = '<div style="margin: auto; color: #64748b; font-size: 12px; font-style: italic;">La maquinaria está inactiva. Sintetiza un Bio-Núcleo para comenzar.</div>'; return; }
 
         huevos.forEach(huevo => {
             const card = document.createElement("div");
             card.style = "min-width: 95px; background: #1e293b; border: 1px solid #3b82f6; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); position: relative;";
-            // 🛠️ FIX: Se añadió el contenedor <div style="color: ..."> alrededor del SVG
             card.innerHTML = `
-                <div style="color: ${huevo.color || huevo.base_color || '#ccc'};">
-                    ${typeof generarSvgGeno === 'function' ? generarSvgGeno(huevo) : '<span>Huevo</span>'}
+                <div style="color: ${huevo.color || huevo.base_color || '#ccc'}; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center;">
+                    ${typeof generarSvgGeno === 'function' ? generarSvgGeno(huevo) : '<span>ADN</span>'}
                 </div>
                 <div id="timer-${huevo.id}" style="font-size: 12px; font-weight: bold; color: #00d2ff; margin-top: 8px; letter-spacing: 1px;">Calc...</div>
                 <button id="btn-skip-${huevo.id}" style="margin-top: 8px; font-size: 10px; background: linear-gradient(135deg, #8b5cf6, #3b82f6); color: white; border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4); text-transform: uppercase;">⚡ 0.5 POL</button>
             `;
-            const svg = card.querySelector("svg"); if(svg) { svg.style.width = "45px"; svg.style.height = "45px"; }
 
             const btnSkip = card.querySelector(`#btn-skip-${huevo.id}`);
             if(btnSkip) {
@@ -320,7 +375,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     if(window.miWallet && window.miWallet.pol >= 0.5) {
                         window.miWallet.pol -= 0.5; actualizarPolUI();
                         huevo.isEgg = false; if (typeof generarSvgGeno === 'function') huevo.svg = generarSvgGeno(huevo); 
-                        alert(`⚡ ¡Sobrecarga Activada!\nEl Huevo eclosionó instantáneamente.\nBienvenido al mundo: [Gen ${huevo.generation}].\nForma: ${huevo.body_shape}`);
+                        alert(`⚡ ¡Sobrecarga Térmica!\nEl Bio-Núcleo finalizó su síntesis instantáneamente.\nBienvenido al mundo: [Gen ${huevo.generation}].\nForma Base: ${huevo.body_shape}`);
                         window.renderizarIncubadora(); if(window.actualizarPanelRPG) window.actualizarPanelRPG();
                     } else { alert("No tienes suficiente POL en tu billetera conectada."); }
                 });
@@ -337,7 +392,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const label = document.getElementById(`timer-${huevo.id}`);
             if (restante <= 0) {
                 huevo.isEgg = false; if (typeof generarSvgGeno === 'function') huevo.svg = generarSvgGeno(huevo); 
-                requiereActualizacion = true; alert(`🧬 ¡Atención!\nUn Bio-Núcleo Genético acaba de Sintetizar.\nForma resultante: ${huevo.body_shape}`);
+                requiereActualizacion = true; alert(`🧬 ¡Síntesis Completada!\nUn Bio-Núcleo ha terminado de procesarse.\nForma resultante: ${huevo.body_shape}`);
             } else {
                 if(label) {
                     const min = Math.floor(restante / 60000); const sec = Math.floor((restante % 60000) / 1000);
