@@ -78,8 +78,9 @@ function generarSvgGeno(genesVisuales) {
         </svg>`;
     }
 
-    // ... (resto de la función generarSvgGeno para Genos adultos no cambia)
-}
+    // =========================================
+    // 🧬 DIBUJO DE GENOS ADULTOS
+    // =========================================
     const color = safeData.base_color || "#77DD77";
     const shape = safeData.body_shape || "frijol";
     const rndId = Math.floor(Math.random() * 100000);
@@ -94,7 +95,6 @@ function generarSvgGeno(genesVisuales) {
     if (safeData.mutated_cabezaX) safeAnclaje.cabezaX = safeData.mutated_cabezaX;
     if (safeData.mutated_cabezaY) safeAnclaje.cabezaY = safeData.mutated_cabezaY;
     
-    // 🧠 LECTURA ESTRICTA DEL ADN
     const obtenerPieza = (dic, gen, fallback) => {
         if (typeof dic === 'undefined' || Object.keys(dic).length === 0) return '';
         if (gen && dic[gen]) return dic[gen]; 
