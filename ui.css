@@ -198,8 +198,8 @@
     display: none; /* Para Chrome, Safari y Opera */
 }
 
-/* 2. Truco anti-superposición del Botón NEXO */
-/* Le damos un espacio vacío al final de la lista para que el último Geno suba por encima del botón */
+/* 2. Truco anti-superposición ESTÉTICA del Botón NEXO */
+/* ✅ Aumentamos el colchón de 90px a 140px para dejar un espacio bonito */
 #geno-swap-grid {
-    padding-bottom: 90px !important; 
+    padding-bottom: 140px !important; 
 }
