@@ -1,7 +1,76 @@
 function generarSvgGeno(genesVisuales) {
     const safeData = genesVisuales || {};
+    
+    // =========================================
+    // 🧬 DIBUJO DE CÁPSULA (Bio-Núcleo) PARA "HUEVOS"
+    // =========================================
     if (safeData.isEgg) {
-        return `<svg width="100%" height="100%" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;"><style>@keyframes huevoFlota { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }.huevo-anim { animation: huevoFlota 3s ease-in-out infinite; }</style><g class="huevo-anim"><ellipse cx="50" cy="55" rx="30" ry="40" fill="#fffacd" stroke="#d4af37" stroke-width="3" stroke-dasharray="4,4"/><text x="50" y="62" font-size="28" text-anchor="middle" font-family="sans-serif">❓</text></g></svg>`;
+        // Obtenemos el color heredado (o uno por defecto) para teñir el ADN y el líquido
+        const adnColor = safeData.color || safeData.base_color || "#00d2ff";
+        return `
+        <svg width="100%" height="100%" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">
+            <defs>
+                <linearGradient id="glow-${safeData.id || 1}" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8"/>
+                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0.1"/>
+                </linearGradient>
+                <linearGradient id="liquid-${safeData.id || 1}" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="${adnColor}" stop-opacity="0.5"/>
+                    <stop offset="100%" stop-color="${adnColor}" stop-opacity="0.1"/>
+                </linearGradient>
+            </defs>
+            <style>
+                @keyframes bionucleoFlota { 
+                    0%, 100% { transform: translateY(0); } 
+                    50% { transform: translateY(-8px); } 
+                }
+                @keyframes girarADN { 
+                    0% { transform: scaleX(1); } 
+                    50% { transform: scaleX(0.1); } 
+                    100% { transform: scaleX(1); } 
+                }
+                @keyframes burbujas {
+                    0% { transform: translateY(0) scale(1); opacity: 0; }
+                    50% { opacity: 0.8; }
+                    100% { transform: translateY(-30px) scale(0.5); opacity: 0; }
+                }
+                .capsula-anim { animation: bionucleoFlota 3.5s ease-in-out infinite; transform-origin: center; }
+                .adn-helix { animation: girarADN 2s linear infinite; transform-origin: 50px 0; }
+                .adn-helix-retraso { animation: girarADN 2s linear infinite; animation-delay: 1s; transform-origin: 50px 0; }
+                .burbuja { animation: burbujas 2s ease-in infinite; fill: #ffffff; }
+            </style>
+            
+            <g class="capsula-anim">
+                <rect x="35" y="90" width="30" height="15" rx="5" fill="#1a2a36" stroke="#4dd0e1" stroke-width="2"/>
+                <rect x="40" y="87" width="20" height="5" fill="#4dd0e1"/>
+                
+                <rect x="40" y="10" width="20" height="10" rx="3" fill="#1a2a36" stroke="#4dd0e1" stroke-width="2"/>
+                
+                <rect x="30" y="20" width="40" height="70" rx="15" fill="url(#liquid-${safeData.id || 1})" stroke="#4dd0e1" stroke-width="2" stroke-opacity="0.6"/>
+                <path d="M 32 35 C 32 25, 45 22, 55 22 C 40 22, 35 30, 35 45 Z" fill="url(#glow-${safeData.id || 1})"/>
+                
+                <g class="adn-helix">
+                    <line x1="45" y1="35" x2="55" y2="40" stroke="${adnColor}" stroke-width="2"/>
+                    <line x1="45" y1="55" x2="55" y2="60" stroke="${adnColor}" stroke-width="2"/>
+                    <line x1="45" y1="75" x2="55" y2="80" stroke="${adnColor}" stroke-width="2"/>
+                    <circle cx="45" cy="35" r="3" fill="#ffffff"/>
+                    <circle cx="45" cy="55" r="3" fill="#ffffff"/>
+                    <circle cx="45" cy="75" r="3" fill="#ffffff"/>
+                </g>
+                <g class="adn-helix-retraso">
+                    <line x1="55" y1="35" x2="45" y2="40" stroke="${adnColor}" stroke-width="2"/>
+                    <line x1="55" y1="55" x2="45" y2="60" stroke="${adnColor}" stroke-width="2"/>
+                    <line x1="55" y1="75" x2="45" y2="80" stroke="${adnColor}" stroke-width="2"/>
+                    <circle cx="55" cy="35" r="3" fill="${adnColor}"/>
+                    <circle cx="55" cy="55" r="3" fill="${adnColor}"/>
+                    <circle cx="55" cy="75" r="3" fill="${adnColor}"/>
+                </g>
+
+                <circle cx="45" cy="80" r="2" class="burbuja" style="animation-delay: 0s;"/>
+                <circle cx="55" cy="75" r="1.5" class="burbuja" style="animation-delay: 0.7s;"/>
+                <circle cx="48" cy="85" r="2.5" class="burbuja" style="animation-delay: 1.2s;"/>
+            </g>
+        </svg>`;
     }
 
     const color = safeData.base_color || "#77DD77";
@@ -18,15 +87,13 @@ function generarSvgGeno(genesVisuales) {
     if (safeData.mutated_cabezaX) safeAnclaje.cabezaX = safeData.mutated_cabezaX;
     if (safeData.mutated_cabezaY) safeAnclaje.cabezaY = safeData.mutated_cabezaY;
     
-    // 🧠 MEJORA: LECTURA ESTRICTA DEL ADN. 
-    // Ya no inventa caras aleatorias cada vez que se dibuja. 
-    // Lee lo que viene de la base de datos, y si falta algo, pone uno por defecto fijo.
+    // 🧠 LECTURA ESTRICTA DEL ADN
     const obtenerPieza = (dic, gen, fallback) => {
         if (typeof dic === 'undefined' || Object.keys(dic).length === 0) return '';
-        if (gen && dic[gen]) return dic[gen]; // Usa el que tiene guardado en el ADN
-        if (dic[fallback]) return dic[fallback]; // Si no tiene, usa el de emergencia
+        if (gen && dic[gen]) return dic[gen]; 
+        if (dic[fallback]) return dic[fallback]; 
         const keys = Object.keys(dic);
-        return dic[keys[0]] || ''; // Rescate final
+        return dic[keys[0]] || ''; 
     };
 
     const ojo = obtenerPieza(typeof dicOjos !== 'undefined' ? dicOjos : {}, safeData.eye_type, "estandar");
@@ -45,8 +112,6 @@ function generarSvgGeno(genesVisuales) {
             pathD = "M 15 90 C 15 20, 145 20, 145 90 C 145 118, 122 122, 80 122 C 38 122, 15 118, 15 90 Z"; 
             shineD = "M 40 55 Q 50 40 70 40 Q 55 48 40 55 Z"; 
 
-            // --- ⚪ MANCHAS PROCEDURALES FIJAS ⚪ ---
-            // Esto asegura que las manchas del hongo sean únicas pero nunca cambien de sitio.
             const seedStr = (safeData.id || "hongo") + color + shape;
             let baseSeed = 0;
             for (let i = 0; i < seedStr.length; i++) {
