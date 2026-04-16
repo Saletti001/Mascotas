@@ -138,72 +138,124 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // =========================================
-// VISOR DE GENOS MAESTRO (INVENTARIO)
+// VISOR DE GENOS MAESTRO (INVENTARIO CON SLOTS)
 // =========================================
 document.addEventListener("DOMContentLoaded", () => {
+    // 1. Inicializamos el límite de slots para el jugador (6 por defecto)
+    if (!window.maxGenoSlots) window.maxGenoSlots = 6;
+
     const btnMisGenosMain = document.getElementById("btn-show-genos");
     const modalSwap = document.getElementById("geno-swap-modal");
     const btnCloseSwap = document.getElementById("close-swap-modal");
     const gridSwap = document.getElementById("geno-swap-grid");
     const pedestal = document.getElementById("geno-container");
 
+    // Función que redibuja el inventario (útil para cuando compramos slots)
+    function renderizarInventarioGenos() {
+        if (!gridSwap || !modalSwap) return;
+        
+        gridSwap.innerHTML = ""; // Limpiamos la cuadrícula
+        
+        // Juntamos a la mascota actual y a los Genos almacenados
+        const todos = [];
+        if (window.miMascota) todos.push(window.miMascota);
+        if (window.misGenos) todos.push(...window.misGenos);
+
+        // --- DIBUJAR GENOS OCUPADOS ---
+        todos.forEach(geno => {
+            if (geno.isEgg) return; 
+
+            const card = document.createElement("div");
+            card.style = "background: #1a2a36; border: 1px solid #4dd0e1; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);";
+            card.onmouseover = () => card.style.boxShadow = "0 0 15px rgba(77, 208, 225, 0.4)";
+            card.onmouseout = () => card.style.boxShadow = "0 4px 10px rgba(0,0,0,0.3)";
+
+            const pColor = geno.color || geno.base_color || "#ccc";
+            
+            let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
+            svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+            
+            card.innerHTML = `
+                <div style="width: 70px; height: 70px; color: ${pColor}; display: flex; justify-content: center; align-items: center;">
+                    ${svg}
+                </div>
+                <span style="color: white; font-weight: bold; font-size: 12px; margin-top: 10px; text-align: center;">${geno.name || 'Sujeto'}</span>
+            `;
+            
+            card.onclick = () => {
+                window.miMascota = geno;
+                if (pedestal) {
+                    const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
+                    pedestal.innerHTML = `<div class="geno-idle" style="color: ${pColor}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${svgPedestal}</div>`;
+                }
+                const nameEl = document.getElementById('geno-name');
+                if (nameEl) nameEl.innerText = geno.name || 'Sujeto';
+                
+                if(typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
+                modalSwap.classList.add("hidden");
+            };
+            
+            gridSwap.appendChild(card);
+        });
+
+        // --- DIBUJAR SLOTS VACÍOS ---
+        const slotsOcupados = todos.length;
+        // Si hay más Genos que slots (ej. por tus 15 clones), la matemática no bajará de 0
+        const slotsLibres = Math.max(0, window.maxGenoSlots - slotsOcupados);
+
+        for (let i = 0; i < slotsLibres; i++) {
+            const emptyCard = document.createElement("div");
+            // Estilo transparente y con borde punteado para denotar espacio vacío
+            emptyCard.style = "background: rgba(26, 42, 54, 0.5); border: 1px dashed #4dd0e1; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.5;";
+            emptyCard.innerHTML = `
+                <div style="width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; font-size: 24px; color: #4dd0e1;">
+                    🧬
+                </div>
+                <span style="color: #4dd0e1; font-weight: bold; font-size: 12px; margin-top: 10px; text-align: center;">Vacío</span>
+            `;
+            gridSwap.appendChild(emptyCard);
+        }
+
+        // --- DIBUJAR BOTÓN DE EXPANSIÓN ($POL) ---
+        // Micropagos bajos: 0.5 POL base + 0.1 POL extra por cada slot que hayas comprado
+        const costoExpansion = parseFloat((0.5 + (window.maxGenoSlots - 6) * 0.1).toFixed(2));
+
+        const buyCard = document.createElement("div");
+        buyCard.style = "background: rgba(138, 43, 226, 0.1); border: 1px solid #8A2BE2; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;";
+        buyCard.onmouseover = () => buyCard.style.boxShadow = "0 0 15px rgba(138, 43, 226, 0.4)";
+        buyCard.onmouseout = () => buyCard.style.boxShadow = "none";
+        
+        buyCard.innerHTML = `
+            <div style="width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; font-size: 30px; color: #e0b0ff;">
+                ➕
+            </div>
+            <span style="color: white; font-weight: bold; font-size: 12px; margin-top: 5px; text-align: center;">Expandir</span>
+            <span style="color: #e0b0ff; font-weight: bold; font-size: 11px; margin-top: 5px; text-align: center;">${costoExpansion} POL</span>
+        `;
+
+        buyCard.onclick = () => {
+            if (window.miWallet && window.miWallet.pol >= costoExpansion) {
+                // Cobramos el POL y sumamos 1 espacio
+                window.miWallet.pol -= costoExpansion;
+                window.maxGenoSlots += 1;
+                
+                // Actualizar la interfaz de POL si tienes la función (opcional)
+                if(typeof actualizarHUD === 'function') actualizarHUD();
+                
+                // Recargamos el inventario al instante
+                renderizarInventarioGenos();
+            } else {
+                alert("No tienes suficiente $POL para expandir tu inventario. ¡Consigue más jugando o recargando!");
+            }
+        };
+
+        gridSwap.appendChild(buyCard);
+    }
+
+    // Eventos para abrir y cerrar
     if (btnMisGenosMain) {
         btnMisGenosMain.addEventListener("click", () => {
-            if (!gridSwap || !modalSwap) return;
-            
-            gridSwap.innerHTML = ""; // Limpiamos la cuadrícula
-            
-            // Juntamos a la mascota actual y a los Genos almacenados
-            const todos = [];
-            if (window.miMascota) todos.push(window.miMascota);
-            if (window.misGenos) todos.push(...window.misGenos);
-
-            if (todos.length === 0) {
-                gridSwap.innerHTML = '<div style="color: #ccc; grid-column: span 2; text-align: center;">No tienes Genos en tu base de datos.</div>';
-            }
-
-            todos.forEach(geno => {
-                if (geno.isEgg) return; // Ocultamos los huevos de este menú
-
-                const card = document.createElement("div");
-                card.style = "background: #1a2a36; border: 1px solid #4dd0e1; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);";
-                
-                card.onmouseover = () => card.style.boxShadow = "0 0 15px rgba(77, 208, 225, 0.4)";
-                card.onmouseout = () => card.style.boxShadow = "0 4px 10px rgba(0,0,0,0.3)";
-
-                const pColor = geno.color || geno.base_color || "#ccc";
-                
-                let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-                svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
-                
-                card.innerHTML = `
-                    <div style="width: 70px; height: 70px; color: ${pColor}; display: flex; justify-content: center; align-items: center;">
-                        ${svg}
-                    </div>
-                    <span style="color: white; font-weight: bold; font-size: 12px; margin-top: 10px; text-align: center;">${geno.name || 'Sujeto'}</span>
-                `;
-                
-                // Al hacer clic, se actualiza el laboratorio
-                card.onclick = () => {
-                    window.miMascota = geno;
-                    
-                    if (pedestal) {
-                        const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-                        
-                        // Esto le devuelve sus coordenadas al centro exacto sin chocar con la animación de tu CSS
-                        pedestal.innerHTML = `<div class="geno-idle" style="color: ${pColor}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${svgPedestal}</div>`;
-                    }
-                    
-                    const nameEl = document.getElementById('geno-name');
-                    if (nameEl) nameEl.innerText = geno.name || 'Sujeto';
-                    
-                    if(typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
-                    modalSwap.classList.add("hidden");
-                };
-                
-                gridSwap.appendChild(card);
-            });
-            
+            renderizarInventarioGenos(); // Construye la lista calculando los espacios al abrir
             modalSwap.classList.remove("hidden");
         });
     }
