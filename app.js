@@ -2,32 +2,25 @@
 // app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN
 // =========================================
 
-
-// 🎒 INVENTARIO VACÍO: Simulamos a un jugador nuevo (Onboarding).
+// 🎒 INVENTARIO VACÍO: SEÑUELO ANTI-CRASH
 window.misGenos = []; 
-window.miMascota = null; 
-window.maxGenoSlots = 6; // Límite inicial de Genos gratis
+// Le damos un objeto temporal en lugar de "null" para que los otros scripts no exploten al leerlo
+window.miMascota = { id: "temp", name: "Sincronizando...", isEgg: true, level: 0, color: "#ccc" }; 
+window.maxGenoSlots = 6; 
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ✨ COMPROBAR JUGADOR NUEVO: Si no tiene Genos, iniciamos la secuencia de ADN
+    // ✨ COMPROBAR JUGADOR NUEVO
     setTimeout(() => {
-        if (window.misGenos.length === 0 && !window.miMascota) {
+        if (window.misGenos.length === 0) {
+            // Borramos el Geno verde que está puesto por defecto en tu HTML
+            const pedestal = document.getElementById("geno-container");
+            if (pedestal) pedestal.innerHTML = "";
+            
+            // Lanzamos la secuencia inicial
             iniciarSecuenciaBienvenida();
         }
-    }, 500);
-
-// ... (todo lo demás hacia abajo se queda exactamente igual) ...
-window.miMascota = window.misGenos[0]; // Asignamos el Clon 1 como mascota
-
-document.addEventListener("DOMContentLoaded", () => {
-    
-    // ✨ COMPROBAR JUGADOR NUEVO: Si no tiene Genos, iniciamos la secuencia de ADN
-    setTimeout(() => {
-        if (window.misGenos.length === 0 && !window.miMascota) {
-            iniciarSecuenciaBienvenida();
-        }
-    }, 500);
+    }, 100); // Casi instantáneo
 
     const fabMenu = document.getElementById("fab-menu");
     const drawerMenu = document.getElementById("drawer-menu");
@@ -80,7 +73,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (btn) {
             btn.onclick = () => {
                 window.navegarA(pantallaId);
-                // Llamadas a funciones específicas de cada pantalla si existen
                 if(btnId === 'btn-sanctuary' && window.renderizarSantuario) window.renderizarSantuario();
                 if(btnId === 'btn-alchemy' && window.renderizarAlquimia) window.renderizarAlquimia();
                 if(btnId === 'btn-breeding' && window.iniciarSelectorCrianza) window.iniciarSelectorCrianza();
@@ -141,7 +133,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // VISOR DE GENOS MAESTRO (INVENTARIO CON SLOTS)
 // =========================================
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Inicializamos el límite de slots para el jugador (6 por defecto)
     if (!window.maxGenoSlots) window.maxGenoSlots = 6;
 
     const btnMisGenosMain = document.getElementById("btn-show-genos");
@@ -153,24 +144,20 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderizarInventarioGenos() {
         if (!gridSwap || !modalSwap) return;
         
-        gridSwap.innerHTML = ""; // Limpiamos la cuadrícula
+        gridSwap.innerHTML = ""; 
         
-        // Juntamos a la mascota actual y a los Genos almacenados
         const todos = [];
-        if (window.miMascota) todos.push(window.miMascota);
+        if (window.miMascota && !window.miMascota.isEgg) todos.push(window.miMascota);
         if (window.misGenos) todos.push(...window.misGenos);
 
         const slotsOcupados = todos.length;
 
-        // --- 📊 NUEVO: INDICADOR DE CAPACIDAD ---
         const infoCard = document.createElement("div");
         infoCard.style = "grid-column: 1 / -1; text-align: center; margin-bottom: 5px; padding-bottom: 10px; border-bottom: 1px solid #333;";
-        // Se pone rojo si el jugador superó su límite (como en tu caso de prueba)
         const colorTexto = slotsOcupados > window.maxGenoSlots ? "#ff6b6b" : "#4dd0e1";
         infoCard.innerHTML = `<span style="color: ${colorTexto}; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Capacidad: ${slotsOcupados} / ${window.maxGenoSlots}</span>`;
         gridSwap.appendChild(infoCard);
 
-        // --- DIBUJAR GENOS OCUPADOS ---
         todos.forEach(geno => {
             if (geno.isEgg) return; 
 
@@ -207,8 +194,6 @@ document.addEventListener("DOMContentLoaded", () => {
             gridSwap.appendChild(card);
         });
 
-        // --- DIBUJAR SLOTS VACÍOS ---
-        // Usamos Math.max para que si hay sobrecupo (números negativos) no explote y solo dibuje 0.
         const slotsLibres = Math.max(0, window.maxGenoSlots - slotsOcupados);
 
         for (let i = 0; i < slotsLibres; i++) {
@@ -223,9 +208,8 @@ document.addEventListener("DOMContentLoaded", () => {
             gridSwap.appendChild(emptyCard);
         }
 
-        // --- DIBUJAR BOTÓN DE EXPANSIÓN ($POL) ---
         const costoExpansion = parseFloat((0.5 + (window.maxGenoSlots - 6) * 0.1).toFixed(2));
-        const siguienteSlot = window.maxGenoSlots + 1; // 📊 NUEVO: Te avisa qué slot vas a comprar
+        const siguienteSlot = window.maxGenoSlots + 1;
 
         const buyCard = document.createElement("div");
         buyCard.style = "background: rgba(138, 43, 226, 0.1); border: 1px solid #8A2BE2; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;";
@@ -246,7 +230,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 window.maxGenoSlots += 1;
                 
                 if(typeof window.actualizarHUD === 'function') window.actualizarHUD();
-                renderizarInventarioGenos(); // Se redibuja y verás cómo el contador "Capacidad" cambia
+                renderizarInventarioGenos(); 
             } else {
                 alert("No tienes suficiente $POL para expandir tu inventario. ¡Consigue más jugando o recargando!");
             }
@@ -273,36 +257,32 @@ document.addEventListener("DOMContentLoaded", () => {
 // SECUENCIA DE INICIO: LA CÁPSULA DE ADN
 // =========================================
 function iniciarSecuenciaBienvenida() {
-    // 1. DICCIONARIO LIMITADO: Solo las 5 formas base para el primer Geno
     const formasBase = ["gota", "frijol", "circulo", "cuadrado", "triangulo"];
     const coloresBase = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77", "#ff9800", "#ffb347", "#a8e6cf"];
 
-    // Función para sacar una cara o boca aleatoria de tus diccionarios globales
     const obtenerClaveAleatoria = (dic) => {
         if (!dic || Object.keys(dic).length === 0) return "estandar";
         const keys = Object.keys(dic);
         return keys[Math.floor(Math.random() * keys.length)];
     };
 
-    // 2. CREAMOS EL GENO (Totalmente aleatorio pero legal)
     const miPrimerGeno = {
-        id: Date.now(), // Usamos la fecha como ID único irrompible
-        name: "Sujeto Alfa", // Nombre por defecto
+        id: Date.now(), 
+        name: "Sujeto Alfa",
         rarity: "Común",
         element: "Biomutante",
-        body_shape: formasBase[Math.floor(Math.random() * formasBase.length)], // Solo de las 5 base
+        body_shape: formasBase[Math.floor(Math.random() * formasBase.length)], 
         color: coloresBase[Math.floor(Math.random() * coloresBase.length)],
         base_color: "", 
         eye_type: obtenerClaveAleatoria(typeof dicOjos !== 'undefined' ? dicOjos : {}),
         mouth_type: obtenerClaveAleatoria(typeof dicBocas !== 'undefined' ? dicBocas : {}),
-        wing_type: "ninguno", // Un inicial nace sin accesorios
+        wing_type: "ninguno", 
         hat_type: "ninguno",
         level: 1,
         breedCount: 0
     };
     miPrimerGeno.base_color = miPrimerGeno.color;
 
-    // 3. CREAMOS LA INTERFAZ VISUAL DE LA CÁPSULA (Pantalla negra por encima de todo)
     const modalOverlay = document.createElement("div");
     modalOverlay.id = "dna-startup-modal";
     modalOverlay.style = "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(10, 20, 30, 0.98); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: white; font-family: sans-serif;";
@@ -320,7 +300,6 @@ function iniciarSecuenciaBienvenida() {
 
     document.body.appendChild(modalOverlay);
 
-    // 4. LÓGICA DE LA ANIMACIÓN Y EL BOTÓN
     const capsule = document.getElementById("dna-capsule");
     const text = document.getElementById("dna-text");
     const subtext = document.getElementById("dna-subtext");
@@ -328,52 +307,41 @@ function iniciarSecuenciaBienvenida() {
     const svgContainer = document.getElementById("dna-svg-container");
     const btnClaim = document.getElementById("btn-claim-geno");
 
-    // Efecto hover para el botón
     btnClaim.onmouseover = () => btnClaim.style.transform = "scale(1.05)";
     btnClaim.onmouseout = () => btnClaim.style.transform = "scale(1)";
 
-    // Al hacer clic en el ADN
     capsule.onclick = () => {
-        capsule.onclick = null; // Prevenir doble clic
-        
-        // Animación de "cargando" (reusamos la animación de las llamas de tu SVG)
+        capsule.onclick = null; 
         capsule.style.animation = "propulsor 0.1s infinite alternate ease-in-out"; 
         text.innerText = "Sintetizando...";
         subtext.innerText = "Combinando biomoléculas...";
 
-        // Esperamos 2 segundos para dar suspenso
         setTimeout(() => {
             capsule.style.display = "none";
             text.innerText = "¡Tu primer Geno ha nacido!";
             subtext.innerText = "Cuidalo bien y llévalo a la gloria.";
 
-            // Renderizamos al Geno usando tu SVGEngine
             let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
             svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             svgContainer.innerHTML = svg;
             
-            resultDiv.style.display = "flex"; // Mostramos al Geno
+            resultDiv.style.display = "flex"; 
         }, 2000);
     };
 
-    // Al hacer clic en "Integrar al Laboratorio"
     btnClaim.onclick = () => {
-        // 1. Guardamos el Geno en la Base de Datos / Inventario
-        window.misGenos.push(miPrimerGeno);
+        // Al darle al botón, la mascota temporal se convierte en el Geno real
         window.miMascota = miPrimerGeno;
 
-        // 2. Lo dibujamos en el Pedestal de tu pantalla principal
         const pedestal = document.getElementById("geno-container");
         if (pedestal) {
             const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
             pedestal.innerHTML = `<div class="geno-idle" style="color: ${miPrimerGeno.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${svgPedestal}</div>`;
         }
         
-        // 3. Actualizamos el nombre en pantalla
         const nameEl = document.getElementById('geno-name');
         if (nameEl) nameEl.innerText = miPrimerGeno.name;
 
-        // 4. Destruimos la pantalla de bienvenida y el jugador empieza el juego
         modalOverlay.remove();
         if(typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
     };
