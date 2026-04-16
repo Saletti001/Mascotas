@@ -4,7 +4,7 @@ function generarSvgGeno(genesVisuales) {
     // =========================================
     // 🧬 DIBUJO DE CÁPSULA (Bio-Núcleo Arreglado y Ámbar)
     // =========================================
-    if (safeData.isEgg) {
+   if (safeData.isEgg) {
         // Color heredado para el resplandor de la hélice
         const adnColor = safeData.color || safeData.base_color || "#00d2ff";
         const rndId = safeData.id || Math.floor(Math.random() * 1000);
