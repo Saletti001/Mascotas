@@ -2,22 +2,22 @@
 // app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN
 // =========================================
 
-// 🎒 INVENTARIO VACÍO: Simulamos a un jugador nuevo.
-// 🎒 INVENTARIO DE PRUEBA: Generamos 15 Genos de golpe para probar el scroll
-window.misGenos = [];
-for (let i = 1; i <= 15; i++) {
-    window.misGenos.push({ 
-        id: i, 
-        name: "Clon " + i, 
-        body_shape: "frijol", 
-        color: "#4dd0e1", 
-        base_color: "#4dd0e1",
-        eye_type: "estandar", 
-        mouth_type: "colmillos", 
-        wing_type: "ninguno", 
-        hat_type: "ninguno" 
-    });
-}
+
+// 🎒 INVENTARIO VACÍO: Simulamos a un jugador nuevo (Onboarding).
+window.misGenos = []; 
+window.miMascota = null; 
+window.maxGenoSlots = 6; // Límite inicial de Genos gratis
+
+document.addEventListener("DOMContentLoaded", () => {
+    
+    // ✨ COMPROBAR JUGADOR NUEVO: Si no tiene Genos, iniciamos la secuencia de ADN
+    setTimeout(() => {
+        if (window.misGenos.length === 0 && !window.miMascota) {
+            iniciarSecuenciaBienvenida();
+        }
+    }, 500);
+
+// ... (todo lo demás hacia abajo se queda exactamente igual) ...
 window.miMascota = window.misGenos[0]; // Asignamos el Clon 1 como mascota
 
 document.addEventListener("DOMContentLoaded", () => {
