@@ -2,73 +2,68 @@ function generarSvgGeno(genesVisuales) {
     const safeData = genesVisuales || {};
     
     // =========================================
-    // 🧬 DIBUJO DE CÁPSULA (Bio-Núcleo) PARA "HUEVOS"
+    // 🧬 DIBUJO DE CÁPSULA (Bio-Núcleo Premium)
     // =========================================
     if (safeData.isEgg) {
-        // Obtenemos el color heredado (o uno por defecto) para teñir el ADN y el líquido
         const adnColor = safeData.color || safeData.base_color || "#00d2ff";
         return `
         <svg width="100%" height="100%" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">
             <defs>
-                <linearGradient id="glow-${safeData.id || 1}" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.8"/>
-                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0.1"/>
+                <linearGradient id="glass-${safeData.id || 1}" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.5"/>
+                    <stop offset="15%" stop-color="#ffffff" stop-opacity="0.1"/>
+                    <stop offset="85%" stop-color="#ffffff" stop-opacity="0.0"/>
+                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0.2"/>
                 </linearGradient>
-                <linearGradient id="liquid-${safeData.id || 1}" x1="0%" y1="0%" x2="0%" y2="100%">
-                    <stop offset="0%" stop-color="${adnColor}" stop-opacity="0.5"/>
+                <linearGradient id="liquid-${safeData.id || 1}" x1="0%" y1="100%" x2="0%" y2="0%">
+                    <stop offset="0%" stop-color="${adnColor}" stop-opacity="0.8"/>
                     <stop offset="100%" stop-color="${adnColor}" stop-opacity="0.1"/>
                 </linearGradient>
+                <filter id="glow-${safeData.id || 1}">
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                    <feMerge>
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
             </defs>
             <style>
-                @keyframes bionucleoFlota { 
-                    0%, 100% { transform: translateY(0); } 
-                    50% { transform: translateY(-8px); } 
-                }
-                @keyframes girarADN { 
-                    0% { transform: scaleX(1); } 
-                    50% { transform: scaleX(0.1); } 
-                    100% { transform: scaleX(1); } 
-                }
-                @keyframes burbujas {
-                    0% { transform: translateY(0) scale(1); opacity: 0; }
-                    50% { opacity: 0.8; }
-                    100% { transform: translateY(-30px) scale(0.5); opacity: 0; }
-                }
+                @keyframes bionucleoFlota { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+                @keyframes adnPulse { 0%, 100% { opacity: 0.8; transform: scaleX(1); } 50% { opacity: 1; transform: scaleX(1.05); } }
+                @keyframes burbujas { 0% { transform: translateY(10px); opacity: 0; } 50% { opacity: 0.9; } 100% { transform: translateY(-35px); opacity: 0; } }
+                
                 .capsula-anim { animation: bionucleoFlota 3.5s ease-in-out infinite; transform-origin: center; }
-                .adn-helix { animation: girarADN 2s linear infinite; transform-origin: 50px 0; }
-                .adn-helix-retraso { animation: girarADN 2s linear infinite; animation-delay: 1s; transform-origin: 50px 0; }
+                .adn-glow { animation: adnPulse 2.5s ease-in-out infinite; transform-origin: center; filter: url(#glow-${safeData.id || 1}); }
                 .burbuja { animation: burbujas 2s ease-in infinite; fill: #ffffff; }
             </style>
             
             <g class="capsula-anim">
-                <rect x="35" y="90" width="30" height="15" rx="5" fill="#1a2a36" stroke="#4dd0e1" stroke-width="2"/>
-                <rect x="40" y="87" width="20" height="5" fill="#4dd0e1"/>
+                <path d="M 38 25 L 62 25 L 57 15 L 43 15 Z" fill="#0d1a24" stroke="#4dd0e1" stroke-width="1.5"/>
+                <rect x="45" y="11" width="10" height="4" fill="#4dd0e1" rx="2"/>
                 
-                <rect x="40" y="10" width="20" height="10" rx="3" fill="#1a2a36" stroke="#4dd0e1" stroke-width="2"/>
+                <path d="M 38 95 L 62 95 L 57 105 L 43 105 Z" fill="#0d1a24" stroke="#4dd0e1" stroke-width="1.5"/>
+                <rect x="42" y="105" width="16" height="4" fill="#4dd0e1" rx="2"/>
                 
-                <rect x="30" y="20" width="40" height="70" rx="15" fill="url(#liquid-${safeData.id || 1})" stroke="#4dd0e1" stroke-width="2" stroke-opacity="0.6"/>
-                <path d="M 32 35 C 32 25, 45 22, 55 22 C 40 22, 35 30, 35 45 Z" fill="url(#glow-${safeData.id || 1})"/>
+                <rect x="32" y="25" width="36" height="70" rx="12" fill="url(#liquid-${safeData.id || 1})"/>
                 
-                <g class="adn-helix">
-                    <line x1="45" y1="35" x2="55" y2="40" stroke="${adnColor}" stroke-width="2"/>
-                    <line x1="45" y1="55" x2="55" y2="60" stroke="${adnColor}" stroke-width="2"/>
-                    <line x1="45" y1="75" x2="55" y2="80" stroke="${adnColor}" stroke-width="2"/>
-                    <circle cx="45" cy="35" r="3" fill="#ffffff"/>
-                    <circle cx="45" cy="55" r="3" fill="#ffffff"/>
-                    <circle cx="45" cy="75" r="3" fill="#ffffff"/>
+                <g class="adn-glow">
+                    <path d="M 60 35 C 30 45, 30 55, 60 65 C 90 75, 90 85, 60 95" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 4" opacity="0.6"/>
+                    <path d="M 40 35 C 70 45, 70 55, 40 65 C 10 75, 10 85, 40 95" fill="none" stroke="${adnColor}" stroke-width="3" stroke-linecap="round"/>
+                    
+                    <line x1="45" y1="41" x2="55" y2="41" stroke="#ffffff" stroke-width="1.5" opacity="0.8"/>
+                    <line x1="40" y1="50" x2="60" y2="50" stroke="#ffffff" stroke-width="1.5" opacity="0.8"/>
+                    <line x1="45" y1="59" x2="55" y2="59" stroke="#ffffff" stroke-width="1.5" opacity="0.8"/>
+                    <line x1="45" y1="71" x2="55" y2="71" stroke="#ffffff" stroke-width="1.5" opacity="0.8"/>
+                    <line x1="40" y1="80" x2="60" y2="80" stroke="#ffffff" stroke-width="1.5" opacity="0.8"/>
+                    <line x1="45" y1="89" x2="55" y2="89" stroke="#ffffff" stroke-width="1.5" opacity="0.8"/>
                 </g>
-                <g class="adn-helix-retraso">
-                    <line x1="55" y1="35" x2="45" y2="40" stroke="${adnColor}" stroke-width="2"/>
-                    <line x1="55" y1="55" x2="45" y2="60" stroke="${adnColor}" stroke-width="2"/>
-                    <line x1="55" y1="75" x2="45" y2="80" stroke="${adnColor}" stroke-width="2"/>
-                    <circle cx="55" cy="35" r="3" fill="${adnColor}"/>
-                    <circle cx="55" cy="55" r="3" fill="${adnColor}"/>
-                    <circle cx="55" cy="75" r="3" fill="${adnColor}"/>
-                </g>
-
-                <circle cx="45" cy="80" r="2" class="burbuja" style="animation-delay: 0s;"/>
-                <circle cx="55" cy="75" r="1.5" class="burbuja" style="animation-delay: 0.7s;"/>
-                <circle cx="48" cy="85" r="2.5" class="burbuja" style="animation-delay: 1.2s;"/>
+                
+                <circle cx="40" cy="85" r="1.5" class="burbuja" style="animation-delay: 0s;"/>
+                <circle cx="55" cy="80" r="2.5" class="burbuja" style="animation-delay: 0.6s;"/>
+                <circle cx="48" cy="90" r="2" class="burbuja" style="animation-delay: 1.2s;"/>
+                
+                <rect x="32" y="25" width="36" height="70" rx="12" fill="url(#glass-${safeData.id || 1})" stroke="#4dd0e1" stroke-width="1.5"/>
+                <path d="M 36 32 Q 38 60 36 88" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
             </g>
         </svg>`;
     }
