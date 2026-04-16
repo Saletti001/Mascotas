@@ -4,7 +4,7 @@ function generarSvgGeno(genesVisuales) {
     // =========================================
     // 🧬 DIBUJO DE CÁPSULA (Bio-Núcleo Arreglado y Ámbar)
     // =========================================
-   if (safeData.isEgg) {
+    if (safeData.isEgg) {
         // Color heredado para el resplandor de la hélice
         const adnColor = safeData.color || safeData.base_color || "#00d2ff";
         const rndId = safeData.id || Math.floor(Math.random() * 1000);
@@ -13,7 +13,7 @@ function generarSvgGeno(genesVisuales) {
         <svg width="100%" height="100%" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">
             <defs>
                 <clipPath id="clip-cristal-${rndId}">
-                    <rect x="33.5" y="26.5" width="33" height="67" rx="11" />
+                    <rect x="32" y="25" width="36" height="70" rx="12" />
                 </clipPath>
 
                 <linearGradient id="liquid-amber-${rndId}" x1="0%" y1="100%" x2="0%" y2="0%">
@@ -47,12 +47,7 @@ function generarSvgGeno(genesVisuales) {
             </style>
             
             <g class="capsula-anim">
-                <path d="M 38 25 L 62 25 L 57 15 L 43 15 Z" fill="#0d1a24" stroke="#4dd0e1" stroke-width="1.5"/>
-                
-                <path d="M 38 95 L 62 95 L 57 105 L 43 105 Z" fill="#0d1a24" stroke="#4dd0e1" stroke-width="1.5"/>
-                
                 <rect x="32" y="25" width="36" height="70" rx="12" fill="none" stroke="#4dd0e1" stroke-width="1.5" stroke-opacity="0.7"/>
-
                 <rect x="32" y="25" width="36" height="70" rx="12" fill="url(#liquid-amber-${rndId})"/>
 
                 <g clip-path="url(#clip-cristal-${rndId})">
@@ -72,14 +67,15 @@ function generarSvgGeno(genesVisuales) {
                     <circle cx="55" cy="80" r="2.5" class="burbuja" style="animation-delay: 0.6s;"/>
                     <circle cx="48" cy="90" r="2" class="burbuja" style="animation-delay: 1.2s;"/>
                 </g>
+
                 <rect x="32" y="25" width="36" height="70" rx="12" fill="url(#glass-front-${rndId})" />
                 <path d="M 36 32 Q 38 60 36 88" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
+
+                <path d="M 38 25 L 62 25 L 57 15 L 43 15 Z" fill="#0d1a24" stroke="#4dd0e1" stroke-width="1.5"/>
+                <path d="M 38 95 L 62 95 L 57 105 L 43 105 Z" fill="#0d1a24" stroke="#4dd0e1" stroke-width="1.5"/>
             </g>
         </svg>`;
     }
-
-    // ... (resto de la función generarSvgGeno para Genos adultos no cambia)
-}
 
     // =========================================
     // 🧬 DIBUJO DE GENOS ADULTOS
