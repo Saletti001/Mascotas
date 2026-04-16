@@ -2,7 +2,7 @@ function generarSvgGeno(genesVisuales) {
     const safeData = genesVisuales || {};
     
     // =========================================
-    // 🧬 DIBUJO DE CÁPSULA CON SIMETRÍA PERFECTA
+    // 🧬 DIBUJO DE CÁPSULA CON SIMETRÍA Y TAPAS METÁLICAS
     // =========================================
     if (safeData.isEgg) {
         const adnColor = safeData.color || safeData.base_color || "#00d2ff";
@@ -24,6 +24,14 @@ function generarSvgGeno(genesVisuales) {
                     <stop offset="15%" stop-color="#ffffff" stop-opacity="0.1"/>
                     <stop offset="85%" stop-color="#ffffff" stop-opacity="0.0"/>
                     <stop offset="100%" stop-color="#ffffff" stop-opacity="0.2"/>
+                </linearGradient>
+
+                <linearGradient id="metal-cap-${rndId}" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#2c3e50"/>
+                    <stop offset="25%" stop-color="#7f8c8d"/>
+                    <stop offset="50%" stop-color="#bdc3c7"/>
+                    <stop offset="75%" stop-color="#7f8c8d"/>
+                    <stop offset="100%" stop-color="#2c3e50"/>
                 </linearGradient>
 
                 <filter id="glow-adn-${rndId}">
@@ -71,8 +79,8 @@ function generarSvgGeno(genesVisuales) {
                 <rect x="32" y="25" width="36" height="70" rx="12" fill="url(#glass-front-${rndId})" />
                 <path d="M 36 32 Q 38 60 36 88" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
 
-                <path d="M 38 25 L 62 25 L 57 15 L 43 15 Z" fill="#0d1a24" stroke="#4dd0e1" stroke-width="1.5"/>
-                <path d="M 38 95 L 62 95 L 57 105 L 43 105 Z" fill="#0d1a24" stroke="#4dd0e1" stroke-width="1.5"/>
+                <path d="M 38 25 L 62 25 L 57 15 L 43 15 Z" fill="url(#metal-cap-${rndId})" stroke="#4dd0e1" stroke-width="1.5"/>
+                <path d="M 38 95 L 62 95 L 57 105 L 43 105 Z" fill="url(#metal-cap-${rndId})" stroke="#4dd0e1" stroke-width="1.5"/>
             </g>
         </svg>`;
     }
