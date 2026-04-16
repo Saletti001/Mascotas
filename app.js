@@ -283,9 +283,11 @@ function iniciarSecuenciaBienvenida() {
     };
     miPrimerGeno.base_color = miPrimerGeno.color;
 
+    // 3. CREAMOS LA INTERFAZ VISUAL DE LA CÁPSULA (Solo dentro del juego)
     const modalOverlay = document.createElement("div");
     modalOverlay.id = "dna-startup-modal";
-    modalOverlay.style = "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(10, 20, 30, 0.98); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: white; font-family: sans-serif;";
+    // Cambiamos 'fixed' por 'absolute' y '100vw/vh' por '100%'
+    modalOverlay.style = "position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 20, 30, 0.98); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: white; font-family: sans-serif;";
 
     modalOverlay.innerHTML = `
         <div id="dna-capsule" style="font-size: 100px; animation: respirar 2s infinite; cursor: pointer; transition: 0.3s; user-select: none;">🧬</div>
@@ -297,6 +299,10 @@ function iniciarSecuenciaBienvenida() {
             <button id="btn-claim-geno" style="background: #4dd0e1; color: #1a2a36; border: none; padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 12px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 15px rgba(77, 208, 225, 0.5); transition: 0.2s;">Integrar al Laboratorio</button>
         </div>
     `;
+
+    // Lo inyectamos DENTRO del contenedor del juego en lugar de todo el documento
+    const gameContainer = document.getElementById("game-container") || document.body;
+    gameContainer.appendChild(modalOverlay);
 
     document.body.appendChild(modalOverlay);
 
