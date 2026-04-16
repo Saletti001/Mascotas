@@ -186,16 +186,18 @@
 /* VISOR DE GENOS (INVENTARIO MODAL)         */
 /* ========================================= */
 
-/* 1. Ocultar la barra de scroll pero seguir permitiendo deslizar */
+/* 1. Ocultar la barra de scroll pero seguir permitiendo deslizar (Inventario y Crianza) */
 #geno-swap-grid,
-#geno-swap-modal > div {
-    scrollbar-width: none; /* Para Firefox */
-    -ms-overflow-style: none; /* Para Internet Explorer y Edge */
+#geno-swap-modal > div,
+#breeding-list {
+    scrollbar-width: none !important; /* Para Firefox */
+    -ms-overflow-style: none !important; /* Para Internet Explorer y Edge */
 }
 
 #geno-swap-grid::-webkit-scrollbar,
-#geno-swap-modal > div::-webkit-scrollbar {
-    display: none; /* Para Chrome, Safari y Opera */
+#geno-swap-modal > div::-webkit-scrollbar,
+#breeding-list::-webkit-scrollbar {
+    display: none !important; /* Para Chrome, Safari y Opera */
 }
 
 /* 2. SEPARAR EL CAJÓN DEL BOTÓN NEXO */
