@@ -13,7 +13,7 @@ function generarSvgGeno(genesVisuales) {
         <svg width="100%" height="100%" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">
             <defs>
                 <clipPath id="clip-cristal-${rndId}">
-                    <rect x="33" y="26" width="34" height="68" rx="11" />
+                    <rect x="33.5" y="26.5" width="33" height="67" rx="11" />
                 </clipPath>
 
                 <linearGradient id="liquid-amber-${rndId}" x1="0%" y1="100%" x2="0%" y2="0%">
@@ -77,6 +77,9 @@ function generarSvgGeno(genesVisuales) {
             </g>
         </svg>`;
     }
+
+    // ... (resto de la función generarSvgGeno para Genos adultos no cambia)
+}
 
     // =========================================
     // 🧬 DIBUJO DE GENOS ADULTOS
