@@ -254,7 +254,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // =========================================
-// SECUENCIA DE INICIO: LA CÁPSULA DE ADN
+// SECUENCIA DE INICIO: EL BIO-NÚCLEO ALFA
 // =========================================
 function iniciarSecuenciaBienvenida() {
     const formasBase = ["gota", "frijol", "circulo", "cuadrado", "triangulo"];
@@ -267,7 +267,7 @@ function iniciarSecuenciaBienvenida() {
     };
 
     const miPrimerGeno = {
-        id: Date.now(), 
+        id: "genesis", 
         name: "Sujeto Alfa",
         rarity: "Común",
         element: "Biomutante",
@@ -283,15 +283,20 @@ function iniciarSecuenciaBienvenida() {
     };
     miPrimerGeno.base_color = miPrimerGeno.color;
 
-    // 3. CREAMOS LA INTERFAZ VISUAL DE LA CÁPSULA (Solo dentro del juego)
+    // 1. Creamos el contenedor de la pantalla de bienvenida
     const modalOverlay = document.createElement("div");
     modalOverlay.id = "dna-startup-modal";
     modalOverlay.style = "position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 20, 30, 0.98); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: white; font-family: sans-serif;";
 
+    // 2. Aquí es donde inyectamos el Bio-Núcleo usando tu nueva función SVG
+    const svgBioNucleo = typeof generarSvgGeno === 'function' ? generarSvgGeno({ isEgg: true, color: "#4dd0e1", id: "genesis" }) : '🧬';
+
     modalOverlay.innerHTML = `
-        <div id="dna-capsule" style="font-size: 100px; animation: respirar 2s infinite; cursor: pointer; transition: 0.3s; user-select: none;">🧬</div>
-        <h2 id="dna-text" style="margin-top: 30px; font-weight: bold; color: #4dd0e1; text-align: center; text-transform: uppercase; letter-spacing: 2px;">¡Bio-Núcleo Encontrado!</h2>
-        <p id="dna-subtext" style="color: #aaa; text-align: center; max-width: 350px; line-height: 1.5; margin-top: 10px;">Toca la secuencia para sintetizar a tu primer Geno.</p>
+        <div id="dna-capsule" style="width: 180px; height: 180px; cursor: pointer; transition: 0.3s; user-select: none;">
+            ${svgBioNucleo}
+        </div>
+        <h2 id="dna-text" style="margin-top: 20px; font-weight: bold; color: #4dd0e1; text-align: center; text-transform: uppercase; letter-spacing: 2px;">¡Bio-Núcleo Encontrado!</h2>
+        <p id="dna-subtext" style="color: #aaa; text-align: center; max-width: 300px; line-height: 1.5; margin-top: 10px; font-size: 14px;">Detectada secuencia de origen. Toca para sintetizar tu primer espécimen.</p>
         
         <div id="dna-result" style="display: none; flex-direction: column; align-items: center;">
             <div id="dna-svg-container" style="width: 200px; height: 200px; margin: 20px 0;"></div>
@@ -299,7 +304,6 @@ function iniciarSecuenciaBienvenida() {
         </div>
     `;
 
-    // Lo inyectamos DENTRO del contenedor del juego en lugar de todo el documento
     const gameContainer = document.getElementById("game-container") || document.body;
     gameContainer.appendChild(modalOverlay);
 
@@ -315,32 +319,32 @@ function iniciarSecuenciaBienvenida() {
 
     capsule.onclick = () => {
         capsule.onclick = null; 
+        
+        // Efecto de vibración rápida mientras sintetiza
         capsule.style.animation = "propulsor 0.1s infinite alternate ease-in-out"; 
         text.innerText = "Sintetizando Bio-Núcleo...";
-        subtext.innerText = "Recombinando biomoléculas...";
+        subtext.innerText = "Secuenciando cadena de aminoácidos...";
 
         setTimeout(() => {
             capsule.style.display = "none";
-            text.innerText = "¡Tu primer Geno ha sido sintetizado!";
-            subtext.innerText = "Cuidalo bien y llévalo a la gloria.";
+            text.innerText = "¡Sujeto Alfa Sintetizado!";
+            subtext.innerText = "Estable e integrado. Listo para la investigación.";
 
             let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
             svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             svgContainer.innerHTML = svg;
             
             resultDiv.style.display = "flex"; 
-        }, 2000);
+        }, 2500);
     };
 
     btnClaim.onclick = () => {
         window.miMascota = miPrimerGeno;
-
         const pedestal = document.getElementById("geno-container");
         if (pedestal) {
             const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
             pedestal.innerHTML = `<div class="geno-idle" style="color: ${miPrimerGeno.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${svgPedestal}</div>`;
         }
-        
         const nameEl = document.getElementById('geno-name');
         if (nameEl) nameEl.innerText = miPrimerGeno.name;
 
