@@ -198,8 +198,14 @@
     display: none; /* Para Chrome, Safari y Opera */
 }
 
-/* 2. Truco anti-superposición ESTÉTICA del Botón NEXO */
-/* ✅ Aumentamos el colchón de 90px a 140px para dejar un espacio bonito */
+/* 2. SEPARAR EL CAJÓN DEL BOTÓN NEXO */
+/* Le damos un margen inferior al cajón y limitamos su altura para que flote sobre el botón */
+#geno-swap-modal > div {
+    margin-bottom: 90px !important; 
+    max-height: 70vh !important; /* Asegura que el cajón no sea más alto que el 70% de la pantalla */
+}
+
+/* 3. Como el cajón ya se subió, le quitamos el colchón exagerado a la cuadrícula */
 #geno-swap-grid {
-    padding-bottom: 140px !important; 
+    padding-bottom: 15px !important; 
 }
