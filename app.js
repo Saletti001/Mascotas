@@ -286,12 +286,11 @@ function iniciarSecuenciaBienvenida() {
     // 3. CREAMOS LA INTERFAZ VISUAL DE LA CÁPSULA (Solo dentro del juego)
     const modalOverlay = document.createElement("div");
     modalOverlay.id = "dna-startup-modal";
-    // Cambiamos 'fixed' por 'absolute' y '100vw/vh' por '100%'
     modalOverlay.style = "position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 20, 30, 0.98); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: white; font-family: sans-serif;";
 
     modalOverlay.innerHTML = `
         <div id="dna-capsule" style="font-size: 100px; animation: respirar 2s infinite; cursor: pointer; transition: 0.3s; user-select: none;">🧬</div>
-        <h2 id="dna-text" style="margin-top: 30px; font-weight: bold; color: #4dd0e1; text-align: center; text-transform: uppercase; letter-spacing: 2px;">Código de ADN Encontrado</h2>
+        <h2 id="dna-text" style="margin-top: 30px; font-weight: bold; color: #4dd0e1; text-align: center; text-transform: uppercase; letter-spacing: 2px;">¡Bio-Núcleo Encontrado!</h2>
         <p id="dna-subtext" style="color: #aaa; text-align: center; max-width: 350px; line-height: 1.5; margin-top: 10px;">Toca la secuencia para sintetizar a tu primer Geno.</p>
         
         <div id="dna-result" style="display: none; flex-direction: column; align-items: center;">
@@ -317,12 +316,12 @@ function iniciarSecuenciaBienvenida() {
     capsule.onclick = () => {
         capsule.onclick = null; 
         capsule.style.animation = "propulsor 0.1s infinite alternate ease-in-out"; 
-        text.innerText = "Sintetizando...";
-        subtext.innerText = "Combinando biomoléculas...";
+        text.innerText = "Sintetizando Bio-Núcleo...";
+        subtext.innerText = "Recombinando biomoléculas...";
 
         setTimeout(() => {
             capsule.style.display = "none";
-            text.innerText = "¡Tu primer Geno ha nacido!";
+            text.innerText = "¡Tu primer Geno ha sido sintetizado!";
             subtext.innerText = "Cuidalo bien y llévalo a la gloria.";
 
             let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
@@ -334,7 +333,6 @@ function iniciarSecuenciaBienvenida() {
     };
 
     btnClaim.onclick = () => {
-        // Al darle al botón, la mascota temporal se convierte en el Geno real
         window.miMascota = miPrimerGeno;
 
         const pedestal = document.getElementById("geno-container");

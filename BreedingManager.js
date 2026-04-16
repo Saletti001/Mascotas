@@ -277,7 +277,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const colorHijo = Math.random() > 0.5 ? (padre1.color || padre1.base_color || "#77DD77") : (padre2.color || padre2.base_color || "#77DD77");
 
                 const hijo = {
-                    id: Date.now(), name: "Huevo Misterioso", isEgg: true, hatchTime: Date.now() + 120000, 
+                    id: Date.now(), name: "Bio-Núcleo Genético", isEgg: true, hatchTime: Date.now() + 120000, 
                     generation: genHijo, breedCount: 0, level: 1, xp: 0, xpNeeded: 100,
                     genes: genesHijo, stats: statsHijo,
                     body_shape: genesHijo.cuerpo.dom, eye_type: genesHijo.ojos.dom, mouth_type: genesHijo.boca.dom,
@@ -337,7 +337,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const label = document.getElementById(`timer-${huevo.id}`);
             if (restante <= 0) {
                 huevo.isEgg = false; if (typeof generarSvgGeno === 'function') huevo.svg = generarSvgGeno(huevo); 
-                requiereActualizacion = true; alert(`🐣 ¡Atención!\nUn huevo acaba de eclosionar.\nForma resultante: ${huevo.body_shape}`);
+                requiereActualizacion = true; alert(`🧬 ¡Atención!\nUn Bio-Núcleo Genético acaba de Sintetizar.\nForma resultante: ${huevo.body_shape}`);
             } else {
                 if(label) {
                     const min = Math.floor(restante / 60000); const sec = Math.floor((restante % 60000) / 1000);
