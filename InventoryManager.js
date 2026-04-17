@@ -5,8 +5,8 @@
 class InventoryManager {
     constructor() {
         this.maxSlots = 10; 
-        this.overflowSlots = 2; // NUEVO: 2 Slots de Emergencia
-        this.items = []; // Renombrado de 'slots' a 'items' para compatibilidad global
+        this.overflowSlots = 2; // 2 Slots de Emergencia
+        this.items = []; 
         this.vitalEssence = 0; 
         this.stackLimits = {
             basic: 99,
@@ -45,7 +45,6 @@ class InventoryManager {
 
         let limit = this.stackLimits[newItem.type] || 1;
         
-        // Buscar si ya existe el ítem y no está lleno (y que no esté en zona de emergencia)
         let existingSlot = this.items.find(slot => slot.id === newItem.id && slot.count < limit && !slot.isOverflow);
 
         if (existingSlot) {
@@ -62,7 +61,7 @@ class InventoryManager {
                     ...newItem, 
                     count: newItem.count || 1,
                     isOverflow: true,
-                    expiresAt: Date.now() + (24 * 60 * 60 * 1000) // 24 horas en milisegundos
+                    expiresAt: Date.now() + (24 * 60 * 60 * 1000) 
                 });
             } else {
                 alert("🎒 ¡Almacén y Espacios de Emergencia LLENOS!\nDebes destruir algo para hacer espacio.");
@@ -70,7 +69,7 @@ class InventoryManager {
             }
         }
         
-        this.reorganize(); // Revisa si puede salvar ítems
+        this.reorganize(); 
         this.updateUI();
         this.renderGrid();
         return true;
@@ -93,13 +92,13 @@ class InventoryManager {
                 this.selectedIndex = null; 
                 if(document.getElementById("item-actions")) document.getElementById("item-actions").classList.add("hidden");
             }
-            this.reorganize(); // Si liberamos espacio, salvamos ítems de emergencia
+            this.reorganize(); 
             this.updateUI();
             this.renderGrid();
         }
     }
 
-    // ✨ NUEVO: Si liberas espacio, los ítems en emergencia se mueven a la zona segura
+    // ✨ Si liberas espacio, los ítems en emergencia se mueven a la zona segura
     reorganize() {
         for(let i = 0; i < this.items.length; i++) {
             if (i < this.maxSlots && this.items[i].isOverflow) {
@@ -114,8 +113,8 @@ class InventoryManager {
         const counter = document.getElementById("slot-counter");
         if (counter) {
             let color = "#444";
-            if (this.items.length >= this.maxSlots) color = "#ff9800"; // Naranja si usa emergencia
-            if (this.items.length >= (this.maxSlots + this.overflowSlots)) color = "#d9534f"; // Rojo si está full full
+            if (this.items.length >= this.maxSlots) color = "#ff9800"; 
+            if (this.items.length >= (this.maxSlots + this.overflowSlots)) color = "#d9534f"; 
             
             counter.innerHTML = `${this.items.length}/${this.maxSlots}<br>SLOTS`;
             counter.style.color = color;
@@ -141,7 +140,6 @@ class InventoryManager {
             const slotDiv = document.createElement("div");
             slotDiv.className = "inventory-slot";
             
-            // Si es un slot de emergencia (> 9)
             if (i >= this.maxSlots) {
                 slotDiv.classList.add("emergency-slot");
             }
@@ -157,7 +155,7 @@ class InventoryManager {
                     slotDiv.appendChild(countSpan);
                 }
 
-                // ✨ NUEVO: Mostrar el temporizador si está en emergencia
+                // ✨ Mostrar el temporizador si está en emergencia
                 if (item.isOverflow && item.expiresAt) {
                     const timerSpan = document.createElement("div");
                     timerSpan.id = `timer-item-${i}`;
@@ -211,7 +209,7 @@ class InventoryManager {
             if (this.selectedIndex !== null) this.removeItem(this.selectedIndex, this.items[this.selectedIndex].count);
         });
 
-        // ✨ NUEVO: MOTOR DE CADUCIDAD EN TIEMPO REAL (Corre cada segundo)
+        // ✨ MOTOR DE CADUCIDAD EN TIEMPO REAL (Corre cada segundo)
         setInterval(() => {
             let hasExpiredItems = false;
             
@@ -220,9 +218,8 @@ class InventoryManager {
                     const restante = item.expiresAt - Date.now();
                     
                     if (restante <= 0) {
-                        hasExpiredItems = true; // Se acabó el tiempo
+                        hasExpiredItems = true; 
                     } else {
-                        // Actualizar UI del contador si el inventario está abierto
                         const label = document.getElementById(`timer-item-${index}`);
                         if (label) {
                             const h = Math.floor(restante / 3600000);
@@ -234,7 +231,6 @@ class InventoryManager {
                 }
             });
 
-            // Si alguien expiró, lo borramos de la matriz principal
             if (hasExpiredItems) {
                 const prevCount = this.items.length;
                 this.items = this.items.filter(item => !item.isOverflow || !item.expiresAt || item.expiresAt > Date.now());
@@ -243,16 +239,49 @@ class InventoryManager {
                     this.selectedIndex = null;
                     this.updateUI();
                     this.renderGrid();
-                    // Opcional: Sonido de error o alerta
                     console.log("⚠️ Un ítem en la zona de emergencia ha sido destruido por falta de espacio.");
                 }
             }
         }, 1000);
     }
 
+    // 🛠️ FUNCIÓN DEV: Inyecta el botón de llenado mágico
+    injectDebugButton() {
+        const header = document.querySelector("#inventory-modal .modal-header");
+        if (header && !document.getElementById("btn-debug-fill")) {
+            const btnFill = document.createElement("button");
+            btnFill.id = "btn-debug-fill";
+            btnFill.innerText = "🧪 Test Llenar";
+            btnFill.style = "background: #ff9800; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; color: white; font-weight: bold; margin-left: auto; margin-right: 15px;";
+            
+            header.insertBefore(btnFill, document.getElementById("close-inventory"));
+
+            btnFill.addEventListener("click", () => {
+                let added = 0;
+                while (this.items.length < this.maxSlots) {
+                    this.addItem({
+                        id: "caja_test_" + Date.now() + Math.random(),
+                        name: "Caja de Suministros",
+                        icon: "📦",
+                        type: "basic",
+                        maxStack: 1,
+                        desc: "Ítem de relleno para testear."
+                    });
+                    added++;
+                }
+                if (added > 0) {
+                    alert("🎒 Inventario lleno. ¡Ve al Centro de Crianza y sintetiza un Bio-Núcleo para ver cómo entra en Emergencia!");
+                } else {
+                    alert("El inventario ya está lleno.");
+                }
+            });
+        }
+    }
+
     init() {
         this.updateUI();
         this.setupEvents();
+        this.injectDebugButton(); // Agregamos el botón de desarrollador
     }
 }
 
