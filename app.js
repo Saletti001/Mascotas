@@ -7,16 +7,13 @@ window.maxGenoSlots = window.maxGenoSlots || 6;
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ✨ COMPROBAR JUGADOR NUEVO 100% BLINDADO
+    // COMPROBAR JUGADOR NUEVO
     setTimeout(() => {
-        // La prueba definitiva de si es nuevo: no hay partida guardada en la PC
         const noHayPartida = !localStorage.getItem("proyecto_genos_save_v1");
         
         if (noHayPartida) {
-            // Borramos el Geno verde genérico del HTML sin alterar propiedades CSS (para que quede centrado)
             const pedestal = document.getElementById("geno-container");
             if (pedestal) pedestal.innerHTML = "";
-            
             iniciarSecuenciaBienvenida();
         }
     }, 100);
@@ -25,7 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const drawerMenu = document.getElementById("drawer-menu");
     const closeDrawer = document.getElementById("close-drawer");
 
-    // REFERENCIAS A LAS PANTALLAS
     const screenRoom = document.getElementById("room-area");
     const screenArcade = document.getElementById("arcade-menu");
     const screenSanctuary = document.getElementById("sanctuary-screen");
@@ -39,7 +35,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if(fabMenu) fabMenu.addEventListener("click", () => drawerMenu.classList.remove("hidden"));
     if(closeDrawer) closeDrawer.addEventListener("click", () => drawerMenu.classList.add("hidden"));
 
-    // FUNCIÓN DE NAVEGACIÓN GLOBAL
     window.navegarA = function(idPantalla) {
         screens.forEach(s => { if(s) s.classList.add("hidden"); });
         const destino = document.getElementById(idPantalla);
@@ -57,7 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
         btn.addEventListener("click", () => window.navegarA("room-area"));
     });
 
-    // ENRUTADORES DEL MENÚ NEXO
     const botonesNexo = {
         'btn-sanctuary': 'sanctuary-screen',
         'btn-alchemy': 'alchemy-screen',
@@ -81,7 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // BOTÓN DE ALIMENTAR (MANZANA)
     const btnFeed = document.getElementById("btn-feed");
     if(btnFeed) {
         btnFeed.addEventListener("click", () => {
@@ -99,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // ✨ INTERACCIÓN CON EL GENO PRINCIPAL (CLICK PARA CARIÑOS)
+    // INTERACCIÓN CON EL GENO PRINCIPAL (CLICK PARA CARIÑOS)
     const contenedorGenoMain = document.getElementById("geno-container");
     if (contenedorGenoMain) {
         contenedorGenoMain.addEventListener("click", (e) => {
@@ -130,7 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // BOTÓN DE MÚSICA
     const btnMusic = document.getElementById("btn-toggle-music");
     const musicIcon = document.getElementById("music-icon");
     const musicText = document.getElementById("music-text");
@@ -152,7 +144,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // REGALOS INICIALES DEL JUEGO
     setTimeout(() => {
         if(!window.miWallet) window.miWallet = { pol: 10.0 };
         const regaloDado = localStorage.getItem("regaloInicialDado");
@@ -181,8 +172,17 @@ document.addEventListener("DOMContentLoaded", () => {
         gridSwap.innerHTML = ""; 
         
         const todos = [];
-        if (window.miMascota && !window.miMascota.isEgg && window.miMascota.id && window.miMascota.id !== "temp") todos.push(window.miMascota);
-        if (window.misGenos) todos.push(...window.misGenos);
+        // Añadimos la Mascota Actual primero (Si existe)
+        if (window.miMascota && !window.miMascota.isEgg && window.miMascota.id && window.miMascota.id !== "temp") {
+            todos.push(window.miMascota);
+        }
+        
+        // ✨ CORRECCIÓN: Filtramos la BBDD para no volver a meter a la Mascota Actual (Evita el duplicado)
+        if (window.misGenos) {
+            const idMascotaActual = window.miMascota ? window.miMascota.id : null;
+            const genosEnPC = window.misGenos.filter(g => g.id !== idMascotaActual);
+            todos.push(...genosEnPC);
+        }
 
         const slotsOcupados = todos.length;
 
@@ -197,8 +197,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const card = document.createElement("div");
             card.style = "background: #1a2a36; border: 1px solid #4dd0e1; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);";
-            card.onmouseover = () => card.style.boxShadow = "0 0 15px rgba(77, 208, 225, 0.4)";
-            card.onmouseout = () => card.style.boxShadow = "0 4px 10px rgba(0,0,0,0.3)";
+            
+            // Si es la mascota equipada, le ponemos un borde brillante permanente
+            if (window.miMascota && window.miMascota.id === geno.id) {
+                card.style.border = "2px solid #ffcc00";
+                card.style.boxShadow = "0 0 15px rgba(255, 204, 0, 0.4)";
+            } else {
+                card.onmouseover = () => card.style.boxShadow = "0 0 15px rgba(77, 208, 225, 0.4)";
+                card.onmouseout = () => card.style.boxShadow = "0 4px 10px rgba(0,0,0,0.3)";
+            }
 
             const pColor = geno.color || geno.base_color || "#ccc";
             
@@ -410,6 +417,7 @@ function iniciarSecuenciaBienvenida() {
 
         const pedestal = document.getElementById("geno-container");
         if (pedestal) {
+            pedestal.style.display = "block";
             const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
             pedestal.innerHTML = `<div class="geno-idle" style="color: ${miPrimerGeno.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${svgPedestal}</div>`;
         }

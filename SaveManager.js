@@ -37,6 +37,14 @@ window.cargarProgreso = function() {
                     const polText = document.getElementById("pol-amount");
                     if(polText) polText.innerText = `🔷 ${window.miWallet.pol.toFixed(1)} POL`;
                 }
+
+                // ✨ CORRECCIÓN: Dibujar el Geno en el pedestal al cargar la partida
+                const pedestal = document.getElementById("geno-container");
+                if (pedestal && window.miMascota && window.miMascota.id && window.miMascota.id !== "temp") {
+                    pedestal.style.display = "block";
+                    pedestal.innerHTML = `<div class="geno-idle" style="color: ${window.miMascota.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${window.miMascota.svg}</div>`;
+                }
+
                 if(window.actualizarPanelRPG) window.actualizarPanelRPG();
                 if(window.renderizarIncubadora) window.renderizarIncubadora();
             }, 100); 
@@ -49,8 +57,8 @@ window.cargarProgreso = function() {
 
 // 2. FUNCIÓN PARA GUARDAR EL PROGRESO
 window.guardarProgreso = function() {
-    // 🔥 ANTI-CORRUPCIÓN: Si la mascota actual no tiene ID, es el Geno verde falso de RPGManager. ¡NO GUARDAR!
-    if (!window.miMascota || !window.miMascota.id) return;
+    // ANTI-CORRUPCIÓN: No guardar si es el Geno falso temporal
+    if (!window.miMascota || !window.miMascota.id || window.miMascota.id === "temp") return;
 
     const dataToSave = {
         misGenos: window.misGenos || [],
@@ -67,7 +75,6 @@ window.guardarProgreso = function() {
 window.cargarProgreso();
 
 document.addEventListener("DOMContentLoaded", () => {
-    // AUTO-GUARDADO
     setInterval(() => {
         window.guardarProgreso();
     }, 5000);
