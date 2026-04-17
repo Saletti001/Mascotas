@@ -2,31 +2,35 @@
 // app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN
 // =========================================
 
-// ✨ LÓGICA BLINDADA PARA DETECTAR JUGADORES NUEVOS
+// Respetamos los datos si SaveManager los acaba de cargar, si no, creamos un array vacío
 window.misGenos = window.misGenos || []; 
 window.maxGenoSlots = window.maxGenoSlots || 6; 
 
-// Si la base de datos está vacía, ES UN JUGADOR NUEVO 100% confirmado.
-const esJugadorNuevo = window.misGenos.length === 0;
-
-if (esJugadorNuevo) {
-    // Aplastamos el "Geno Base" falso del RPGManager para que no haya errores visuales
-    window.miMascota = { id: "temp", name: "Sincronizando...", isEgg: true, level: 0, color: "#ccc" }; 
-} else {
-    // Si ya es jugador viejo, respetamos su mascota actual
-    window.miMascota = window.miMascota || { id: "temp", name: "Sincronizando...", isEgg: true, level: 0, color: "#ccc" }; 
+// 👻 EL GENO FANTASMA: Si eres nuevo, esto evita que el juego explote pero es invisible (transparent)
+if (!window.miMascota || window.miMascota.id === "temp") {
+    window.miMascota = { 
+        id: "temp", name: "", isEgg: true, level: 0, 
+        color: "transparent", base_color: "transparent", 
+        visual_genes: { body_shape: "gota", base_color: "transparent" }
+    };
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ✨ LANZAR CÁPSULA SI ES NUEVO
-    setTimeout(() => {
-        if (esJugadorNuevo) {
-            const pedestal = document.getElementById("geno-container");
-            if (pedestal) pedestal.innerHTML = "";
-            iniciarSecuenciaBienvenida();
-        }
-    }, 100);
+    // ✨ AHORA SÍ EVALUAMOS SI ERES NUEVO (Después de que SaveManager hizo su trabajo)
+    const esJugadorNuevo = (!window.misGenos || window.misGenos.length === 0);
+
+    if (esJugadorNuevo) {
+        // Ocultamos el pedestal inmediatamente para que no haya parpadeos
+        const pedestal = document.getElementById("geno-container");
+        if (pedestal) pedestal.style.display = "none";
+        
+        iniciarSecuenciaBienvenida();
+    } else {
+        // Nos aseguramos de que el pedestal sí esté visible para el jugador recurrente
+        const pedestal = document.getElementById("geno-container");
+        if (pedestal) pedestal.style.display = "block";
+    }
 
     const fabMenu = document.getElementById("fab-menu");
     const drawerMenu = document.getElementById("drawer-menu");
@@ -131,7 +135,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // REGALOS INICIALES DEL JUEGO
     setTimeout(() => {
         if(!window.miWallet) window.miWallet = { pol: 10.0 };
-        // Validar si ya se dio el regalo inicial para no dar escáneres cada vez que se carga el juego
         const regaloDado = localStorage.getItem("regaloInicialDado");
         if (!regaloDado && window.miInventario) {
             window.miInventario.addItem({ id: "dna_scanner", name: "Escáner ADN", icon: "🧬", type: "consumible", maxStack: 20 }, 5);
@@ -383,6 +386,8 @@ function iniciarSecuenciaBienvenida() {
         window.miMascota = miPrimerGeno;
         const pedestal = document.getElementById("geno-container");
         if (pedestal) {
+            // Hacemos que el pedestal vuelva a aparecer
+            pedestal.style.display = "block";
             const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
             pedestal.innerHTML = `<div class="geno-idle" style="color: ${miPrimerGeno.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${svgPedestal}</div>`;
         }
