@@ -7,10 +7,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // 🛠️ INYECCIÓN CSS: Ocultar Scrollbar y Forzar color exacto "NEXO" (#80deea)
     const style = document.createElement('style');
     style.innerHTML = `
-        #incubator-grid::-webkit-scrollbar { display: none; } /* Chrome, Safari y Opera */
-        #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; } /* IE, Edge y Firefox */
+        #incubator-grid::-webkit-scrollbar { display: none; } 
+        #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; } 
         
-        /* 🔥 COLOR FORZADO PARA LA BASE DE DATOS GENÉTICA */
         #breeding-selector h3 { 
             color: #80deea !important; 
             font-weight: bold !important;
@@ -92,9 +91,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const padre = index === 0 ? padre1 : padre2;
             if (padre) {
                 const pColor = padre.color || padre.visual_genes?.base_color || padre.base_color || "#ccc";
-                
                 slot.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(padre) : '<span>Geno</span>';
-                
                 const svg = slot.querySelector("svg");
                 if(svg) { svg.style.width = "50px"; svg.style.height = "50px"; svg.style.color = pColor; }
                 slot.style.border = "2px solid #4dd0e1"; slot.style.background = "#1a2a36"; slot.style.boxShadow = "0 0 10px rgba(77, 208, 225, 0.4)";
@@ -124,7 +121,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if(selectorContainer) selectorContainer.classList.add("hidden");
 
         const pColor = g.color || g.visual_genes?.base_color || g.base_color || "#ccc";
-
         const svgContainer = document.getElementById("id-card-svg");
         if(svgContainer) {
             svgContainer.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(g) : '';
@@ -133,7 +129,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         document.getElementById("id-card-name").innerText = g.name || `Sujeto`;
-        
         if (g.id && String(g.id).length > 10 && typeof window.generarNuevoID === 'function') {
             g.id = window.generarNuevoID();
         }
@@ -152,7 +147,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("id-card-rarity").innerText = g.rarity || "Común";
         document.getElementById("id-card-element").innerText = (g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal");
-        
         const criasEl = document.getElementById("id-card-breeds");
         if(criasEl) criasEl.innerText = `${7 - (g.breedCount || 0)} de 7`;
 
@@ -165,7 +159,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if(qualityEl && window.calcularCalidad && window.obtenerColorRango) {
             const statsActualizadas = window.calcularCalidad(g.stats, g.rarity || "Común", g.level || 1);
             const color = window.obtenerColorRango(statsActualizadas.rango);
-
             qualityEl.innerText = `${statsActualizadas.rango} (${statsActualizadas.calidadPorcentaje}%)`;
             qualityEl.style.color = color;
             qualityEl.style.textShadow = statsActualizadas.rango === "S" ? "0 0 10px rgba(255, 204, 0, 0.8)" : "none";
@@ -235,16 +228,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const pColor = geno.color || geno.visual_genes?.base_color || geno.base_color || "#ccc";
             const pShape = (geno.genes && geno.genes.cuerpo) ? geno.genes.cuerpo.dom : (geno.shape || geno.visual_genes?.body_shape || geno.body_shape || "gota");
-            
             let svgContent = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '<span>Geno</span>';
 
             let statusText = `<span style="color: #00d2ff; font-weight: bold; font-size: 11px;">${7 - (geno.breedCount||0)} secuencias disponibles</span>`;
             if(yaSeleccionado) statusText = `<span style="color: #f0ad4e; font-weight: bold; font-size: 11px;">⚠️ Ya está seleccionado</span>`;
             else if((geno.breedCount||0) >= 7) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Límite de síntesis</span>`;
-
-            if (geno.id && String(geno.id).length > 10 && typeof window.generarNuevoID === 'function') {
-                geno.id = window.generarNuevoID();
-            }
 
             btn.innerHTML = `
                 <div style="width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #333; flex-shrink: 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); color: ${pColor};">${svgContent}</div>
@@ -259,7 +247,6 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
 
             const svg = btn.querySelector("svg"); if(svg) { svg.style.width = "65px"; svg.style.height = "65px"; } 
-
             const infoBtn = btn.querySelector('.btn-info-geno');
             if(infoBtn) { infoBtn.addEventListener("click", (e) => { e.stopPropagation(); mostrarTarjetaGeno(geno); }); }
 
@@ -282,16 +269,12 @@ document.addEventListener("DOMContentLoaded", () => {
         btnBreeding.addEventListener("click", () => {
             if(!padre1 || !padre2) return;
             
-            // ✨ NUEVA VERIFICACIÓN DE ESPACIO (+2 SLOTS DE EMERGENCIA)
-            if (window.miInventario && window.miInventario.items) {
-                const maxSlots = window.miInventario.maxSlots || 10;
-                const overflowMax = maxSlots + 2;
-                
-                if (window.miInventario.items.length >= overflowMax) {
-                    alert("🎒 ¡Almacén Nexo y Espacios de Emergencia LLENOS!\nNo tienes espacio para sintetizar. Libera espacio destruyendo ítems menos valiosos.");
+            // ✨ VERIFICACIÓN DE ESPACIO OFICIAL USANDO TU INVENTARIO
+            if (window.miInventario) {
+                const totalCap = window.miInventario.maxSlots + window.miInventario.overflowSlots;
+                if (window.miInventario.items.length >= totalCap) {
+                    alert("🎒 ¡Almacén y Espacios de Emergencia LLENOS!\nDebes liberar espacio antes de sintetizar.");
                     return;
-                } else if (window.miInventario.items.length >= maxSlots) {
-                    alert("⚠️ Advertencia: Tu Almacén principal está lleno.\nEl Bio-Núcleo se guardará en un espacio de emergencia temporal (24h).");
                 }
             }
             
@@ -305,83 +288,50 @@ document.addEventListener("DOMContentLoaded", () => {
             btnBreeding.disabled = true; btnBreeding.innerText = "SINTETIZANDO..."; btnBreeding.style.background = "#8A2BE2"; btnBreeding.style.cursor = "wait";
             if (reqDiv) reqDiv.innerHTML = "Creando Bio-Núcleo...";
             
-            let toggle = false;
-            const anim = setInterval(() => {
-                toggle = !toggle;
-                slot1.style.transform = toggle ? "scale(1.1)" : "scale(0.9)"; slot2.style.transform = !toggle ? "scale(1.1)" : "scale(0.9)";
-                slot1.style.borderColor = toggle ? "#8b5cf6" : "#4dd0e1"; slot2.style.borderColor = !toggle ? "#8b5cf6" : "#4dd0e1";
-            }, 150);
-
             setTimeout(() => {
-                clearInterval(anim);
-                slot1.style.transform = "scale(1)"; slot2.style.transform = "scale(1)";
-                slot1.style.borderColor = "#4dd0e1"; slot2.style.borderColor = "#4dd0e1";
-
                 const genHijo = Math.max(padre1.generation || 0, padre2.generation || 0) + 1;
-                const p1Genes = padre1.genes || { cuerpo: {dom: padre1.body_shape||"gota", rec: padre1.body_shape||"gota"}, ojos: {dom: padre1.eye_type||"estandar", rec: padre1.eye_type||"estandar"}, boca: {dom: padre1.mouth_type||"feliz", rec: padre1.mouth_type||"feliz"}, espalda: {dom: padre1.wing_type||"ninguno", rec: padre1.wing_type||"ninguno"}, cabeza: {dom: padre1.hat_type||"ninguno", rec: padre1.hat_type||"ninguno"}, afinidad: {dom: padre1.element||"Normal", rec: padre1.element||"Normal"} };
-                const p2Genes = padre2.genes || { cuerpo: {dom: padre2.body_shape||"gota", rec: padre2.body_shape||"gota"}, ojos: {dom: padre2.eye_type||"estandar", rec: padre2.eye_type||"estandar"}, boca: {dom: padre2.mouth_type||"feliz", rec: padre2.mouth_type||"feliz"}, espalda: {dom: padre2.wing_type||"ninguno", rec: padre2.wing_type||"ninguno"}, cabeza: {dom: padre2.hat_type||"ninguno", rec: padre2.hat_type||"ninguno"}, afinidad: {dom: padre2.element||"Normal", rec: padre2.element||"Normal"} };
-                
-                const genesHijo = {
-                    cuerpo: window.cruzarRasgo(p1Genes.cuerpo, p2Genes.cuerpo, "gota"),
-                    ojos: window.cruzarRasgo(p1Genes.ojos, p2Genes.ojos, "estandar"),
-                    boca: window.cruzarRasgo(p1Genes.boca, p2Genes.boca, "feliz"),
-                    espalda: window.cruzarRasgo(p1Genes.espalda, p2Genes.espalda, "ninguno"),
-                    cabeza: window.cruzarRasgo(p1Genes.cabeza, p2Genes.cabeza, "ninguno"),
-                    afinidad: window.cruzarRasgo(p1Genes.afinidad, p2Genes.afinidad, "Normal")
-                };
-
-                const statsHijo = {
-                    hp: window.heredarStat(padre1.stats?.hp || 50, padre2.stats?.hp || 50),
-                    atk: window.heredarStat(padre1.stats?.atk || 15, padre2.stats?.atk || 15),
-                    spd: window.heredarStat(padre1.stats?.spd || 15, padre2.stats?.spd || 15),
-                    luk: window.heredarStat(padre1.stats?.luk || 15, padre2.stats?.luk || 15)
-                };
-
-                const colorHijo = Math.random() > 0.5 ? (padre1.color || padre1.base_color || "#77DD77") : (padre2.color || padre2.base_color || "#77DD77");
-
                 const prefijos = ["Neo", "Bio", "Geno", "Cyto", "Viro", "Rad", "Syn", "Evo", "Nexo", "Mut"];
                 const sufijos = ["-X", "-Prime", "morph", "cyte", "tron", "plasm", "-7", "core", "gen", "-Z"];
                 const nombreHijo = prefijos[Math.floor(Math.random() * prefijos.length)] + sufijos[Math.floor(Math.random() * sufijos.length)];
 
                 const hijo = {
-                    id: typeof window.generarNuevoID === 'function' ? window.generarNuevoID() : Date.now(), 
-                    name: nombreHijo, 
-                    isEgg: true, 
-                    incubating: false, 
-                    hatchDuration: 120000, 
-                    hatchTime: 0, 
+                    id: window.generarNuevoID ? window.generarNuevoID() : Date.now(), 
+                    name: nombreHijo, isEgg: true, incubating: false, hatchDuration: 120000, hatchTime: 0, 
                     generation: genHijo, breedCount: 0, level: 1, xp: 0, xpNeeded: 100,
-                    genes: genesHijo, stats: statsHijo,
-                    body_shape: genesHijo.cuerpo.dom, eye_type: genesHijo.ojos.dom, mouth_type: genesHijo.boca.dom,
-                    wing_type: genesHijo.espalda.dom, hat_type: genesHijo.cabeza.dom, element: genesHijo.afinidad.dom,
-                    base_color: colorHijo, color: colorHijo, reward: 100
+                    genes: {
+                        cuerpo: window.cruzarRasgo(padre1.genes?.cuerpo, padre2.genes?.cuerpo, "gota"),
+                        ojos: window.cruzarRasgo(padre1.genes?.ojos, padre2.genes?.ojos, "estandar"),
+                        boca: window.cruzarRasgo(padre1.genes?.boca, padre2.genes?.boca, "feliz"),
+                        espalda: window.cruzarRasgo(padre1.genes?.espalda, padre2.genes?.espalda, "ninguno"),
+                        cabeza: window.cruzarRasgo(padre1.genes?.cabeza, padre2.genes?.cabeza, "ninguno"),
+                        afinidad: window.cruzarRasgo(padre1.genes?.afinidad, padre2.genes?.afinidad, "Normal")
+                    },
+                    stats: {
+                        hp: window.heredarStat(padre1.stats?.hp || 50, padre2.stats?.hp || 50),
+                        atk: window.heredarStat(padre1.stats?.atk || 15, padre2.stats?.atk || 15),
+                        spd: window.heredarStat(padre1.stats?.spd || 15, padre2.stats?.spd || 15),
+                        luk: window.heredarStat(padre1.stats?.luk || 15, padre2.stats?.luk || 15)
+                    },
+                    base_color: Math.random() > 0.5 ? (padre1.color || "#77DD77") : (padre2.color || "#77DD77"),
+                    reward: 100
                 };
-
+                hijo.color = hijo.base_color;
+                hijo.body_shape = hijo.genes.cuerpo.dom;
                 if (typeof generarSvgGeno === 'function') hijo.svg = generarSvgGeno(hijo);
-                if(!window.misGenos) window.misGenos = []; window.misGenos.push(hijo);
-
-                // ✨ INYECCIÓN EN INVENTARIO (Normal o Emergencia)
-                const itemBioNucleo = {
-                    id: "bionucleo_" + hijo.id,
-                    name: "Bio-Núcleo #" + hijo.id,
-                    icon: "🧬",
-                    type: "bio_nucleo",
-                    maxStack: 1,
-                    desc: "Material genético en gestación."
-                };
                 
-                if (window.miInventario) {
-                    if(!window.miInventario.items) window.miInventario.items = [];
-                    const maxSlots = window.miInventario.maxSlots || 10;
-                    
-                    // Si se pasa del límite, va a emergencia
-                    if (window.miInventario.items.length >= maxSlots) {
-                        itemBioNucleo.isOverflow = true;
-                        itemBioNucleo.expiresAt = Date.now() + (24 * 60 * 60 * 1000); // 24 horas exactas
-                    }
+                if(!window.misGenos) window.misGenos = []; 
+                window.misGenos.push(hijo);
 
-                    // Forzamos el guardado
-                    window.miInventario.items.push({...itemBioNucleo, count: 1});
+                // ✨ INTEGRACIÓN CON EL INVENTARIO: Llamada oficial para que se dibuje en la mochila
+                if (window.miInventario && window.miInventario.addItem) {
+                    window.miInventario.addItem({
+                        id: "bionucleo_" + hijo.id,
+                        name: "Bio-Núcleo #" + hijo.id,
+                        icon: "🧬",
+                        type: "bio_nucleo",
+                        maxStack: 1,
+                        desc: "Material genético en gestación."
+                    });
                 }
                 
                 window.iniciarSelectorCrianza(); 
@@ -406,7 +356,6 @@ document.addEventListener("DOMContentLoaded", () => {
         huevos.forEach(huevo => {
             const card = document.createElement("div");
             card.style = "min-width: 95px; background: #1e293b; border: 1px solid #3b82f6; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); position: relative;";
-            
             let actionHtml = '';
             let timerHtml = '';
 
@@ -417,14 +366,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else {
                     actionHtml = `<button id="btn-buy-${huevo.id}" style="margin-top: 8px; font-size: 10px; background: linear-gradient(135deg, #ff9800, #ff5722); color: white; border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 8px rgba(255, 152, 0, 0.4); text-transform: uppercase;">🛒 🔋 0.2 POL</button>`;
                 }
-            } 
-            else {
+            } else {
                 const restante = huevo.hatchTime - Date.now();
                 if (restante > 0) {
                     timerHtml = `<div id="timer-${huevo.id}" style="font-size: 12px; font-weight: bold; color: #ffbf00; margin-top: 8px; letter-spacing: 1px;">Calc...</div>`;
                     actionHtml = `<button id="btn-skip-${huevo.id}" style="margin-top: 8px; font-size: 10px; background: linear-gradient(135deg, #8b5cf6, #3b82f6); color: white; border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4); text-transform: uppercase;">⚡ 0.5 POL</button>`;
-                } 
-                else {
+                } else {
                     timerHtml = `<div id="timer-${huevo.id}" style="font-size: 12px; font-weight: bold; color: #4dd0e1; margin-top: 8px; letter-spacing: 1px;">¡LISTO!</div>`;
                     actionHtml = `<button id="btn-claim-${huevo.id}" style="margin-top: 8px; font-size: 10px; background: linear-gradient(135deg, #77DD77, #3b82f6); color: #0d1a24; border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 8px rgba(119, 221, 119, 0.4); text-transform: uppercase;">✨ RECLAMAR</button>`;
                 }
@@ -439,70 +386,47 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
 
             if (!huevo.incubating) {
-                const btnActivate = card.querySelector(`#btn-activate-${huevo.id}`);
-                if (btnActivate) {
-                    btnActivate.addEventListener("click", () => {
-                        if(window.miInventario && typeof window.miInventario.consumeItem === 'function') { 
-                            window.miInventario.consumeItem("incubator_01", 1); 
-                        } else if (window.miInventario && window.miInventario.items) {
-                            const incItem = window.miInventario.items.find(i => i.id === "incubator_01");
-                            if(incItem) incItem.count = (incItem.count || incItem.cantidad) - 1;
-                        }
+                card.querySelector(`#btn-activate-${huevo.id}`)?.addEventListener("click", () => {
+                    if(window.miInventario && window.miInventario.consumeItem("incubator_01", 1)) {
                         huevo.incubating = true;
                         huevo.hatchTime = Date.now() + (huevo.hatchDuration || 120000);
                         window.renderizarIncubadora();
-                    });
-                }
-                const btnBuy = card.querySelector(`#btn-buy-${huevo.id}`);
-                if (btnBuy) {
-                    btnBuy.addEventListener("click", () => {
-                        const costo = 0.2;
-                        if (window.miWallet && window.miWallet.pol >= costo) {
-                            window.miWallet.pol -= costo;
-                            if(window.miInventario && window.miInventario.addItem) {
-                                window.miInventario.addItem({ id: "incubator_01", name: "Incubadora Térmica", icon: "🔋", type: "consumible", maxStack: 20 }, 1);
-                            } else if (window.miInventario) {
-                                if(!window.miInventario.items) window.miInventario.items = [];
-                                window.miInventario.items.push({ id: "incubator_01", name: "Incubadora Térmica", icon: "🔋", type: "consumible", maxStack: 20, count: 1 });
-                            }
-                            actualizarPolUI();
-                            window.renderizarIncubadora(); 
-                        } else { alert("❌ No tienes suficiente $POL (0.2) para comprar una Incubadora Térmica."); }
-                    });
-                }
+                    }
+                });
+                card.querySelector(`#btn-buy-${huevo.id}`)?.addEventListener("click", () => {
+                    if (window.miWallet && window.miWallet.pol >= 0.2) {
+                        window.miWallet.pol -= 0.2;
+                        window.miInventario.addItem({ id: "incubator_01", name: "Incubadora Térmica", icon: "🔋", type: "consumible", maxStack: 20 }, 1);
+                        actualizarPolUI(); window.renderizarIncubadora(); 
+                    } else { alert("❌ No tienes suficiente $POL."); }
+                });
             } else {
                 const restante = huevo.hatchTime - Date.now();
                 if (restante > 0) {
-                    const btnSkip = card.querySelector(`#btn-skip-${huevo.id}`);
-                    if(btnSkip) {
-                        btnSkip.addEventListener("click", () => {
-                            if(window.miWallet && window.miWallet.pol >= 0.5) {
-                                window.miWallet.pol -= 0.5; actualizarPolUI();
-                                huevo.isEgg = false; if (typeof generarSvgGeno === 'function') huevo.svg = generarSvgGeno(huevo); 
-                                
-                                if(window.miInventario && window.miInventario.items) {
-                                    window.miInventario.items = window.miInventario.items.filter(i => i.id !== "bionucleo_" + huevo.id);
-                                }
-
-                                alert(`⚡ ¡Sobrecarga Térmica!\nEl Bio-Núcleo finalizó su procesamiento.\nBienvenido: [Gen ${huevo.generation}]. Base: ${huevo.body_shape}`);
-                                window.renderizarIncubadora(); if(window.actualizarPanelRPG) window.actualizarPanelRPG();
-                            } else { alert("No tienes suficiente POL."); }
-                        });
-                    }
-                } else {
-                    const btnClaim = card.querySelector(`#btn-claim-${huevo.id}`);
-                    if(btnClaim) {
-                        btnClaim.addEventListener("click", () => {
-                            huevo.isEgg = false; if (typeof generarSvgGeno === 'function') huevo.svg = generarSvgGeno(huevo); 
-                            
-                            if(window.miInventario && window.miInventario.items) {
-                                window.miInventario.items = window.miInventario.items.filter(i => i.id !== "bionucleo_" + huevo.id);
+                    card.querySelector(`#btn-skip-${huevo.id}`)?.addEventListener("click", () => {
+                        if(window.miWallet && window.miWallet.pol >= 0.5) {
+                            window.miWallet.pol -= 0.5; actualizarPolUI();
+                            huevo.isEgg = false; 
+                            // ✨ LIBERAR SLOT AL NACER
+                            if(window.miInventario) {
+                                let idx = window.miInventario.items.findIndex(i => i.id === "bionucleo_" + huevo.id);
+                                if(idx !== -1) window.miInventario.removeItem(idx, 1);
                             }
-
-                            alert(`🧬 ¡Bio-Núcleo Revelado!\nBienvenido: [Gen ${huevo.generation}]. Base: ${huevo.body_shape}`);
+                            alert(`⚡ ¡Geno nacido!`);
                             window.renderizarIncubadora(); if(window.actualizarPanelRPG) window.actualizarPanelRPG();
-                        });
-                    }
+                        } else { alert("No tienes suficiente POL."); }
+                    });
+                } else {
+                    card.querySelector(`#btn-claim-${huevo.id}`)?.addEventListener("click", () => {
+                        huevo.isEgg = false;
+                        // ✨ LIBERAR SLOT AL NACER
+                        if(window.miInventario) {
+                            let idx = window.miInventario.items.findIndex(i => i.id === "bionucleo_" + huevo.id);
+                            if(idx !== -1) window.miInventario.removeItem(idx, 1);
+                        }
+                        alert(`🧬 ¡Geno nacido!`);
+                        window.renderizarIncubadora(); if(window.actualizarPanelRPG) window.actualizarPanelRPG();
+                    });
                 }
             }
             grid.appendChild(card);
@@ -514,16 +438,17 @@ document.addEventListener("DOMContentLoaded", () => {
         let requiereActualizacion = false;
         huevos.forEach(huevo => {
             const restante = huevo.hatchTime - Date.now();
-            const label = document.getElementById(`timer-${huevo.id}`);
             if (restante <= 0) {
-                if (label && label.innerText !== "¡LISTO!") { requiereActualizacion = true; }
+                const label = document.getElementById(`timer-${huevo.id}`);
+                if (label && label.innerText !== "¡LISTO!") requiereActualizacion = true;
             } else {
+                const label = document.getElementById(`timer-${huevo.id}`);
                 if(label) {
                     const min = Math.floor(restante / 60000); const sec = Math.floor((restante % 60000) / 1000);
                     label.innerText = `${min}:${sec < 10 ? "0" + sec : sec}`;
                 }
             }
         });
-        if(requiereActualizacion) { window.renderizarIncubadora(); }
+        if(requiereActualizacion) window.renderizarIncubadora();
     }, 1000);
 });
