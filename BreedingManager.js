@@ -309,7 +309,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const nombreHijo = prefijos[Math.floor(Math.random() * prefijos.length)] + sufijos[Math.floor(Math.random() * sufijos.length)];
 
                 const hijo = {
-                    id: Date.now() + Math.floor(Math.random() * 1000), // ID Numérico gigante
+                    id: window.generarNuevoID(), // ID Secuencial (000002, 000003, etc)
                     name: nombreHijo, 
                     isEgg: true, 
                     incubating: false, 

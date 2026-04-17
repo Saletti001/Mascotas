@@ -42,6 +42,20 @@ document.addEventListener("DOMContentLoaded", () => {
         // Actualizamos textos básicos
         const nameEl = document.getElementById("geno-name");
         if(nameEl) nameEl.innerText = g.name || "Geno";
+
+        // ✨ NUEVO: Inyección del Número de Serie (ID) en el Panel de Stats
+        let serialEl = document.getElementById("geno-serial-id");
+        if (!serialEl && nameEl) {
+            serialEl = document.createElement("div");
+            serialEl.id = "geno-serial-id";
+            serialEl.style = "font-size: 11px; color: #00d2ff; font-family: monospace; letter-spacing: 1px; margin-top: -5px; margin-bottom: 10px;";
+            // Lo insertamos justo debajo del nombre
+            nameEl.parentNode.insertBefore(serialEl, nameEl.nextSibling);
+        }
+        if (serialEl) {
+            // Si el Geno tiene ID, lo mostramos con formato. Si no, mostramos "PROTOTIPO"
+            serialEl.innerText = g.id ? `SN: #${g.id}` : "SN: PROTOTIPO";
+        }
         
         const lvlEl = document.getElementById("geno-level");
         if(lvlEl) lvlEl.innerText = `Nv. ${g.level}`;
@@ -62,24 +76,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const elementEl = document.getElementById("geno-element");
         if(elementEl) elementEl.innerText = (g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal");
 
-        // --- NUEVA LÓGICA: CALIDAD GENÉTICA ---
+        // --- LÓGICA: CALIDAD GENÉTICA ---
         const qualityBadge = document.getElementById("geno-quality-badge");
         if (qualityBadge) {
             let rango = "D";
             let pct = 0;
-            let color = "#aaa"; // Gris por defecto
+            let color = "#aaa";
 
-            // Si el Geno nació con el nuevo sistema y ya tiene su rango guardado
             if (g.stats.rango && g.stats.calidadPorcentaje !== undefined) {
                 rango = g.stats.rango;
                 pct = g.stats.calidadPorcentaje;
             } else {
-                // Si es un Geno antiguo, se lo calculamos al vuelo asumiendo que es Común
-                const limites = { hp: [35, 55], atk: [10, 22], spd: [8, 25], luk: [5, 15] }; // Limites de Común
+                const limites = { hp: [35, 55], atk: [10, 22], spd: [8, 25], luk: [5, 15] }; 
                 let tMin = limites.hp[0] + limites.atk[0] + limites.spd[0] + limites.luk[0];
                 let tMax = limites.hp[1] + limites.atk[1] + limites.spd[1] + limites.luk[1];
                 
-                // Restamos los puntos ganados por subir de nivel para ver su "stat base real"
                 let puntosInvertidos = (g.level - 1) * 3;
                 let tObt = (g.stats.hp + g.stats.atk + g.stats.spd + g.stats.luk) - puntosInvertidos;
 
@@ -94,17 +105,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 else rango = "D";
             }
 
-            // Asignamos colores según el rango para que sea MUY visual
-            if (rango === "S") color = "#ffcc00"; // Oro/Amarillo
-            else if (rango === "A") color = "#4dd0e1"; // Cian
-            else if (rango === "B") color = "#4CAF50"; // Verde
-            else if (rango === "C") color = "#f0ad4e"; // Naranja
-            else color = "#d9534f"; // Rojo (Basura)
+            if (rango === "S") color = "#ffcc00"; 
+            else if (rango === "A") color = "#4dd0e1"; 
+            else if (rango === "B") color = "#4CAF50"; 
+            else if (rango === "C") color = "#f0ad4e"; 
+            else color = "#d9534f"; 
 
             qualityBadge.innerText = `${rango} (${pct}%)`;
             qualityBadge.style.color = color;
             
-            // Si es S, le ponemos un brillito especial
             if (rango === "S") {
                 qualityBadge.style.textShadow = "0 0 10px rgba(255, 204, 0, 0.8)";
             } else {
@@ -150,8 +159,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         
         if (typeof window.guardarJuego === 'function') {
-    window.guardarJuego();
-}
+            window.guardarJuego();
+        }
     };
 
     window.ganarXP = function(cantidad) {
@@ -174,7 +183,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     contenedor.classList.add("geno-idle");
                 }, 500);
             }
-            if(window.Sonidos) window.Sonidos.play("heal"); // Sonido de Level Up
+            if(window.Sonidos) window.Sonidos.play("heal"); 
             alert(`¡Súper Evolución! 🌟\n${window.miMascota.name} ha alcanzado el Nivel ${window.miMascota.level}.\nTienes 3 Puntos de Atributo disponibles.`);
         }
         window.actualizarPanelRPG();
@@ -262,15 +271,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const contenedor = document.getElementById("geno-container");
     if (contenedor) {
         // Dibujar el Geno y añadirle la clase de respiración
-        contenedor.innerHTML = generarSvgGeno(window.miMascota.visual_genes);
+        contenedor.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(window.miMascota.visual_genes) : '<span>Geno</span>';
         contenedor.classList.add("geno-idle");
         
         // INTERACCIÓN: Acariciar al Geno
         contenedor.addEventListener("click", (e) => {
-            // 1. Sonido de cariño (si tienes el audio activado)
             if(window.Sonidos) window.Sonidos.play("click");
             
-            // 2. Efecto de Saltito
             contenedor.classList.remove("geno-idle");
             contenedor.classList.add("happy-jump");
             setTimeout(() => {
@@ -278,12 +285,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 contenedor.classList.add("geno-idle");
             }, 300);
 
-            // 3. Crear Partícula de Corazón
             const heart = document.createElement("div");
             heart.className = "heart-particle";
             heart.innerText = "❤️";
             
-            // Posicionar el corazón donde hiciste clic
             const rect = contenedor.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
@@ -292,8 +297,6 @@ document.addEventListener("DOMContentLoaded", () => {
             heart.style.top = `${y}px`;
             
             contenedor.appendChild(heart);
-            
-            // Eliminar el corazón del HTML cuando termine la animación
             setTimeout(() => heart.remove(), 1000);
         });
     }

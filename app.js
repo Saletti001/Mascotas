@@ -254,13 +254,21 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // =========================================
+// GENERADOR GLOBAL DE IDs SECUENCIALES
+// =========================================
+window.generarNuevoID = function() {
+    let count = parseInt(localStorage.getItem('genoGlobalCounter') || '0');
+    count++;
+    localStorage.setItem('genoGlobalCounter', count);
+    return String(count).padStart(6, '0'); // Formato: "000001", "000002", etc.
+};
+
+// =========================================
 // SECUENCIA DE INICIO: EL BIO-NÚCLEO ALFA
 // =========================================
 function iniciarSecuenciaBienvenida() {
     const formasBase = ["gota", "frijol", "circulo", "cuadrado", "triangulo"];
     const coloresBase = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77", "#ff9800", "#ffb347", "#a8e6cf"];
-    
-    // Los 6 elementos oficiales del laboratorio
     const elementosBase = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
 
     const obtenerClaveAleatoria = (dic) => {
@@ -269,7 +277,6 @@ function iniciarSecuenciaBienvenida() {
         return keys[Math.floor(Math.random() * keys.length)];
     };
 
-    // 🎲 1. GENERACIÓN DE RASGOS ALEATORIOS
     const shapeRandom = formasBase[Math.floor(Math.random() * formasBase.length)];
     const colorRandom = coloresBase[Math.floor(Math.random() * coloresBase.length)];
     const eyeRandom = obtenerClaveAleatoria(typeof dicOjos !== 'undefined' ? dicOjos : {});
@@ -277,21 +284,15 @@ function iniciarSecuenciaBienvenida() {
     const elementoRandom = elementosBase[Math.floor(Math.random() * elementosBase.length)];
     const recElementoRandom = elementosBase[Math.floor(Math.random() * elementosBase.length)];
 
-    // 🎲 2. GENERADOR DE ESTADÍSTICAS (Min, Max)
     const randStat = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-    // 🏷️ 3. GENERADOR DE NOMBRES DE LABORATORIO
     const prefijos = ["Neo", "Bio", "Geno", "Cyto", "Viro", "Rad", "Syn", "Evo", "Nexo", "Mut"];
     const sufijos = ["-X", "-Prime", "morph", "cyte", "tron", "plasm", "-7", "core", "gen", "-Z"];
     const nombreAleatorio = prefijos[Math.floor(Math.random() * prefijos.length)] + sufijos[Math.floor(Math.random() * sufijos.length)];
 
-    // 🆔 4. NÚMERO DE SERIE ÚNICO (Simulando un Token ID global muy grande)
-    // Combina la fecha en milisegundos con un random para asegurar que nunca se repita
-    const serialID = Date.now() + Math.floor(Math.random() * 1000);
-
     const miPrimerGeno = {
-        id: serialID, // ✅ Código numérico único e irrepetible
-        name: nombreAleatorio, // ✅ Nombre temático aleatorio
+        id: window.generarNuevoID(), // ✅ Usa el nuevo formato 000001
+        name: nombreAleatorio,
         rarity: "Común",
         element: elementoRandom, 
         body_shape: shapeRandom, 
@@ -305,12 +306,7 @@ function iniciarSecuenciaBienvenida() {
         xp: 0,
         xpNeeded: 100,
         breedCount: 0,
-        stats: {
-            hp: randStat(45, 60),
-            atk: randStat(10, 25),
-            spd: randStat(10, 25),
-            luk: randStat(10, 25)
-        },
+        stats: { hp: randStat(45, 60), atk: randStat(10, 25), spd: randStat(10, 25), luk: randStat(10, 25) },
         genes: {
             cuerpo: { dom: shapeRandom, rec: formasBase[Math.floor(Math.random() * formasBase.length)] },
             ojos: { dom: eyeRandom, rec: obtenerClaveAleatoria(typeof dicOjos !== 'undefined' ? dicOjos : {}) },
@@ -321,7 +317,6 @@ function iniciarSecuenciaBienvenida() {
         }
     };
 
-    // Creamos el contenedor de la pantalla de bienvenida
     const modalOverlay = document.createElement("div");
     modalOverlay.id = "dna-startup-modal";
     modalOverlay.style = "position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 20, 30, 0.98); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: white; font-family: sans-serif;";
@@ -351,26 +346,20 @@ function iniciarSecuenciaBienvenida() {
     const svgContainer = document.getElementById("dna-svg-container");
     const btnClaim = document.getElementById("btn-claim-geno");
 
-    btnClaim.onmouseover = () => btnClaim.style.transform = "scale(1.05)";
-    btnClaim.onmouseout = () => btnClaim.style.transform = "scale(1)";
-
     capsule.onclick = () => {
         capsule.onclick = null; 
-        
         capsule.style.animation = "propulsor 0.1s infinite alternate ease-in-out"; 
         text.innerText = "Sintetizando Bio-Núcleo...";
         subtext.innerText = "Secuenciando cadena de aminoácidos...";
 
         setTimeout(() => {
             capsule.style.display = "none";
-            // Usamos el nombre generado aleatoriamente para presentarlo
             text.innerText = `¡${miPrimerGeno.name} Sintetizado!`;
             subtext.innerText = "Estable e integrado. Listo para la investigación.";
 
             let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
             svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             svgContainer.innerHTML = svg;
-            
             resultDiv.style.display = "flex"; 
         }, 2500);
     };
@@ -382,9 +371,9 @@ function iniciarSecuenciaBienvenida() {
             const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
             pedestal.innerHTML = `<div class="geno-idle" style="color: ${miPrimerGeno.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${svgPedestal}</div>`;
         }
+        
         const nameEl = document.getElementById('geno-name');
-        // Agregamos el ID al lado del nombre en el pedestal
-        if (nameEl) nameEl.innerText = `${miPrimerGeno.name} #${miPrimerGeno.id}`;
+        if (nameEl) nameEl.innerText = `${miPrimerGeno.name} #${miPrimerGeno.id}`; // ✅ Nombre + ID en el pedestal
 
         modalOverlay.remove();
         if(typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
