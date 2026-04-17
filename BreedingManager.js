@@ -12,6 +12,23 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
     document.head.appendChild(style);
 
+    // 🛠️ AUTO-CORRECCIÓN DE COLORES Y TÍTULOS HTML
+    setTimeout(() => {
+        const titulos = document.querySelectorAll("h1, h2, h3, h4, div, span");
+        titulos.forEach(t => {
+            // Cambiamos el título viejo a CÁMARA DE BIO-NÚCLEOS
+            if (t.innerText && t.innerText.trim() === "INCUBADORA TÉRMICA") {
+                t.innerText = "CÁMARA DE BIO-NÚCLEOS";
+            }
+            // Forzamos el título de "BASE DE DATOS GENÉTICA" a color blanco para que sea legible
+            if (t.innerText && t.innerText.trim().toUpperCase() === "BASE DE DATOS GENÉTICA") {
+                t.style.color = "#ffffff";
+                t.style.textShadow = "0 0 5px rgba(255,255,255,0.3)";
+                t.style.letterSpacing = "1px";
+            }
+        });
+    }, 500);
+
     let padre1 = null;
     let padre2 = null;
     let seleccionandoPara = 1; 
@@ -118,7 +135,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("id-card-name").innerText = g.name || `Sujeto`;
         
-        // ✨ CORRECCIÓN: Ahora dice "ID: #" en lugar de "SN:"
+        // 🛠️ AUTO-PARCHE ID (Por si es un Geno viejo)
+        if (g.id && String(g.id).length > 10 && typeof window.generarNuevoID === 'function') {
+            g.id = window.generarNuevoID();
+        }
+
         let idEl = document.getElementById("id-card-serial");
         if (!idEl) {
             idEl = document.createElement("div");
@@ -223,11 +244,19 @@ document.addEventListener("DOMContentLoaded", () => {
             if(yaSeleccionado) statusText = `<span style="color: #f0ad4e; font-weight: bold; font-size: 11px;">⚠️ Ya está seleccionado</span>`;
             else if((geno.breedCount||0) >= 7) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Límite de síntesis</span>`;
 
+            // 🛠️ AUTO-PARCHE ID
+            if (geno.id && String(geno.id).length > 10 && typeof window.generarNuevoID === 'function') {
+                geno.id = window.generarNuevoID();
+            }
+
+            // ✨ CORRECCIÓN DE ENVOLTURA: Se añadió white-space: nowrap para asegurar que el ID se mantenga en la misma línea
             btn.innerHTML = `
                 <div style="width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #333; flex-shrink: 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); color: ${pColor};">${svgContent}</div>
-                <div style="display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-left: 15px;">
+                <div style="display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-left: 15px; overflow: hidden;">
                     <span style="color: #fff; font-weight: 900; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px;">${geno.name || 'Sujeto'} <span style="color: #00d2ff; font-size: 11px;">Nv.${geno.level || 1}</span></span>
-                    <span style="color: #aaa; font-size: 10px; margin-bottom: 6px; text-transform: uppercase;">Base: ${pShape} <span style="color:#555; margin-left:5px;">| ID: #${geno.id}</span></span>
+                    <span style="color: #aaa; font-size: 10px; margin-bottom: 6px; text-transform: uppercase; display: flex; align-items: center; white-space: nowrap;">
+                        Base: ${pShape} <span style="color:#888; margin-left:5px; padding-left: 5px; border-left: 1px solid #444;">ID: #${geno.id}</span>
+                    </span>
                     ${statusText}
                 </div>
                 <button class="btn-info-geno" style="background: rgba(77, 208, 225, 0.1); border: 1px solid #4dd0e1; color: #fff; width: 45px; height: 45px; border-radius: 8px; font-size: 22px; cursor: pointer; flex-shrink: 0; display: flex; justify-content: center; align-items: center; margin-left: 10px; transition: 0.2s; box-shadow: inset 0 0 5px rgba(77, 208, 225, 0.3);" title="Análisis Genético">🔬</button>
@@ -327,9 +356,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // =========================================
-    // LÓGICA DE LA CÁMARA INFERIOR (ESTADOS DEL BIO-NÚCLEO)
-    // =========================================
     window.renderizarIncubadora = function() {
         const grid = document.getElementById("incubator-grid");
         if(!grid) return;
