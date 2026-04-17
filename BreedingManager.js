@@ -4,15 +4,25 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // 🛠️ INYECCIÓN CSS: OCULTAR SCROLLBAR FEA DEL GRID
+    // 🛠️ INYECCIÓN CSS: Ocultar Scrollbar y Forzar color exacto "NEXO" (#80deea)
     const style = document.createElement('style');
     style.innerHTML = `
         #incubator-grid::-webkit-scrollbar { display: none; } /* Chrome, Safari y Opera */
         #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; } /* IE, Edge y Firefox */
+        
+        /* 🔥 COLOR FORZADO PARA LA BASE DE DATOS GENÉTICA */
+        #breeding-selector h3 { 
+            color: #80deea !important; 
+            font-weight: bold !important;
+            letter-spacing: 1px !important; 
+            text-transform: uppercase !important;
+            text-shadow: none !important;
+            opacity: 1 !important;
+        }
     `;
     document.head.appendChild(style);
 
-    // 🛠️ AUTO-PARCHE DE ESTILOS: Copiando el estilo exacto de "RED NEXO" / "ALMACÉN NEXO"
+    // 🛠️ Corrección rápida de título (Por si sigue diciendo Incubadora Térmica en el HTML)
     setTimeout(() => {
         const titulos = document.querySelectorAll("h1, h2, h3, h4, div, span");
         titulos.forEach(t => {
@@ -20,30 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 t.innerText = "CÁMARA DE BIO-NÚCLEOS";
             }
         });
-
-        // 🎯 Clonar el estilo exacto del menú Nexo
-        const refTitle = document.querySelector("#inventory-modal h3") || document.querySelector("#drawer-menu h3");
-        const targetTitle = document.querySelector("#breeding-selector h3");
-        
-        if (targetTitle) {
-            targetTitle.innerText = "BASE DE DATOS GENÉTICA";
-            targetTitle.style.textTransform = "uppercase";
-            
-            if (refTitle) {
-                // Copia las propiedades CSS calculadas desde tu ui.css
-                const refStyle = window.getComputedStyle(refTitle);
-                targetTitle.style.color = refStyle.color;
-                targetTitle.style.textShadow = refStyle.textShadow;
-                targetTitle.style.fontFamily = refStyle.fontFamily;
-                targetTitle.style.fontSize = refStyle.fontSize;
-                targetTitle.style.letterSpacing = refStyle.letterSpacing;
-                targetTitle.style.fontWeight = refStyle.fontWeight;
-            } else {
-                // Fallback por si acaso
-                targetTitle.style.color = "#4dd0e1"; 
-                targetTitle.style.letterSpacing = "1px";
-            }
-        }
     }, 500);
 
     let padre1 = null;
