@@ -259,6 +259,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function iniciarSecuenciaBienvenida() {
     const formasBase = ["gota", "frijol", "circulo", "cuadrado", "triangulo"];
     const coloresBase = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77", "#ff9800", "#ffb347", "#a8e6cf"];
+    const elementosBase = ["Fuego", "Agua", "Planta", "Eléctrico", "Tierra", "Biomutante", "Luz", "Sombra"];
 
     const obtenerClaveAleatoria = (dic) => {
         if (!dic || Object.keys(dic).length === 0) return "estandar";
@@ -266,30 +267,58 @@ function iniciarSecuenciaBienvenida() {
         return keys[Math.floor(Math.random() * keys.length)];
     };
 
+    // 🎲 1. GENERACIÓN DE RASGOS ALEATORIOS
+    const shapeRandom = formasBase[Math.floor(Math.random() * formasBase.length)];
+    const colorRandom = coloresBase[Math.floor(Math.random() * coloresBase.length)];
+    const eyeRandom = obtenerClaveAleatoria(typeof dicOjos !== 'undefined' ? dicOjos : {});
+    const mouthRandom = obtenerClaveAleatoria(typeof dicBocas !== 'undefined' ? dicBocas : {});
+    const elementoRandom = elementosBase[Math.floor(Math.random() * elementosBase.length)];
+    const recElementoRandom = elementosBase[Math.floor(Math.random() * elementosBase.length)];
+
+    // 🎲 2. GENERADOR DE ESTADÍSTICAS (Min, Max)
+    const randStat = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
     const miPrimerGeno = {
         id: "genesis", 
         name: "Sujeto Alfa",
         rarity: "Común",
-        element: "Biomutante",
-        body_shape: formasBase[Math.floor(Math.random() * formasBase.length)], 
-        color: coloresBase[Math.floor(Math.random() * coloresBase.length)],
-        base_color: "", 
-        eye_type: obtenerClaveAleatoria(typeof dicOjos !== 'undefined' ? dicOjos : {}),
-        mouth_type: obtenerClaveAleatoria(typeof dicBocas !== 'undefined' ? dicBocas : {}),
+        element: elementoRandom,
+        body_shape: shapeRandom, 
+        color: colorRandom,
+        base_color: colorRandom, 
+        eye_type: eyeRandom,
+        mouth_type: mouthRandom,
         wing_type: "ninguno", 
         hat_type: "ninguno",
         level: 1,
-        breedCount: 0
+        xp: 0,
+        xpNeeded: 100,
+        breedCount: 0,
+        // ✨ AHORA SÍ TIENE STATS ALEATORIOS
+        stats: {
+            hp: randStat(45, 60),
+            atk: randStat(10, 25),
+            spd: randStat(10, 25),
+            luk: randStat(10, 25)
+        },
+        // 🧬 AHORA TIENE ADN PARA EL ESCÁNER
+        genes: {
+            cuerpo: { dom: shapeRandom, rec: formasBase[Math.floor(Math.random() * formasBase.length)] },
+            ojos: { dom: eyeRandom, rec: obtenerClaveAleatoria(typeof dicOjos !== 'undefined' ? dicOjos : {}) },
+            boca: { dom: mouthRandom, rec: obtenerClaveAleatoria(typeof dicBocas !== 'undefined' ? dicBocas : {}) },
+            espalda: { dom: "ninguno", rec: "ninguno" },
+            cabeza: { dom: "ninguno", rec: "ninguno" },
+            afinidad: { dom: elementoRandom, rec: recElementoRandom }
+        }
     };
-    miPrimerGeno.base_color = miPrimerGeno.color;
 
-    // 1. Creamos el contenedor de la pantalla de bienvenida
+    // 3. Creamos el contenedor de la pantalla de bienvenida
     const modalOverlay = document.createElement("div");
     modalOverlay.id = "dna-startup-modal";
     modalOverlay.style = "position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 20, 30, 0.98); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: white; font-family: sans-serif;";
 
-    // 2. Aquí es donde inyectamos el Bio-Núcleo usando tu nueva función SVG
-    const svgBioNucleo = typeof generarSvgGeno === 'function' ? generarSvgGeno({ isEgg: true, color: "#4dd0e1", id: "genesis" }) : '🧬';
+    // Aquí es donde inyectamos el Bio-Núcleo usando tu nueva función SVG
+    const svgBioNucleo = typeof generarSvgGeno === 'function' ? generarSvgGeno({ isEgg: true, color: miPrimerGeno.color, id: "genesis" }) : '🧬';
 
     modalOverlay.innerHTML = `
         <div id="dna-capsule" style="width: 180px; height: 180px; cursor: pointer; transition: 0.3s; user-select: none;">
