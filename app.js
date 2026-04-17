@@ -6,7 +6,7 @@
 window.misGenos = window.misGenos || []; 
 window.maxGenoSlots = window.maxGenoSlots || 6; 
 
-// 👻 EL GENO FANTASMA: Si eres nuevo, esto evita que el juego explote pero es invisible (transparent)
+// 👻 EL GENO FANTASMA: Si eres nuevo, esto evita que el juego explote pero es invisible
 if (!window.miMascota || window.miMascota.id === "temp") {
     window.miMascota = { 
         id: "temp", name: "", isEgg: true, level: 0, 
@@ -17,8 +17,8 @@ if (!window.miMascota || window.miMascota.id === "temp") {
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ✨ AHORA SÍ EVALUAMOS SI ERES NUEVO (Después de que SaveManager hizo su trabajo)
-    const esJugadorNuevo = (!window.misGenos || window.misGenos.length === 0);
+    // ✨ AHORA SÍ EVALUAMOS SI ERES NUEVO (Revisamos que la lista esté vacía de verdad)
+    const esJugadorNuevo = (!window.misGenos || window.misGenos.length === 0) && (!window.miMascota || window.miMascota.id === "temp");
 
     if (esJugadorNuevo) {
         // Ocultamos el pedestal inmediatamente para que no haya parpadeos
@@ -384,9 +384,13 @@ function iniciarSecuenciaBienvenida() {
 
     btnClaim.onclick = () => {
         window.miMascota = miPrimerGeno;
+        
+        // ✨ CORRECCIÓN CRÍTICA: ¡Por fin se guarda el Geno en la BBDD principal!
+        if(!window.misGenos) window.misGenos = [];
+        window.misGenos.push(miPrimerGeno);
+
         const pedestal = document.getElementById("geno-container");
         if (pedestal) {
-            // Hacemos que el pedestal vuelva a aparecer
             pedestal.style.display = "block";
             const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
             pedestal.innerHTML = `<div class="geno-idle" style="color: ${miPrimerGeno.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${svgPedestal}</div>`;

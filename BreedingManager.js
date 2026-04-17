@@ -6,24 +6,39 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const style = document.createElement('style');
     style.innerHTML = `
-        #incubator-grid::-webkit-scrollbar { display: none; }
-        #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; }
-        #breeding-selector h3 { 
-            color: #80deea !important; 
-            font-weight: bold !important;
-            letter-spacing: 1px !important; 
-            text-transform: uppercase !important;
-            text-shadow: none !important;
-            opacity: 1 !important;
-        }
+        #incubator-grid::-webkit-scrollbar { display: none; } /* Chrome, Safari y Opera */
+        #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; } /* IE, Edge y Firefox */
     `;
     document.head.appendChild(style);
 
     setTimeout(() => {
         const titulos = document.querySelectorAll("h1, h2, h3, h4, div, span");
         titulos.forEach(t => {
-            if (t.innerText && t.innerText.trim() === "INCUBADORA TÉRMICA") t.innerText = "CÁMARA DE BIO-NÚCLEOS";
+            if (t.innerText && t.innerText.trim() === "INCUBADORA TÉRMICA") {
+                t.innerText = "CÁMARA DE BIO-NÚCLEOS";
+            }
         });
+
+        const refTitle = document.querySelector("#inventory-modal h3") || document.querySelector("#drawer-menu h3");
+        const targetTitle = document.querySelector("#breeding-selector h3");
+        
+        if (targetTitle) {
+            targetTitle.innerText = "BASE DE DATOS GENÉTICA";
+            targetTitle.style.textTransform = "uppercase";
+            
+            if (refTitle) {
+                const refStyle = window.getComputedStyle(refTitle);
+                targetTitle.style.color = refStyle.color;
+                targetTitle.style.textShadow = refStyle.textShadow;
+                targetTitle.style.fontFamily = refStyle.fontFamily;
+                targetTitle.style.fontSize = refStyle.fontSize;
+                targetTitle.style.letterSpacing = refStyle.letterSpacing;
+                targetTitle.style.fontWeight = refStyle.fontWeight;
+            } else {
+                targetTitle.style.color = "#4dd0e1"; 
+                targetTitle.style.letterSpacing = "1px";
+            }
+        }
     }, 500);
 
     let padre1 = null;
@@ -87,7 +102,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const padre = index === 0 ? padre1 : padre2;
             if (padre) {
                 const pColor = padre.color || padre.visual_genes?.base_color || padre.base_color || "#ccc";
+                
                 slot.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(padre) : '<span>Geno</span>';
+                
                 const svg = slot.querySelector("svg");
                 if(svg) { svg.style.width = "50px"; svg.style.height = "50px"; svg.style.color = pColor; }
                 slot.style.border = "2px solid #4dd0e1"; slot.style.background = "#1a2a36"; slot.style.boxShadow = "0 0 10px rgba(77, 208, 225, 0.4)";
@@ -127,7 +144,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("id-card-name").innerText = g.name || `Sujeto`;
         
-        if (g.id && String(g.id).length > 10 && typeof window.generarNuevoID === 'function') g.id = window.generarNuevoID();
+        if (g.id && String(g.id).length > 10 && typeof window.generarNuevoID === 'function') {
+            g.id = window.generarNuevoID();
+        }
 
         let idEl = document.getElementById("id-card-serial");
         if (!idEl) {
@@ -202,7 +221,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if(listContainer) { listContainer.innerHTML = ""; listContainer.style.display = "flex"; listContainer.style.flexDirection = "column"; listContainer.style.gap = "12px"; }
 
         const todosMisGenos = [];
-        if(window.miMascota) todosMisGenos.push(window.miMascota);
+        if(window.miMascota && window.miMascota.id !== "temp") todosMisGenos.push(window.miMascota);
         if(window.misGenos) todosMisGenos.push(...window.misGenos);
 
         if (todosMisGenos.length === 0) {
@@ -273,7 +292,6 @@ document.addEventListener("DOMContentLoaded", () => {
         btnBreeding.addEventListener("click", () => {
             if(!padre1 || !padre2) return;
             
-            // ✨ VERIFICACIÓN DE ESPACIO SEGURA
             if (window.miInventario) {
                 const slotsCount = window.miInventario.slots ? window.miInventario.slots.length : 0;
                 const maxSlots = window.miInventario.maxSlots || 10;
@@ -297,12 +315,15 @@ document.addEventListener("DOMContentLoaded", () => {
             btnBreeding.disabled = true; btnBreeding.innerText = "SINTETIZANDO..."; btnBreeding.style.background = "#8A2BE2"; btnBreeding.style.cursor = "wait";
             if (reqDiv) reqDiv.innerHTML = "Creando Bio-Núcleo...";
             
+            // ✨ CORRECCIÓN DE ANIMACIÓN: Mucho más suave y lenta (400ms en vez de 150ms)
             let toggle = false;
             const anim = setInterval(() => {
                 toggle = !toggle;
-                slot1.style.transform = toggle ? "scale(1.1)" : "scale(0.9)"; slot2.style.transform = !toggle ? "scale(1.1)" : "scale(0.9)";
-                slot1.style.borderColor = toggle ? "#8b5cf6" : "#4dd0e1"; slot2.style.borderColor = !toggle ? "#8b5cf6" : "#4dd0e1";
-            }, 150);
+                slot1.style.transform = toggle ? "scale(1.05)" : "scale(0.98)"; 
+                slot2.style.transform = !toggle ? "scale(1.05)" : "scale(0.98)";
+                slot1.style.borderColor = toggle ? "#8b5cf6" : "#4dd0e1"; 
+                slot2.style.borderColor = !toggle ? "#8b5cf6" : "#4dd0e1";
+            }, 400);
 
             setTimeout(() => {
                 clearInterval(anim);
@@ -352,26 +373,33 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (typeof generarSvgGeno === 'function') hijo.svg = generarSvgGeno(hijo);
                 if(!window.misGenos) window.misGenos = []; window.misGenos.push(hijo);
 
-                // ✨ CREAMOS LA CÁPSULA (No revelamos el Geno)
                 const svgCapsula = typeof generarSvgGeno === 'function' ? generarSvgGeno({ isEgg: true, color: colorHijo }) : '🧬';
 
                 const itemBioNucleo = {
                     id: "bionucleo_" + hijo.id,
                     name: "Bio-Núcleo #" + hijo.id,
                     icon: svgCapsula,
-                    color: hijo.base_color,
+                    color: hijo.base_color, 
                     type: "bio_nucleo",
                     maxStack: 1,
                     desc: "Material genético en gestación."
                 };
                 
-                // ✨ SE AÑADE OFICIALMENTE AL INVENTARIO DE MANERA BLINDADA
-                if (window.miInventario && typeof window.miInventario.addItem === 'function') {
-                    window.miInventario.addItem(itemBioNucleo);
+                if (window.miInventario) {
+                    if(!window.miInventario.slots) window.miInventario.slots = [];
+                    const maxSlots = window.miInventario.maxSlots || 10;
+                    
+                    if (window.miInventario.slots.length >= maxSlots) {
+                        itemBioNucleo.isOverflow = true;
+                        itemBioNucleo.expiresAt = Date.now() + (24 * 60 * 60 * 1000); 
+                    }
+
+                    if(typeof window.miInventario.addItem === 'function') window.miInventario.addItem(itemBioNucleo, 1);
                 }
                 
                 window.iniciarSelectorCrianza(); 
-                if (typeof window.guardarJuego === 'function') window.guardarJuego(); // Forzamos un guardado final por seguridad
+                if (typeof window.guardarJuego === 'function') window.guardarJuego();
+                else if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
             }, 2000);
         });
     }
@@ -430,6 +458,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             huevo.hatchTime = Date.now() + (huevo.hatchDuration || 120000);
                             window.renderizarIncubadora();
                             if (typeof window.guardarJuego === 'function') window.guardarJuego();
+                            else if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
                         }
                     } 
                 });
@@ -437,7 +466,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const costo = 0.2;
                     if (window.miWallet && window.miWallet.pol >= costo) {
                         window.miWallet.pol -= costo;
-                        window.miInventario.addItem({ id: "incubator_01", name: "Incubadora Térmica", icon: "🔋", type: "consumible", maxStack: 20 });
+                        window.miInventario.addItem({ id: "incubator_01", name: "Incubadora Térmica", icon: "🔋", type: "consumible", maxStack: 20 }, 1);
                         actualizarPolUI(); window.renderizarIncubadora(); 
                     } else { alert("❌ No tienes suficiente POL."); }
                 });
@@ -456,6 +485,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             alert(`⚡ ¡Geno nacido!`);
                             window.renderizarIncubadora(); if(window.actualizarPanelRPG) window.actualizarPanelRPG();
                             if (typeof window.guardarJuego === 'function') window.guardarJuego();
+                            else if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
                         } else { alert("No tienes suficiente POL."); }
                     });
                 } else {
@@ -469,6 +499,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         alert(`🧬 ¡Geno nacido!`);
                         window.renderizarIncubadora(); if(window.actualizarPanelRPG) window.actualizarPanelRPG();
                         if (typeof window.guardarJuego === 'function') window.guardarJuego();
+                        else if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
                     });
                 }
             }
