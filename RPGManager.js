@@ -60,18 +60,22 @@ document.addEventListener("DOMContentLoaded", () => {
         if(rarityEl) {
             rarityEl.innerText = g.rarity || "Común";
             
-            // ✨ NUEVO: Inyectamos el Nº Serie como una fila limpia encima de la Rareza
+            // 🛠️ AUTO-PARCHE: Si el ID es viejo y gigante (Date.now), lo convertimos al formato nuevo corto
+            if (g.id && String(g.id).length > 10 && typeof window.generarNuevoID === 'function') {
+                g.id = window.generarNuevoID();
+            }
+
+            // ✨ NUEVO: ID Centrado debajo de la barra de XP, limpio y sin texto extra
             let serialRow = document.getElementById("row-serial-id");
             if (!serialRow) {
                 serialRow = document.createElement("div");
                 serialRow.id = "row-serial-id";
-                serialRow.style = "display: flex; justify-content: space-between; margin-bottom: 8px;";
-                serialRow.innerHTML = `<span style="color: #ccc;">Nº Serie:</span> <span id="stat-serial-val" style="font-weight: bold; color: #00d2ff; font-family: monospace; letter-spacing: 1px;"></span>`;
+                // Diseño centrado, espaciado perfecto
+                serialRow.style = "text-align: center; margin-top: 8px; margin-bottom: 12px; font-weight: bold; color: #00d2ff; font-family: monospace; letter-spacing: 2px; font-size: 15px;";
                 // Insertamos la fila justo antes del contenedor de la rareza
                 rarityEl.parentNode.parentNode.insertBefore(serialRow, rarityEl.parentNode);
             }
-            const valEl = document.getElementById("stat-serial-val");
-            if (valEl) valEl.innerText = g.id ? `#${g.id}` : "#000000";
+            serialRow.innerText = g.id ? `#${g.id}` : "#000000";
         }
 
         const elementEl = document.getElementById("geno-element");
@@ -271,11 +275,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================================
     const contenedor = document.getElementById("geno-container");
     if (contenedor) {
-        // Dibujar el Geno y añadirle la clase de respiración
         contenedor.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(window.miMascota.visual_genes) : '<span>Geno</span>';
         contenedor.classList.add("geno-idle");
         
-        // INTERACCIÓN: Acariciar al Geno
         contenedor.addEventListener("click", (e) => {
             if(window.Sonidos) window.Sonidos.play("click");
             
