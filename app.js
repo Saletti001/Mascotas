@@ -2,25 +2,22 @@
 // app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN
 // =========================================
 
-// 🎒 INVENTARIO VACÍO: SEÑUELO ANTI-CRASH
-window.misGenos = []; 
-// Le damos un objeto temporal en lugar de "null" para que los otros scripts no exploten al leerlo
-window.miMascota = { id: "temp", name: "Sincronizando...", isEgg: true, level: 0, color: "#ccc" }; 
-window.maxGenoSlots = 6; 
+// ✨ CORRECCIÓN CRÍTICA: "||" significa "O". 
+// Si SaveManager ya cargó tus datos, los respeta. Si no, crea un array vacío.
+window.misGenos = window.misGenos || []; 
+window.miMascota = window.miMascota || { id: "temp", name: "Sincronizando...", isEgg: true, level: 0, color: "#ccc" }; 
+window.maxGenoSlots = window.maxGenoSlots || 6; 
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ✨ COMPROBAR JUGADOR NUEVO
+    // ✨ COMPROBAR JUGADOR NUEVO (Solo si realmente no hay datos)
     setTimeout(() => {
-        if (window.misGenos.length === 0) {
-            // Borramos el Geno verde que está puesto por defecto en tu HTML
+        if (window.misGenos.length === 0 && window.miMascota.id === "temp") {
             const pedestal = document.getElementById("geno-container");
             if (pedestal) pedestal.innerHTML = "";
-            
-            // Lanzamos la secuencia inicial
             iniciarSecuenciaBienvenida();
         }
-    }, 100); // Casi instantáneo
+    }, 100);
 
     const fabMenu = document.getElementById("fab-menu");
     const drawerMenu = document.getElementById("drawer-menu");
@@ -125,7 +122,12 @@ document.addEventListener("DOMContentLoaded", () => {
     // REGALOS INICIALES DEL JUEGO
     setTimeout(() => {
         if(!window.miWallet) window.miWallet = { pol: 10.0 };
-        if (window.miInventario) window.miInventario.addItem({ id: "dna_scanner", name: "Escáner ADN", icon: "🧬", type: "consumible", maxStack: 20 }, 5);
+        // Validar si ya se dio el regalo inicial para no dar escáneres cada vez que se carga el juego
+        const regaloDado = localStorage.getItem("regaloInicialDado");
+        if (!regaloDado && window.miInventario) {
+            window.miInventario.addItem({ id: "dna_scanner", name: "Escáner ADN", icon: "🧬", type: "consumible", maxStack: 20 }, 5);
+            localStorage.setItem("regaloInicialDado", "true");
+        }
     }, 500);
 });
 
@@ -147,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
         gridSwap.innerHTML = ""; 
         
         const todos = [];
-        if (window.miMascota && !window.miMascota.isEgg) todos.push(window.miMascota);
+        if (window.miMascota && !window.miMascota.isEgg && window.miMascota.id !== "temp") todos.push(window.miMascota);
         if (window.misGenos) todos.push(...window.misGenos);
 
         const slotsOcupados = todos.length;
@@ -189,6 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 if(typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
                 modalSwap.classList.add("hidden");
+                if (typeof window.guardarJuego === 'function') window.guardarJuego();
             };
             
             gridSwap.appendChild(card);
@@ -231,6 +234,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 if(typeof window.actualizarHUD === 'function') window.actualizarHUD();
                 renderizarInventarioGenos(); 
+                if (typeof window.guardarJuego === 'function') window.guardarJuego();
             } else {
                 alert("No tienes suficiente $POL para expandir tu inventario. ¡Consigue más jugando o recargando!");
             }
@@ -260,7 +264,7 @@ window.generarNuevoID = function() {
     let count = parseInt(localStorage.getItem('genoGlobalCounter') || '0');
     count++;
     localStorage.setItem('genoGlobalCounter', count);
-    return String(count).padStart(6, '0'); // Formato: "000001", "000002", etc.
+    return String(count).padStart(6, '0'); 
 };
 
 // =========================================
@@ -291,7 +295,7 @@ function iniciarSecuenciaBienvenida() {
     const nombreAleatorio = prefijos[Math.floor(Math.random() * prefijos.length)] + sufijos[Math.floor(Math.random() * sufijos.length)];
 
     const miPrimerGeno = {
-        id: window.generarNuevoID(), // ✅ Usa el nuevo formato 000001
+        id: window.generarNuevoID(),
         name: nombreAleatorio,
         rarity: "Común",
         element: elementoRandom, 
@@ -373,9 +377,10 @@ function iniciarSecuenciaBienvenida() {
         }
         
         const nameEl = document.getElementById('geno-name');
-        if (nameEl) nameEl.innerText = `${miPrimerGeno.name} #${miPrimerGeno.id}`; // ✅ Nombre + ID en el pedestal
+        if (nameEl) nameEl.innerText = `${miPrimerGeno.name} #${miPrimerGeno.id}`;
 
         modalOverlay.remove();
         if(typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
+        if(typeof window.guardarProgreso === 'function') window.guardarProgreso();
     };
 }
