@@ -4,15 +4,34 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // 🛠️ INYECCIÓN CSS: Ocultar Scrollbar y Forzar color de títulos
+    // 🛠️ INYECCIÓN CSS: OCULTAR SCROLLBAR FEA DEL GRID
     const style = document.createElement('style');
     style.innerHTML = `
-        #incubator-grid::-webkit-scrollbar { display: none; }
-        #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; }
-        /* Forzar el título de la base de datos para que sea legible */
-        #breeding-selector h3 { color: #ffffff !important; text-shadow: 0 0 8px rgba(255,255,255,0.6) !important; letter-spacing: 2px !important; }
+        #incubator-grid::-webkit-scrollbar { display: none; } /* Chrome, Safari y Opera */
+        #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; } /* IE, Edge y Firefox */
     `;
     document.head.appendChild(style);
+
+    // 🛠️ AUTO-CORRECCIÓN DE COLORES Y TÍTULOS HTML (Parches de estilo nexo)
+    setTimeout(() => {
+        const titulos = document.querySelectorAll("h1, h2, h3, h4, div, span");
+        titulos.forEach(t => {
+            // Cambiamos el título viejo a CÁMARA DE BIO-NÚCLEOS
+            if (t.innerText && t.innerText.trim() === "INCUBADORA TÉRMICA") {
+                t.innerText = "CÁMARA DE BIO-NÚCLEOS";
+            }
+        });
+
+        // ✨ CORRECCIÓN ESTILO CONSISTENTE NEXO: Título de la Base de Datos Genética
+        const genDatabaseTitle = document.querySelector("#breeding-selector h3");
+        if (genDatabaseTitle) {
+            genDatabaseTitle.style.color = "#ffffff"; // Blanco puro nexo
+            genDatabaseTitle.style.textShadow = "0 0 10px rgba(255,255,255,0.7)"; // Brillo blanco nexo
+            genDatabaseTitle.style.letterSpacing = "2px";
+            genDatabaseTitle.style.textTransform = "uppercase"; // Asegurar mayúsculas
+            genDatabaseTitle.innerText = "BASE DE DATOS GENÉTICA";
+        }
+    }, 500);
 
     let padre1 = null;
     let padre2 = null;
@@ -76,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (padre) {
                 const pColor = padre.color || padre.visual_genes?.base_color || padre.base_color || "#ccc";
                 
-                // ✨ CORRECCIÓN: Le pasamos el objeto padre COMPLETO al SVG para que respete sus ojos y boca reales
+                // Forzamos el uso de los genes visuales completos para que dibuje caras reales
                 slot.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(padre) : '<span>Geno</span>';
                 
                 const svg = slot.querySelector("svg");
@@ -111,7 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const svgContainer = document.getElementById("id-card-svg");
         if(svgContainer) {
-            // ✨ CORRECCIÓN: Pasamos el Geno completo a la tarjeta
+            // Usamos el objeto completo para la tarjeta de ID
             svgContainer.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(g) : '';
             const svg = svgContainer.querySelector("svg");
             if(svg) { svg.style.width = "90px"; svg.style.height = "90px"; svg.style.color = pColor; }
@@ -221,7 +240,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const pColor = geno.color || geno.visual_genes?.base_color || geno.base_color || "#ccc";
             const pShape = (geno.genes && geno.genes.cuerpo) ? geno.genes.cuerpo.dom : (geno.shape || geno.visual_genes?.body_shape || geno.body_shape || "gota");
             
-            // ✨ CORRECCIÓN: Le enviamos a generarSvgGeno el objeto completo para que dibuje caras y elementos
+            // Usamos el objeto completo para dibujar las caras reales
             let svgContent = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '<span>Geno</span>';
 
             let statusText = `<span style="color: #00d2ff; font-weight: bold; font-size: 11px;">${7 - (geno.breedCount||0)} secuencias disponibles</span>`;
@@ -232,7 +251,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 geno.id = window.generarNuevoID();
             }
 
-            // ✨ CORRECCIÓN DE ESPACIADO: Se usa white-space: nowrap para evitar el salto de línea del ID
             btn.innerHTML = `
                 <div style="width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #333; flex-shrink: 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); color: ${pColor};">${svgContent}</div>
                 <div style="display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-left: 15px; overflow: hidden;">
@@ -318,7 +336,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const nombreHijo = prefijos[Math.floor(Math.random() * prefijos.length)] + sufijos[Math.floor(Math.random() * sufijos.length)];
 
                 const hijo = {
-                    id: window.generarNuevoID(), 
+                    id: window.generarNuevoID(), // ID Secuencial
                     name: nombreHijo, 
                     isEgg: true, 
                     incubating: false, 
@@ -339,6 +357,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // =========================================
+    // LÓGICA DE LA CÁMARA INFERIOR (ESTADOS DEL BIO-NÚCLEO)
+    // =========================================
     window.renderizarIncubadora = function() {
         const grid = document.getElementById("incubator-grid");
         if(!grid) return;
