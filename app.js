@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const noHayPartida = !localStorage.getItem("proyecto_genos_save_v1");
         
         if (noHayPartida) {
-            // Borramos el Geno verde genérico del HTML sin alterar propiedades CSS
+            // Borramos el Geno verde genérico del HTML sin alterar propiedades CSS (para que quede centrado)
             const pedestal = document.getElementById("geno-container");
             if (pedestal) pedestal.innerHTML = "";
             
@@ -99,6 +99,37 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    // ✨ INTERACCIÓN CON EL GENO PRINCIPAL (CLICK PARA CARIÑOS)
+    const contenedorGenoMain = document.getElementById("geno-container");
+    if (contenedorGenoMain) {
+        contenedorGenoMain.addEventListener("click", (e) => {
+            if (!window.miMascota || window.miMascota.id === "temp") return;
+
+            if (window.Sonidos) window.Sonidos.play("click");
+            
+            contenedorGenoMain.classList.remove("geno-idle");
+            contenedorGenoMain.classList.add("happy-jump");
+            setTimeout(() => {
+                contenedorGenoMain.classList.remove("happy-jump");
+                contenedorGenoMain.classList.add("geno-idle");
+            }, 300);
+
+            const heart = document.createElement("div");
+            heart.className = "heart-particle";
+            heart.innerText = "❤️";
+            
+            const rect = contenedorGenoMain.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            heart.style.left = `${x}px`;
+            heart.style.top = `${y}px`;
+            
+            contenedorGenoMain.appendChild(heart);
+            setTimeout(() => heart.remove(), 1000);
+        });
+    }
+
     // BOTÓN DE MÚSICA
     const btnMusic = document.getElementById("btn-toggle-music");
     const musicIcon = document.getElementById("music-icon");
@@ -150,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
         gridSwap.innerHTML = ""; 
         
         const todos = [];
-        if (window.miMascota && !window.miMascota.isEgg && window.miMascota.id) todos.push(window.miMascota);
+        if (window.miMascota && !window.miMascota.isEgg && window.miMascota.id && window.miMascota.id !== "temp") todos.push(window.miMascota);
         if (window.misGenos) todos.push(...window.misGenos);
 
         const slotsOcupados = todos.length;

@@ -2,27 +2,8 @@
 // RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN
 // =========================================
 
-// ESTADO GLOBAL DEL GENO PRINCIPAL (RPG)
-window.miMascota = { 
-    name: "Geno Base", 
-    generation: 0,
-    renames: 0,
-    visual_genes: { body_shape: "frijol", base_color: "#77DD77" },
-    rarity: "Común",
-    element: "🧪 Tóxico",
-    level: 1,
-    xp: 0,
-    xpNeeded: 100,
-    statPoints: 0,
-    stats: {
-        hp: Math.floor(Math.random() * 6) + 40,
-        atk: Math.floor(Math.random() * 6) + 10,
-        spd: Math.floor(Math.random() * 6) + 10,
-        luk: Math.floor(Math.random() * 6) + 10
-    },
-    recessive_gene: "🔥 Ígneo (Recesivo)",
-    scanned: false
-};
+// Ya no inyectamos el "Geno Base" falso aquí.
+// window.miMascota se manejará exclusivamente desde SaveManager.js o app.js (Tutorial).
 
 document.addEventListener("DOMContentLoaded", () => {
     const panelStats = document.getElementById("geno-stats-panel");
@@ -30,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnsAddStat = document.querySelectorAll(".btn-add-stat");
 
     window.actualizarPanelRPG = function() {
-        if(!window.miMascota) return;
+        if(!window.miMascota || window.miMascota.id === "temp") return; // No actualizamos UI si es el fantasma del tutorial
         const g = window.miMascota;
 
         if(!g.level) g.level = 1;
@@ -70,9 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!serialRow) {
                 serialRow = document.createElement("div");
                 serialRow.id = "row-serial-id";
-                // Diseño centrado, espaciado perfecto
                 serialRow.style = "text-align: center; margin-top: 8px; margin-bottom: 12px; font-weight: bold; color: #00d2ff; font-family: monospace; letter-spacing: 2px; font-size: 15px;";
-                // Insertamos la fila justo antes del contenedor de la rareza
                 rarityEl.parentNode.parentNode.insertBefore(serialRow, rarityEl.parentNode);
             }
             serialRow.innerText = g.id ? `#${g.id}` : "#000000";
@@ -169,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     window.ganarXP = function(cantidad) {
-        if (window.miMascota.level >= 50) return; 
+        if (!window.miMascota || window.miMascota.id === "temp" || window.miMascota.level >= 50) return; 
         
         window.miMascota.xp += cantidad;
         
@@ -197,7 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
     btnsAddStat.forEach(btn => {
         btn.addEventListener("click", (e) => {
             const stat = e.target.getAttribute("data-stat");
-            if (window.miMascota.statPoints > 0) {
+            if (window.miMascota && window.miMascota.statPoints > 0) {
                 if (stat === 'hp') window.miMascota.stats.hp += 5;
                 if (stat === 'atk') window.miMascota.stats.atk += 1;
                 if (stat === 'spd') window.miMascota.stats.spd += 1;
@@ -219,6 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (btnScanner) {
         btnScanner.addEventListener("click", () => {
+            if (!window.miMascota) return;
             if (window.miMascota.scanned) { alert("El ADN recesivo ya ha sido decodificado."); return; }
             if (window.miInventario && window.miInventario.consumeItem("dna_scanner", 1)) {
                 window.miMascota.scanned = true;
@@ -233,6 +213,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (btnRename) {
         btnRename.addEventListener("click", () => {
+            if (!window.miMascota) return;
             btnRename.style.transform = "scale(0.8)";
             setTimeout(() => btnRename.style.transform = "scale(1)", 150);
 
@@ -270,39 +251,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // =========================================
-    // RENDERIZADO Y MASCOTA INTERACTIVA
-    // =========================================
-    const contenedor = document.getElementById("geno-container");
-    if (contenedor) {
-        contenedor.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(window.miMascota.visual_genes) : '<span>Geno</span>';
-        contenedor.classList.add("geno-idle");
-        
-        contenedor.addEventListener("click", (e) => {
-            if(window.Sonidos) window.Sonidos.play("click");
-            
-            contenedor.classList.remove("geno-idle");
-            contenedor.classList.add("happy-jump");
-            setTimeout(() => {
-                contenedor.classList.remove("happy-jump");
-                contenedor.classList.add("geno-idle");
-            }, 300);
-
-            const heart = document.createElement("div");
-            heart.className = "heart-particle";
-            heart.innerText = "❤️";
-            
-            const rect = contenedor.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            heart.style.left = `${x}px`;
-            heart.style.top = `${y}px`;
-            
-            contenedor.appendChild(heart);
-            setTimeout(() => heart.remove(), 1000);
-        });
-    }
+    // ELIMINADO EL RENDERIZADO AUTOMÁTICO EN EL RPGMANAGER.
+    // Esto era lo que dibujaba al Geno verde y lo dejaba descentrado.
+    // Ahora todo el dibujo lo gestiona el SaveManager o el App.js.
 
     window.actualizarPanelRPG();
 });
