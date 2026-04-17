@@ -2,17 +2,26 @@
 // app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN
 // =========================================
 
-// ✨ CORRECCIÓN CRÍTICA: "||" significa "O". 
-// Si SaveManager ya cargó tus datos, los respeta. Si no, crea un array vacío.
+// ✨ LÓGICA BLINDADA PARA DETECTAR JUGADORES NUEVOS
 window.misGenos = window.misGenos || []; 
-window.miMascota = window.miMascota || { id: "temp", name: "Sincronizando...", isEgg: true, level: 0, color: "#ccc" }; 
 window.maxGenoSlots = window.maxGenoSlots || 6; 
+
+// Si la base de datos está vacía, ES UN JUGADOR NUEVO 100% confirmado.
+const esJugadorNuevo = window.misGenos.length === 0;
+
+if (esJugadorNuevo) {
+    // Aplastamos el "Geno Base" falso del RPGManager para que no haya errores visuales
+    window.miMascota = { id: "temp", name: "Sincronizando...", isEgg: true, level: 0, color: "#ccc" }; 
+} else {
+    // Si ya es jugador viejo, respetamos su mascota actual
+    window.miMascota = window.miMascota || { id: "temp", name: "Sincronizando...", isEgg: true, level: 0, color: "#ccc" }; 
+}
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ✨ COMPROBAR JUGADOR NUEVO (Solo si realmente no hay datos)
+    // ✨ LANZAR CÁPSULA SI ES NUEVO
     setTimeout(() => {
-        if (window.misGenos.length === 0 && window.miMascota.id === "temp") {
+        if (esJugadorNuevo) {
             const pedestal = document.getElementById("geno-container");
             if (pedestal) pedestal.innerHTML = "";
             iniciarSecuenciaBienvenida();
@@ -192,6 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if(typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
                 modalSwap.classList.add("hidden");
                 if (typeof window.guardarJuego === 'function') window.guardarJuego();
+                else if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
             };
             
             gridSwap.appendChild(card);
@@ -235,6 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if(typeof window.actualizarHUD === 'function') window.actualizarHUD();
                 renderizarInventarioGenos(); 
                 if (typeof window.guardarJuego === 'function') window.guardarJuego();
+                else if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
             } else {
                 alert("No tienes suficiente $POL para expandir tu inventario. ¡Consigue más jugando o recargando!");
             }
