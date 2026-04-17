@@ -383,7 +383,8 @@ function iniciarSecuenciaBienvenida() {
             pedestal.innerHTML = `<div class="geno-idle" style="color: ${miPrimerGeno.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${svgPedestal}</div>`;
         }
         const nameEl = document.getElementById('geno-name');
-        if (nameEl) nameEl.innerText = miPrimerGeno.name;
+        // Agregamos el ID al lado del nombre en el pedestal
+        if (nameEl) nameEl.innerText = `${miPrimerGeno.name} #${miPrimerGeno.id}`;
 
         modalOverlay.remove();
         if(typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
