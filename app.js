@@ -259,7 +259,9 @@ document.addEventListener("DOMContentLoaded", () => {
 function iniciarSecuenciaBienvenida() {
     const formasBase = ["gota", "frijol", "circulo", "cuadrado", "triangulo"];
     const coloresBase = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77", "#ff9800", "#ffb347", "#a8e6cf"];
-    const elementosBase = ["Fuego", "Agua", "Planta", "Eléctrico", "Tierra", "Biomutante", "Luz", "Sombra"];
+    
+    // 🔥 CORRECCIÓN: Los 6 elementos oficiales del laboratorio según tu hoja de ruta
+    const elementosBase = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
 
     const obtenerClaveAleatoria = (dic) => {
         if (!dic || Object.keys(dic).length === 0) return "estandar";
@@ -282,7 +284,7 @@ function iniciarSecuenciaBienvenida() {
         id: "genesis", 
         name: "Sujeto Alfa",
         rarity: "Común",
-        element: elementoRandom,
+        element: elementoRandom, // ✅ Elemento oficial aleatorio
         body_shape: shapeRandom, 
         color: colorRandom,
         base_color: colorRandom, 
@@ -294,21 +296,19 @@ function iniciarSecuenciaBienvenida() {
         xp: 0,
         xpNeeded: 100,
         breedCount: 0,
-        // ✨ AHORA SÍ TIENE STATS ALEATORIOS
         stats: {
             hp: randStat(45, 60),
             atk: randStat(10, 25),
             spd: randStat(10, 25),
             luk: randStat(10, 25)
         },
-        // 🧬 AHORA TIENE ADN PARA EL ESCÁNER
         genes: {
             cuerpo: { dom: shapeRandom, rec: formasBase[Math.floor(Math.random() * formasBase.length)] },
             ojos: { dom: eyeRandom, rec: obtenerClaveAleatoria(typeof dicOjos !== 'undefined' ? dicOjos : {}) },
             boca: { dom: mouthRandom, rec: obtenerClaveAleatoria(typeof dicBocas !== 'undefined' ? dicBocas : {}) },
             espalda: { dom: "ninguno", rec: "ninguno" },
             cabeza: { dom: "ninguno", rec: "ninguno" },
-            afinidad: { dom: elementoRandom, rec: recElementoRandom }
+            afinidad: { dom: elementoRandom, rec: recElementoRandom } // ✅ Genética elemental oficial
         }
     };
 
@@ -317,7 +317,6 @@ function iniciarSecuenciaBienvenida() {
     modalOverlay.id = "dna-startup-modal";
     modalOverlay.style = "position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 20, 30, 0.98); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: white; font-family: sans-serif;";
 
-    // Aquí es donde inyectamos el Bio-Núcleo usando tu nueva función SVG
     const svgBioNucleo = typeof generarSvgGeno === 'function' ? generarSvgGeno({ isEgg: true, color: miPrimerGeno.color, id: "genesis" }) : '🧬';
 
     modalOverlay.innerHTML = `
@@ -349,7 +348,6 @@ function iniciarSecuenciaBienvenida() {
     capsule.onclick = () => {
         capsule.onclick = null; 
         
-        // Efecto de vibración rápida mientras sintetiza
         capsule.style.animation = "propulsor 0.1s infinite alternate ease-in-out"; 
         text.innerText = "Sintetizando Bio-Núcleo...";
         subtext.innerText = "Secuenciando cadena de aminoácidos...";
