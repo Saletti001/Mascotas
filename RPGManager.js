@@ -42,20 +42,6 @@ document.addEventListener("DOMContentLoaded", () => {
         // Actualizamos textos básicos
         const nameEl = document.getElementById("geno-name");
         if(nameEl) nameEl.innerText = g.name || "Geno";
-
-        // ✨ NUEVO: Inyección del Número de Serie (ID) en el Panel de Stats
-        let serialEl = document.getElementById("geno-serial-id");
-        if (!serialEl && nameEl) {
-            serialEl = document.createElement("div");
-            serialEl.id = "geno-serial-id";
-            serialEl.style = "font-size: 11px; color: #00d2ff; font-family: monospace; letter-spacing: 1px; margin-top: -5px; margin-bottom: 10px;";
-            // Lo insertamos justo debajo del nombre
-            nameEl.parentNode.insertBefore(serialEl, nameEl.nextSibling);
-        }
-        if (serialEl) {
-            // Si el Geno tiene ID, lo mostramos con formato. Si no, mostramos "PROTOTIPO"
-            serialEl.innerText = g.id ? `SN: #${g.id}` : "SN: PROTOTIPO";
-        }
         
         const lvlEl = document.getElementById("geno-level");
         if(lvlEl) lvlEl.innerText = `Nv. ${g.level}`;
@@ -71,7 +57,22 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const rarityEl = document.getElementById("geno-rarity");
-        if(rarityEl) rarityEl.innerText = g.rarity || "Común";
+        if(rarityEl) {
+            rarityEl.innerText = g.rarity || "Común";
+            
+            // ✨ NUEVO: Inyectamos el Nº Serie como una fila limpia encima de la Rareza
+            let serialRow = document.getElementById("row-serial-id");
+            if (!serialRow) {
+                serialRow = document.createElement("div");
+                serialRow.id = "row-serial-id";
+                serialRow.style = "display: flex; justify-content: space-between; margin-bottom: 8px;";
+                serialRow.innerHTML = `<span style="color: #ccc;">Nº Serie:</span> <span id="stat-serial-val" style="font-weight: bold; color: #00d2ff; font-family: monospace; letter-spacing: 1px;"></span>`;
+                // Insertamos la fila justo antes del contenedor de la rareza
+                rarityEl.parentNode.parentNode.insertBefore(serialRow, rarityEl.parentNode);
+            }
+            const valEl = document.getElementById("stat-serial-val");
+            if (valEl) valEl.innerText = g.id ? `#${g.id}` : "#000000";
+        }
 
         const elementEl = document.getElementById("geno-element");
         if(elementEl) elementEl.innerText = (g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal");
