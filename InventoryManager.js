@@ -6,7 +6,7 @@ class InventoryManager {
     constructor() {
         this.maxSlots = 10; 
         this.overflowSlots = 2; // 2 Slots de Emergencia
-        this.slots = []; // 👈 Volvemos a 'slots' para que SaveManager no pierda tus datos
+        this.slots = []; 
         this.vitalEssence = 0; 
         this.stackLimits = {
             basic: 99,
@@ -30,7 +30,6 @@ class InventoryManager {
         document.head.appendChild(style);
     }
 
-    // ✨ NUEVO: Avisa al sistema que guarde automáticamente tras cada cambio
     guardarCambios() {
         if (typeof window.guardarJuego === 'function') window.guardarJuego();
         else if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
@@ -74,7 +73,7 @@ class InventoryManager {
         this.reorganize(); 
         this.updateUI();
         this.renderGrid();
-        this.guardarCambios(); // Guardar automático
+        this.guardarCambios();
         return true;
     }
 
@@ -98,7 +97,7 @@ class InventoryManager {
             this.reorganize(); 
             this.updateUI();
             this.renderGrid();
-            this.guardarCambios(); // Guardar automático
+            this.guardarCambios();
         }
     }
 
@@ -252,16 +251,21 @@ class InventoryManager {
         }, 1000);
     }
 
+    // ✨ NUEVO: Panel de herramientas Dev (Cajas + Esencia)
     injectDebugButton() {
         const header = document.querySelector("#inventory-modal .modal-header");
-        if (header && !document.getElementById("btn-debug-fill")) {
+        if (header && !document.getElementById("debug-tools-container")) {
+            
+            const debugContainer = document.createElement("div");
+            debugContainer.id = "debug-tools-container";
+            debugContainer.style = "display: flex; gap: 8px; margin-left: auto; margin-right: 15px;";
+
+            // Botón 1: Test Llenar Mochila
             const btnFill = document.createElement("button");
             btnFill.id = "btn-debug-fill";
-            btnFill.innerText = "🧪 Test Llenar";
-            btnFill.style = "background: #ff9800; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; color: white; font-weight: bold; margin-left: auto; margin-right: 15px;";
+            btnFill.innerText = "🧪 Llenar";
+            btnFill.style = "background: #ff9800; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; color: white; font-weight: bold;";
             
-            header.insertBefore(btnFill, document.getElementById("close-inventory"));
-
             btnFill.addEventListener("click", () => {
                 let added = 0;
                 while (this.slots.length < this.maxSlots) {
@@ -270,6 +274,20 @@ class InventoryManager {
                 }
                 if (added > 0) alert("🎒 Inventario lleno."); else alert("El inventario ya está lleno.");
             });
+
+            // Botón 2: Test Esencia Vital
+            const btnEssence = document.createElement("button");
+            btnEssence.id = "btn-debug-essence";
+            btnEssence.innerText = "🧪 +1000 ✨";
+            btnEssence.style = "background: #8b5cf6; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; color: white; font-weight: bold;";
+            
+            btnEssence.addEventListener("click", () => {
+                this.addEssence(1000);
+            });
+
+            debugContainer.appendChild(btnFill);
+            debugContainer.appendChild(btnEssence);
+            header.insertBefore(debugContainer, document.getElementById("close-inventory"));
         }
     }
 
@@ -296,7 +314,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     iniciarOReconstruir();
 
-    // Vigilar si SaveManager sobreescribe el objeto al recargar la página
     setInterval(() => {
         if (window.miInventario && typeof window.miInventario.addItem !== 'function') {
             Object.setPrototypeOf(window.miInventario, InventoryManager.prototype);
