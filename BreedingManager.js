@@ -4,30 +4,15 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // 🛠️ INYECCIÓN CSS: OCULTAR SCROLLBAR FEA DEL GRID
+    // 🛠️ INYECCIÓN CSS: Ocultar Scrollbar y Forzar color de títulos
     const style = document.createElement('style');
     style.innerHTML = `
-        #incubator-grid::-webkit-scrollbar { display: none; } /* Chrome, Safari y Opera */
-        #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; } /* IE, Edge y Firefox */
+        #incubator-grid::-webkit-scrollbar { display: none; }
+        #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; }
+        /* Forzar el título de la base de datos para que sea legible */
+        #breeding-selector h3 { color: #ffffff !important; text-shadow: 0 0 8px rgba(255,255,255,0.6) !important; letter-spacing: 2px !important; }
     `;
     document.head.appendChild(style);
-
-    // 🛠️ AUTO-CORRECCIÓN DE COLORES Y TÍTULOS HTML
-    setTimeout(() => {
-        const titulos = document.querySelectorAll("h1, h2, h3, h4, div, span");
-        titulos.forEach(t => {
-            // Cambiamos el título viejo a CÁMARA DE BIO-NÚCLEOS
-            if (t.innerText && t.innerText.trim() === "INCUBADORA TÉRMICA") {
-                t.innerText = "CÁMARA DE BIO-NÚCLEOS";
-            }
-            // Forzamos el título de "BASE DE DATOS GENÉTICA" a color blanco para que sea legible
-            if (t.innerText && t.innerText.trim().toUpperCase() === "BASE DE DATOS GENÉTICA") {
-                t.style.color = "#ffffff";
-                t.style.textShadow = "0 0 5px rgba(255,255,255,0.3)";
-                t.style.letterSpacing = "1px";
-            }
-        });
-    }, 500);
 
     let padre1 = null;
     let padre2 = null;
@@ -90,10 +75,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const padre = index === 0 ? padre1 : padre2;
             if (padre) {
                 const pColor = padre.color || padre.visual_genes?.base_color || padre.base_color || "#ccc";
-                const pShape = (padre.genes && padre.genes.cuerpo) ? padre.genes.cuerpo.dom : (padre.shape || padre.visual_genes?.body_shape || padre.body_shape || "gota");
-                const pWing = (padre.genes && padre.genes.espalda) ? padre.genes.espalda.dom : (padre.wing_type || "ninguno");
-
-                slot.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno({ body_shape: pShape, base_color: pColor, wing_type: pWing, isEgg: false }) : '<span>Geno</span>';
+                
+                // ✨ CORRECCIÓN: Le pasamos el objeto padre COMPLETO al SVG para que respete sus ojos y boca reales
+                slot.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(padre) : '<span>Geno</span>';
+                
                 const svg = slot.querySelector("svg");
                 if(svg) { svg.style.width = "50px"; svg.style.height = "50px"; svg.style.color = pColor; }
                 slot.style.border = "2px solid #4dd0e1"; slot.style.background = "#1a2a36"; slot.style.boxShadow = "0 0 10px rgba(77, 208, 225, 0.4)";
@@ -123,19 +108,17 @@ document.addEventListener("DOMContentLoaded", () => {
         if(selectorContainer) selectorContainer.classList.add("hidden");
 
         const pColor = g.color || g.visual_genes?.base_color || g.base_color || "#ccc";
-        const pShape = (g.genes && g.genes.cuerpo) ? g.genes.cuerpo.dom : (g.shape || g.visual_genes?.body_shape || g.body_shape || "gota");
-        const pWing = (g.genes && g.genes.espalda) ? g.genes.espalda.dom : (g.wing_type || "ninguno");
 
         const svgContainer = document.getElementById("id-card-svg");
         if(svgContainer) {
-            svgContainer.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno({ body_shape: pShape, base_color: pColor, wing_type: pWing, isEgg: false }) : '';
+            // ✨ CORRECCIÓN: Pasamos el Geno completo a la tarjeta
+            svgContainer.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(g) : '';
             const svg = svgContainer.querySelector("svg");
             if(svg) { svg.style.width = "90px"; svg.style.height = "90px"; svg.style.color = pColor; }
         }
 
         document.getElementById("id-card-name").innerText = g.name || `Sujeto`;
         
-        // 🛠️ AUTO-PARCHE ID (Por si es un Geno viejo)
         if (g.id && String(g.id).length > 10 && typeof window.generarNuevoID === 'function') {
             g.id = window.generarNuevoID();
         }
@@ -237,25 +220,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const pColor = geno.color || geno.visual_genes?.base_color || geno.base_color || "#ccc";
             const pShape = (geno.genes && geno.genes.cuerpo) ? geno.genes.cuerpo.dom : (geno.shape || geno.visual_genes?.body_shape || geno.body_shape || "gota");
-            const pWing = (geno.genes && geno.genes.espalda) ? geno.genes.espalda.dom : (geno.wing_type || "ninguno");
-            let svgContent = typeof generarSvgGeno === 'function' ? generarSvgGeno({ body_shape: pShape, base_color: pColor, wing_type: pWing, isEgg: false }) : '<span>Geno</span>';
+            
+            // ✨ CORRECCIÓN: Le enviamos a generarSvgGeno el objeto completo para que dibuje caras y elementos
+            let svgContent = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '<span>Geno</span>';
 
             let statusText = `<span style="color: #00d2ff; font-weight: bold; font-size: 11px;">${7 - (geno.breedCount||0)} secuencias disponibles</span>`;
             if(yaSeleccionado) statusText = `<span style="color: #f0ad4e; font-weight: bold; font-size: 11px;">⚠️ Ya está seleccionado</span>`;
             else if((geno.breedCount||0) >= 7) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Límite de síntesis</span>`;
 
-            // 🛠️ AUTO-PARCHE ID
             if (geno.id && String(geno.id).length > 10 && typeof window.generarNuevoID === 'function') {
                 geno.id = window.generarNuevoID();
             }
 
-            // ✨ CORRECCIÓN DE ENVOLTURA: Se añadió white-space: nowrap para asegurar que el ID se mantenga en la misma línea
+            // ✨ CORRECCIÓN DE ESPACIADO: Se usa white-space: nowrap para evitar el salto de línea del ID
             btn.innerHTML = `
                 <div style="width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #333; flex-shrink: 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); color: ${pColor};">${svgContent}</div>
                 <div style="display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-left: 15px; overflow: hidden;">
                     <span style="color: #fff; font-weight: 900; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px;">${geno.name || 'Sujeto'} <span style="color: #00d2ff; font-size: 11px;">Nv.${geno.level || 1}</span></span>
-                    <span style="color: #aaa; font-size: 10px; margin-bottom: 6px; text-transform: uppercase; display: flex; align-items: center; white-space: nowrap;">
-                        Base: ${pShape} <span style="color:#888; margin-left:5px; padding-left: 5px; border-left: 1px solid #444;">ID: #${geno.id}</span>
+                    <span style="color: #aaa; font-size: 10px; margin-bottom: 6px; text-transform: uppercase; white-space: nowrap;">
+                        Base: ${pShape} <span style="color:#666; margin: 0 4px;">|</span> <span style="color: #888;">ID: #${geno.id}</span>
                     </span>
                     ${statusText}
                 </div>
@@ -335,7 +318,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const nombreHijo = prefijos[Math.floor(Math.random() * prefijos.length)] + sufijos[Math.floor(Math.random() * sufijos.length)];
 
                 const hijo = {
-                    id: window.generarNuevoID(), // ID Secuencial
+                    id: window.generarNuevoID(), 
                     name: nombreHijo, 
                     isEgg: true, 
                     incubating: false, 
