@@ -1,5 +1,5 @@
 // =========================================
-// InventoryManager.js - SISTEMA DE ALMACÉN Y EMERGENCIA (Actualizado)
+// InventoryManager.js - SISTEMA DE ALMACÉN Y EMERGENCIA
 // =========================================
 
 class InventoryManager {
@@ -16,7 +16,7 @@ class InventoryManager {
         };
         this.selectedIndex = null; 
 
-        // 🛠️ INYECCIÓN CSS PARA LOS SLOTS DE EMERGENCIA (Actualizado: Sin icono amarillo)
+        // 🛠️ INYECCIÓN CSS PARA LOS SLOTS DE EMERGENCIA
         const style = document.createElement('style');
         style.innerHTML = `
             .emergency-slot {
@@ -25,18 +25,21 @@ class InventoryManager {
                 box-shadow: inset 0 0 10px rgba(217, 83, 79, 0.2);
                 position: relative;
             }
-            /* Se ha quitado el icono amarillo (⚠️) de emergencia */
-            .emergency-slot::after {
-                /* content: "⚠️"; */ position: absolute; top: -5px; right: -5px; font-size: 12px;
-            }
             .inventory-slot { position: relative; margin-bottom: 15px; } /* Espacio para el timer */
         `;
         document.head.appendChild(style);
     }
 
+    // ✨ NUEVO: Avisa al sistema de guardado (app.js o SaveManager.js) que hubo cambios
+    guardarCambios() {
+        if (typeof window.guardarJuego === 'function') window.guardarJuego();
+        else if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
+    }
+
     addEssence(amount) {
         this.vitalEssence += amount;
         this.updateUI();
+        this.guardarCambios(); // Guardar
     }
 
     addItem(newItem) {
@@ -72,6 +75,7 @@ class InventoryManager {
         this.reorganize(); 
         this.updateUI();
         this.renderGrid();
+        this.guardarCambios(); // Guardar
         return true;
     }
 
@@ -95,6 +99,7 @@ class InventoryManager {
             this.reorganize(); 
             this.updateUI();
             this.renderGrid();
+            this.guardarCambios(); // Guardar
         }
     }
 
@@ -144,16 +149,14 @@ class InventoryManager {
             
             if (this.items[i]) {
                 const item = this.items[i];
-                // ✨ DIBUJAR SVG O ICONO
                 slotDiv.innerHTML = item.icon;
                 
-                // Si es un SVG, forzamos su tamaño para que quepa
                 const svgInSlot = slotDiv.querySelector('svg');
                 if (svgInSlot) {
                     svgInSlot.style.width = "100%";
                     svgInSlot.style.height = "100%";
                     svgInSlot.style.display = "block";
-                    if (item.color) svgInSlot.style.color = item.color; // Mantenemos color
+                    if (item.color) svgInSlot.style.color = item.color;
                 }
 
                 if (item.count > 1) {
@@ -245,6 +248,7 @@ class InventoryManager {
                     this.selectedIndex = null;
                     this.updateUI();
                     this.renderGrid();
+                    this.guardarCambios(); // Guardar
                     console.log("⚠️ Un ítem en la zona de emergencia ha sido destruido por falta de espacio.");
                 }
             }
@@ -291,6 +295,16 @@ class InventoryManager {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+    // ✨ NUEVO: Rescatamos los datos que SaveManager haya cargado previamente
+    const datosGuardados = window.miInventario; 
+
     window.miInventario = new InventoryManager();
+
+    // Re-inyectamos los ítems y la esencia si existían
+    if (datosGuardados) {
+        if (datosGuardados.items) window.miInventario.items = datosGuardados.items;
+        if (datosGuardados.vitalEssence) window.miInventario.vitalEssence = datosGuardados.vitalEssence;
+    }
+
     window.miInventario.init();
 });
