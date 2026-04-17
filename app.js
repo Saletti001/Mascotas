@@ -2,35 +2,24 @@
 // app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN
 // =========================================
 
-// Respetamos los datos si SaveManager los acaba de cargar, si no, creamos un array vacío
 window.misGenos = window.misGenos || []; 
 window.maxGenoSlots = window.maxGenoSlots || 6; 
 
-// 👻 EL GENO FANTASMA: Si eres nuevo, esto evita que el juego explote pero es invisible
-if (!window.miMascota || window.miMascota.id === "temp") {
-    window.miMascota = { 
-        id: "temp", name: "", isEgg: true, level: 0, 
-        color: "transparent", base_color: "transparent", 
-        visual_genes: { body_shape: "gota", base_color: "transparent" }
-    };
-}
-
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ✨ AHORA SÍ EVALUAMOS SI ERES NUEVO (Revisamos que la lista esté vacía de verdad)
-    const esJugadorNuevo = (!window.misGenos || window.misGenos.length === 0) && (!window.miMascota || window.miMascota.id === "temp");
-
-    if (esJugadorNuevo) {
-        // Ocultamos el pedestal inmediatamente para que no haya parpadeos
-        const pedestal = document.getElementById("geno-container");
-        if (pedestal) pedestal.style.display = "none";
+    // ✨ COMPROBAR JUGADOR NUEVO 100% BLINDADO
+    setTimeout(() => {
+        // La prueba definitiva de si es nuevo: no hay partida guardada en la PC
+        const noHayPartida = !localStorage.getItem("proyecto_genos_save_v1");
         
-        iniciarSecuenciaBienvenida();
-    } else {
-        // Nos aseguramos de que el pedestal sí esté visible para el jugador recurrente
-        const pedestal = document.getElementById("geno-container");
-        if (pedestal) pedestal.style.display = "block";
-    }
+        if (noHayPartida) {
+            // Borramos el Geno verde genérico del HTML sin alterar propiedades CSS
+            const pedestal = document.getElementById("geno-container");
+            if (pedestal) pedestal.innerHTML = "";
+            
+            iniciarSecuenciaBienvenida();
+        }
+    }, 100);
 
     const fabMenu = document.getElementById("fab-menu");
     const drawerMenu = document.getElementById("drawer-menu");
@@ -161,7 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
         gridSwap.innerHTML = ""; 
         
         const todos = [];
-        if (window.miMascota && !window.miMascota.isEgg && window.miMascota.id !== "temp") todos.push(window.miMascota);
+        if (window.miMascota && !window.miMascota.isEgg && window.miMascota.id) todos.push(window.miMascota);
         if (window.misGenos) todos.push(...window.misGenos);
 
         const slotsOcupados = todos.length;
@@ -385,13 +374,11 @@ function iniciarSecuenciaBienvenida() {
     btnClaim.onclick = () => {
         window.miMascota = miPrimerGeno;
         
-        // ✨ CORRECCIÓN CRÍTICA: ¡Por fin se guarda el Geno en la BBDD principal!
         if(!window.misGenos) window.misGenos = [];
         window.misGenos.push(miPrimerGeno);
 
         const pedestal = document.getElementById("geno-container");
         if (pedestal) {
-            pedestal.style.display = "block";
             const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
             pedestal.innerHTML = `<div class="geno-idle" style="color: ${miPrimerGeno.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${svgPedestal}</div>`;
         }

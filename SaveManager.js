@@ -4,13 +4,12 @@
 
 const SAVE_KEY = "proyecto_genos_save_v1";
 
-// 1. CARGA INMEDIATA (Síncrona): Se ejecuta apenas el archivo es leído por el navegador
+// 1. CARGA INMEDIATA
 window.cargarProgreso = function() {
     const dataString = localStorage.getItem(SAVE_KEY);
     if (dataString) {
         const data = JSON.parse(dataString);
 
-        // Restaurar BBDD de Genos y el Geno Principal
         if (data.misGenos) {
             window.misGenos = data.misGenos;
             window.misGenos.forEach(geno => {
@@ -27,12 +26,10 @@ window.cargarProgreso = function() {
             window.maxGenoSlots = data.maxGenoSlots;
         }
 
-        // Preparar el inventario para que el InventoryManager lo recoja
         if (!window.miInventario) window.miInventario = {};
         if (data.inventarioItems) window.miInventario.items = data.inventarioItems;
         if (data.esencia !== undefined) window.miInventario.vitalEssence = data.esencia;
 
-        // Esperamos a que el HTML termine de cargar para actualizar textos visuales
         document.addEventListener("DOMContentLoaded", () => {
             setTimeout(() => {
                 if (window.miWallet && data.pol !== undefined) {
@@ -52,6 +49,9 @@ window.cargarProgreso = function() {
 
 // 2. FUNCIÓN PARA GUARDAR EL PROGRESO
 window.guardarProgreso = function() {
+    // 🔥 ANTI-CORRUPCIÓN: Si la mascota actual no tiene ID, es el Geno verde falso de RPGManager. ¡NO GUARDAR!
+    if (!window.miMascota || !window.miMascota.id) return;
+
     const dataToSave = {
         misGenos: window.misGenos || [],
         miMascota: window.miMascota || null,
@@ -63,11 +63,11 @@ window.guardarProgreso = function() {
     localStorage.setItem(SAVE_KEY, JSON.stringify(dataToSave));
 };
 
-// 🔥 EJECUCIÓN INSTANTÁNEA ANTES QUE APP.JS
+// EJECUTAR CARGA AL INICIO
 window.cargarProgreso();
 
 document.addEventListener("DOMContentLoaded", () => {
-    // AUTO-GUARDADO SILENCIOSO (Cada 5 segundos)
+    // AUTO-GUARDADO
     setInterval(() => {
         window.guardarProgreso();
     }, 5000);
