@@ -1,5 +1,5 @@
 // =========================================
-// InventoryManager.js - SISTEMA DE ALMACÉN Y EMERGENCIA
+// InventoryManager.js - SISTEMA DE ALMACÉN Y EMERGENCIA (Actualizado)
 // =========================================
 
 class InventoryManager {
@@ -16,16 +16,18 @@ class InventoryManager {
         };
         this.selectedIndex = null; 
 
-        // 🛠️ INYECCIÓN CSS PARA LOS SLOTS DE EMERGENCIA
+        // 🛠️ INYECCIÓN CSS PARA LOS SLOTS DE EMERGENCIA (Actualizado: Sin icono amarillo)
         const style = document.createElement('style');
         style.innerHTML = `
             .emergency-slot {
                 border: 2px dashed #d9534f !important;
                 background: rgba(217, 83, 79, 0.1) !important;
                 box-shadow: inset 0 0 10px rgba(217, 83, 79, 0.2);
+                position: relative;
             }
+            /* Se ha quitado el icono amarillo (⚠️) de emergencia */
             .emergency-slot::after {
-                content: "⚠️"; position: absolute; top: -5px; right: -5px; font-size: 12px;
+                /* content: "⚠️"; */ position: absolute; top: -5px; right: -5px; font-size: 12px;
             }
             .inventory-slot { position: relative; margin-bottom: 15px; } /* Espacio para el timer */
         `;
@@ -53,10 +55,8 @@ class InventoryManager {
             const totalCapacity = this.maxSlots + this.overflowSlots;
             
             if (this.items.length < this.maxSlots) {
-                // Hay espacio normal
                 this.items.push({ ...newItem, count: newItem.count || 1 });
             } else if (this.items.length < totalCapacity) {
-                // Está lleno, va a emergencia (24 horas)
                 this.items.push({ 
                     ...newItem, 
                     count: newItem.count || 1,
@@ -98,11 +98,9 @@ class InventoryManager {
         }
     }
 
-    // ✨ Si liberas espacio, los ítems en emergencia se mueven a la zona segura
     reorganize() {
         for(let i = 0; i < this.items.length; i++) {
             if (i < this.maxSlots && this.items[i].isOverflow) {
-                // ¡El ítem entró a la zona segura!
                 delete this.items[i].isOverflow;
                 delete this.items[i].expiresAt;
             }
@@ -146,8 +144,18 @@ class InventoryManager {
             
             if (this.items[i]) {
                 const item = this.items[i];
+                // ✨ DIBUJAR SVG O ICONO
                 slotDiv.innerHTML = item.icon;
                 
+                // Si es un SVG, forzamos su tamaño para que quepa
+                const svgInSlot = slotDiv.querySelector('svg');
+                if (svgInSlot) {
+                    svgInSlot.style.width = "100%";
+                    svgInSlot.style.height = "100%";
+                    svgInSlot.style.display = "block";
+                    if (item.color) svgInSlot.style.color = item.color; // Mantenemos color
+                }
+
                 if (item.count > 1) {
                     const countSpan = document.createElement("span");
                     countSpan.className = "item-count";
@@ -155,7 +163,6 @@ class InventoryManager {
                     slotDiv.appendChild(countSpan);
                 }
 
-                // ✨ Mostrar el temporizador si está en emergencia
                 if (item.isOverflow && item.expiresAt) {
                     const timerSpan = document.createElement("div");
                     timerSpan.id = `timer-item-${i}`;
@@ -209,7 +216,6 @@ class InventoryManager {
             if (this.selectedIndex !== null) this.removeItem(this.selectedIndex, this.items[this.selectedIndex].count);
         });
 
-        // ✨ MOTOR DE CADUCIDAD EN TIEMPO REAL (Corre cada segundo)
         setInterval(() => {
             let hasExpiredItems = false;
             
@@ -245,7 +251,6 @@ class InventoryManager {
         }, 1000);
     }
 
-    // 🛠️ FUNCIÓN DEV: Inyecta el botón de llenado mágico
     injectDebugButton() {
         const header = document.querySelector("#inventory-modal .modal-header");
         if (header && !document.getElementById("btn-debug-fill")) {
@@ -281,7 +286,7 @@ class InventoryManager {
     init() {
         this.updateUI();
         this.setupEvents();
-        this.injectDebugButton(); // Agregamos el botón de desarrollador
+        this.injectDebugButton(); 
     }
 }
 
