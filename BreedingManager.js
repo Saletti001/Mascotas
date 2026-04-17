@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("id-card-name").innerText = g.name || `Sujeto`;
         
-        // ✨ NUEVO: Inyectar el Número de Serie debajo del nombre en la tarjeta de ID
+        // ✨ CORRECCIÓN: Ahora dice "ID: #" en lugar de "SN:"
         let idEl = document.getElementById("id-card-serial");
         if (!idEl) {
             idEl = document.createElement("div");
@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", () => {
             idEl.style = "font-size: 10px; color: #888; font-family: monospace; margin-top: 2px; letter-spacing: 1px;";
             document.getElementById("id-card-name").parentNode.insertBefore(idEl, document.getElementById("id-card-name").nextSibling);
         }
-        idEl.innerText = `SN: ${g.id}`;
+        idEl.innerText = `ID: #${g.id}`;
 
         const lvlEl = document.getElementById("id-card-level");
         if(lvlEl) lvlEl.innerText = `Nv. ${g.level || 1}`;
@@ -223,7 +223,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if(yaSeleccionado) statusText = `<span style="color: #f0ad4e; font-weight: bold; font-size: 11px;">⚠️ Ya está seleccionado</span>`;
             else if((geno.breedCount||0) >= 7) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Límite de síntesis</span>`;
 
-            // ✨ NUEVO: Inyectamos el ID visualmente al lado de la Forma Base
             btn.innerHTML = `
                 <div style="width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #333; flex-shrink: 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); color: ${pColor};">${svgContent}</div>
                 <div style="display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-left: 15px;">
@@ -258,7 +257,6 @@ document.addEventListener("DOMContentLoaded", () => {
         btnBreeding.addEventListener("click", () => {
             if(!padre1 || !padre2) return;
             
-            // COBRO DE ESENCIA VITAL
             let esenciaActual = (window.miInventario && typeof window.miInventario.vitalEssence !== 'undefined') ? window.miInventario.vitalEssence : 9999; 
             if (esenciaActual < 500) { alert("⚠️ No tienes suficiente Esencia Vital (✨ 500)."); return; }
             
@@ -303,13 +301,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const colorHijo = Math.random() > 0.5 ? (padre1.color || padre1.base_color || "#77DD77") : (padre2.color || padre2.base_color || "#77DD77");
 
-                // ✨ NUEVO: Generador de nombres para crías y su Token ID
                 const prefijos = ["Neo", "Bio", "Geno", "Cyto", "Viro", "Rad", "Syn", "Evo", "Nexo", "Mut"];
                 const sufijos = ["-X", "-Prime", "morph", "cyte", "tron", "plasm", "-7", "core", "gen", "-Z"];
                 const nombreHijo = prefijos[Math.floor(Math.random() * prefijos.length)] + sufijos[Math.floor(Math.random() * sufijos.length)];
 
                 const hijo = {
-                    id: window.generarNuevoID(), // ID Secuencial (000002, 000003, etc)
+                    id: window.generarNuevoID(), // ID Secuencial
                     name: nombreHijo, 
                     isEgg: true, 
                     incubating: false, 
