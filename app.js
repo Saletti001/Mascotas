@@ -260,7 +260,7 @@ function iniciarSecuenciaBienvenida() {
     const formasBase = ["gota", "frijol", "circulo", "cuadrado", "triangulo"];
     const coloresBase = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77", "#ff9800", "#ffb347", "#a8e6cf"];
     
-    // 🔥 CORRECCIÓN: Los 6 elementos oficiales del laboratorio según tu hoja de ruta
+    // Los 6 elementos oficiales del laboratorio
     const elementosBase = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
 
     const obtenerClaveAleatoria = (dic) => {
@@ -280,11 +280,20 @@ function iniciarSecuenciaBienvenida() {
     // 🎲 2. GENERADOR DE ESTADÍSTICAS (Min, Max)
     const randStat = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
+    // 🏷️ 3. GENERADOR DE NOMBRES DE LABORATORIO
+    const prefijos = ["Neo", "Bio", "Geno", "Cyto", "Viro", "Rad", "Syn", "Evo", "Nexo", "Mut"];
+    const sufijos = ["-X", "-Prime", "morph", "cyte", "tron", "plasm", "-7", "core", "gen", "-Z"];
+    const nombreAleatorio = prefijos[Math.floor(Math.random() * prefijos.length)] + sufijos[Math.floor(Math.random() * sufijos.length)];
+
+    // 🆔 4. NÚMERO DE SERIE ÚNICO (Simulando un Token ID global muy grande)
+    // Combina la fecha en milisegundos con un random para asegurar que nunca se repita
+    const serialID = Date.now() + Math.floor(Math.random() * 1000);
+
     const miPrimerGeno = {
-        id: "genesis", 
-        name: "Sujeto Alfa",
+        id: serialID, // ✅ Código numérico único e irrepetible
+        name: nombreAleatorio, // ✅ Nombre temático aleatorio
         rarity: "Común",
-        element: elementoRandom, // ✅ Elemento oficial aleatorio
+        element: elementoRandom, 
         body_shape: shapeRandom, 
         color: colorRandom,
         base_color: colorRandom, 
@@ -308,11 +317,11 @@ function iniciarSecuenciaBienvenida() {
             boca: { dom: mouthRandom, rec: obtenerClaveAleatoria(typeof dicBocas !== 'undefined' ? dicBocas : {}) },
             espalda: { dom: "ninguno", rec: "ninguno" },
             cabeza: { dom: "ninguno", rec: "ninguno" },
-            afinidad: { dom: elementoRandom, rec: recElementoRandom } // ✅ Genética elemental oficial
+            afinidad: { dom: elementoRandom, rec: recElementoRandom } 
         }
     };
 
-    // 3. Creamos el contenedor de la pantalla de bienvenida
+    // Creamos el contenedor de la pantalla de bienvenida
     const modalOverlay = document.createElement("div");
     modalOverlay.id = "dna-startup-modal";
     modalOverlay.style = "position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 20, 30, 0.98); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: white; font-family: sans-serif;";
@@ -354,7 +363,8 @@ function iniciarSecuenciaBienvenida() {
 
         setTimeout(() => {
             capsule.style.display = "none";
-            text.innerText = "¡Sujeto Alfa Sintetizado!";
+            // Usamos el nombre generado aleatoriamente para presentarlo
+            text.innerText = `¡${miPrimerGeno.name} Sintetizado!`;
             subtext.innerText = "Estable e integrado. Listo para la investigación.";
 
             let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
