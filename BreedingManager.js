@@ -4,15 +4,24 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // 🛠️ INYECCIÓN CSS: OCULTAR SCROLLBAR FEA DEL GRID
+    // 🛠️ INYECCIÓN CSS: Ocultar Scrollbar y Forzar color exacto "NEXO" (#80deea)
     const style = document.createElement('style');
     style.innerHTML = `
-        #incubator-grid::-webkit-scrollbar { display: none; } 
-        #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; } 
+        #incubator-grid::-webkit-scrollbar { display: none; } /* Chrome, Safari y Opera */
+        #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; } /* IE, Edge y Firefox */
+        
+        /* 🔥 COLOR FORZADO PARA LA BASE DE DATOS GENÉTICA */
+        #breeding-selector h3 { 
+            color: #80deea !important; 
+            font-weight: bold !important;
+            letter-spacing: 1px !important; 
+            text-transform: uppercase !important;
+            text-shadow: none !important;
+            opacity: 1 !important;
+        }
     `;
     document.head.appendChild(style);
 
-    // 🛠️ AUTO-PARCHE DE ESTILOS: Copiando el estilo exacto de "RED NEXO" / "ALMACÉN NEXO"
     setTimeout(() => {
         const titulos = document.querySelectorAll("h1, h2, h3, h4, div, span");
         titulos.forEach(t => {
@@ -20,27 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 t.innerText = "CÁMARA DE BIO-NÚCLEOS";
             }
         });
-
-        const refTitle = document.querySelector("#inventory-modal h3") || document.querySelector("#drawer-menu h3");
-        const targetTitle = document.querySelector("#breeding-selector h3");
-        
-        if (targetTitle) {
-            targetTitle.innerText = "BASE DE DATOS GENÉTICA";
-            targetTitle.style.textTransform = "uppercase";
-            
-            if (refTitle) {
-                const refStyle = window.getComputedStyle(refTitle);
-                targetTitle.style.color = refStyle.color;
-                targetTitle.style.textShadow = refStyle.textShadow;
-                targetTitle.style.fontFamily = refStyle.fontFamily;
-                targetTitle.style.fontSize = refStyle.fontSize;
-                targetTitle.style.letterSpacing = refStyle.letterSpacing;
-                targetTitle.style.fontWeight = refStyle.fontWeight;
-            } else {
-                targetTitle.style.color = "#4dd0e1"; 
-                targetTitle.style.letterSpacing = "1px";
-            }
-        }
     }, 500);
 
     let padre1 = null;
@@ -294,12 +282,16 @@ document.addEventListener("DOMContentLoaded", () => {
         btnBreeding.addEventListener("click", () => {
             if(!padre1 || !padre2) return;
             
-            // ✨ VERIFICACIÓN DE ESPACIO EN INVENTARIO ANTES DE COBRAR
+            // ✨ NUEVA VERIFICACIÓN DE ESPACIO (+2 SLOTS DE EMERGENCIA)
             if (window.miInventario && window.miInventario.items) {
                 const maxSlots = window.miInventario.maxSlots || 10;
-                if (window.miInventario.items.length >= maxSlots) {
-                    alert("🎒 ¡Almacén Nexo lleno! No tienes espacio para un nuevo Bio-Núcleo. Libera espacio destruyendo ítems menos valiosos.");
+                const overflowMax = maxSlots + 2;
+                
+                if (window.miInventario.items.length >= overflowMax) {
+                    alert("🎒 ¡Almacén Nexo y Espacios de Emergencia LLENOS!\nNo tienes espacio para sintetizar. Libera espacio destruyendo ítems menos valiosos.");
                     return;
+                } else if (window.miInventario.items.length >= maxSlots) {
+                    alert("⚠️ Advertencia: Tu Almacén principal está lleno.\nEl Bio-Núcleo se guardará en un espacio de emergencia temporal (24h).");
                 }
             }
             
@@ -368,7 +360,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (typeof generarSvgGeno === 'function') hijo.svg = generarSvgGeno(hijo);
                 if(!window.misGenos) window.misGenos = []; window.misGenos.push(hijo);
 
-                // ✨ NUEVO: El Bio-Núcleo ocupa un slot en el inventario al ser creado
+                // ✨ INYECCIÓN EN INVENTARIO (Normal o Emergencia)
                 const itemBioNucleo = {
                     id: "bionucleo_" + hijo.id,
                     name: "Bio-Núcleo #" + hijo.id,
@@ -378,10 +370,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     desc: "Material genético en gestación."
                 };
                 
-                if(window.miInventario && window.miInventario.addItem) {
-                    window.miInventario.addItem(itemBioNucleo, 1);
-                } else if (window.miInventario) {
+                if (window.miInventario) {
                     if(!window.miInventario.items) window.miInventario.items = [];
+                    const maxSlots = window.miInventario.maxSlots || 10;
+                    
+                    // Si se pasa del límite, va a emergencia
+                    if (window.miInventario.items.length >= maxSlots) {
+                        itemBioNucleo.isOverflow = true;
+                        itemBioNucleo.expiresAt = Date.now() + (24 * 60 * 60 * 1000); // 24 horas exactas
+                    }
+
+                    // Forzamos el guardado
                     window.miInventario.items.push({...itemBioNucleo, count: 1});
                 }
                 
@@ -481,10 +480,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                 window.miWallet.pol -= 0.5; actualizarPolUI();
                                 huevo.isEgg = false; if (typeof generarSvgGeno === 'function') huevo.svg = generarSvgGeno(huevo); 
                                 
-                                // ✨ NUEVO: El Bio-Núcleo libera su slot al nacer
-                                if(window.miInventario && typeof window.miInventario.removeItem === 'function') {
-                                    window.miInventario.removeItem("bionucleo_" + huevo.id, 1);
-                                } else if (window.miInventario && window.miInventario.items) {
+                                if(window.miInventario && window.miInventario.items) {
                                     window.miInventario.items = window.miInventario.items.filter(i => i.id !== "bionucleo_" + huevo.id);
                                 }
 
@@ -499,10 +495,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         btnClaim.addEventListener("click", () => {
                             huevo.isEgg = false; if (typeof generarSvgGeno === 'function') huevo.svg = generarSvgGeno(huevo); 
                             
-                            // ✨ NUEVO: El Bio-Núcleo libera su slot al nacer
-                            if(window.miInventario && typeof window.miInventario.removeItem === 'function') {
-                                window.miInventario.removeItem("bionucleo_" + huevo.id, 1);
-                            } else if (window.miInventario && window.miInventario.items) {
+                            if(window.miInventario && window.miInventario.items) {
                                 window.miInventario.items = window.miInventario.items.filter(i => i.id !== "bionucleo_" + huevo.id);
                             }
 
