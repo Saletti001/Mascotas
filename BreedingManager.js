@@ -4,44 +4,26 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // 🛠️ INYECCIÓN CSS: OCULTAR SCROLLBAR FEA DEL GRID
     const style = document.createElement('style');
     style.innerHTML = `
-        #incubator-grid::-webkit-scrollbar { display: none; } /* Chrome, Safari y Opera */
-        #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; } /* IE, Edge y Firefox */
+        #incubator-grid::-webkit-scrollbar { display: none; }
+        #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; }
+        #breeding-selector h3 { 
+            color: #80deea !important; 
+            font-weight: bold !important;
+            letter-spacing: 1px !important; 
+            text-transform: uppercase !important;
+            text-shadow: none !important;
+            opacity: 1 !important;
+        }
     `;
     document.head.appendChild(style);
 
-    // 🛠️ AUTO-PARCHE DE ESTILOS: Copiando el estilo exacto de "RED NEXO" / "ALMACÉN NEXO"
     setTimeout(() => {
         const titulos = document.querySelectorAll("h1, h2, h3, h4, div, span");
         titulos.forEach(t => {
-            if (t.innerText && t.innerText.trim() === "INCUBADORA TÉRMICA") {
-                t.innerText = "CÁMARA DE BIO-NÚCLEOS";
-            }
+            if (t.innerText && t.innerText.trim() === "INCUBADORA TÉRMICA") t.innerText = "CÁMARA DE BIO-NÚCLEOS";
         });
-
-        // 🎯 Clonar el estilo exacto del menú Nexo
-        const refTitle = document.querySelector("#inventory-modal h3") || document.querySelector("#drawer-menu h3");
-        const targetTitle = document.querySelector("#breeding-selector h3");
-        
-        if (targetTitle) {
-            targetTitle.innerText = "BASE DE DATOS GENÉTICA";
-            targetTitle.style.textTransform = "uppercase";
-            
-            if (refTitle) {
-                const refStyle = window.getComputedStyle(refTitle);
-                targetTitle.style.color = refStyle.color;
-                targetTitle.style.textShadow = refStyle.textShadow;
-                targetTitle.style.fontFamily = refStyle.fontFamily;
-                targetTitle.style.fontSize = refStyle.fontSize;
-                targetTitle.style.letterSpacing = refStyle.letterSpacing;
-                targetTitle.style.fontWeight = refStyle.fontWeight;
-            } else {
-                targetTitle.style.color = "#4dd0e1"; 
-                targetTitle.style.letterSpacing = "1px";
-            }
-        }
     }, 500);
 
     let padre1 = null;
@@ -105,9 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const padre = index === 0 ? padre1 : padre2;
             if (padre) {
                 const pColor = padre.color || padre.visual_genes?.base_color || padre.base_color || "#ccc";
-                
                 slot.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(padre) : '<span>Geno</span>';
-                
                 const svg = slot.querySelector("svg");
                 if(svg) { svg.style.width = "50px"; svg.style.height = "50px"; svg.style.color = pColor; }
                 slot.style.border = "2px solid #4dd0e1"; slot.style.background = "#1a2a36"; slot.style.boxShadow = "0 0 10px rgba(77, 208, 225, 0.4)";
@@ -147,9 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("id-card-name").innerText = g.name || `Sujeto`;
         
-        if (g.id && String(g.id).length > 10 && typeof window.generarNuevoID === 'function') {
-            g.id = window.generarNuevoID();
-        }
+        if (g.id && String(g.id).length > 10 && typeof window.generarNuevoID === 'function') g.id = window.generarNuevoID();
 
         let idEl = document.getElementById("id-card-serial");
         if (!idEl) {
@@ -295,11 +273,17 @@ document.addEventListener("DOMContentLoaded", () => {
         btnBreeding.addEventListener("click", () => {
             if(!padre1 || !padre2) return;
             
+            // ✨ VERIFICACIÓN DE ESPACIO SEGURA
             if (window.miInventario) {
-                const totalCap = window.miInventario.maxSlots + window.miInventario.overflowSlots;
-                if (window.miInventario.items.length >= totalCap) {
-                    alert("🎒 ¡Almacén y Espacios de Emergencia LLENOS!\nDebes liberar espacio antes de sintetizar.");
+                const slotsCount = window.miInventario.slots ? window.miInventario.slots.length : 0;
+                const maxSlots = window.miInventario.maxSlots || 10;
+                const overflowMax = maxSlots + 2;
+                
+                if (slotsCount >= overflowMax) {
+                    alert("🎒 ¡Almacén y Espacios de Emergencia LLENOS!\nNo tienes espacio para sintetizar. Libera espacio destruyendo ítems menos valiosos.");
                     return;
+                } else if (slotsCount >= maxSlots) {
+                    alert("⚠️ Advertencia: Tu Almacén principal está lleno.\nEl Bio-Núcleo se guardará en un espacio de emergencia temporal (24h).");
                 }
             }
             
@@ -368,32 +352,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (typeof generarSvgGeno === 'function') hijo.svg = generarSvgGeno(hijo);
                 if(!window.misGenos) window.misGenos = []; window.misGenos.push(hijo);
 
-                // ✨ CORRECCIÓN: Generamos visualmente la cápsula para la mochila, no el Geno nacido
+                // ✨ CREAMOS LA CÁPSULA (No revelamos el Geno)
                 const svgCapsula = typeof generarSvgGeno === 'function' ? generarSvgGeno({ isEgg: true, color: colorHijo }) : '🧬';
 
                 const itemBioNucleo = {
                     id: "bionucleo_" + hijo.id,
                     name: "Bio-Núcleo #" + hijo.id,
-                    icon: svgCapsula, // Usamos la cápsula misteriosa
-                    color: hijo.base_color, 
+                    icon: svgCapsula,
+                    color: hijo.base_color,
                     type: "bio_nucleo",
                     maxStack: 1,
                     desc: "Material genético en gestación."
                 };
                 
-                if (window.miInventario) {
-                    if(!window.miInventario.items) window.miInventario.items = [];
-                    const maxSlots = window.miInventario.maxSlots || 10;
-                    
-                    if (window.miInventario.items.length >= maxSlots) {
-                        itemBioNucleo.isOverflow = true;
-                        itemBioNucleo.expiresAt = Date.now() + (24 * 60 * 60 * 1000); 
-                    }
-
-                    window.miInventario.addItem(itemBioNucleo, 1);
+                // ✨ SE AÑADE OFICIALMENTE AL INVENTARIO DE MANERA BLINDADA
+                if (window.miInventario && typeof window.miInventario.addItem === 'function') {
+                    window.miInventario.addItem(itemBioNucleo);
                 }
                 
                 window.iniciarSelectorCrianza(); 
+                if (typeof window.guardarJuego === 'function') window.guardarJuego(); // Forzamos un guardado final por seguridad
             }, 2000);
         });
     }
@@ -407,8 +385,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if(huevos.length === 0) { grid.innerHTML = '<div style="margin: auto; color: #64748b; font-size: 12px; font-style: italic;">La cámara está vacía. Sintetiza un Bio-Núcleo para comenzar.</div>'; return; }
 
         let countInc = 0;
-        if (window.miInventario && window.miInventario.items) {
-             const inc = window.miInventario.items.find(i => i.id === "incubator_01");
+        if (window.miInventario && window.miInventario.slots) {
+             const inc = window.miInventario.slots.find(i => i.id === "incubator_01");
              countInc = inc ? (inc.cantidad || inc.count || 0) : 0;
         }
 
@@ -446,17 +424,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!huevo.incubating) {
                 card.querySelector(`#btn-activate-${huevo.id}`)?.addEventListener("click", () => {
-                    if(window.miInventario && window.miInventario.consumeItem("incubator_01", 1)) {
-                        huevo.incubating = true;
-                        huevo.hatchTime = Date.now() + (huevo.hatchDuration || 120000);
-                        window.renderizarIncubadora();
-                    }
+                    if(window.miInventario && typeof window.miInventario.consumeItem === 'function') { 
+                        if(window.miInventario.consumeItem("incubator_01", 1)) {
+                            huevo.incubating = true;
+                            huevo.hatchTime = Date.now() + (huevo.hatchDuration || 120000);
+                            window.renderizarIncubadora();
+                            if (typeof window.guardarJuego === 'function') window.guardarJuego();
+                        }
+                    } 
                 });
                 card.querySelector(`#btn-buy-${huevo.id}`)?.addEventListener("click", () => {
                     const costo = 0.2;
                     if (window.miWallet && window.miWallet.pol >= costo) {
                         window.miWallet.pol -= costo;
-                        window.miInventario.addItem({ id: "incubator_01", name: "Incubadora Térmica", icon: "🔋", type: "consumible", maxStack: 20 }, 1);
+                        window.miInventario.addItem({ id: "incubator_01", name: "Incubadora Térmica", icon: "🔋", type: "consumible", maxStack: 20 });
                         actualizarPolUI(); window.renderizarIncubadora(); 
                     } else { alert("❌ No tienes suficiente POL."); }
                 });
@@ -468,24 +449,26 @@ document.addEventListener("DOMContentLoaded", () => {
                             window.miWallet.pol -= 0.5; actualizarPolUI();
                             huevo.isEgg = false; 
                             
-                            if(window.miInventario) {
-                                let idx = window.miInventario.items.findIndex(i => i.id === "bionucleo_" + huevo.id);
+                            if(window.miInventario && window.miInventario.slots) {
+                                let idx = window.miInventario.slots.findIndex(i => i.id === "bionucleo_" + huevo.id);
                                 if(idx !== -1) window.miInventario.removeItem(idx, 1);
                             }
                             alert(`⚡ ¡Geno nacido!`);
                             window.renderizarIncubadora(); if(window.actualizarPanelRPG) window.actualizarPanelRPG();
+                            if (typeof window.guardarJuego === 'function') window.guardarJuego();
                         } else { alert("No tienes suficiente POL."); }
                     });
                 } else {
                     card.querySelector(`#btn-claim-${huevo.id}`)?.addEventListener("click", () => {
                         huevo.isEgg = false;
                         
-                        if(window.miInventario) {
-                            let idx = window.miInventario.items.findIndex(i => i.id === "bionucleo_" + huevo.id);
+                        if(window.miInventario && window.miInventario.slots) {
+                            let idx = window.miInventario.slots.findIndex(i => i.id === "bionucleo_" + huevo.id);
                             if(idx !== -1) window.miInventario.removeItem(idx, 1);
                         }
                         alert(`🧬 ¡Geno nacido!`);
                         window.renderizarIncubadora(); if(window.actualizarPanelRPG) window.actualizarPanelRPG();
+                        if (typeof window.guardarJuego === 'function') window.guardarJuego();
                     });
                 }
             }
@@ -509,6 +492,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         });
-        if(requiereActualizacion) window.renderizarIncubadora();
+        if(requiereActualizacion) window.renderizarIncubadora(); 
     }, 1000);
 });

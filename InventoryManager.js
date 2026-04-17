@@ -6,7 +6,7 @@ class InventoryManager {
     constructor() {
         this.maxSlots = 10; 
         this.overflowSlots = 2; // 2 Slots de Emergencia
-        this.items = []; 
+        this.slots = []; // 👈 Volvemos a 'slots' para que SaveManager no pierda tus datos
         this.vitalEssence = 0; 
         this.stackLimits = {
             basic: 99,
@@ -30,7 +30,7 @@ class InventoryManager {
         document.head.appendChild(style);
     }
 
-    // ✨ NUEVO: Avisa al sistema de guardado (app.js o SaveManager.js) que hubo cambios
+    // ✨ NUEVO: Avisa al sistema que guarde automáticamente tras cada cambio
     guardarCambios() {
         if (typeof window.guardarJuego === 'function') window.guardarJuego();
         else if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
@@ -39,7 +39,7 @@ class InventoryManager {
     addEssence(amount) {
         this.vitalEssence += amount;
         this.updateUI();
-        this.guardarCambios(); // Guardar
+        this.guardarCambios();
     }
 
     addItem(newItem) {
@@ -49,18 +49,17 @@ class InventoryManager {
         }
 
         let limit = this.stackLimits[newItem.type] || 1;
-        
-        let existingSlot = this.items.find(slot => slot.id === newItem.id && slot.count < limit && !slot.isOverflow);
+        let existingSlot = this.slots.find(slot => slot.id === newItem.id && slot.count < limit && !slot.isOverflow);
 
         if (existingSlot) {
             existingSlot.count += (newItem.count || 1);
         } else {
             const totalCapacity = this.maxSlots + this.overflowSlots;
             
-            if (this.items.length < this.maxSlots) {
-                this.items.push({ ...newItem, count: newItem.count || 1 });
-            } else if (this.items.length < totalCapacity) {
-                this.items.push({ 
+            if (this.slots.length < this.maxSlots) {
+                this.slots.push({ ...newItem, count: newItem.count || 1 });
+            } else if (this.slots.length < totalCapacity) {
+                this.slots.push({ 
                     ...newItem, 
                     count: newItem.count || 1,
                     isOverflow: true,
@@ -75,13 +74,13 @@ class InventoryManager {
         this.reorganize(); 
         this.updateUI();
         this.renderGrid();
-        this.guardarCambios(); // Guardar
+        this.guardarCambios(); // Guardar automático
         return true;
     }
 
     consumeItem(itemId, amount = 1) {
-        let index = this.items.findIndex(item => item.id === itemId);
-        if (index !== -1 && this.items[index].count >= amount) {
+        let index = this.slots.findIndex(item => item.id === itemId);
+        if (index !== -1 && this.slots[index].count >= amount) {
             this.removeItem(index, amount);
             return true;
         }
@@ -89,25 +88,25 @@ class InventoryManager {
     }
 
     removeItem(index, amount) {
-        if (this.items[index]) {
-            this.items[index].count -= amount;
-            if (this.items[index].count <= 0) {
-                this.items.splice(index, 1); 
+        if (this.slots[index]) {
+            this.slots[index].count -= amount;
+            if (this.slots[index].count <= 0) {
+                this.slots.splice(index, 1); 
                 this.selectedIndex = null; 
                 if(document.getElementById("item-actions")) document.getElementById("item-actions").classList.add("hidden");
             }
             this.reorganize(); 
             this.updateUI();
             this.renderGrid();
-            this.guardarCambios(); // Guardar
+            this.guardarCambios(); // Guardar automático
         }
     }
 
     reorganize() {
-        for(let i = 0; i < this.items.length; i++) {
-            if (i < this.maxSlots && this.items[i].isOverflow) {
-                delete this.items[i].isOverflow;
-                delete this.items[i].expiresAt;
+        for(let i = 0; i < this.slots.length; i++) {
+            if (i < this.maxSlots && this.slots[i].isOverflow) {
+                delete this.slots[i].isOverflow;
+                delete this.slots[i].expiresAt;
             }
         }
     }
@@ -116,10 +115,10 @@ class InventoryManager {
         const counter = document.getElementById("slot-counter");
         if (counter) {
             let color = "#444";
-            if (this.items.length >= this.maxSlots) color = "#ff9800"; 
-            if (this.items.length >= (this.maxSlots + this.overflowSlots)) color = "#d9534f"; 
+            if (this.slots.length >= this.maxSlots) color = "#ff9800"; 
+            if (this.slots.length >= (this.maxSlots + this.overflowSlots)) color = "#d9534f"; 
             
-            counter.innerHTML = `${this.items.length}/${this.maxSlots}<br>SLOTS`;
+            counter.innerHTML = `${this.slots.length}/${this.maxSlots}<br>SLOTS`;
             counter.style.color = color;
         }
         
@@ -147,8 +146,8 @@ class InventoryManager {
                 slotDiv.classList.add("emergency-slot");
             }
             
-            if (this.items[i]) {
-                const item = this.items[i];
+            if (this.slots[i]) {
+                const item = this.slots[i];
                 slotDiv.innerHTML = item.icon;
                 
                 const svgInSlot = slotDiv.querySelector('svg');
@@ -216,16 +215,15 @@ class InventoryManager {
         });
         
         document.getElementById("btn-release-all").addEventListener("click", () => {
-            if (this.selectedIndex !== null) this.removeItem(this.selectedIndex, this.items[this.selectedIndex].count);
+            if (this.selectedIndex !== null) this.removeItem(this.selectedIndex, this.slots[this.selectedIndex].count);
         });
 
         setInterval(() => {
             let hasExpiredItems = false;
             
-            this.items.forEach((item, index) => {
+            this.slots.forEach((item, index) => {
                 if (item.isOverflow && item.expiresAt) {
                     const restante = item.expiresAt - Date.now();
-                    
                     if (restante <= 0) {
                         hasExpiredItems = true; 
                     } else {
@@ -241,15 +239,14 @@ class InventoryManager {
             });
 
             if (hasExpiredItems) {
-                const prevCount = this.items.length;
-                this.items = this.items.filter(item => !item.isOverflow || !item.expiresAt || item.expiresAt > Date.now());
-                
-                if (this.items.length < prevCount) {
+                const prevCount = this.slots.length;
+                this.slots = this.slots.filter(item => !item.isOverflow || !item.expiresAt || item.expiresAt > Date.now());
+                if (this.slots.length < prevCount) {
                     this.selectedIndex = null;
                     this.updateUI();
                     this.renderGrid();
-                    this.guardarCambios(); // Guardar
-                    console.log("⚠️ Un ítem en la zona de emergencia ha sido destruido por falta de espacio.");
+                    this.guardarCambios();
+                    console.log("⚠️ Un ítem de emergencia ha sido destruido por falta de espacio.");
                 }
             }
         }, 1000);
@@ -267,22 +264,11 @@ class InventoryManager {
 
             btnFill.addEventListener("click", () => {
                 let added = 0;
-                while (this.items.length < this.maxSlots) {
-                    this.addItem({
-                        id: "caja_test_" + Date.now() + Math.random(),
-                        name: "Caja de Suministros",
-                        icon: "📦",
-                        type: "basic",
-                        maxStack: 1,
-                        desc: "Ítem de relleno para testear."
-                    });
+                while (this.slots.length < this.maxSlots) {
+                    this.addItem({ id: "caja_test_" + Date.now() + Math.random(), name: "Caja de Suministros", icon: "📦", type: "basic", maxStack: 1, desc: "Ítem de relleno." });
                     added++;
                 }
-                if (added > 0) {
-                    alert("🎒 Inventario lleno. ¡Ve al Centro de Crianza y sintetiza un Bio-Núcleo para ver cómo entra en Emergencia!");
-                } else {
-                    alert("El inventario ya está lleno.");
-                }
+                if (added > 0) alert("🎒 Inventario lleno."); else alert("El inventario ya está lleno.");
             });
         }
     }
@@ -294,17 +280,28 @@ class InventoryManager {
     }
 }
 
+// ✨ AUTO-REPARADOR CONTRA SAVEMANAGER
 document.addEventListener("DOMContentLoaded", () => {
-    // ✨ NUEVO: Rescatamos los datos que SaveManager haya cargado previamente
-    const datosGuardados = window.miInventario; 
+    const iniciarOReconstruir = () => {
+        if (!window.miInventario || typeof window.miInventario.addItem !== 'function') {
+            const datosGuardados = window.miInventario || {};
+            window.miInventario = new InventoryManager();
 
-    window.miInventario = new InventoryManager();
+            if (datosGuardados.slots) window.miInventario.slots = datosGuardados.slots;
+            else if (datosGuardados.items) window.miInventario.slots = datosGuardados.items;
+            
+            if (datosGuardados.vitalEssence) window.miInventario.vitalEssence = datosGuardados.vitalEssence;
+            window.miInventario.init();
+        }
+    };
+    iniciarOReconstruir();
 
-    // Re-inyectamos los ítems y la esencia si existían
-    if (datosGuardados) {
-        if (datosGuardados.items) window.miInventario.items = datosGuardados.items;
-        if (datosGuardados.vitalEssence) window.miInventario.vitalEssence = datosGuardados.vitalEssence;
-    }
-
-    window.miInventario.init();
+    // Vigilar si SaveManager sobreescribe el objeto al recargar la página
+    setInterval(() => {
+        if (window.miInventario && typeof window.miInventario.addItem !== 'function') {
+            Object.setPrototypeOf(window.miInventario, InventoryManager.prototype);
+            if (!window.miInventario.slots) window.miInventario.slots = window.miInventario.items || [];
+            window.miInventario.init();
+        }
+    }, 1000);
 });
