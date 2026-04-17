@@ -4,41 +4,39 @@
 
 const SAVE_KEY = "proyecto_genos_save_v1";
 
-// 1. CARGA INMEDIATA
 window.cargarProgreso = function() {
     const dataString = localStorage.getItem(SAVE_KEY);
     if (dataString) {
         const data = JSON.parse(dataString);
 
-        if (data.misGenos) {
-            window.misGenos = data.misGenos;
-            window.misGenos.forEach(geno => {
-                if (typeof generarSvgGeno === 'function') geno.svg = generarSvgGeno(geno);
-            });
-        }
-        
-        if (data.miMascota) {
-            window.miMascota = data.miMascota;
-            if (typeof generarSvgGeno === 'function') window.miMascota.svg = generarSvgGeno(window.miMascota);
-        }
-
-        if (data.maxGenoSlots) {
-            window.maxGenoSlots = data.maxGenoSlots;
-        }
+        if (data.misGenos) window.misGenos = data.misGenos;
+        if (data.miMascota) window.miMascota = data.miMascota;
+        if (data.maxGenoSlots) window.maxGenoSlots = data.maxGenoSlots;
 
         if (!window.miInventario) window.miInventario = {};
         if (data.inventarioItems) window.miInventario.items = data.inventarioItems;
         if (data.esencia !== undefined) window.miInventario.vitalEssence = data.esencia;
 
         document.addEventListener("DOMContentLoaded", () => {
+            // ✨ CORRECCIÓN: Esperamos 150ms para asegurarnos de que la función de dibujo SVG ya exista
             setTimeout(() => {
+                // Generamos los dibujos ahora que es seguro
+                if (window.misGenos) {
+                    window.misGenos.forEach(geno => {
+                        if (typeof generarSvgGeno === 'function') geno.svg = generarSvgGeno(geno);
+                    });
+                }
+                if (window.miMascota && typeof generarSvgGeno === 'function') {
+                    window.miMascota.svg = generarSvgGeno(window.miMascota);
+                }
+
                 if (window.miWallet && data.pol !== undefined) {
                     window.miWallet.pol = data.pol;
                     const polText = document.getElementById("pol-amount");
                     if(polText) polText.innerText = `🔷 ${window.miWallet.pol.toFixed(1)} POL`;
                 }
 
-                // ✨ CORRECCIÓN: Dibujar el Geno en el pedestal al cargar la partida
+                // ✨ CORRECCIÓN: Ahora el SVG sí existe y ya no saldrá "undefined"
                 const pedestal = document.getElementById("geno-container");
                 if (pedestal && window.miMascota && window.miMascota.id && window.miMascota.id !== "temp") {
                     pedestal.style.display = "block";
@@ -47,7 +45,7 @@ window.cargarProgreso = function() {
 
                 if(window.actualizarPanelRPG) window.actualizarPanelRPG();
                 if(window.renderizarIncubadora) window.renderizarIncubadora();
-            }, 100); 
+            }, 150); 
         });
         
         return true;
@@ -55,9 +53,7 @@ window.cargarProgreso = function() {
     return false;
 };
 
-// 2. FUNCIÓN PARA GUARDAR EL PROGRESO
 window.guardarProgreso = function() {
-    // ANTI-CORRUPCIÓN: No guardar si es el Geno falso temporal
     if (!window.miMascota || !window.miMascota.id || window.miMascota.id === "temp") return;
 
     const dataToSave = {
@@ -71,7 +67,6 @@ window.guardarProgreso = function() {
     localStorage.setItem(SAVE_KEY, JSON.stringify(dataToSave));
 };
 
-// EJECUTAR CARGA AL INICIO
 window.cargarProgreso();
 
 document.addEventListener("DOMContentLoaded", () => {

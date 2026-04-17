@@ -7,13 +7,13 @@ window.maxGenoSlots = window.maxGenoSlots || 6;
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // COMPROBAR JUGADOR NUEVO
     setTimeout(() => {
         const noHayPartida = !localStorage.getItem("proyecto_genos_save_v1");
         
         if (noHayPartida) {
             const pedestal = document.getElementById("geno-container");
             if (pedestal) pedestal.innerHTML = "";
+            
             iniciarSecuenciaBienvenida();
         }
     }, 100);
@@ -92,7 +92,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // INTERACCIÓN CON EL GENO PRINCIPAL (CLICK PARA CARIÑOS)
     const contenedorGenoMain = document.getElementById("geno-container");
     if (contenedorGenoMain) {
         contenedorGenoMain.addEventListener("click", (e) => {
@@ -172,16 +171,20 @@ document.addEventListener("DOMContentLoaded", () => {
         gridSwap.innerHTML = ""; 
         
         const todos = [];
-        // Añadimos la Mascota Actual primero (Si existe)
-        if (window.miMascota && !window.miMascota.isEgg && window.miMascota.id && window.miMascota.id !== "temp") {
-            todos.push(window.miMascota);
-        }
         
-        // ✨ CORRECCIÓN: Filtramos la BBDD para no volver a meter a la Mascota Actual (Evita el duplicado)
+        // ✨ CORRECCIÓN: Filtro infalible para no duplicar a tu mascota
         if (window.misGenos) {
-            const idMascotaActual = window.miMascota ? window.miMascota.id : null;
-            const genosEnPC = window.misGenos.filter(g => g.id !== idMascotaActual);
-            todos.push(...genosEnPC);
+            const idMascotaActual = window.miMascota ? String(window.miMascota.id) : null;
+            
+            // Buscamos la mascota actual y la ponemos de primero
+            const mascota = window.misGenos.find(g => String(g.id) === idMascotaActual);
+            if (mascota && !mascota.isEgg) todos.push(mascota);
+            
+            // Añadimos al resto asegurándonos de que sus IDs no coincidan con la mascota
+            const otros = window.misGenos.filter(g => String(g.id) !== idMascotaActual);
+            otros.forEach(g => {
+                if (!g.isEgg) todos.push(g);
+            });
         }
 
         const slotsOcupados = todos.length;
@@ -193,13 +196,10 @@ document.addEventListener("DOMContentLoaded", () => {
         gridSwap.appendChild(infoCard);
 
         todos.forEach(geno => {
-            if (geno.isEgg) return; 
-
             const card = document.createElement("div");
             card.style = "background: #1a2a36; border: 1px solid #4dd0e1; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);";
             
-            // Si es la mascota equipada, le ponemos un borde brillante permanente
-            if (window.miMascota && window.miMascota.id === geno.id) {
+            if (window.miMascota && String(window.miMascota.id) === String(geno.id)) {
                 card.style.border = "2px solid #ffcc00";
                 card.style.boxShadow = "0 0 15px rgba(255, 204, 0, 0.4)";
             } else {
