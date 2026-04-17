@@ -4,16 +4,13 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // 🛠️ AUTO-CORRECCIÓN DEL TÍTULO HTML
-    // Cambiamos el título "INCUBADORA TÉRMICA" a "CÁMARA DE BIO-NÚCLEOS"
-    setTimeout(() => {
-        const titulos = document.querySelectorAll("h2, h3, h4, div, span");
-        titulos.forEach(t => {
-            if (t.innerText && t.innerText.trim() === "INCUBADORA TÉRMICA") {
-                t.innerText = "CÁMARA DE BIO-NÚCLEOS";
-            }
-        });
-    }, 500);
+    // 🛠️ INYECCIÓN CSS: OCULTAR SCROLLBAR FEA DEL GRID
+    const style = document.createElement('style');
+    style.innerHTML = `
+        #incubator-grid::-webkit-scrollbar { display: none; } /* Chrome, Safari y Opera */
+        #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; } /* IE, Edge y Firefox */
+    `;
+    document.head.appendChild(style);
 
     let padre1 = null;
     let padre2 = null;
@@ -98,7 +95,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 btnBreeding.style.opacity = "1"; btnBreeding.style.cursor = "pointer";
             } else {
                 if (reqDiv) reqDiv.innerHTML = "";
-                btnBreeding.innerText = "SELECCIONA SUJETOS";
+                btnBreeding.innerText = "INSERTA MUESTRAS";
                 btnBreeding.style.background = "#333"; btnBreeding.style.opacity = "0.5"; btnBreeding.style.cursor = "not-allowed";
             }
         }
@@ -211,9 +208,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const pWing = (geno.genes && geno.genes.espalda) ? geno.genes.espalda.dom : (geno.wing_type || "ninguno");
             let svgContent = typeof generarSvgGeno === 'function' ? generarSvgGeno({ body_shape: pShape, base_color: pColor, wing_type: pWing, isEgg: false }) : '<span>Geno</span>';
 
-            let statusText = `<span style="color: #00d2ff; font-weight: bold; font-size: 11px;">${7 - (geno.breedCount||0)} crías disponibles</span>`;
+            let statusText = `<span style="color: #00d2ff; font-weight: bold; font-size: 11px;">${7 - (geno.breedCount||0)} secuencias disponibles</span>`;
             if(yaSeleccionado) statusText = `<span style="color: #f0ad4e; font-weight: bold; font-size: 11px;">⚠️ Ya está seleccionado</span>`;
-            else if((geno.breedCount||0) >= 7) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Límite de crías</span>`;
+            else if((geno.breedCount||0) >= 7) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Límite de síntesis</span>`;
 
             btn.innerHTML = `
                 <div style="width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #333; flex-shrink: 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); color: ${pColor};">${svgContent}</div>
