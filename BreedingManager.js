@@ -117,6 +117,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         document.getElementById("id-card-name").innerText = g.name || `Sujeto`;
+        
+        // ✨ NUEVO: Inyectar el Número de Serie debajo del nombre en la tarjeta de ID
+        let idEl = document.getElementById("id-card-serial");
+        if (!idEl) {
+            idEl = document.createElement("div");
+            idEl.id = "id-card-serial";
+            idEl.style = "font-size: 10px; color: #888; font-family: monospace; margin-top: 2px; letter-spacing: 1px;";
+            document.getElementById("id-card-name").parentNode.insertBefore(idEl, document.getElementById("id-card-name").nextSibling);
+        }
+        idEl.innerText = `SN: ${g.id}`;
+
         const lvlEl = document.getElementById("id-card-level");
         if(lvlEl) lvlEl.innerText = `Nv. ${g.level || 1}`;
 
@@ -212,11 +223,12 @@ document.addEventListener("DOMContentLoaded", () => {
             if(yaSeleccionado) statusText = `<span style="color: #f0ad4e; font-weight: bold; font-size: 11px;">⚠️ Ya está seleccionado</span>`;
             else if((geno.breedCount||0) >= 7) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Límite de síntesis</span>`;
 
+            // ✨ NUEVO: Inyectamos el ID visualmente al lado de la Forma Base
             btn.innerHTML = `
                 <div style="width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #333; flex-shrink: 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); color: ${pColor};">${svgContent}</div>
                 <div style="display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-left: 15px;">
                     <span style="color: #fff; font-weight: 900; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px;">${geno.name || 'Sujeto'} <span style="color: #00d2ff; font-size: 11px;">Nv.${geno.level || 1}</span></span>
-                    <span style="color: #aaa; font-size: 10px; margin-bottom: 6px; text-transform: uppercase;">Base: ${pShape}</span>
+                    <span style="color: #aaa; font-size: 10px; margin-bottom: 6px; text-transform: uppercase;">Base: ${pShape} <span style="color:#555; margin-left:5px;">| ID: #${geno.id}</span></span>
                     ${statusText}
                 </div>
                 <button class="btn-info-geno" style="background: rgba(77, 208, 225, 0.1); border: 1px solid #4dd0e1; color: #fff; width: 45px; height: 45px; border-radius: 8px; font-size: 22px; cursor: pointer; flex-shrink: 0; display: flex; justify-content: center; align-items: center; margin-left: 10px; transition: 0.2s; box-shadow: inset 0 0 5px rgba(77, 208, 225, 0.3);" title="Análisis Genético">🔬</button>
@@ -291,11 +303,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const colorHijo = Math.random() > 0.5 ? (padre1.color || padre1.base_color || "#77DD77") : (padre2.color || padre2.base_color || "#77DD77");
 
+                // ✨ NUEVO: Generador de nombres para crías y su Token ID
+                const prefijos = ["Neo", "Bio", "Geno", "Cyto", "Viro", "Rad", "Syn", "Evo", "Nexo", "Mut"];
+                const sufijos = ["-X", "-Prime", "morph", "cyte", "tron", "plasm", "-7", "core", "gen", "-Z"];
+                const nombreHijo = prefijos[Math.floor(Math.random() * prefijos.length)] + sufijos[Math.floor(Math.random() * sufijos.length)];
+
                 const hijo = {
-                    id: Date.now(), name: "Bio-Núcleo Genético", isEgg: true, 
-                    incubating: false, // ESTADO NUEVO: Empieza inactivo
-                    hatchDuration: 120000, // 2 minutos
-                    hatchTime: 0, // Se asigna al activarlo
+                    id: Date.now() + Math.floor(Math.random() * 1000), // ID Numérico gigante
+                    name: nombreHijo, 
+                    isEgg: true, 
+                    incubating: false, 
+                    hatchDuration: 120000, 
+                    hatchTime: 0, 
                     generation: genHijo, breedCount: 0, level: 1, xp: 0, xpNeeded: 100,
                     genes: genesHijo, stats: statsHijo,
                     body_shape: genesHijo.cuerpo.dom, eye_type: genesHijo.ojos.dom, mouth_type: genesHijo.boca.dom,
@@ -335,7 +354,6 @@ document.addEventListener("DOMContentLoaded", () => {
             let actionHtml = '';
             let timerHtml = '';
 
-            // ESTADO 1: INACTIVO (Esperando ítem Incubadora)
             if (!huevo.incubating) {
                 timerHtml = `<div id="timer-${huevo.id}" style="font-size: 12px; font-weight: bold; color: #aaa; margin-top: 8px; letter-spacing: 1px;">INACTIVO</div>`;
                 if (countInc > 0) {
@@ -344,15 +362,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     actionHtml = `<button id="btn-buy-${huevo.id}" style="margin-top: 8px; font-size: 10px; background: linear-gradient(135deg, #ff9800, #ff5722); color: white; border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 8px rgba(255, 152, 0, 0.4); text-transform: uppercase;">🛒 🔋 0.2 POL</button>`;
                 }
             } 
-            // ESTADOS ACTIVOS
             else {
                 const restante = huevo.hatchTime - Date.now();
-                // ESTADO 2: PROCESANDO (Tiempo corriendo)
                 if (restante > 0) {
                     timerHtml = `<div id="timer-${huevo.id}" style="font-size: 12px; font-weight: bold; color: #ffbf00; margin-top: 8px; letter-spacing: 1px;">Calc...</div>`;
                     actionHtml = `<button id="btn-skip-${huevo.id}" style="margin-top: 8px; font-size: 10px; background: linear-gradient(135deg, #8b5cf6, #3b82f6); color: white; border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4); text-transform: uppercase;">⚡ 0.5 POL</button>`;
                 } 
-                // ESTADO 3: LISTO PARA RECLAMAR
                 else {
                     timerHtml = `<div id="timer-${huevo.id}" style="font-size: 12px; font-weight: bold; color: #4dd0e1; margin-top: 8px; letter-spacing: 1px;">¡LISTO!</div>`;
                     actionHtml = `<button id="btn-claim-${huevo.id}" style="margin-top: 8px; font-size: 10px; background: linear-gradient(135deg, #77DD77, #3b82f6); color: #0d1a24; border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 8px rgba(119, 221, 119, 0.4); text-transform: uppercase;">✨ RECLAMAR</button>`;
@@ -367,12 +382,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 ${actionHtml}
             `;
 
-            // EVENTOS DE LOS BOTONES
             if (!huevo.incubating) {
                 const btnActivate = card.querySelector(`#btn-activate-${huevo.id}`);
                 if (btnActivate) {
                     btnActivate.addEventListener("click", () => {
-                        // Consumir Incubadora
                         if(window.miInventario && typeof window.miInventario.consumeItem === 'function') { 
                             window.miInventario.consumeItem("incubator_01", 1); 
                         } else if (window.miInventario && window.miInventario.items) {
@@ -430,7 +443,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // EL TEMPORIZADOR SOLO ACTUALIZA LOS QUE ESTÁN INCUBANDO
     setInterval(() => {
         const huevos = (window.misGenos || []).filter(g => g.isEgg && g.incubating);
         let requiereActualizacion = false;
