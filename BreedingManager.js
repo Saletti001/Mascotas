@@ -221,8 +221,20 @@ document.addEventListener("DOMContentLoaded", () => {
         if(listContainer) { listContainer.innerHTML = ""; listContainer.style.display = "flex"; listContainer.style.flexDirection = "column"; listContainer.style.gap = "12px"; }
 
         const todosMisGenos = [];
-        if(window.miMascota && window.miMascota.id !== "temp") todosMisGenos.push(window.miMascota);
-        if(window.misGenos) todosMisGenos.push(...window.misGenos);
+        
+        // ✨ CORRECCIÓN: Filtro infalible anti-duplicados
+        if (window.misGenos) {
+            const idMascotaActual = window.miMascota ? String(window.miMascota.id) : null;
+            
+            // Añadir mascota actual (si es válida)
+            if (window.miMascota && window.miMascota.id && window.miMascota.id !== "temp" && !window.miMascota.isEgg) {
+                todosMisGenos.push(window.miMascota);
+            }
+            
+            // Añadir el resto excluyendo a la mascota actual
+            const otros = window.misGenos.filter(g => String(g.id) !== idMascotaActual && !g.isEgg);
+            todosMisGenos.push(...otros);
+        }
 
         if (todosMisGenos.length === 0) {
             if(listContainer) listContainer.innerHTML = '<div style="font-size: 12px; color: #ef4444; width:100%; text-align:center; padding: 20px;">La base de datos está vacía.</div>';
@@ -230,8 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         todosMisGenos.forEach(geno => {
-            if(!geno || geno.isEgg) return;
-            const yaSeleccionado = (padre1 && padre1.id === geno.id) || (padre2 && padre2.id === geno.id);
+            const yaSeleccionado = (padre1 && String(padre1.id) === String(geno.id)) || (padre2 && String(padre2.id) === String(geno.id));
             const cumpleRequisitos = ((geno.breedCount || 0) < 7) && !yaSeleccionado;
 
             const btn = document.createElement("div");
@@ -315,7 +326,6 @@ document.addEventListener("DOMContentLoaded", () => {
             btnBreeding.disabled = true; btnBreeding.innerText = "SINTETIZANDO..."; btnBreeding.style.background = "#8A2BE2"; btnBreeding.style.cursor = "wait";
             if (reqDiv) reqDiv.innerHTML = "Creando Bio-Núcleo...";
             
-            // ✨ CORRECCIÓN DE ANIMACIÓN: Mucho más suave y lenta (400ms en vez de 150ms)
             let toggle = false;
             const anim = setInterval(() => {
                 toggle = !toggle;
