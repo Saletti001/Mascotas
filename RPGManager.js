@@ -10,6 +10,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const badgePuntos = document.getElementById("stat-points-badge");
     const btnsAddStat = document.querySelectorAll(".btn-add-stat");
 
+    // ✨ LÓGICA V8.0: Gen "Umbral del Despertar"
+    function verificarUmbralDespertar(g) {
+        if (g.level >= 25 && window.tieneGenActivo && window.tieneGenActivo(g, "umbral_despertar") && !g.umbralAplicado) {
+            g.stats.hp += 5;
+            g.stats.atk += 5;
+            g.stats.spd += 5;
+            g.stats.luk += 5;
+            g.umbralAplicado = true;
+            if(window.Sonidos) window.Sonidos.play("heal");
+            alert("✨ ¡Gen Activado: Umbral del Despertar!\nLas estadísticas base de tu Geno han aumentado +5 de forma permanente.");
+        }
+    }
+
     window.actualizarPanelRPG = function() {
         if(!window.miMascota || window.miMascota.id === "temp") return; // No actualizamos UI si es el fantasma del tutorial
         const g = window.miMascota;
@@ -46,7 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 g.id = window.generarNuevoID();
             }
 
-            // ✨ NUEVO: ID Centrado debajo de la barra de XP, limpio y sin texto extra
             let serialRow = document.getElementById("row-serial-id");
             if (!serialRow) {
                 serialRow = document.createElement("div");
@@ -60,7 +72,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const elementEl = document.getElementById("geno-element");
         if(elementEl) elementEl.innerText = (g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal");
 
-        // --- LÓGICA: CALIDAD GENÉTICA ---
+        // --- LÓGICA: CALIDAD GENÉTICA (ACTUALIZADO A V8.0) ---
         const qualityBadge = document.getElementById("geno-quality-badge");
         if (qualityBadge) {
             let rango = "D";
@@ -71,12 +83,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 rango = g.stats.rango;
                 pct = g.stats.calidadPorcentaje;
             } else {
-                const limites = { hp: [35, 55], atk: [10, 22], spd: [8, 25], luk: [5, 15] }; 
+                // ✨ AHORA LEE LA TABLA OFICIAL SEGÚN SU RAREZA
+                const limites = (window.TABLA_IVS && window.TABLA_IVS[g.rarity]) ? window.TABLA_IVS[g.rarity] : { hp: [35, 55], atk: [10, 22], spd: [8, 25], luk: [5, 15] }; 
                 let tMin = limites.hp[0] + limites.atk[0] + limites.spd[0] + limites.luk[0];
                 let tMax = limites.hp[1] + limites.atk[1] + limites.spd[1] + limites.luk[1];
                 
                 let puntosInvertidos = (g.level - 1) * 3;
-                let tObt = (g.stats.hp + g.stats.atk + g.stats.spd + g.stats.luk) - puntosInvertidos;
+                
+                // Descontar el bono del Umbral del Despertar si está aplicado
+                let bonoUmbral = g.umbralAplicado ? 20 : 0; 
+                let tObt = (g.stats.hp + g.stats.atk + g.stats.spd + g.stats.luk) - puntosInvertidos - bonoUmbral;
 
                 pct = Math.round(((tObt - tMin) / (tMax - tMin)) * 100);
                 if (pct > 100) pct = 100;
@@ -115,10 +131,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const sluk = document.getElementById("stat-luk");
         if(sluk) sluk.innerText = Math.floor(g.stats.luk);
 
+        // ✨ NUEVO: REVELACIÓN DEL GEN OCULTO V8.0
         const recEl = document.getElementById("geno-recessive");
         if(recEl) {
             if(g.scanned) {
-                recEl.innerText = (g.genes && g.genes.afinidad) ? g.genes.afinidad.rec : "Normal";
+                const genOcultoName = g.hidden_gene ? g.hidden_gene.name : ((g.genes && g.genes.afinidad) ? g.genes.afinidad.rec : "Normal");
+                recEl.innerText = genOcultoName;
                 recEl.style.color = "#80deea";
                 recEl.style.textShadow = "0 0 5px rgba(128,222,234,0.5)";
             } else {
@@ -169,6 +187,9 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             if(window.Sonidos) window.Sonidos.play("heal"); 
             alert(`¡Súper Evolución! 🌟\n${window.miMascota.name} ha alcanzado el Nivel ${window.miMascota.level}.\nTienes 3 Puntos de Atributo disponibles.`);
+
+            // Comprobamos si ha desbloqueado el Umbral del Despertar al subir de nivel
+            verificarUmbralDespertar(window.miMascota);
         }
         window.actualizarPanelRPG();
     };
@@ -202,6 +223,10 @@ document.addEventListener("DOMContentLoaded", () => {
             if (window.miMascota.scanned) { alert("El ADN recesivo ya ha sido decodificado."); return; }
             if (window.miInventario && window.miInventario.consumeItem("dna_scanner", 1)) {
                 window.miMascota.scanned = true;
+                
+                // Si el Geno ya era nivel 25+ y lo acaba de escanear, recibe el bono retroactivamente.
+                verificarUmbralDespertar(window.miMascota);
+
                 window.actualizarPanelRPG();
                 panelStats.style.boxShadow = "0 0 20px #8B5CF6";
                 btnScanner.innerText = "Gen Revelado ✅";
@@ -250,10 +275,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-
-    // ELIMINADO EL RENDERIZADO AUTOMÁTICO EN EL RPGMANAGER.
-    // Esto era lo que dibujaba al Geno verde y lo dejaba descentrado.
-    // Ahora todo el dibujo lo gestiona el SaveManager o el App.js.
 
     window.actualizarPanelRPG();
 });

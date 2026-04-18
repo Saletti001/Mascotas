@@ -163,8 +163,10 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("id-card-rarity").innerText = g.rarity || "Común";
         document.getElementById("id-card-element").innerText = (g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal");
         
+        // ✨ APLICAMOS LA LÓGICA DEL GEN ACTIVO A LA UI
+        const maxCrias = typeof window.getMaxCrias === 'function' ? window.getMaxCrias(g) : 7;
         const criasEl = document.getElementById("id-card-breeds");
-        if(criasEl) criasEl.innerText = `${7 - (g.breedCount || 0)} de 7`;
+        if(criasEl) criasEl.innerText = `${maxCrias - (g.breedCount || 0)} de ${maxCrias}`;
 
         document.getElementById("id-card-hp").innerText = Math.floor(g.stats?.hp || 50);
         document.getElementById("id-card-atk").innerText = Math.floor(g.stats?.atk || 15);
@@ -187,7 +189,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const domText = document.getElementById("id-card-dom");
         const recText = document.getElementById("id-card-rec");
 
-        // ✨ ACTUALIZACIÓN: El Escáner ahora revela el Gen Oculto de la V8.0
         if (secretGeneContainer) {
             if (g.scanned) {
                 if (scanBtn) scanBtn.classList.add("hidden");
@@ -248,7 +249,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         todosMisGenos.forEach(geno => {
             const yaSeleccionado = (padre1 && String(padre1.id) === String(geno.id)) || (padre2 && String(padre2.id) === String(geno.id));
-            const cumpleRequisitos = ((geno.breedCount || 0) < 7) && !yaSeleccionado;
+            
+            // ✨ APLICAMOS EL LÍMITE DE CRÍAS DINÁMICO AL SELECTOR
+            const maxCrias = typeof window.getMaxCrias === 'function' ? window.getMaxCrias(geno) : 7;
+            const cumpleRequisitos = ((geno.breedCount || 0) < maxCrias) && !yaSeleccionado;
 
             const btn = document.createElement("div");
             let styleStr = "padding: 12px; border-radius: 14px; display: flex; align-items: center; text-align: left; box-shadow: 0 4px 10px rgba(0,0,0,0.4); transition: 0.2s;";
@@ -264,9 +268,9 @@ document.addEventListener("DOMContentLoaded", () => {
             
             let svgContent = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '<span>Geno</span>';
 
-            let statusText = `<span style="color: #00d2ff; font-weight: bold; font-size: 11px;">${7 - (geno.breedCount||0)} secuencias disponibles</span>`;
+            let statusText = `<span style="color: #00d2ff; font-weight: bold; font-size: 11px;">${maxCrias - (geno.breedCount||0)} secuencias disponibles</span>`;
             if(yaSeleccionado) statusText = `<span style="color: #f0ad4e; font-weight: bold; font-size: 11px;">⚠️ Ya está seleccionado</span>`;
-            else if((geno.breedCount||0) >= 7) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Límite de síntesis</span>`;
+            else if((geno.breedCount||0) >= maxCrias) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Límite de síntesis</span>`;
 
             if (geno.id && String(geno.id).length > 10 && typeof window.generarNuevoID === 'function') {
                 geno.id = window.generarNuevoID();
@@ -375,7 +379,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     luk: typeof window.heredarStat === 'function' ? window.heredarStat(padre1.stats?.luk || 15, padre2.stats?.luk || 15) : varianza(padre1.stats?.luk || 15, padre2.stats?.luk || 15)
                 };
 
-                // ✨ INYECCIÓN: Lógica de herencia de Genes Ocultos V8.0
+                // Lógica de herencia de Genes Ocultos V8.0
                 const heredarGenOculto = () => {
                     const r = Math.random();
                     if(r < 0.4 && padre1.hidden_gene) return padre1.hidden_gene;
@@ -398,7 +402,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     hatchTime: 0, 
                     generation: genHijo, breedCount: 0, level: 1, xp: 0, xpNeeded: 100,
                     genes: genesHijo, stats: statsHijo,
-                    hidden_gene: heredarGenOculto(), // Se asigna el gen heredado o mutado
+                    hidden_gene: heredarGenOculto(), 
                     scanned: false,
                     body_shape: genesHijo.cuerpo.dom, eye_type: genesHijo.ojos.dom, mouth_type: genesHijo.boca.dom,
                     wing_type: genesHijo.espalda.dom, hat_type: genesHijo.cabeza.dom, element: genesHijo.afinidad.dom,

@@ -58,6 +58,25 @@ window.generarGenOculto = function() {
     return { id: randomKey, ...window.GENES_OCULTOS[randomKey] };
 };
 
+// ✨ MOTOR LÓGICO DE GENES ACTIVOS
+window.tieneGenActivo = function(geno, idGen) {
+    // Un gen SOLO funciona si existe en el Geno Y si ha sido escaneado (desbloqueado)
+    return geno && geno.scanned && geno.hidden_gene && geno.hidden_gene.id === idGen;
+};
+
+// Utilidades para que el resto del juego lea los efectos activos
+window.getMaxCrias = function(geno) {
+    return window.tieneGenActivo(geno, "fertilidad_pura") ? 9 : 7;
+};
+
+window.getMultiplicadorXP = function(geno) {
+    return window.tieneGenActivo(geno, "aprendiz_acelerado") ? 1.25 : 1.0;
+};
+
+window.getMultiplicadorEsencia = function(geno) {
+    return window.tieneGenActivo(geno, "esencia_concentrada") ? 2.0 : 1.0;
+};
+
 document.addEventListener("DOMContentLoaded", () => {
     
     setTimeout(() => {
@@ -137,7 +156,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     contenedor.classList.add("happy-jump");
                     setTimeout(() => contenedor.classList.remove("happy-jump"), 500);
                 }
-                if(window.ganarXP) window.ganarXP(25);
+                
+                // Aplicamos el multiplicador de XP si el gen está escaneado
+                const multiplicador = typeof window.getMultiplicadorXP === 'function' ? window.getMultiplicadorXP(window.miMascota) : 1.0;
+                if(window.ganarXP) window.ganarXP(Math.floor(25 * multiplicador));
+                
             } else {
                 alert("No tienes manzanas en tu mochila.");
             }
@@ -400,7 +423,7 @@ function iniciarSecuenciaBienvenida() {
         xpNeeded: 100,
         breedCount: 0,
         stats: statsV8, 
-        hidden_gene: window.generarGenOculto(), // ✨ INYECCIÓN DEL GEN OCULTO V8.0
+        hidden_gene: window.generarGenOculto(), 
         scanned: false,
         genes: {
             cuerpo: { dom: shapeRandom, rec: formasBase[Math.floor(Math.random() * formasBase.length)] },
