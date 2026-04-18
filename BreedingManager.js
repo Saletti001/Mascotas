@@ -6,8 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
     
     const style = document.createElement('style');
     style.innerHTML = `
-        #incubator-grid::-webkit-scrollbar { display: none; } /* Chrome, Safari y Opera */
-        #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; } /* IE, Edge y Firefox */
+        #incubator-grid::-webkit-scrollbar { display: none; }
+        #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; }
     `;
     document.head.appendChild(style);
 
@@ -264,7 +264,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 geno.id = window.generarNuevoID();
             }
 
-            // ✨ CORRECCIÓN VISUAL: Reemplazado white-space: nowrap por un layout flexible (flex-wrap: wrap)
             btn.innerHTML = `
                 <div style="width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #333; flex-shrink: 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); color: ${pColor};">${svgContent}</div>
                 <div style="display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-left: 15px; overflow: hidden;">
@@ -355,11 +354,18 @@ document.addEventListener("DOMContentLoaded", () => {
                     afinidad: window.cruzarRasgo(p1Genes.afinidad, p2Genes.afinidad, "Normal")
                 };
 
+                // ✨ CORRECCIÓN: Herencia de IVs controlada. Si la función oficial no existe, usa varianza natural (-5% a +10%)
+                const varianza = (stat1, stat2) => {
+                    const base = (stat1 + stat2) / 2;
+                    const multiplicador = 0.95 + (Math.random() * 0.15); 
+                    return Math.floor(base * multiplicador);
+                };
+
                 const statsHijo = {
-                    hp: window.heredarStat(padre1.stats?.hp || 50, padre2.stats?.hp || 50),
-                    atk: window.heredarStat(padre1.stats?.atk || 15, padre2.stats?.atk || 15),
-                    spd: window.heredarStat(padre1.stats?.spd || 15, padre2.stats?.spd || 15),
-                    luk: window.heredarStat(padre1.stats?.luk || 15, padre2.stats?.luk || 15)
+                    hp: typeof window.heredarStat === 'function' ? window.heredarStat(padre1.stats?.hp || 50, padre2.stats?.hp || 50) : varianza(padre1.stats?.hp || 50, padre2.stats?.hp || 50),
+                    atk: typeof window.heredarStat === 'function' ? window.heredarStat(padre1.stats?.atk || 15, padre2.stats?.atk || 15) : varianza(padre1.stats?.atk || 15, padre2.stats?.atk || 15),
+                    spd: typeof window.heredarStat === 'function' ? window.heredarStat(padre1.stats?.spd || 15, padre2.stats?.spd || 15) : varianza(padre1.stats?.spd || 15, padre2.stats?.spd || 15),
+                    luk: typeof window.heredarStat === 'function' ? window.heredarStat(padre1.stats?.luk || 15, padre2.stats?.luk || 15) : varianza(padre1.stats?.luk || 15, padre2.stats?.luk || 15)
                 };
 
                 const colorHijo = Math.random() > 0.5 ? (padre1.color || padre1.base_color || "#77DD77") : (padre2.color || padre2.base_color || "#77DD77");

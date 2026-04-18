@@ -5,6 +5,28 @@
 window.misGenos = window.misGenos || []; 
 window.maxGenoSlots = window.maxGenoSlots || 6; 
 
+// =========================================
+// NUEVA TABLA DE IVs Y GENÉTICA (V8.0)
+// =========================================
+window.TABLA_IVS = {
+    "Común": { hp: [35, 55], atk: [10, 22], spd: [8, 25], luk: [5, 15] },
+    "Raro": { hp: [50, 75], atk: [18, 35], spd: [15, 40], luk: [10, 25] },
+    "Épico": { hp: [70, 100], atk: [28, 50], spd: [25, 55], luk: [20, 35] },
+    "Legendario": { hp: [95, 130], atk: [40, 70], spd: [35, 80], luk: [30, 50] },
+    "Mítico": { hp: [120, 160], atk: [60, 100], spd: [50, 110], luk: [45, 70] }
+};
+
+window.generarStatsPorRareza = function(rareza) {
+    const limites = window.TABLA_IVS[rareza] || window.TABLA_IVS["Común"];
+    const randStat = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    return {
+        hp: randStat(limites.hp[0], limites.hp[1]),
+        atk: randStat(limites.atk[0], limites.atk[1]),
+        spd: randStat(limites.spd[0], limites.spd[1]),
+        luk: randStat(limites.luk[0], limites.luk[1])
+    };
+};
+
 document.addEventListener("DOMContentLoaded", () => {
     
     setTimeout(() => {
@@ -172,15 +194,12 @@ document.addEventListener("DOMContentLoaded", () => {
         
         const todos = [];
         
-        // ✨ CORRECCIÓN: Filtro infalible para no duplicar a tu mascota
         if (window.misGenos) {
             const idMascotaActual = window.miMascota ? String(window.miMascota.id) : null;
             
-            // Buscamos la mascota actual y la ponemos de primero
             const mascota = window.misGenos.find(g => String(g.id) === idMascotaActual);
             if (mascota && !mascota.isEgg) todos.push(mascota);
             
-            // Añadimos al resto asegurándonos de que sus IDs no coincidan con la mascota
             const otros = window.misGenos.filter(g => String(g.id) !== idMascotaActual);
             otros.forEach(g => {
                 if (!g.isEgg) todos.push(g);
@@ -298,9 +317,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// =========================================
-// GENERADOR GLOBAL DE IDs SECUENCIALES
-// =========================================
 window.generarNuevoID = function() {
     let count = parseInt(localStorage.getItem('genoGlobalCounter') || '0');
     count++;
@@ -329,16 +345,21 @@ function iniciarSecuenciaBienvenida() {
     const elementoRandom = elementosBase[Math.floor(Math.random() * elementosBase.length)];
     const recElementoRandom = elementosBase[Math.floor(Math.random() * elementosBase.length)];
 
-    const randStat = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-
     const prefijos = ["Neo", "Bio", "Geno", "Cyto", "Viro", "Rad", "Syn", "Evo", "Nexo", "Mut"];
     const sufijos = ["-X", "-Prime", "morph", "cyte", "tron", "plasm", "-7", "core", "gen", "-Z"];
     const nombreAleatorio = prefijos[Math.floor(Math.random() * prefijos.length)] + sufijos[Math.floor(Math.random() * sufijos.length)];
 
+    // ✨ MECÁNICA "EL GORDO": 0.1% de nacer Legendario directamente.
+    const esGordo = Math.random() <= 0.001; 
+    const rarezaInicial = esGordo ? "Legendario" : "Común";
+    const statsV8 = window.generarStatsPorRareza(rarezaInicial);
+
+    if (esGordo) console.log("🎰 ¡EL GORDO HA SIDO ACTIVADO! 0.1% conseguido.");
+
     const miPrimerGeno = {
         id: window.generarNuevoID(),
         name: nombreAleatorio,
-        rarity: "Común",
+        rarity: rarezaInicial,
         element: elementoRandom, 
         body_shape: shapeRandom, 
         color: colorRandom,
@@ -351,7 +372,7 @@ function iniciarSecuenciaBienvenida() {
         xp: 0,
         xpNeeded: 100,
         breedCount: 0,
-        stats: { hp: randStat(45, 60), atk: randStat(10, 25), spd: randStat(10, 25), luk: randStat(10, 25) },
+        stats: statsV8, // Aplicamos IVs dinámicos V8.0
         genes: {
             cuerpo: { dom: shapeRandom, rec: formasBase[Math.floor(Math.random() * formasBase.length)] },
             ojos: { dom: eyeRandom, rec: obtenerClaveAleatoria(typeof dicOjos !== 'undefined' ? dicOjos : {}) },
@@ -400,7 +421,8 @@ function iniciarSecuenciaBienvenida() {
         setTimeout(() => {
             capsule.style.display = "none";
             text.innerText = `¡${miPrimerGeno.name} Sintetizado!`;
-            subtext.innerText = "Estable e integrado. Listo para la investigación.";
+            if(esGordo) subtext.innerHTML = "<span style='color: #ffcc00; font-weight:bold;'>¡EVENTO GORDO! Has obtenido un espécimen Legendario.</span>";
+            else subtext.innerText = "Estable e integrado. Listo para la investigación.";
 
             let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
             svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
