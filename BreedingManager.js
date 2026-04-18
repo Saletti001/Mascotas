@@ -187,12 +187,20 @@ document.addEventListener("DOMContentLoaded", () => {
         const domText = document.getElementById("id-card-dom");
         const recText = document.getElementById("id-card-rec");
 
+        // ✨ ACTUALIZACIÓN: El Escáner ahora revela el Gen Oculto de la V8.0
         if (secretGeneContainer) {
             if (g.scanned) {
                 if (scanBtn) scanBtn.classList.add("hidden");
                 if (lockedText) lockedText.classList.add("hidden");
-                if (domText) { domText.innerHTML = `🧬 Dom: <span style="color:#fff;">${(g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal")}</span>`; domText.classList.remove("hidden"); }
-                if (recText) { recText.innerHTML = `🔬 Rec: <span style="color:#80deea;">${(g.genes && g.genes.afinidad) ? g.genes.afinidad.rec : "Normal"}</span>`; recText.classList.remove("hidden"); }
+                
+                if (domText) { 
+                    domText.innerHTML = `🧬 Gen: <span style="color:#fff; font-weight:bold;">${g.hidden_gene ? g.hidden_gene.name : "Estándar"}</span>`; 
+                    domText.classList.remove("hidden"); 
+                }
+                if (recText) { 
+                    recText.innerHTML = `📝 Efecto: <span style="color:#80deea;">${g.hidden_gene ? g.hidden_gene.desc : "Sin mutación especial"}</span>`; 
+                    recText.classList.remove("hidden"); 
+                }
             } else {
                 if (scanBtn) {
                     scanBtn.classList.remove("hidden");
@@ -354,7 +362,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     afinidad: window.cruzarRasgo(p1Genes.afinidad, p2Genes.afinidad, "Normal")
                 };
 
-                // ✨ CORRECCIÓN: Herencia de IVs controlada. Si la función oficial no existe, usa varianza natural (-5% a +10%)
                 const varianza = (stat1, stat2) => {
                     const base = (stat1 + stat2) / 2;
                     const multiplicador = 0.95 + (Math.random() * 0.15); 
@@ -366,6 +373,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     atk: typeof window.heredarStat === 'function' ? window.heredarStat(padre1.stats?.atk || 15, padre2.stats?.atk || 15) : varianza(padre1.stats?.atk || 15, padre2.stats?.atk || 15),
                     spd: typeof window.heredarStat === 'function' ? window.heredarStat(padre1.stats?.spd || 15, padre2.stats?.spd || 15) : varianza(padre1.stats?.spd || 15, padre2.stats?.spd || 15),
                     luk: typeof window.heredarStat === 'function' ? window.heredarStat(padre1.stats?.luk || 15, padre2.stats?.luk || 15) : varianza(padre1.stats?.luk || 15, padre2.stats?.luk || 15)
+                };
+
+                // ✨ INYECCIÓN: Lógica de herencia de Genes Ocultos V8.0
+                const heredarGenOculto = () => {
+                    const r = Math.random();
+                    if(r < 0.4 && padre1.hidden_gene) return padre1.hidden_gene;
+                    if(r < 0.8 && padre2.hidden_gene) return padre2.hidden_gene;
+                    return typeof window.generarGenOculto === 'function' ? window.generarGenOculto() : { id: "ninguno", name: "Estándar", desc: "Sin efecto especial" };
                 };
 
                 const colorHijo = Math.random() > 0.5 ? (padre1.color || padre1.base_color || "#77DD77") : (padre2.color || padre2.base_color || "#77DD77");
@@ -383,6 +398,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     hatchTime: 0, 
                     generation: genHijo, breedCount: 0, level: 1, xp: 0, xpNeeded: 100,
                     genes: genesHijo, stats: statsHijo,
+                    hidden_gene: heredarGenOculto(), // Se asigna el gen heredado o mutado
+                    scanned: false,
                     body_shape: genesHijo.cuerpo.dom, eye_type: genesHijo.ojos.dom, mouth_type: genesHijo.boca.dom,
                     wing_type: genesHijo.espalda.dom, hat_type: genesHijo.cabeza.dom, element: genesHijo.afinidad.dom,
                     base_color: colorHijo, color: colorHijo, reward: 100

@@ -6,7 +6,7 @@ window.misGenos = window.misGenos || [];
 window.maxGenoSlots = window.maxGenoSlots || 6; 
 
 // =========================================
-// NUEVA TABLA DE IVs Y GENÉTICA (V8.0)
+// TABLA DE IVs (V8.0)
 // =========================================
 window.TABLA_IVS = {
     "Común": { hp: [35, 55], atk: [10, 22], spd: [8, 25], luk: [5, 15] },
@@ -27,6 +27,37 @@ window.generarStatsPorRareza = function(rareza) {
     };
 };
 
+// =========================================
+// BIBLIOTECA DE GENES OCULTOS (V8.0)
+// =========================================
+window.GENES_OCULTOS = {
+    "resiliencia_ultima": { name: "Resiliencia Última", desc: "x1.4 ATK/SPD si HP < 15%" },
+    "piel_cristal": { name: "Piel de Cristal", desc: "Primer golpe recibe 0 daño" },
+    "velocidad_fantasma": { name: "Velocidad Fantasma", desc: "20% probabilidad de turno doble" },
+    "reflejo_genetico": { name: "Reflejo Genético", desc: "Devuelve 30% del daño crítico" },
+    "elemento_dual": { name: "Elemento Dual", desc: "Segundo elemento activable en combate" },
+    "afinidad_latente": { name: "Afinidad Latente", desc: "Mitiga debilidad elemental a x0.75" },
+    "fertilidad_pura": { name: "Fertilidad Pura", desc: "Límite de crías +2 (Total 9)" },
+    "dominancia_genetica": { name: "Dominancia Genética", desc: "70% dominancia en herencia de rasgos" },
+    "cooldown_acelerado": { name: "Cooldown Acelerado", desc: "-50% tiempo de descanso cría" },
+    "catalizador_rareza": { name: "Catalizador de Rareza", desc: "+2% Éxito Crítico en Reactor" },
+    "aprendiz_acelerado": { name: "Aprendiz Acelerado", desc: "x1.25 XP obtenida" },
+    "umbral_despertar": { name: "Umbral del Despertar", desc: "+5 todos los IVs al Nv. 25" },
+    "cromatico_latente": { name: "Cromático Latente", desc: "Desbloquea skin alternativa" },
+    "aura_linaje": { name: "Aura de Linaje", desc: "Aureola visual inmutable" },
+    "patron_holografico": { name: "Patrón Holográfico", desc: "Patrón de piel animado" },
+    "esencia_concentrada": { name: "Esencia Concentrada", desc: "x2 Esencia Vital al liberar" },
+    "resistencia_colapso": { name: "Resistencia al Colapso", desc: "Evita colapso total en Reactor" },
+    "gen_mentor": { name: "Gen Mentor", desc: "+15% XP para becados" },
+    "aura_liderazgo": { name: "Aura de Liderazgo", desc: "+10% ATK a todo el equipo" }
+};
+
+window.generarGenOculto = function() {
+    const keys = Object.keys(window.GENES_OCULTOS);
+    const randomKey = keys[Math.floor(Math.random() * keys.length)];
+    return { id: randomKey, ...window.GENES_OCULTOS[randomKey] };
+};
+
 document.addEventListener("DOMContentLoaded", () => {
     
     setTimeout(() => {
@@ -35,7 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (noHayPartida) {
             const pedestal = document.getElementById("geno-container");
             if (pedestal) pedestal.innerHTML = "";
-            
             iniciarSecuenciaBienvenida();
         }
     }, 100);
@@ -349,12 +379,9 @@ function iniciarSecuenciaBienvenida() {
     const sufijos = ["-X", "-Prime", "morph", "cyte", "tron", "plasm", "-7", "core", "gen", "-Z"];
     const nombreAleatorio = prefijos[Math.floor(Math.random() * prefijos.length)] + sufijos[Math.floor(Math.random() * sufijos.length)];
 
-    // ✨ MECÁNICA "EL GORDO": 0.1% de nacer Legendario directamente.
     const esGordo = Math.random() <= 0.001; 
     const rarezaInicial = esGordo ? "Legendario" : "Común";
     const statsV8 = window.generarStatsPorRareza(rarezaInicial);
-
-    if (esGordo) console.log("🎰 ¡EL GORDO HA SIDO ACTIVADO! 0.1% conseguido.");
 
     const miPrimerGeno = {
         id: window.generarNuevoID(),
@@ -372,7 +399,9 @@ function iniciarSecuenciaBienvenida() {
         xp: 0,
         xpNeeded: 100,
         breedCount: 0,
-        stats: statsV8, // Aplicamos IVs dinámicos V8.0
+        stats: statsV8, 
+        hidden_gene: window.generarGenOculto(), // ✨ INYECCIÓN DEL GEN OCULTO V8.0
+        scanned: false,
         genes: {
             cuerpo: { dom: shapeRandom, rec: formasBase[Math.floor(Math.random() * formasBase.length)] },
             ojos: { dom: eyeRandom, rec: obtenerClaveAleatoria(typeof dicOjos !== 'undefined' ? dicOjos : {}) },
