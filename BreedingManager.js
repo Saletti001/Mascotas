@@ -222,16 +222,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const todosMisGenos = [];
         
-        // ✨ CORRECCIÓN: Filtro infalible anti-duplicados
         if (window.misGenos) {
             const idMascotaActual = window.miMascota ? String(window.miMascota.id) : null;
             
-            // Añadir mascota actual (si es válida)
             if (window.miMascota && window.miMascota.id && window.miMascota.id !== "temp" && !window.miMascota.isEgg) {
                 todosMisGenos.push(window.miMascota);
             }
             
-            // Añadir el resto excluyendo a la mascota actual
             const otros = window.misGenos.filter(g => String(g.id) !== idMascotaActual && !g.isEgg);
             todosMisGenos.push(...otros);
         }
@@ -267,13 +264,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 geno.id = window.generarNuevoID();
             }
 
+            // ✨ CORRECCIÓN VISUAL: Reemplazado white-space: nowrap por un layout flexible (flex-wrap: wrap)
             btn.innerHTML = `
                 <div style="width: 75px; height: 75px; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.4); border-radius: 10px; border: 1px solid #333; flex-shrink: 0; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); color: ${pColor};">${svgContent}</div>
                 <div style="display: flex; flex-direction: column; justify-content: center; flex-grow: 1; padding-left: 15px; overflow: hidden;">
                     <span style="color: #fff; font-weight: 900; font-size: 14px; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 2px;">${geno.name || 'Sujeto'} <span style="color: #00d2ff; font-size: 11px;">Nv.${geno.level || 1}</span></span>
-                    <span style="color: #aaa; font-size: 10px; margin-bottom: 6px; text-transform: uppercase; white-space: nowrap;">
-                        Base: ${pShape} <span style="color:#666; margin: 0 4px;">|</span> <span style="color: #888;">ID: #${geno.id}</span>
-                    </span>
+                    
+                    <div style="color: #aaa; font-size: 10px; margin-bottom: 6px; text-transform: uppercase; display: flex; flex-wrap: wrap; gap: 4px; align-items: center;">
+                        <span>Base: ${pShape}</span>
+                        <span style="color:#555;">|</span>
+                        <span style="color: #888;">ID: #${geno.id}</span>
+                    </div>
+
                     ${statusText}
                 </div>
                 <button class="btn-info-geno" style="background: rgba(77, 208, 225, 0.1); border: 1px solid #4dd0e1; color: #fff; width: 45px; height: 45px; border-radius: 8px; font-size: 22px; cursor: pointer; flex-shrink: 0; display: flex; justify-content: center; align-items: center; margin-left: 10px; transition: 0.2s; box-shadow: inset 0 0 5px rgba(77, 208, 225, 0.3);" title="Análisis Genético">🔬</button>
