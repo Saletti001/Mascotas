@@ -2,7 +2,7 @@ function generarSvgGeno(genesVisuales) {
     const safeData = genesVisuales || {};
     
     // =========================================
-    // 🧬 DIBUJO DE CÁPSULA CON SIMETRÍA Y TAPAS METÁLICAS
+    // 🧬 DIBUJO DE CÁPSULA (HUEVOS)
     // =========================================
     if (safeData.isEgg) {
         const adnColor = safeData.color || safeData.base_color || "#00d2ff";
@@ -86,12 +86,13 @@ function generarSvgGeno(genesVisuales) {
     }
 
     // =========================================
-    // 🧬 DIBUJO DE GENOS ADULTOS (Sin cambios)
+    // 🧬 DIBUJO DE GENOS ADULTOS
     // =========================================
     const color = safeData.base_color || "#77DD77";
     const shape = safeData.body_shape || "frijol";
     const rndId = Math.floor(Math.random() * 100000);
     const gradId = `grad-${rndId}`;
+    const maskId = `mask-cuerpo-${rndId}`; // Nueva máscara para los cosméticos
 
     let safeAnclaje = (typeof anclajes !== 'undefined' && anclajes[shape]) 
         ? {...anclajes[shape]} 
@@ -181,27 +182,79 @@ function generarSvgGeno(genesVisuales) {
             shineD = "M 45 48 Q 60 38 75 40 Q 55 52 50 75 Q 40 60 45 48 Z"; break;
     }
 
+    // =========================================
+    // ✨ INYECCIÓN V8.0: EFECTOS COSMÉTICOS DE GENES OCULTOS
+    // =========================================
+    let capaFondo = ""; // Para auras detrás del Geno
+    let capaCosmeticaFrente = ""; // Para patrones sobre la piel del Geno
+
+    if (safeData.scanned && safeData.hidden_gene) {
+        const idGen = safeData.hidden_gene.id;
+
+        // 1. Aura de Linaje (Fondo Inmutable)
+        if (idGen === "aura_linaje") {
+            capaFondo = `
+                <g class="anim-aura">
+                    <circle cx="80" cy="85" r="70" fill="none" stroke="#ffcc00" stroke-width="4" stroke-dasharray="15 10" opacity="0.6"/>
+                    <circle cx="80" cy="85" r="60" fill="none" stroke="#ffffff" stroke-width="1.5" stroke-dasharray="5 20" opacity="0.8"/>
+                </g>
+            `;
+        }
+
+        // 2. Patrón Holográfico (Sobre la piel, enmascarado)
+        if (idGen === "patron_holografico") {
+            capaCosmeticaFrente = `
+                <g clip-path="url(#${maskId})" class="anim-holograma">
+                    <path d="M 0 0 L 200 160 M 0 20 L 200 180 M 0 40 L 200 200 M 0 60 L 200 220" stroke="#00d2ff" stroke-width="1.5" opacity="0.4" stroke-dasharray="10 5" />
+                    <path d="M 200 0 L 0 160 M 200 20 L 0 180 M 200 40 L 0 200 M 200 60 L 0 220" stroke="#00d2ff" stroke-width="1.5" opacity="0.4" stroke-dasharray="10 5" />
+                </g>
+            `;
+        }
+    }
+
     return `
     <svg width="200" height="190" viewBox="-20 0 200 160" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">
         <defs>
-            <linearGradient id="${gradId}" x1="0%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#000" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity="0.25"/></linearGradient>
+            <linearGradient id="${gradId}" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#000" stop-opacity="0"/>
+                <stop offset="100%" stop-color="#000" stop-opacity="0.25"/>
+            </linearGradient>
+            
+            <clipPath id="${maskId}">
+                <path d="${pathD}" />
+            </clipPath>
         </defs>
         <style>
             @keyframes respirar { 0%, 100% { transform: scale(1); } 50% { transform: scaleY(0.97) scaleX(1.02); } }
             @keyframes parpadear { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(0.05); } }
             @keyframes propulsor { 0% { transform: scaleY(1); opacity: 0.9; } 100% { transform: scaleY(1.5); opacity: 1; } }
+            @keyframes rotarAura { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+            @keyframes deslizarHolograma { 0% { transform: translateY(-20px); opacity: 0.3; } 50% { opacity: 0.7; } 100% { transform: translateY(20px); opacity: 0.3; } }
+            
             .g-cuerpo { transform-origin: 80px 136px; animation: respirar 3.5s ease-in-out infinite; }
             .g-ojos { transform-origin: 80px 85px; animation: parpadear 5s infinite; }
             .anim-flotar { animation: respirar 3s ease-in-out infinite; }
             .anim-fuego { animation: propulsor 0.1s infinite alternate ease-in-out; }
+            
+            /* Animaciones de Genes Ocultos V8.0 */
+            .anim-aura { transform-origin: 80px 85px; animation: rotarAura 15s linear infinite; }
+            .anim-holograma { animation: deslizarHolograma 4s ease-in-out infinite alternate; }
         </style>
+        
+        ${capaFondo}
+        
         <g class="g-cuerpo">
             <g transform="translate(${safeAnclaje.espaldaX}, ${safeAnclaje.espaldaY})">${wing}</g>
             ${extras}
+            
             <path d="${pathD}" fill="${color}" stroke="#1a2a36" stroke-width="5"/>
             <path d="${pathD}" fill="url(#${gradId})"/>
             ${detallesFrente}
+            
             <path d="${shineD}" fill="#fff" opacity="0.4"/>
+            
+            ${capaCosmeticaFrente}
+            
             <g class="g-ojos">${ojo}</g>
             <g class="g-boca">${boca}</g>
             <g transform="translate(${safeAnclaje.cabezaX}, ${safeAnclaje.cabezaY})">${hat}</g>
