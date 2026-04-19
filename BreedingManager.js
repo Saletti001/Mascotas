@@ -163,7 +163,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("id-card-rarity").innerText = g.rarity || "Común";
         document.getElementById("id-card-element").innerText = (g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal");
         
-        // ✨ APLICAMOS LA LÓGICA DEL GEN ACTIVO A LA UI
         const maxCrias = typeof window.getMaxCrias === 'function' ? window.getMaxCrias(g) : 7;
         const criasEl = document.getElementById("id-card-breeds");
         if(criasEl) criasEl.innerText = `${maxCrias - (g.breedCount || 0)} de ${maxCrias}`;
@@ -250,7 +249,6 @@ document.addEventListener("DOMContentLoaded", () => {
         todosMisGenos.forEach(geno => {
             const yaSeleccionado = (padre1 && String(padre1.id) === String(geno.id)) || (padre2 && String(padre2.id) === String(geno.id));
             
-            // ✨ APLICAMOS EL LÍMITE DE CRÍAS DINÁMICO AL SELECTOR
             const maxCrias = typeof window.getMaxCrias === 'function' ? window.getMaxCrias(geno) : 7;
             const cumpleRequisitos = ((geno.breedCount || 0) < maxCrias) && !yaSeleccionado;
 
@@ -366,9 +364,23 @@ document.addEventListener("DOMContentLoaded", () => {
                     afinidad: window.cruzarRasgo(p1Genes.afinidad, p2Genes.afinidad, "Normal")
                 };
 
+                // ✨ ACTUALIZACIÓN V8.0: Sistema de Degeneración Genética (Pesado hacia abajo)
                 const varianza = (stat1, stat2) => {
                     const base = (stat1 + stat2) / 2;
-                    const multiplicador = 0.95 + (Math.random() * 0.15); 
+                    const r = Math.random();
+                    let multiplicador;
+                    
+                    if (r < 0.60) {
+                        // 60% prob: Degeneración genética (0.85x a 0.98x)
+                        multiplicador = 0.85 + (Math.random() * 0.13);
+                    } else if (r < 0.90) {
+                        // 30% prob: Estabilidad genética (0.98x a 1.02x)
+                        multiplicador = 0.98 + (Math.random() * 0.04);
+                    } else {
+                        // 10% prob: Mutación perfecta (1.02x a 1.10x)
+                        multiplicador = 1.02 + (Math.random() * 0.08);
+                    }
+                    
                     return Math.floor(base * multiplicador);
                 };
 
@@ -379,7 +391,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     luk: typeof window.heredarStat === 'function' ? window.heredarStat(padre1.stats?.luk || 15, padre2.stats?.luk || 15) : varianza(padre1.stats?.luk || 15, padre2.stats?.luk || 15)
                 };
 
-                // Lógica de herencia de Genes Ocultos V8.0
                 const heredarGenOculto = () => {
                     const r = Math.random();
                     if(r < 0.4 && padre1.hidden_gene) return padre1.hidden_gene;
