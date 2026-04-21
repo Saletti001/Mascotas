@@ -31,7 +31,6 @@ window.generarStatsPorRareza = function(rareza) {
 // 🧬 BIBLIOTECA DE GENES CATEGORIZADA (V9.0)
 // =========================================
 window.BASE_DATOS_GENES_V9 = {
-
     cosmetico: [
         { id: "cromatico_latente", name: "Cromático Latente", desc: "Desbloquea skin alternativo invertido" },
         { id: "aura_linaje", name: "Aura de Linaje", desc: "Aureola visual permanente" },
@@ -40,11 +39,10 @@ window.BASE_DATOS_GENES_V9 = {
         { id: "forma_invertida", name: "Forma Invertida", desc: "Paleta en negativo fotográfico" },
         { id: "rastro_elemental", name: "Rastro Elemental", desc: "Rastro visual al moverse" },
         { id: "sombra_genetica", name: "Sombra Genética", desc: "Sombra con animación independiente" },
-        { id: "emblema_fundador", name: "Emblema Fundador", desc: "Insignia élite integrada en el cuerpo" },
+        { id: "emblema_fundador", name: "Emblema Fundador", desc: "Insignia élite integrada" },
         { id: "eco_visual", name: "Eco Visual", desc: "Réplica translúcida con retraso" },
         { id: "metamorfosis_estacional", name: "Metamorfosis Estacional", desc: "Cambio de tonalidad estacional" }
     ],
-    // ... (el resto de categorías siguen igual)
     combate: [
         { id: "resiliencia_ultima", name: "Resiliencia Última", desc: "x1.4 ATK/SPD si HP < 15%" },
         { id: "piel_cristal", name: "Piel de Cristal", desc: "Primer golpe recibe 0 daño" },
@@ -75,11 +73,13 @@ window.BASE_DATOS_GENES_V9 = {
     ]
 };
 
-// Generador Maestro V9.0 con regla B != C
+// =========================================
+// ✨ GENERADOR MAESTRO V9.0 (SISTEMA DE DOS DADOS)
+// =========================================
 window.generarGenesV9 = function(rareza) {
     const slots = { A: null, B: null, C: null };
     
-    // Probabilidades base (Ejemplo dinámico escalado por rareza)
+    // Probabilidades base de DESBLOQUEAR los slots
     let probA = 0.05, probB = 0.20, probC = 0.10;
     if (rareza === "Raro") { probA = 0.10; probB = 0.40; probC = 0.20; }
     if (rareza === "Épico") { probA = 0.15; probB = 0.70; probC = 0.40; }
@@ -89,9 +89,31 @@ window.generarGenesV9 = function(rareza) {
     const randomFromCat = (catArray) => catArray[Math.floor(Math.random() * catArray.length)];
     const catsFuncionales = ["combate", "elemental", "crianza", "progresion", "reactor_santuario", "social"];
 
-    // Tirada Slot A (Cosmético)
+    // 🎲 DADO 1: PRIVILEGIO (¿Se desbloquea el Slot A?)
     if (Math.random() <= probA) {
-        slots.A = randomFromCat(window.BASE_DATOS_GENES_V9.cosmetico);
+        
+        // 🎲 DADO 2: UNIVERSAL DE SUERTE (¿Qué cosmético te toca?)
+        const suerte = Math.random();
+        let idElegido = "";
+
+        if (suerte <= 0.55) {
+            // 55% de que sea RARO
+            const raros = ["brillo_bioluminiscente", "rastro_elemental", "eco_visual"];
+            idElegido = raros[Math.floor(Math.random() * raros.length)];
+        } else if (suerte <= 0.85) {
+            // 30% de que sea ÉPICO
+            const epicos = ["cromatico_latente", "forma_invertida", "sombra_genetica", "metamorfosis_estacional"];
+            idElegido = epicos[Math.floor(Math.random() * epicos.length)];
+        } else if (suerte <= 0.98) {
+            // 13% de que sea LEGENDARIO
+            const legendarios = ["aura_linaje", "emblema_fundador"];
+            idElegido = legendarios[Math.floor(Math.random() * legendarios.length)];
+        } else {
+            // 2% de que sea MÍTICO (Jackpot absoluto)
+            idElegido = "patron_holografico";
+        }
+
+        slots.A = window.BASE_DATOS_GENES_V9.cosmetico.find(g => g.id === idElegido);
     }
 
     // Tirada Slot B (Funcional 1)
@@ -103,7 +125,6 @@ window.generarGenesV9 = function(rareza) {
 
     // Tirada Slot C (Funcional 2) con Regla B != C
     if (Math.random() <= probC) {
-        // Filtrar la categoría que ya salió en B
         const catsDisponiblesC = catsFuncionales.filter(c => c !== catB);
         const catC = catsDisponiblesC[Math.floor(Math.random() * catsDisponiblesC.length)];
         slots.C = randomFromCat(window.BASE_DATOS_GENES_V9[catC]);
@@ -411,7 +432,7 @@ function iniciarSecuenciaBienvenida() {
         xpNeeded: 100,
         breedCount: 0,
         stats: statsV8, 
-        hidden_genes: window.generarGenesV9(rarezaInicial), // ✨ ESTRUCTURA 3 SLOTS V9.0
+        hidden_genes: window.generarGenesV9(rarezaInicial), 
         scanned: false,
         genes: {
             cuerpo: { dom: shapeRandom, rec: formasBase[Math.floor(Math.random() * formasBase.length)] },
