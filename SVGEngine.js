@@ -104,7 +104,7 @@ function generarSvgGeno(genesVisuales) {
     }
 
     // =========================================
-    // ✨ INYECCIÓN V9.0: LOS 10 GENES COSMÉTICOS
+    // ✨ INYECCIÓN V9.0: LOS 10 GENES COSMÉTICOS (Eco Potenciado)
     // =========================================
     let capaFondo = ""; 
     let capaCosmeticaFrente = ""; 
@@ -115,31 +115,26 @@ function generarSvgGeno(genesVisuales) {
     if (safeData.scanned && safeData.hidden_genes && safeData.hidden_genes.A) {
         const idGenCosmetico = safeData.hidden_genes.A.id;
 
-        // 1. Cromático Latente (Épico): Hue invertido intenso
         if (idGenCosmetico === "cromatico_latente") {
             estiloCuerpoEnLinea = "filter: hue-rotate(180deg) saturate(1.5);";
         }
         
-        // 2. Forma Invertida (Épico): Paleta negativa fotográfica
         if (idGenCosmetico === "forma_invertida") {
             estiloCuerpoEnLinea = "filter: invert(1) contrast(1.2);";
         }
 
-        // 3. Metamorfosis Estacional (Épico): Cambio continuo de color
         if (idGenCosmetico === "metamorfosis_estacional") {
             claseCuerpoExtra = `anim-estacional-${rndId}`;
             cssExtra += `@keyframes hueShift-${rndId} { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } } 
                          .anim-estacional-${rndId} { animation: hueShift-${rndId} 8s linear infinite; }`;
         }
 
-        // 4. Brillo Bioluminiscente (Raro): Sombra pulsante del mismo color del Geno
         if (idGenCosmetico === "brillo_bioluminiscente") {
             claseCuerpoExtra = `anim-biolum-${rndId}`;
             cssExtra += `@keyframes biolum-${rndId} { 0% { filter: drop-shadow(0 0 5px ${color}); } 100% { filter: drop-shadow(0 0 20px ${color}); } } 
                          .anim-biolum-${rndId} { animation: biolum-${rndId} 2s infinite alternate ease-in-out; }`;
         }
 
-        // 5. Aura de Linaje (Legendario): Anillos inmutables
         if (idGenCosmetico === "aura_linaje") {
             capaFondo = `
                 <g class="anim-aura">
@@ -149,7 +144,6 @@ function generarSvgGeno(genesVisuales) {
             `;
         }
 
-        // 6. Patrón Holográfico (Mítico): Malla Cyberpunk Magenta
         if (idGenCosmetico === "patron_holografico") {
             capaCosmeticaFrente += `
                 <g clip-path="url(#${maskId})" class="anim-holograma">
@@ -159,7 +153,6 @@ function generarSvgGeno(genesVisuales) {
             `;
         }
 
-        // 7. Emblema Fundador (Legendario): Estrella dorada de élite en la frente
         if (idGenCosmetico === "emblema_fundador") {
             capaCosmeticaFrente += `
                 <g transform="translate(70, 45) scale(0.6)" opacity="0.9">
@@ -168,14 +161,12 @@ function generarSvgGeno(genesVisuales) {
             `;
         }
 
-        // 8. Sombra Genética (Épico): Sombra que baila independiente
         if (idGenCosmetico === "sombra_genetica") {
             cssExtra += `@keyframes sombraGen-${rndId} { 0% { transform: translate(15px, 5px) skewX(-10deg); } 100% { transform: translate(-15px, 5px) skewX(10deg); } } 
                          .anim-sombra-gen-${rndId} { animation: sombraGen-${rndId} 3s infinite alternate ease-in-out; transform-origin: 80px 136px; }`;
             capaFondo += `<g class="anim-sombra-gen-${rndId}"><path d="${pathD}" fill="#000" opacity="0.4"/></g>`;
         }
 
-        // 9. Rastro Elemental (Raro): Estela horizontal difuminada
         if (idGenCosmetico === "rastro_elemental") {
             capaFondo += `
                 <g transform="translate(-15, 0)" opacity="0.3" filter="blur(3px)">
@@ -184,9 +175,19 @@ function generarSvgGeno(genesVisuales) {
             `;
         }
 
-        // 10. Eco Visual (Raro): Clon translúcido que respira desfasado
+        // ✨ ECO VISUAL MEJORADO: Ahora tiene un desfase real y un brillo fantasmal
         if (idGenCosmetico === "eco_visual") {
-            cssExtra += `.anim-eco-${rndId} { transform-origin: 80px 136px; animation: respirar 3.5s ease-in-out infinite; animation-delay: -0.5s; opacity: 0.3; filter: hue-rotate(30deg); }`;
+            cssExtra += `
+                @keyframes ecoMove-${rndId} {
+                    0%, 100% { transform: translate(-10px, -5px) scale(1); opacity: 0.2; }
+                    50% { transform: translate(10px, 5px) scale(1.02); opacity: 0.5; }
+                }
+                .anim-eco-${rndId} { 
+                    transform-origin: 80px 136px; 
+                    animation: ecoMove-${rndId} 4s ease-in-out infinite; 
+                    filter: blur(2px) brightness(1.4) hue-rotate(20deg); 
+                }
+            `;
             capaFondo += `
                 <g class="anim-eco-${rndId}">
                     <g transform="translate(${safeAnclaje.espaldaX}, ${safeAnclaje.espaldaY})">${wing}</g>
