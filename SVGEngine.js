@@ -104,7 +104,7 @@ function generarSvgGeno(genesVisuales) {
     }
 
     // =========================================
-    // ✨ INYECCIÓN V9.0: LOS 10 GENES COSMÉTICOS (Eco Potenciado)
+    // ✨ INYECCIÓN V9.0: LOS 10 GENES COSMÉTICOS
     // =========================================
     let capaFondo = ""; 
     let capaCosmeticaFrente = ""; 
@@ -153,10 +153,40 @@ function generarSvgGeno(genesVisuales) {
             `;
         }
 
+        // ✨ EMBLEMA FUNDADOR REDISEÑADO: Flotante, Cambia de Color RGB, Estrella Giratoria
         if (idGenCosmetico === "emblema_fundador") {
+            cssExtra += `
+                @keyframes emblemaGlow-${rndId} {
+                    0% { filter: drop-shadow(0 0 5px #ffcc00) drop-shadow(0 0 15px #ff00ea); transform: translateY(0px) scale(0.6); }
+                    50% { filter: drop-shadow(0 0 10px #00d2ff) drop-shadow(0 0 25px #00d2ff) hue-rotate(180deg); transform: translateY(-4px) scale(0.65); }
+                    100% { filter: drop-shadow(0 0 5px #ffcc00) drop-shadow(0 0 15px #ff00ea) hue-rotate(360deg); transform: translateY(0px) scale(0.6); }
+                }
+                .anim-emblema-${rndId} { 
+                    animation: emblemaGlow-${rndId} 4s infinite alternate ease-in-out; 
+                    transform-origin: 15px 15px; 
+                }
+                @keyframes girarCentro-${rndId} {
+                    0% { transform: rotate(0deg) scale(1); }
+                    50% { transform: rotate(180deg) scale(1.2); }
+                    100% { transform: rotate(360deg) scale(1); }
+                }
+                .anim-centro-${rndId} {
+                    transform-origin: 15px 15px;
+                    animation: girarCentro-${rndId} 6s infinite linear;
+                }
+            `;
+
             capaCosmeticaFrente += `
-                <g transform="translate(70, 45) scale(0.6)" opacity="0.9">
-                    <path d="M 15 0 L 19 10 L 30 10 L 21 16 L 24 26 L 15 20 L 6 26 L 9 16 L 0 10 L 11 10 Z" fill="#ffcc00" stroke="#b8860b" stroke-width="1"/>
+                <g transform="translate(65, 30)">
+                    <g class="anim-emblema-${rndId}">
+                        <path d="M 15 -5 C 30 -5, 35 10, 35 15 C 35 25, 15 40, 15 40 C 15 40, -5 25, -5 15 C -5 10, 0 -5, 15 -5 Z" fill="rgba(255, 215, 0, 0.2)" stroke="#ffcc00" stroke-width="2" stroke-dasharray="4 2"/>
+                        
+                        <g class="anim-centro-${rndId}">
+                            <path d="M 15 2 L 19 10 L 28 10 L 21 16 L 24 25 L 15 20 L 6 25 L 9 16 L 2 10 L 11 10 Z" fill="#ffffff" stroke="#ffcc00" stroke-width="1"/>
+                            <circle cx="15" cy="15" r="4" fill="#00ffff" />
+                            <circle cx="15" cy="15" r="2" fill="#ffffff" />
+                        </g>
+                    </g>
                 </g>
             `;
         }
@@ -175,7 +205,6 @@ function generarSvgGeno(genesVisuales) {
             `;
         }
 
-        // ✨ ECO VISUAL MEJORADO: Ahora tiene un desfase real y un brillo fantasmal
         if (idGenCosmetico === "eco_visual") {
             cssExtra += `
                 @keyframes ecoMove-${rndId} {
