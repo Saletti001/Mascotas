@@ -10,13 +10,14 @@ document.addEventListener("DOMContentLoaded", () => {
         #incubator-grid::-webkit-scrollbar { display: none; }
         #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; }
         
-        /* ✨ CORRECCIÓN COLOR TÍTULO CRIANZA */
+        /* ✨ CORRECCIÓN COLOR Y BRILLO TÍTULO CRIANZA */
         #breeding-selector h3 {
-            color: #4dd0e1 !important;
-            text-shadow: 0 0 10px rgba(77, 208, 225, 0.5) !important;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: bold;
+            color: #80deea !important;
+            text-shadow: none !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+            font-weight: bold !important;
+            margin: 0 !important;
         }
     `;
     document.head.appendChild(style);
@@ -29,7 +30,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        // Ya no necesitamos copiar estilos, el CSS inyectado arriba se encarga.
         const targetTitle = document.querySelector("#breeding-selector h3");
         if (targetTitle) {
             targetTitle.innerText = "BASE DE DATOS GENÉTICA";
@@ -179,7 +179,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const secretGeneContainer = document.getElementById("id-card-secret-gene");
 
-        // ✨ UI DE GENES V9.0 CORREGIDA (Vertical y Texto Gen)
         if (secretGeneContainer) {
             secretGeneContainer.style.display = "flex";
             secretGeneContainer.style.flexDirection = "column";
@@ -284,7 +283,7 @@ document.addEventListener("DOMContentLoaded", () => {
             } else { styleStr += " border: 1px solid #555; background: #0a1118; opacity: 0.6; cursor: not-allowed;"; }
             btn.style = styleStr;
 
-            const pColor = geno.color || geno.base_color || "#ccc";
+            const pColor = geno.color || geno.visual_genes?.base_color || geno.base_color || "#ccc";
             const pShape = (geno.genes && geno.genes.cuerpo) ? geno.genes.cuerpo.dom : (geno.shape || geno.visual_genes?.body_shape || geno.body_shape || "gota");
             
             let svgContent = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '<span>Geno</span>';
@@ -376,7 +375,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const genHijo = Math.max(padre1.generation || 0, padre2.generation || 0) + 1;
                 const p1Genes = padre1.genes || { cuerpo: {dom: padre1.body_shape||"gota", rec: padre1.body_shape||"gota"}, ojos: {dom: padre1.eye_type||"estandar", rec: padre1.eye_type||"estandar"}, boca: {dom: padre1.mouth_type||"feliz", rec: padre1.mouth_type||"feliz"}, espalda: {dom: padre1.wing_type||"ninguno", rec: padre1.wing_type||"ninguno"}, cabeza: {dom: padre1.hat_type||"ninguno", rec: padre1.hat_type||"ninguno"}, afinidad: {dom: padre1.element||"Normal", rec: padre1.element||"Normal"} };
-                const p2Genes = padre2.genes || { cuerpo: {dom: padre2.body_shape||"gota", rec: padre2.body_shape||"gota"}, ojos: {dom: padre2.eye_type||"estandar", rec: padre2.eye_type||"estandar"}, boca: {dom: padre2.mouth_type||"feliz", rec: padre2.mouth_type||"feliz"}, espalda: {dom: padre1.wing_type||"ninguno", rec: padre1.wing_type||"ninguno"}, cabeza: {dom: padre1.hat_type||"ninguno", rec: padre1.hat_type||"ninguno"}, afinidad: {dom: padre1.element||"Normal", rec: padre1.element||"Normal"} };
+                const p2Genes = padre2.genes || { cuerpo: {dom: padre2.body_shape||"gota", rec: padre2.body_shape||"gota"}, ojos: {dom: padre2.eye_type||"estandar", rec: padre2.eye_type||"estandar"}, boca: {dom: padre2.mouth_type||"feliz", rec: padre2.mouth_type||"feliz"}, espalda: {dom: padre2.wing_type||"ninguno", rec: padre2.wing_type||"ninguno"}, cabeza: {dom: padre2.hat_type||"ninguno", rec: padre2.hat_type||"ninguno"}, afinidad: {dom: padre2.element||"Normal", rec: padre2.element||"Normal"} };
                 
                 const genesHijo = {
                     cuerpo: window.cruzarRasgo(p1Genes.cuerpo, p2Genes.cuerpo, "gota"),
@@ -408,13 +407,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     atk: typeof window.heredarStat === 'function' ? window.heredarStat(padre1.stats?.atk || 15, padre2.stats?.atk || 15) : varianza(padre1.stats?.atk || 15, padre2.stats?.atk || 15),
                     spd: typeof window.heredarStat === 'function' ? window.heredarStat(padre1.stats?.spd || 15, padre2.stats?.spd || 15) : varianza(padre1.stats?.spd || 15, padre2.stats?.spd || 15),
                     luk: typeof window.heredarStat === 'function' ? window.heredarStat(padre1.stats?.luk || 15, padre2.stats?.luk || 15) : varianza(padre1.stats?.luk || 15, padre2.stats?.luk || 15)
-                };
-
-                const heredarGenOculto = () => {
-                    const r = Math.random();
-                    if(r < 0.4 && padre1.hidden_gene) return padre1.hidden_gene;
-                    if(r < 0.8 && padre2.hidden_gene) return padre2.hidden_gene;
-                    return typeof window.generarGenOculto === 'function' ? window.generarGenOculto() : { id: "ninguno", name: "Estándar", desc: "Sin efecto especial" };
                 };
 
                 const colorHijo = Math.random() > 0.5 ? (padre1.color || padre1.base_color || "#77DD77") : (padre2.color || padre2.base_color || "#77DD77");
