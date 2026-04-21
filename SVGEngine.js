@@ -11,35 +11,22 @@ function generarSvgGeno(genesVisuales) {
         return `
         <svg width="100%" height="100%" viewBox="0 0 100 120" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">
             <defs>
-                <clipPath id="clip-cristal-${rndId}">
-                    <rect x="32" y="25" width="36" height="70" rx="12" />
-                </clipPath>
-
+                <clipPath id="clip-cristal-${rndId}"><rect x="32" y="25" width="36" height="70" rx="12" /></clipPath>
                 <linearGradient id="liquid-amber-${rndId}" x1="0%" y1="100%" x2="0%" y2="0%">
                     <stop offset="0%" stop-color="#ffbf00" stop-opacity="0.6"/> <stop offset="100%" stop-color="#ffbf00" stop-opacity="0.1"/>
                 </linearGradient>
-
                 <linearGradient id="glass-front-${rndId}" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.5"/>
-                    <stop offset="15%" stop-color="#ffffff" stop-opacity="0.1"/>
-                    <stop offset="85%" stop-color="#ffffff" stop-opacity="0.0"/>
-                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0.2"/>
+                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.5"/> <stop offset="15%" stop-color="#ffffff" stop-opacity="0.1"/>
+                    <stop offset="85%" stop-color="#ffffff" stop-opacity="0.0"/> <stop offset="100%" stop-color="#ffffff" stop-opacity="0.2"/>
                 </linearGradient>
-
                 <linearGradient id="metal-cap-${rndId}" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stop-color="#2c3e50"/>
-                    <stop offset="25%" stop-color="#7f8c8d"/>
-                    <stop offset="50%" stop-color="#bdc3c7"/>
-                    <stop offset="75%" stop-color="#7f8c8d"/>
+                    <stop offset="0%" stop-color="#2c3e50"/> <stop offset="25%" stop-color="#7f8c8d"/>
+                    <stop offset="50%" stop-color="#bdc3c7"/> <stop offset="75%" stop-color="#7f8c8d"/>
                     <stop offset="100%" stop-color="#2c3e50"/>
                 </linearGradient>
-
                 <filter id="glow-adn-${rndId}">
                     <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
-                    <feMerge>
-                        <feMergeNode in="coloredBlur"/>
-                        <feMergeNode in="SourceGraphic"/>
-                    </feMerge>
+                    <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
                 </filter>
             </defs>
 
@@ -47,7 +34,6 @@ function generarSvgGeno(genesVisuales) {
                 @keyframes bionucleoFlota { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
                 @keyframes adnPulse { 0%, 100% { opacity: 0.8; transform: scaleX(1); } 50% { opacity: 1; transform: scaleX(1.03); } }
                 @keyframes burbujas { 0% { transform: translateY(10px); opacity: 0; } 50% { opacity: 0.9; } 100% { transform: translateY(-35px); opacity: 0; } }
-                
                 .capsula-anim { animation: bionucleoFlota 3.5s ease-in-out infinite; transform-origin: center; }
                 .adn-glow { animation: adnPulse 2.5s ease-in-out infinite; transform-origin: center; filter: url(#glow-adn-${rndId}); }
                 .burbuja { animation: burbujas 2s ease-in infinite; fill: #ffffff; }
@@ -56,29 +42,21 @@ function generarSvgGeno(genesVisuales) {
             <g class="capsula-anim">
                 <rect x="32" y="25" width="36" height="70" rx="12" fill="none" stroke="#4dd0e1" stroke-width="1.5" stroke-opacity="0.7"/>
                 <rect x="32" y="25" width="36" height="70" rx="12" fill="url(#liquid-amber-${rndId})"/>
-
                 <g clip-path="url(#clip-cristal-${rndId})">
                     <g class="adn-glow">
                         <path d="M 60 35 C 30 45, 30 55, 50 65 C 70 75, 70 85, 60 95" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 4" opacity="0.5"/>
                         <path d="M 40 35 C 70 45, 70 55, 50 65 C 30 75, 30 85, 40 95" fill="none" stroke="${adnColor}" stroke-width="3" stroke-linecap="round"/>
-                        
-                        <line x1="45" y1="35" x2="55" y2="35" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
-                        <line x1="45" y1="45" x2="55" y2="45" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
-                        <line x1="45" y1="55" x2="55" y2="55" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
-                        <line x1="45" y1="65" x2="55" y2="65" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
-                        <line x1="45" y1="75" x2="55" y2="75" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
-                        <line x1="45" y1="85" x2="55" y2="85" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="45" y1="35" x2="55" y2="35" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/> <line x1="45" y1="45" x2="55" y2="45" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="45" y1="55" x2="55" y2="55" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/> <line x1="45" y1="65" x2="55" y2="65" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
+                        <line x1="45" y1="75" x2="55" y2="75" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/> <line x1="45" y1="85" x2="55" y2="85" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
                         <line x1="45" y1="95" x2="55" y2="95" stroke="#ffffff" stroke-width="1.5" opacity="0.6"/>
                     </g>
-                    
                     <circle cx="40" cy="85" r="1.5" class="burbuja" style="animation-delay: 0s;"/>
                     <circle cx="55" cy="80" r="2.5" class="burbuja" style="animation-delay: 0.6s;"/>
                     <circle cx="48" cy="90" r="2" class="burbuja" style="animation-delay: 1.2s;"/>
                 </g>
-
                 <rect x="32" y="25" width="36" height="70" rx="12" fill="url(#glass-front-${rndId})" />
                 <path d="M 36 32 Q 38 60 36 88" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.4"/>
-
                 <path d="M 38 25 L 62 25 L 57 15 L 43 15 Z" fill="url(#metal-cap-${rndId})" stroke="#4dd0e1" stroke-width="1.5"/>
                 <path d="M 38 95 L 62 95 L 57 105 L 43 105 Z" fill="url(#metal-cap-${rndId})" stroke="#4dd0e1" stroke-width="1.5"/>
             </g>
@@ -92,7 +70,7 @@ function generarSvgGeno(genesVisuales) {
     const shape = safeData.body_shape || "frijol";
     const rndId = Math.floor(Math.random() * 100000);
     const gradId = `grad-${rndId}`;
-    const maskId = `mask-cuerpo-${rndId}`; // Nueva máscara para los cosméticos
+    const maskId = `mask-cuerpo-${rndId}`; 
 
     let safeAnclaje = (typeof anclajes !== 'undefined' && anclajes[shape]) 
         ? {...anclajes[shape]} 
@@ -119,80 +97,28 @@ function generarSvgGeno(genesVisuales) {
     let pathD = "", shineD = "", extras = "", detallesFrente = ""; 
     
     switch (shape) {
-        case "gota": 
-            pathD = "M 80 24 Q 28 80 28 108 A 52 52 0 0 0 132 108 Q 132 80 80 24 Z"; 
-            shineD = "M 65 50 Q 55 65 58 80 Q 62 70 70 55 Z"; break;
-        case "hongo": 
-            const tallo = "M 72 110 C 72 120 65 130 60 135 C 50 148 65 150 80 150 C 95 150 110 148 100 135 C 95 130 88 120 88 110 Z";
-            pathD = "M 15 90 C 15 20, 145 20, 145 90 C 145 118, 122 122, 80 122 C 38 122, 15 118, 15 90 Z"; 
-            shineD = "M 40 55 Q 50 40 70 40 Q 55 48 40 55 Z"; 
-
-            const seedStr = (safeData.id || "hongo") + color + shape;
-            let baseSeed = 0;
-            for (let i = 0; i < seedStr.length; i++) {
-                baseSeed = seedStr.charCodeAt(i) + ((baseSeed << 5) - baseSeed);
-            }
-            baseSeed = Math.abs(baseSeed);
-
-            const randomFijo = (s) => {
-                let x = Math.sin(s) * 10000;
-                return x - Math.floor(x);
-            };
-
-            let generatedManchas = `<g fill="#ffffff" opacity="0.6">`;
-            for (let i = 0; i < 8; i++) {
-                const cx = 25 + randomFijo(baseSeed + i) * (135 - 25);
-                const cy = 30 + randomFijo(baseSeed + i + 10) * (110 - 30);
-                const r = 3 + randomFijo(baseSeed + i + 20) * (8 - 3);
-                generatedManchas += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}"/>`;
-            }
-            generatedManchas += `</g>`;
-
-            extras = `<path d="${tallo}" fill="${color}" stroke="#1a2a36" stroke-width="5"/><path d="${tallo}" fill="url(#${gradId})"/>`;
-            detallesFrente = `
-                <defs><clipPath id="hongoMask-${rndId}"><path d="${pathD}"/></clipPath></defs>
-                <g clip-path="url(#hongoMask-${rndId})">${generatedManchas}</g>`;
-            break;
-        case "triangulo": 
-            pathD = "M 80 24 Q 88 24 96 40 L 136 120 Q 144 136 120 136 L 40 136 Q 16 136 24 120 L 64 40 Q 72 24 80 24 Z"; 
-            shineD = "M 72 48 L 48 104 Q 56 80 80 56 Z"; break;
-        case "circulo": 
-            pathD = "M 24 88 A 56 56 0 1 0 136 88 A 56 56 0 1 0 24 88 Z"; 
-            shineD = "M 40 72 A 40 40 0 0 1 88 40 A 48 48 0 0 0 40 96 Z"; break;
-        case "cuadrado": 
-            pathD = "M 32 48 Q 32 32 48 32 L 112 32 Q 128 32 128 48 L 128 112 Q 128 128 112 128 L 48 128 Q 32 128 32 112 Z"; 
-            shineD = "M 45 48 Q 45 45 56 45 L 96 45 Q 64 64 45 88 Z"; break;
-        case "estrella":
-            pathD = "M 80 35 Q 84 35 86 41 L 98 68 L 136 68 Q 142 68 139 74 L 110 98 L 119 142 Q 121 148 115 144 L 80 126 L 45 144 Q 39 148 41 142 L 50 98 L 21 74 Q 18 68 24 68 L 62 68 L 74 41 Q 76 35 80 35 Z";
-            shineD = "M 70 60 L 55 95 Q 75 85 90 80 Z"; break;
-        case "pentagono":
-            pathD = "M 80 25 Q 84 25 86 29 L 132 63 Q 135 66 134 70 L 112 125 Q 110 130 105 130 L 55 130 Q 50 130 48 125 L 26 70 Q 25 66 28 63 L 74 29 Q 76 25 80 25 Z";
-            shineD = "M 70 45 L 45 80 Q 60 70 90 70 Z"; break;
-        case "nube":
-            pathD = "M 45 130 C 20 130, 20 75, 50 70 C 55 25, 105 25, 110 70 C 140 75, 140 130, 115 130 Z";
-            shineD = "M 55 60 Q 80 40 105 60 Q 80 50 55 60 Z"; break;
-        case "chili":
-            pathD = "M 80 20 C 40 20, 30 70, 45 105 C 60 140, 80 145, 80 145 C 80 145, 100 140, 115 105 C 130 70, 120 20, 80 20 Z";
-            shineD = "M 50 60 C 40 90, 60 120, 75 135 C 60 110, 50 80, 65 50 Z"; break;
-        case "rayo":
-            pathD = "M 95 20 L 35 85 L 85 85 L 65 145 L 125 80 L 75 80 Z";
-            shineD = "M 75 45 L 55 75 L 80 75 Z"; break;
-        default: 
-            pathD = "M 65 25 C 110 20, 135 50, 135 85 C 135 125, 105 145, 75 145 C 35 145, 25 115, 35 75 C 40 50, 35 30, 65 25 Z"; 
-            shineD = "M 45 48 Q 60 38 75 40 Q 55 52 50 75 Q 40 60 45 48 Z"; break;
+        case "gota": pathD = "M 80 24 Q 28 80 28 108 A 52 52 0 0 0 132 108 Q 132 80 80 24 Z"; shineD = "M 65 50 Q 55 65 58 80 Q 62 70 70 55 Z"; break;
+        case "triangulo": pathD = "M 80 24 Q 88 24 96 40 L 136 120 Q 144 136 120 136 L 40 136 Q 16 136 24 120 L 64 40 Q 72 24 80 24 Z"; shineD = "M 72 48 L 48 104 Q 56 80 80 56 Z"; break;
+        case "circulo": pathD = "M 24 88 A 56 56 0 1 0 136 88 A 56 56 0 1 0 24 88 Z"; shineD = "M 40 72 A 40 40 0 0 1 88 40 A 48 48 0 0 0 40 96 Z"; break;
+        case "cuadrado": pathD = "M 32 48 Q 32 32 48 32 L 112 32 Q 128 32 128 48 L 128 112 Q 128 128 112 128 L 48 128 Q 32 128 32 112 Z"; shineD = "M 45 48 Q 45 45 56 45 L 96 45 Q 64 64 45 88 Z"; break;
+        case "estrella": pathD = "M 80 35 Q 84 35 86 41 L 98 68 L 136 68 Q 142 68 139 74 L 110 98 L 119 142 Q 121 148 115 144 L 80 126 L 45 144 Q 39 148 41 142 L 50 98 L 21 74 Q 18 68 24 68 L 62 68 L 74 41 Q 76 35 80 35 Z"; shineD = "M 70 60 L 55 95 Q 75 85 90 80 Z"; break;
+        case "pentagono": pathD = "M 80 25 Q 84 25 86 29 L 132 63 Q 135 66 134 70 L 112 125 Q 110 130 105 130 L 55 130 Q 50 130 48 125 L 26 70 Q 25 66 28 63 L 74 29 Q 76 25 80 25 Z"; shineD = "M 70 45 L 45 80 Q 60 70 90 70 Z"; break;
+        case "nube": pathD = "M 45 130 C 20 130, 20 75, 50 70 C 55 25, 105 25, 110 70 C 140 75, 140 130, 115 130 Z"; shineD = "M 55 60 Q 80 40 105 60 Q 80 50 55 60 Z"; break;
+        case "chili": pathD = "M 80 20 C 40 20, 30 70, 45 105 C 60 140, 80 145, 80 145 C 80 145, 100 140, 115 105 C 130 70, 120 20, 80 20 Z"; shineD = "M 50 60 C 40 90, 60 120, 75 135 C 60 110, 50 80, 65 50 Z"; break;
+        case "rayo": pathD = "M 95 20 L 35 85 L 85 85 L 65 145 L 125 80 L 75 80 Z"; shineD = "M 75 45 L 55 75 L 80 75 Z"; break;
+        default: pathD = "M 65 25 C 110 20, 135 50, 135 85 C 135 125, 105 145, 75 145 C 35 145, 25 115, 35 75 C 40 50, 35 30, 65 25 Z"; shineD = "M 45 48 Q 60 38 75 40 Q 55 52 50 75 Q 40 60 45 48 Z"; break;
     }
 
     // =========================================
-    // ✨ INYECCIÓN V8.0: EFECTOS COSMÉTICOS DE GENES OCULTOS
+    // ✨ ACTUALIZACIÓN V9.0: LECTURA DEL SLOT A PARA COSMÉTICOS
     // =========================================
-    let capaFondo = ""; // Para auras detrás del Geno
-    let capaCosmeticaFrente = ""; // Para patrones sobre la piel del Geno
+    let capaFondo = ""; 
+    let capaCosmeticaFrente = ""; 
 
-    if (safeData.scanned && safeData.hidden_gene) {
-        const idGen = safeData.hidden_gene.id;
+    if (safeData.scanned && safeData.hidden_genes && safeData.hidden_genes.A) {
+        const idGenCosmetico = safeData.hidden_genes.A.id;
 
-        // 1. Aura de Linaje (Fondo Inmutable)
-        if (idGen === "aura_linaje") {
+        if (idGenCosmetico === "aura_linaje") {
             capaFondo = `
                 <g class="anim-aura">
                     <circle cx="80" cy="85" r="70" fill="none" stroke="#ffcc00" stroke-width="4" stroke-dasharray="15 10" opacity="0.6"/>
@@ -201,8 +127,7 @@ function generarSvgGeno(genesVisuales) {
             `;
         }
 
-        // 2. Patrón Holográfico (Sobre la piel, enmascarado)
-        if (idGen === "patron_holografico") {
+        if (idGenCosmetico === "patron_holografico") {
             capaCosmeticaFrente = `
                 <g clip-path="url(#${maskId})" class="anim-holograma">
                     <path d="M 0 0 L 200 160 M 0 20 L 200 180 M 0 40 L 200 200 M 0 60 L 200 220" stroke="#00d2ff" stroke-width="1.5" opacity="0.4" stroke-dasharray="10 5" />
@@ -219,7 +144,6 @@ function generarSvgGeno(genesVisuales) {
                 <stop offset="0%" stop-color="#000" stop-opacity="0"/>
                 <stop offset="100%" stop-color="#000" stop-opacity="0.25"/>
             </linearGradient>
-            
             <clipPath id="${maskId}">
                 <path d="${pathD}" />
             </clipPath>
@@ -236,7 +160,6 @@ function generarSvgGeno(genesVisuales) {
             .anim-flotar { animation: respirar 3s ease-in-out infinite; }
             .anim-fuego { animation: propulsor 0.1s infinite alternate ease-in-out; }
             
-            /* Animaciones de Genes Ocultos V8.0 */
             .anim-aura { transform-origin: 80px 85px; animation: rotarAura 15s linear infinite; }
             .anim-holograma { animation: deslizarHolograma 4s ease-in-out infinite alternate; }
         </style>
@@ -246,15 +169,11 @@ function generarSvgGeno(genesVisuales) {
         <g class="g-cuerpo">
             <g transform="translate(${safeAnclaje.espaldaX}, ${safeAnclaje.espaldaY})">${wing}</g>
             ${extras}
-            
             <path d="${pathD}" fill="${color}" stroke="#1a2a36" stroke-width="5"/>
             <path d="${pathD}" fill="url(#${gradId})"/>
             ${detallesFrente}
-            
             <path d="${shineD}" fill="#fff" opacity="0.4"/>
-            
             ${capaCosmeticaFrente}
-            
             <g class="g-ojos">${ojo}</g>
             <g class="g-boca">${boca}</g>
             <g transform="translate(${safeAnclaje.cabezaX}, ${safeAnclaje.cabezaY})">${hat}</g>
