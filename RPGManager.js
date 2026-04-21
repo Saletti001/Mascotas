@@ -7,14 +7,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const badgePuntos = document.getElementById("stat-points-badge");
     const btnsAddStat = document.querySelectorAll(".btn-add-stat");
 
-    function verificarUmbralDespertar(g) {
+    // Convertimos la función a global para que otras ventanas puedan llamarla
+    window.verificarUmbralDespertar = function(g) {
         if (g.level >= 25 && window.tieneGenActivoV9 && window.tieneGenActivoV9(g, "umbral_despertar") && !g.umbralAplicado) {
             g.stats.hp += 5; g.stats.atk += 5; g.stats.spd += 5; g.stats.luk += 5;
             g.umbralAplicado = true;
             if(window.Sonidos) window.Sonidos.play("heal");
             alert("✨ ¡Gen Activado: Umbral del Despertar!\nLas estadísticas base de tu Geno han aumentado +5 de forma permanente.");
         }
-    }
+    };
 
     window.actualizarPanelRPG = function() {
         if(!window.miMascota || window.miMascota.id === "temp") return;
@@ -92,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const sspd = document.getElementById("stat-spd"); if(sspd) sspd.innerText = Math.floor(g.stats.spd);
         const sluk = document.getElementById("stat-luk"); if(sluk) sluk.innerText = Math.floor(g.stats.luk);
 
-        // ✨ UI DE GENES V9.0 (CONTENEDOR PERSISTENTE ANTI-BUGS)
+        // UI DE GENES V9.0
         let structureContainer = document.getElementById("genetic-structure-container");
         
         if (!structureContainer) {
@@ -147,7 +148,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // ✨ OCULTAR BOTÓN DE ESCÁNER SI YA ESTÁ ESCANEADO
         const btnScannerUI = document.getElementById("btn-use-scanner");
         if (btnScannerUI) {
             if (g.scanned) {
@@ -155,7 +155,7 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 btnScannerUI.style.display = "block";
                 btnScannerUI.innerText = "Usar Escáner 🧬";
-                btnScannerUI.style.background = ""; // Restaurar el color por defecto del CSS
+                btnScannerUI.style.background = ""; 
             }
         }
 
@@ -191,7 +191,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if(window.Sonidos) window.Sonidos.play("heal"); 
             alert(`¡Súper Evolución! 🌟\n${window.miMascota.name} ha alcanzado el Nivel ${window.miMascota.level}.\nTienes 3 Puntos de Atributo disponibles.`);
 
-            verificarUmbralDespertar(window.miMascota);
+            window.verificarUmbralDespertar(window.miMascota);
         }
         window.actualizarPanelRPG();
     };
@@ -230,13 +230,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
 
                 window.miMascota.scanned = true;
-                verificarUmbralDespertar(window.miMascota);
+                window.verificarUmbralDespertar(window.miMascota);
 
-                // Feedback visual antes de actualizar el panel
                 btnScanner.innerText = "ADN Revelado ✅";
                 btnScanner.style.background = "#4CAF50";
                 
-                // Actualiza el panel (y oculta el botón) después de casi un segundo
                 setTimeout(() => {
                     window.actualizarPanelRPG();
                     panelStats.style.boxShadow = "0 0 20px #8B5CF6";

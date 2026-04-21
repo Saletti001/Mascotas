@@ -4,14 +4,14 @@
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // Inyectamos estilos CSS necesarios
     const style = document.createElement('style');
     style.innerHTML = `
         #incubator-grid::-webkit-scrollbar { display: none; }
         #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; }
         
-        /* ✨ CORRECCIÓN COLOR Y BRILLO TÍTULO CRIANZA */
-        #breeding-selector h3 {
+        #breeding-selector h3, 
+        #geno-id-card-modal h2, 
+        #geno-id-card-modal h3 {
             color: #80deea !important;
             text-shadow: none !important;
             text-transform: uppercase !important;
@@ -27,12 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
         titulos.forEach(t => {
             if (t.innerText) {
                 const textoLimpio = t.innerText.trim().toUpperCase();
-                
-                if (textoLimpio === "INCUBADORA TÉRMICA") {
-                    t.innerText = "CÁMARA DE BIO-NÚCLEOS";
-                }
-                
-                // 🛠️ CAZADOR DE ESTILOS: Mata el brillo rebelde de "Análisis Genético"
+                if (textoLimpio === "INCUBADORA TÉRMICA") t.innerText = "CÁMARA DE BIO-NÚCLEOS";
                 if (textoLimpio === "ANÁLISIS GENÉTICO") {
                     t.style.setProperty("color", "#80deea", "important");
                     t.style.setProperty("text-shadow", "none", "important");
@@ -231,24 +226,29 @@ document.addEventListener("DOMContentLoaded", () => {
                 const newBtn = document.getElementById("btn-id-scan");
                 if (newBtn) {
                     newBtn.addEventListener("click", () => {
-                        if (window.miWallet && window.miWallet.pol >= 0.25) {
-                            window.miWallet.pol -= 0.25; actualizarPolUI();
+                        // ✨ CORRECCIÓN: Consume el ÍTEM Escáner, ya no cobra POL
+                        if (window.miInventario && window.miInventario.consumeItem("dna_scanner", 1)) {
                             
                             if (!g.hidden_genes || !g.hidden_genes.hasOwnProperty('A')) {
                                 g.hidden_genes = window.generarGenesV9(g.rarity);
                             }
 
                             g.scanned = true; 
+                            
+                            // ✨ CORRECCIÓN DE SINCRONIZACIÓN: Le avisa a Stats que debe actualizarse
+                            if (window.miMascota && String(window.miMascota.id) === String(g.id)) {
+                                if (typeof window.verificarUmbralDespertar === 'function') window.verificarUmbralDespertar(g);
+                                if (typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
+                            }
+
                             if(window.guardarJuego) window.guardarJuego();
                             
                             newBtn.innerText = "ESCANEANDO..."; 
                             newBtn.style.background = "#fff"; 
                             newBtn.style.color = "#000";
-                            
-                            // Retraso para ver la animación y luego recargar la tarjeta
                             setTimeout(() => mostrarTarjetaGeno(g), 800);
                         } else { 
-                            alert("No tienes suficiente POL (0.25) para usar el Escáner Molecular."); 
+                            alert("No tienes un Escáner de ADN en tu mochila."); 
                         }
                     });
                 }
@@ -419,6 +419,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     atk: typeof window.heredarStat === 'function' ? window.heredarStat(padre1.stats?.atk || 15, padre2.stats?.atk || 15) : varianza(padre1.stats?.atk || 15, padre2.stats?.atk || 15),
                     spd: typeof window.heredarStat === 'function' ? window.heredarStat(padre1.stats?.spd || 15, padre2.stats?.spd || 15) : varianza(padre1.stats?.spd || 15, padre2.stats?.spd || 15),
                     luk: typeof window.heredarStat === 'function' ? window.heredarStat(padre1.stats?.luk || 15, padre2.stats?.luk || 15) : varianza(padre1.stats?.luk || 15, padre2.stats?.luk || 15)
+                };
+
+                const heredarGenOculto = () => {
+                    const r = Math.random();
+                    if(r < 0.4 && padre1.hidden_gene) return padre1.hidden_gene;
+                    if(r < 0.8 && padre2.hidden_gene) return padre2.hidden_gene;
+                    return typeof window.generarGenOculto === 'function' ? window.generarGenOculto() : { id: "ninguno", name: "Estándar", desc: "Sin efecto especial" };
                 };
 
                 const colorHijo = Math.random() > 0.5 ? (padre1.color || padre1.base_color || "#77DD77") : (padre2.color || padre2.base_color || "#77DD77");
