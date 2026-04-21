@@ -37,7 +37,7 @@
             border-radius: 15px;
             border: 1px solid #4dd0e1;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            max-width: 900px;
+            max-width: 1000px;
             width: 100%;
         }
         .controls {
@@ -45,7 +45,7 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            max-height: 500px;
+            max-height: 550px;
             overflow-y: auto;
             padding-right: 15px;
         }
@@ -61,10 +61,9 @@
             border-radius: 8px;
             border-left: 3px solid #4dd0e1;
         }
-        .control-group.special {
-            border-left: 3px solid #ffcc00;
-            background: rgba(255, 204, 0, 0.05);
-        }
+        .control-group.special-a { border-left: 3px solid #ffcc00; background: rgba(255, 204, 0, 0.05); }
+        .control-group.special-b { border-left: 3px solid #80deea; background: rgba(128, 222, 234, 0.05); }
+        .control-group.special-c { border-left: 3px solid #8A2BE2; background: rgba(138, 43, 226, 0.05); }
         
         label {
             font-size: 11px;
@@ -73,7 +72,6 @@
             font-weight: bold;
             letter-spacing: 1px;
         }
-        .special label { color: #ffcc00; }
         
         select, input[type="color"] {
             padding: 10px;
@@ -110,16 +108,16 @@
             align-items: center;
         }
         
-        /* Toggle Switch para el Escáner */
         .switch-container {
             display: flex;
             align-items: center;
             gap: 10px;
             margin-top: 5px;
+            padding: 10px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 8px;
         }
-        .switch {
-            position: relative; display: inline-block; width: 40px; height: 20px;
-        }
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider {
             position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
@@ -136,10 +134,19 @@
 <body>
 
     <h1>🔬 Laboratorio Genético V9.0</h1>
-    <p style="color: #aaa; margin-bottom: 30px; font-size: 14px;">Entorno de prueba para motor morfológico y efectos visuales de ADN oculto.</p>
+    <p style="color: #aaa; margin-bottom: 30px; font-size: 14px;">Entorno de prueba para motor morfológico y combos funcionales de la V9.</p>
 
     <div class="lab-container">
         <div class="controls">
+            
+            <div class="switch-container" style="margin-bottom: 10px;">
+                <label class="switch">
+                    <input type="checkbox" id="chk-escaneado" checked>
+                    <span class="slider"></span>
+                </label>
+                <span style="font-size: 12px; color: #fff; font-weight: bold;">ADN Escaneado (Revelado)</span>
+            </div>
+
             <div class="control-group">
                 <label>Forma Base (Cuerpo)</label>
                 <select id="sel-forma"></select>
@@ -170,27 +177,30 @@
                 <select id="sel-cabeza"></select>
             </div>
 
-            <div class="control-group special">
-                <label>🧬 Slot A (Gen Cosmético)</label>
+            <div class="control-group special-a">
+                <label style="color:#ffcc00">✨ Gen A (Cosmético)</label>
                 <select id="sel-gen-a">
                     <option value="ninguno">Ninguno (Vacío)</option>
                     <option value="aura_linaje">Aura de Linaje (Legendario)</option>
                     <option value="patron_holografico">Patrón Holográfico (Mítico)</option>
                 </select>
-                
-                <div class="switch-container" style="margin-top: 10px;">
-                    <label class="switch">
-                        <input type="checkbox" id="chk-escaneado" checked>
-                        <span class="slider"></span>
-                    </label>
-                    <span style="font-size: 12px; color: #fff; font-weight: bold;">ADN Escaneado (Revelado)</span>
-                </div>
             </div>
+
+            <div class="control-group special-b">
+                <label style="color:#80deea">⚙️ Gen B (Funcional 1)</label>
+                <select id="sel-gen-b"><option value="ninguno">Ninguno (Vacío)</option></select>
+            </div>
+
+            <div class="control-group special-c">
+                <label style="color:#8A2BE2">⚙️ Gen C (Funcional 2)</label>
+                <select id="sel-gen-c"><option value="ninguno">Ninguno (Vacío)</option></select>
+            </div>
+            
         </div>
 
         <div class="viewer">
             <div id="geno-display"></div>
-            <p id="code-output" style="margin-top:20px; font-size:13px; color:#1e88e5; font-weight: bold; text-align:center;">Cargando motor...</p>
+            <div id="code-output" style="margin-top:20px; font-size:13px; font-weight: bold; text-align:center; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 10px; line-height: 1.5;">Cargando motor...</div>
         </div>
     </div>
 
@@ -202,7 +212,10 @@
             const selBoca = document.getElementById("sel-boca");
             const selEspalda = document.getElementById("sel-espalda");
             const selCabeza = document.getElementById("sel-cabeza");
+            
             const selGenA = document.getElementById("sel-gen-a");
+            const selGenB = document.getElementById("sel-gen-b");
+            const selGenC = document.getElementById("sel-gen-c");
             const chkEscaneado = document.getElementById("chk-escaneado");
             
             const display = document.getElementById("geno-display");
@@ -211,7 +224,7 @@
             // Formas base
             const formasCuerpo = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
 
-            // Arrays dinámicos de los archivos JS
+            // Arrays dinámicos
             const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry"];
             const opcionesBocas = typeof dicBocas !== 'undefined' ? Object.keys(dicBocas) : ["estandar", "feliz", "colmillos"];
             const opcionesEspaldas = typeof dicAlas !== 'undefined' ? Object.keys(dicAlas) : ["ninguno"];
@@ -233,10 +246,40 @@
             rellenarSelect(selEspalda, opcionesEspaldas);
             rellenarSelect(selCabeza, opcionesCabezas);
 
+            // Extraer y poblar los genes funcionales para B y C
+            let genesFuncionales = [];
+            if (window.BASE_DATOS_GENES_V9) {
+                for (let cat in window.BASE_DATOS_GENES_V9) {
+                    if (cat !== "cosmetico") {
+                        window.BASE_DATOS_GENES_V9[cat].forEach(g => { genesFuncionales.push(g); });
+                    }
+                }
+            } else {
+                // Fallback temporal si app.js tarda en cargar
+                genesFuncionales = [{id: "fertilidad_pura", name: "Fertilidad Pura"}, {id: "resiliencia_ultima", name: "Resiliencia Última"}];
+            }
+
+            // Llenar B y C
+            const addGenesToSelect = (selectElement) => {
+                selectElement.innerHTML = '<option value="ninguno">Ninguno (Vacío)</option>';
+                genesFuncionales.forEach(g => {
+                    let opt = document.createElement("option");
+                    opt.value = g.id;
+                    opt.innerText = g.name;
+                    selectElement.appendChild(opt);
+                });
+            };
+            
+            addGenesToSelect(selGenB);
+            addGenesToSelect(selGenC);
+
             function renderizarGeno() {
                 // Simulación del ADN de la V9.0
+                const genBData = selGenB.value !== "ninguno" ? genesFuncionales.find(g => g.id === selGenB.value) : null;
+                const genCData = selGenC.value !== "ninguno" ? genesFuncionales.find(g => g.id === selGenC.value) : null;
+
                 const adnFalso = {
-                    id: 999, // Para los degradados
+                    id: 999, 
                     body_shape: selForma.value,
                     base_color: selColor.value,
                     color: selColor.value,
@@ -247,8 +290,8 @@
                     scanned: chkEscaneado.checked,
                     hidden_genes: {
                         A: selGenA.value !== "ninguno" ? { id: selGenA.value, name: selGenA.options[selGenA.selectedIndex].text } : null,
-                        B: null,
-                        C: null
+                        B: genBData,
+                        C: genCData
                     }
                 };
 
@@ -259,15 +302,21 @@
                     display.style.color = selColor.value; 
                     display.innerHTML = svgString;
                     
-                    let statusGen = adnFalso.scanned ? "Revelado" : "Oculto";
-                    codeOutput.innerText = `FORMA: ${selForma.value.toUpperCase()} | GEN COSMÉTICO: ${statusGen}`;
+                    let statusGen = adnFalso.scanned ? "<span style='color:#4CAF50'>REVELADO</span>" : "<span style='color:#d9534f'>BLOQUEADO</span>";
+                    
+                    codeOutput.innerHTML = `
+                        <div style="color:#4dd0e1; margin-bottom: 8px;">ESTADO ESCÁNER: ${statusGen}</div>
+                        <span style="color:#ffcc00">GEN A:</span> ${selGenA.options[selGenA.selectedIndex].text}<br>
+                        <span style="color:#80deea">GEN B:</span> ${selGenB.options[selGenB.selectedIndex].text}<br>
+                        <span style="color:#8A2BE2">GEN C:</span> ${selGenC.options[selGenC.selectedIndex].text}
+                    `;
                 } else {
                     display.innerHTML = "<p style='color:#ff6b6b; font-weight:bold; text-align:center;'>Error: No se encontró SVGEngine.js.</p>";
                 }
             }
 
             // Listeners
-            [selForma, selColor, selOjos, selBoca, selEspalda, selCabeza, selGenA, chkEscaneado].forEach(control => {
+            [selForma, selColor, selOjos, selBoca, selEspalda, selCabeza, selGenA, selGenB, selGenC, chkEscaneado].forEach(control => {
                 control.addEventListener("change", renderizarGeno);
             });
             if (selColor) selColor.addEventListener("input", renderizarGeno);

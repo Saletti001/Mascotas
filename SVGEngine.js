@@ -127,11 +127,12 @@ function generarSvgGeno(genesVisuales) {
             `;
         }
 
+        // ✨ PATRÓN HOLOGRÁFICO MEJORADO: Color Magenta Cyberpunk, más grueso y visible
         if (idGenCosmetico === "patron_holografico") {
             capaCosmeticaFrente = `
                 <g clip-path="url(#${maskId})" class="anim-holograma">
-                    <path d="M 0 0 L 200 160 M 0 20 L 200 180 M 0 40 L 200 200 M 0 60 L 200 220" stroke="#00d2ff" stroke-width="1.5" opacity="0.4" stroke-dasharray="10 5" />
-                    <path d="M 200 0 L 0 160 M 200 20 L 0 180 M 200 40 L 0 200 M 200 60 L 0 220" stroke="#00d2ff" stroke-width="1.5" opacity="0.4" stroke-dasharray="10 5" />
+                    <path d="M 0 0 L 200 160 M 0 20 L 200 180 M 0 40 L 200 200 M 0 60 L 200 220" stroke="#ff00ea" stroke-width="2.5" opacity="0.8" stroke-dasharray="12 6" />
+                    <path d="M 200 0 L 0 160 M 200 20 L 0 180 M 200 40 L 0 200 M 200 60 L 0 220" stroke="#ff00ea" stroke-width="2.5" opacity="0.8" stroke-dasharray="12 6" />
                 </g>
             `;
         }
@@ -153,7 +154,7 @@ function generarSvgGeno(genesVisuales) {
             @keyframes parpadear { 0%, 94%, 100% { transform: scaleY(1); } 97% { transform: scaleY(0.05); } }
             @keyframes propulsor { 0% { transform: scaleY(1); opacity: 0.9; } 100% { transform: scaleY(1.5); opacity: 1; } }
             @keyframes rotarAura { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-            @keyframes deslizarHolograma { 0% { transform: translateY(-20px); opacity: 0.3; } 50% { opacity: 0.7; } 100% { transform: translateY(20px); opacity: 0.3; } }
+            @keyframes deslizarHolograma { 0% { transform: translateY(-20px); opacity: 0.3; } 50% { opacity: 0.8; } 100% { transform: translateY(20px); opacity: 0.3; } }
             
             .g-cuerpo { transform-origin: 80px 136px; animation: respirar 3.5s ease-in-out infinite; }
             .g-ojos { transform-origin: 80px 85px; animation: parpadear 5s infinite; }
