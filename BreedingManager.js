@@ -183,41 +183,69 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const secretGeneContainer = document.getElementById("id-card-secret-gene");
-        const scanBtn = document.getElementById("btn-id-scan");
-        const lockedText = document.getElementById("id-card-locked-text");
-        const domText = document.getElementById("id-card-dom");
-        const recText = document.getElementById("id-card-rec");
 
+        // ✨ UI DE GENES V9.0 PARA LA TARJETA DE CRIANZA
         if (secretGeneContainer) {
+            secretGeneContainer.style.display = "flex";
+            secretGeneContainer.style.flexDirection = "column";
+            secretGeneContainer.style.alignItems = "stretch";
+            secretGeneContainer.style.gap = "6px";
+            secretGeneContainer.style.marginTop = "15px";
+            secretGeneContainer.style.padding = "15px";
+            secretGeneContainer.style.border = "1px dashed rgba(138, 43, 226, 0.5)";
+            secretGeneContainer.style.borderRadius = "8px";
+            secretGeneContainer.style.background = "rgba(138, 43, 226, 0.1)";
+
             if (g.scanned) {
-                if (scanBtn) scanBtn.classList.add("hidden");
-                if (lockedText) lockedText.classList.add("hidden");
-                
-                if (domText) { 
-                    domText.innerHTML = `🧬 Gen: <span style="color:#fff; font-weight:bold;">${g.hidden_gene ? g.hidden_gene.name : "Estándar"}</span>`; 
-                    domText.classList.remove("hidden"); 
-                }
-                if (recText) { 
-                    recText.innerHTML = `📝 Efecto: <span style="color:#80deea;">${g.hidden_gene ? g.hidden_gene.desc : "Sin mutación especial"}</span>`; 
-                    recText.classList.remove("hidden"); 
-                }
+                const hg = g.hidden_genes || { A: null, B: null, C: null };
+                const buildSlot = (slotLabel, geneData, colorBox) => {
+                    if (!geneData) return `<div style="background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; font-size: 11px; color: #555; border-left: 3px solid #333; display: flex; justify-content: space-between; align-items: center;"><span>${slotLabel}</span> <span style="font-size:10px; font-style:italic;">Vacío</span></div>`;
+                    return `
+                        <div style="background: rgba(0,0,0,0.4); padding: 8px 12px; border-radius: 6px; font-size: 11px; color: #fff; border-left: 3px solid ${colorBox}; display: flex; flex-direction: column; gap: 4px; text-align: left;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: ${colorBox}; font-weight: bold; font-size: 10px; text-transform: uppercase;">${slotLabel}</span>
+                                <span style="font-weight: bold;">${geneData.name}</span>
+                            </div>
+                            <div style="color: #aaa; font-size: 10px; line-height: 1.3;">${geneData.desc}</div>
+                        </div>
+                    `;
+                };
+
+                secretGeneContainer.innerHTML = `
+                    <div style="font-size: 11px; color: #e0b0ff; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; letter-spacing: 1px; text-align: center;">Estructura Genética</div>
+                    ${buildSlot("Gen A (Cosmético)", hg.A, "#ffcc00")}
+                    ${buildSlot("Gen B (Funcional)", hg.B, "#80deea")}
+                    ${buildSlot("Gen C (Funcional)", hg.C, "#8A2BE2")}
+                `;
             } else {
-                if (scanBtn) {
-                    scanBtn.classList.remove("hidden");
-                    const newBtn = scanBtn.cloneNode(true);
-                    scanBtn.parentNode.replaceChild(newBtn, scanBtn);
+                secretGeneContainer.innerHTML = `
+                    <div style="font-size: 11px; color: #e0b0ff; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; letter-spacing: 1px; text-align: center;">Estructura Genética</div>
+                    <div style="color: #aaa; font-size: 12px; margin-bottom: 10px; text-align: center;">🔒 ADN Bloqueado</div>
+                    <button id="btn-id-scan" style="background: linear-gradient(90deg, #8A2BE2, #00d2ff); color: white; border: none; padding: 10px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%; box-shadow: 0 4px 10px rgba(138, 43, 226, 0.3);">Revelar Genes (🧬 Escáner)</button>
+                `;
+                
+                const newBtn = document.getElementById("btn-id-scan");
+                if (newBtn) {
                     newBtn.addEventListener("click", () => {
                         if (window.miWallet && window.miWallet.pol >= 0.25) {
                             window.miWallet.pol -= 0.25; actualizarPolUI();
-                            g.scanned = true; if(window.guardarJuego) window.guardarJuego();
-                            newBtn.innerText = "ESCANEANDO..."; newBtn.style.background = "#fff"; newBtn.style.color = "#000";
+                            
+                            if (!g.hidden_genes || !g.hidden_genes.hasOwnProperty('A')) {
+                                g.hidden_genes = window.generarGenesV9(g.rarity);
+                            }
+
+                            g.scanned = true; 
+                            if(window.guardarJuego) window.guardarJuego();
+                            
+                            newBtn.innerText = "ESCANEANDO..."; 
+                            newBtn.style.background = "#fff"; 
+                            newBtn.style.color = "#000";
                             setTimeout(() => mostrarTarjetaGeno(g), 1000);
-                        } else { alert("No tienes suficiente POL (0.25) para usar el Escáner Molecular."); }
+                        } else { 
+                            alert("No tienes suficiente POL (0.25) para usar el Escáner Molecular."); 
+                        }
                     });
                 }
-                if (lockedText) lockedText.classList.remove("hidden");
-                if (domText) domText.classList.add("hidden");
-                if (recText) recText.classList.add("hidden");
             }
         }
         idCardModal.classList.remove("hidden");
@@ -364,20 +392,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     afinidad: window.cruzarRasgo(p1Genes.afinidad, p2Genes.afinidad, "Normal")
                 };
 
-                // ✨ ACTUALIZACIÓN V8.0: Sistema de Degeneración Genética (Pesado hacia abajo)
                 const varianza = (stat1, stat2) => {
                     const base = (stat1 + stat2) / 2;
                     const r = Math.random();
                     let multiplicador;
                     
                     if (r < 0.60) {
-                        // 60% prob: Degeneración genética (0.85x a 0.98x)
                         multiplicador = 0.85 + (Math.random() * 0.13);
                     } else if (r < 0.90) {
-                        // 30% prob: Estabilidad genética (0.98x a 1.02x)
                         multiplicador = 0.98 + (Math.random() * 0.04);
                     } else {
-                        // 10% prob: Mutación perfecta (1.02x a 1.10x)
                         multiplicador = 1.02 + (Math.random() * 0.08);
                     }
                     
@@ -413,7 +437,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     hatchTime: 0, 
                     generation: genHijo, breedCount: 0, level: 1, xp: 0, xpNeeded: 100,
                     genes: genesHijo, stats: statsHijo,
-                    hidden_gene: heredarGenOculto(), 
+                    hidden_genes: typeof window.generarGenesV9 === 'function' ? window.generarGenesV9("Común") : null, 
                     scanned: false,
                     body_shape: genesHijo.cuerpo.dom, eye_type: genesHijo.ojos.dom, mouth_type: genesHijo.boca.dom,
                     wing_type: genesHijo.espalda.dom, hat_type: genesHijo.cabeza.dom, element: genesHijo.afinidad.dom,

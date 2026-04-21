@@ -26,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if(!g.stats) g.stats = { hp: 50, atk: 15, spd: 15, luk: 15 };
         if(g.statPoints === undefined) g.statPoints = 0;
 
-        // Ampliamos ligeramente el panel para acomodar mejor la info
         if (panelStats) {
             panelStats.style.minWidth = "260px";
         }
@@ -93,12 +92,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const sspd = document.getElementById("stat-spd"); if(sspd) sspd.innerText = Math.floor(g.stats.spd);
         const sluk = document.getElementById("stat-luk"); if(sluk) sluk.innerText = Math.floor(g.stats.luk);
 
-        // ✨ LÓGICA VISUAL CORREGIDA: V9.0 (LISTA VERTICAL DE 3 SLOTS)
+        // ✨ UI DE GENES V9.0 (Texto corregido)
         let recContainer = document.getElementById("geno-recessive");
         if(recContainer) {
             const parentBlock = recContainer.parentNode;
             
-            // Forzamos el CSS directamente por JavaScript para anular cualquier 'flex-row' previo
             parentBlock.style.display = "flex";
             parentBlock.style.flexDirection = "column";
             parentBlock.style.alignItems = "stretch";
@@ -113,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <div style="font-size: 12px; color: #4dd0e1; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; letter-spacing: 1px; text-align: center;">Estructura Genética</div>
                     <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 1px dashed #555; text-align: center; color: #666; font-size: 12px;">
                         🔒 ADN Bloqueado<br>
-                        <span style="font-size: 10px; color: #444; margin-top: 6px; display: inline-block;">Usa el Escáner para revelar los 3 Slots.</span>
+                        <span style="font-size: 10px; color: #444; margin-top: 6px; display: inline-block;">Usa el Escáner para revelar los 3 Genes.</span>
                     </div>
                 `;
             } else {
@@ -135,9 +133,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 parentBlock.innerHTML = `
                     <div style="font-size: 12px; color: #4dd0e1; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; letter-spacing: 1px; text-align: center;">Estructura Genética</div>
-                    ${buildSlot("Slot A (Cosm)", hg.A, "#ffcc00")}
-                    ${buildSlot("Slot B (Func)", hg.B, "#80deea")}
-                    ${buildSlot("Slot C (Func)", hg.C, "#8A2BE2")}
+                    ${buildSlot("Gen A (Cosmético)", hg.A, "#ffcc00")}
+                    ${buildSlot("Gen B (Funcional)", hg.B, "#80deea")}
+                    ${buildSlot("Gen C (Funcional)", hg.C, "#8A2BE2")}
                 `;
             }
         }
