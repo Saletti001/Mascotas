@@ -24,7 +24,7 @@
         }
         h1 { color: #4dd0e1; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(77, 208, 225, 0.5); margin-bottom: 5px; }
         .lab-container { display: flex; gap: 40px; background: #1a2a36; padding: 30px; border-radius: 15px; border: 1px solid #4dd0e1; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 1000px; width: 100%; }
-        .controls { flex: 1; display: flex; flex-direction: column; gap: 15px; max-height: 600px; overflow-y: auto; padding-right: 15px; }
+        .controls { flex: 1; display: flex; flex-direction: column; gap: 15px; max-height: 650px; overflow-y: auto; padding-right: 15px; }
         .controls::-webkit-scrollbar { width: 6px; }
         .controls::-webkit-scrollbar-thumb { background: #4dd0e1; border-radius: 4px; }
         .control-group { display: flex; flex-direction: column; gap: 5px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border-left: 3px solid #4dd0e1; }
@@ -35,60 +35,110 @@
         select, input[type="color"] { padding: 10px; background: #0d1a24; color: #fff; border: 1px solid #333; border-radius: 8px; font-size: 14px; outline: none; cursor: pointer; width: 100%; box-sizing: border-box; }
         select:focus, input:focus { border-color: #4dd0e1; }
         
-        /* ✨ VISOR MEJORADO: SPOTLIGHT Y PEDESTAL IN-GAME */
+        /* ✨ VISOR MEJORADO: CLON EXACTO DE LA PANTALLA PRINCIPAL */
         .viewer { 
             flex: 1.2; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
-            /* Luz focal (spotlight) en el centro que se difumina al azul marino oscuro */
-            background: radial-gradient(circle at 50% 45%, #1f364d 0%, #0a1118 65%);
+            /* Fondo cian brillante con scanlines */
+            background-color: #31c4d8;
+            background-image: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.06) 2px,
+                rgba(0, 0, 0, 0.06) 4px
+            );
             border-radius: 10px; 
-            border: 1px solid #1a2a36; 
+            border: 2px solid #4dd0e1; 
             padding: 20px; 
-            min-height: 450px; 
+            min-height: 500px; 
             position: relative; 
-            box-shadow: inset 0 0 60px rgba(0,0,0,0.9); 
             overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.2);
         }
 
-        /* Sombra simulando el suelo/pedestal */
-        .pedestal-shadow {
+        /* 🏛️ Elementos del Pedestal Holográfico */
+        .pedestal-container {
             position: absolute;
-            top: 65%; /* Altura ajustada debajo del Geno */
-            width: 180px;
-            height: 35px;
-            background: radial-gradient(ellipse at center, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 70%);
-            border-radius: 50%;
+            top: 65%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             z-index: 0;
         }
-        
+
+        /* Anillo superior punteado */
+        .pedestal-ring {
+            width: 220px;
+            height: 50px;
+            border: 1px dashed rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            position: absolute;
+            top: -120px;
+        }
+
+        /* Cilindro de luz blanca */
+        .pedestal-light {
+            width: 130px;
+            height: 140px;
+            background: linear-gradient(to top, rgba(255, 255, 255, 0.5), transparent);
+            position: absolute;
+            top: -100px;
+        }
+
+        /* Base oscura del pedestal */
+        .pedestal-shadow {
+            width: 170px;
+            height: 45px;
+            background: #111b24;
+            border-radius: 50%;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            top: 25px;
+        }
+
+        /* Luz de neón interior del pedestal */
+        .pedestal-core {
+            width: 50px;
+            height: 4px;
+            background: #80deea;
+            border-radius: 4px;
+            box-shadow: 0 0 10px #80deea, 0 0 20px #80deea;
+        }
+
         #geno-display { 
             width: 300px; 
             height: 300px; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
-            z-index: 1; /* Se posiciona encima del pedestal */
-            transform: translateY(-20px); /* Ajuste sutil para que encaje visualmente */
+            z-index: 1; /* El Geno va por encima del pedestal */
+            position: relative;
+            margin-bottom: 60px; /* Lo elevamos un poco para que pose sobre el pedestal */
         }
 
         #code-output {
             position: absolute;
-            bottom: 20px;
-            width: 80%;
-            margin: 0 auto;
-            font-size: 13px;
+            bottom: 15px;
+            width: 85%;
+            font-size: 12px;
             font-weight: bold;
             text-align: center;
-            background: rgba(0,0,0,0.6);
-            padding: 15px;
-            border-radius: 10px;
-            line-height: 1.5;
-            border: 1px solid #1a2a36;
-            backdrop-filter: blur(4px);
+            background: rgba(10, 17, 24, 0.9); /* Fondo oscuro para que el texto se lea sobre el cian */
+            padding: 12px;
+            border-radius: 8px;
+            line-height: 1.4;
+            border: 1px solid #4dd0e1;
             z-index: 2;
+            color: #fff;
         }
 
         .switch-container { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 8px; }
@@ -123,8 +173,7 @@
             
             <div class="control-group">
                 <label>Color Base</label>
-                <input type="color" id="sel-color" value="#77DD77">
-            </div>
+                <input type="color" id="sel-color" value="#ff6b6b"> </div>
 
             <div class="control-group">
                 <label>Ojos</label>
@@ -176,7 +225,13 @@
         </div>
 
         <div class="viewer">
-            <div class="pedestal-shadow"></div>
+            <div class="pedestal-container">
+                <div class="pedestal-ring"></div>
+                <div class="pedestal-light"></div>
+                <div class="pedestal-shadow">
+                    <div class="pedestal-core"></div>
+                </div>
+            </div>
             
             <div id="geno-display"></div>
             
@@ -222,6 +277,9 @@
             rellenarSelect(selBoca, opcionesBocas);
             rellenarSelect(selEspalda, opcionesEspaldas);
             rellenarSelect(selCabeza, opcionesCabezas);
+
+            // Generamos aleatoriamente la forma para que no siempre sea Gota
+            selForma.value = formasCuerpo[Math.floor(Math.random() * formasCuerpo.length)];
 
             let genesFuncionales = [];
             if (window.BASE_DATOS_GENES_V9) {
