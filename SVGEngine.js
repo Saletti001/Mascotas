@@ -29,7 +29,6 @@ function generarSvgGeno(genesVisuales) {
                     <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
                 </filter>
             </defs>
-
             <style>
                 @keyframes bionucleoFlota { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
                 @keyframes adnPulse { 0%, 100% { opacity: 0.8; transform: scaleX(1); } 50% { opacity: 1; transform: scaleX(1.03); } }
@@ -38,7 +37,6 @@ function generarSvgGeno(genesVisuales) {
                 .adn-glow { animation: adnPulse 2.5s ease-in-out infinite; transform-origin: center; filter: url(#glow-adn-${rndId}); }
                 .burbuja { animation: burbujas 2s ease-in infinite; fill: #ffffff; }
             </style>
-            
             <g class="capsula-anim">
                 <rect x="32" y="25" width="36" height="70" rx="12" fill="none" stroke="#4dd0e1" stroke-width="1.5" stroke-opacity="0.7"/>
                 <rect x="32" y="25" width="36" height="70" rx="12" fill="url(#liquid-amber-${rndId})"/>
@@ -72,10 +70,7 @@ function generarSvgGeno(genesVisuales) {
     const gradId = `grad-${rndId}`;
     const maskId = `mask-cuerpo-${rndId}`; 
 
-    let safeAnclaje = (typeof anclajes !== 'undefined' && anclajes[shape]) 
-        ? {...anclajes[shape]} 
-        : { cabezaX: 80, cabezaY: 25, espaldaX: 80, espaldaY: 80 };
-
+    let safeAnclaje = (typeof anclajes !== 'undefined' && anclajes[shape]) ? {...anclajes[shape]} : { cabezaX: 80, cabezaY: 25, espaldaX: 80, espaldaY: 80 };
     if (safeData.mutated_espaldaX) safeAnclaje.espaldaX = safeData.mutated_espaldaX;
     if (safeData.mutated_espaldaY) safeAnclaje.espaldaY = safeData.mutated_espaldaY;
     if (safeData.mutated_cabezaX) safeAnclaje.cabezaX = safeData.mutated_cabezaX;
@@ -85,8 +80,7 @@ function generarSvgGeno(genesVisuales) {
         if (typeof dic === 'undefined' || Object.keys(dic).length === 0) return '';
         if (gen && dic[gen]) return dic[gen]; 
         if (dic[fallback]) return dic[fallback]; 
-        const keys = Object.keys(dic);
-        return dic[keys[0]] || ''; 
+        const keys = Object.keys(dic); return dic[keys[0]] || ''; 
     };
 
     const ojo = obtenerPieza(typeof dicOjos !== 'undefined' ? dicOjos : {}, safeData.eye_type, "estandar");
@@ -110,14 +104,42 @@ function generarSvgGeno(genesVisuales) {
     }
 
     // =========================================
-    // ✨ ACTUALIZACIÓN V9.0: LECTURA DEL SLOT A PARA COSMÉTICOS
+    // ✨ INYECCIÓN V9.0: LOS 10 GENES COSMÉTICOS
     // =========================================
     let capaFondo = ""; 
     let capaCosmeticaFrente = ""; 
+    let claseCuerpoExtra = "";
+    let cssExtra = "";
+    let estiloCuerpoEnLinea = "";
 
     if (safeData.scanned && safeData.hidden_genes && safeData.hidden_genes.A) {
         const idGenCosmetico = safeData.hidden_genes.A.id;
 
+        // 1. Cromático Latente (Épico): Hue invertido intenso
+        if (idGenCosmetico === "cromatico_latente") {
+            estiloCuerpoEnLinea = "filter: hue-rotate(180deg) saturate(1.5);";
+        }
+        
+        // 2. Forma Invertida (Épico): Paleta negativa fotográfica
+        if (idGenCosmetico === "forma_invertida") {
+            estiloCuerpoEnLinea = "filter: invert(1) contrast(1.2);";
+        }
+
+        // 3. Metamorfosis Estacional (Épico): Cambio continuo de color
+        if (idGenCosmetico === "metamorfosis_estacional") {
+            claseCuerpoExtra = `anim-estacional-${rndId}`;
+            cssExtra += `@keyframes hueShift-${rndId} { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } } 
+                         .anim-estacional-${rndId} { animation: hueShift-${rndId} 8s linear infinite; }`;
+        }
+
+        // 4. Brillo Bioluminiscente (Raro): Sombra pulsante del mismo color del Geno
+        if (idGenCosmetico === "brillo_bioluminiscente") {
+            claseCuerpoExtra = `anim-biolum-${rndId}`;
+            cssExtra += `@keyframes biolum-${rndId} { 0% { filter: drop-shadow(0 0 5px ${color}); } 100% { filter: drop-shadow(0 0 20px ${color}); } } 
+                         .anim-biolum-${rndId} { animation: biolum-${rndId} 2s infinite alternate ease-in-out; }`;
+        }
+
+        // 5. Aura de Linaje (Legendario): Anillos inmutables
         if (idGenCosmetico === "aura_linaje") {
             capaFondo = `
                 <g class="anim-aura">
@@ -127,12 +149,48 @@ function generarSvgGeno(genesVisuales) {
             `;
         }
 
-        // ✨ PATRÓN HOLOGRÁFICO MEJORADO: Color Magenta Cyberpunk, más grueso y visible
+        // 6. Patrón Holográfico (Mítico): Malla Cyberpunk Magenta
         if (idGenCosmetico === "patron_holografico") {
-            capaCosmeticaFrente = `
+            capaCosmeticaFrente += `
                 <g clip-path="url(#${maskId})" class="anim-holograma">
                     <path d="M 0 0 L 200 160 M 0 20 L 200 180 M 0 40 L 200 200 M 0 60 L 200 220" stroke="#ff00ea" stroke-width="2.5" opacity="0.8" stroke-dasharray="12 6" />
                     <path d="M 200 0 L 0 160 M 200 20 L 0 180 M 200 40 L 0 200 M 200 60 L 0 220" stroke="#ff00ea" stroke-width="2.5" opacity="0.8" stroke-dasharray="12 6" />
+                </g>
+            `;
+        }
+
+        // 7. Emblema Fundador (Legendario): Estrella dorada de élite en la frente
+        if (idGenCosmetico === "emblema_fundador") {
+            capaCosmeticaFrente += `
+                <g transform="translate(70, 45) scale(0.6)" opacity="0.9">
+                    <path d="M 15 0 L 19 10 L 30 10 L 21 16 L 24 26 L 15 20 L 6 26 L 9 16 L 0 10 L 11 10 Z" fill="#ffcc00" stroke="#b8860b" stroke-width="1"/>
+                </g>
+            `;
+        }
+
+        // 8. Sombra Genética (Épico): Sombra que baila independiente
+        if (idGenCosmetico === "sombra_genetica") {
+            cssExtra += `@keyframes sombraGen-${rndId} { 0% { transform: translate(15px, 5px) skewX(-10deg); } 100% { transform: translate(-15px, 5px) skewX(10deg); } } 
+                         .anim-sombra-gen-${rndId} { animation: sombraGen-${rndId} 3s infinite alternate ease-in-out; transform-origin: 80px 136px; }`;
+            capaFondo += `<g class="anim-sombra-gen-${rndId}"><path d="${pathD}" fill="#000" opacity="0.4"/></g>`;
+        }
+
+        // 9. Rastro Elemental (Raro): Estela horizontal difuminada
+        if (idGenCosmetico === "rastro_elemental") {
+            capaFondo += `
+                <g transform="translate(-15, 0)" opacity="0.3" filter="blur(3px)">
+                    <path d="${pathD}" fill="${color}"/>
+                </g>
+            `;
+        }
+
+        // 10. Eco Visual (Raro): Clon translúcido que respira desfasado
+        if (idGenCosmetico === "eco_visual") {
+            cssExtra += `.anim-eco-${rndId} { transform-origin: 80px 136px; animation: respirar 3.5s ease-in-out infinite; animation-delay: -0.5s; opacity: 0.3; filter: hue-rotate(30deg); }`;
+            capaFondo += `
+                <g class="anim-eco-${rndId}">
+                    <g transform="translate(${safeAnclaje.espaldaX}, ${safeAnclaje.espaldaY})">${wing}</g>
+                    <path d="${pathD}" fill="${color}"/>
                 </g>
             `;
         }
@@ -145,9 +203,7 @@ function generarSvgGeno(genesVisuales) {
                 <stop offset="0%" stop-color="#000" stop-opacity="0"/>
                 <stop offset="100%" stop-color="#000" stop-opacity="0.25"/>
             </linearGradient>
-            <clipPath id="${maskId}">
-                <path d="${pathD}" />
-            </clipPath>
+            <clipPath id="${maskId}"><path d="${pathD}" /></clipPath>
         </defs>
         <style>
             @keyframes respirar { 0%, 100% { transform: scale(1); } 50% { transform: scaleY(0.97) scaleX(1.02); } }
@@ -160,14 +216,15 @@ function generarSvgGeno(genesVisuales) {
             .g-ojos { transform-origin: 80px 85px; animation: parpadear 5s infinite; }
             .anim-flotar { animation: respirar 3s ease-in-out infinite; }
             .anim-fuego { animation: propulsor 0.1s infinite alternate ease-in-out; }
-            
             .anim-aura { transform-origin: 80px 85px; animation: rotarAura 15s linear infinite; }
             .anim-holograma { animation: deslizarHolograma 4s ease-in-out infinite alternate; }
+            
+            ${cssExtra}
         </style>
         
         ${capaFondo}
         
-        <g class="g-cuerpo">
+        <g class="g-cuerpo ${claseCuerpoExtra}" style="${estiloCuerpoEnLinea}">
             <g transform="translate(${safeAnclaje.espaldaX}, ${safeAnclaje.espaldaY})">${wing}</g>
             ${extras}
             <path d="${pathD}" fill="${color}" stroke="#1a2a36" stroke-width="5"/>

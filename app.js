@@ -31,11 +31,20 @@ window.generarStatsPorRareza = function(rareza) {
 // 🧬 BIBLIOTECA DE GENES CATEGORIZADA (V9.0)
 // =========================================
 window.BASE_DATOS_GENES_V9 = {
+
     cosmetico: [
-        { id: "cromatico_latente", name: "Cromático Latente", desc: "Desbloquea skin alternativa" },
-        { id: "aura_linaje", name: "Aura de Linaje", desc: "Aureola visual inmutable" },
-        { id: "patron_holografico", name: "Patrón Holográfico", desc: "Patrón de piel animado" }
+        { id: "cromatico_latente", name: "Cromático Latente", desc: "Desbloquea skin alternativo invertido" },
+        { id: "aura_linaje", name: "Aura de Linaje", desc: "Aureola visual permanente" },
+        { id: "patron_holografico", name: "Patrón Holográfico", desc: "Patrón de piel animado único" },
+        { id: "brillo_bioluminiscente", name: "Brillo Bioluminiscente", desc: "Brillo pulsante activo" },
+        { id: "forma_invertida", name: "Forma Invertida", desc: "Paleta en negativo fotográfico" },
+        { id: "rastro_elemental", name: "Rastro Elemental", desc: "Rastro visual al moverse" },
+        { id: "sombra_genetica", name: "Sombra Genética", desc: "Sombra con animación independiente" },
+        { id: "emblema_fundador", name: "Emblema Fundador", desc: "Insignia élite integrada en el cuerpo" },
+        { id: "eco_visual", name: "Eco Visual", desc: "Réplica translúcida con retraso" },
+        { id: "metamorfosis_estacional", name: "Metamorfosis Estacional", desc: "Cambio de tonalidad estacional" }
     ],
+    // ... (el resto de categorías siguen igual)
     combate: [
         { id: "resiliencia_ultima", name: "Resiliencia Última", desc: "x1.4 ATK/SPD si HP < 15%" },
         { id: "piel_cristal", name: "Piel de Cristal", desc: "Primer golpe recibe 0 daño" },

@@ -22,111 +22,25 @@
             flex-direction: column;
             align-items: center;
         }
-        h1 {
-            color: #4dd0e1;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(77, 208, 225, 0.5);
-            margin-bottom: 5px;
-        }
-        .lab-container {
-            display: flex;
-            gap: 40px;
-            background: #1a2a36;
-            padding: 30px;
-            border-radius: 15px;
-            border: 1px solid #4dd0e1;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            max-width: 1000px;
-            width: 100%;
-        }
-        .controls {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            max-height: 550px;
-            overflow-y: auto;
-            padding-right: 15px;
-        }
+        h1 { color: #4dd0e1; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(77, 208, 225, 0.5); margin-bottom: 5px; }
+        .lab-container { display: flex; gap: 40px; background: #1a2a36; padding: 30px; border-radius: 15px; border: 1px solid #4dd0e1; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 1000px; width: 100%; }
+        .controls { flex: 1; display: flex; flex-direction: column; gap: 15px; max-height: 600px; overflow-y: auto; padding-right: 15px; }
         .controls::-webkit-scrollbar { width: 6px; }
         .controls::-webkit-scrollbar-thumb { background: #4dd0e1; border-radius: 4px; }
-        
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            background: rgba(0,0,0,0.2);
-            padding: 10px;
-            border-radius: 8px;
-            border-left: 3px solid #4dd0e1;
-        }
+        .control-group { display: flex; flex-direction: column; gap: 5px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border-left: 3px solid #4dd0e1; }
         .control-group.special-a { border-left: 3px solid #ffcc00; background: rgba(255, 204, 0, 0.05); }
         .control-group.special-b { border-left: 3px solid #80deea; background: rgba(128, 222, 234, 0.05); }
         .control-group.special-c { border-left: 3px solid #8A2BE2; background: rgba(138, 43, 226, 0.05); }
-        
-        label {
-            font-size: 11px;
-            color: #aaa;
-            text-transform: uppercase;
-            font-weight: bold;
-            letter-spacing: 1px;
-        }
-        
-        select, input[type="color"] {
-            padding: 10px;
-            background: #0d1a24;
-            color: #fff;
-            border: 1px solid #333;
-            border-radius: 8px;
-            font-size: 14px;
-            outline: none;
-            cursor: pointer;
-            width: 100%;
-            box-sizing: border-box;
-        }
+        label { font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
+        select, input[type="color"] { padding: 10px; background: #0d1a24; color: #fff; border: 1px solid #333; border-radius: 8px; font-size: 14px; outline: none; cursor: pointer; width: 100%; box-sizing: border-box; }
         select:focus, input:focus { border-color: #4dd0e1; }
-        
-        .viewer {
-            flex: 1.2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: #0d1a24; 
-            border-radius: 10px;
-            border: 2px dashed #1e88e5; 
-            padding: 20px;
-            min-height: 400px;
-            position: relative;
-        }
-        #geno-display {
-            width: 300px; 
-            height: 300px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .switch-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 5px;
-            padding: 10px;
-            background: rgba(0,0,0,0.5);
-            border-radius: 8px;
-        }
+        .viewer { flex: 1.2; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #0d1a24; border-radius: 10px; border: 2px dashed #1e88e5; padding: 20px; min-height: 400px; position: relative; }
+        #geno-display { width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; }
+        .switch-container { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 8px; }
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #333; transition: .4s; border-radius: 20px;
-        }
-        .slider:before {
-            position: absolute; content: ""; height: 14px; width: 14px;
-            left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;
-        }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #ffcc00; }
         input:checked + .slider:before { transform: translateX(20px); }
     </style>
@@ -134,12 +48,12 @@
 <body>
 
     <h1>🔬 Laboratorio Genético V9.0</h1>
-    <p style="color: #aaa; margin-bottom: 30px; font-size: 14px;">Entorno de prueba para motor morfológico y combos funcionales de la V9.</p>
+    <p style="color: #aaa; margin-bottom: 30px; font-size: 14px;">Entorno de prueba para motor morfológico y los 10 Genes Cosméticos.</p>
 
     <div class="lab-container">
         <div class="controls">
             
-            <div class="switch-container" style="margin-bottom: 10px;">
+            <div class="switch-container">
                 <label class="switch">
                     <input type="checkbox" id="chk-escaneado" checked>
                     <span class="slider"></span>
@@ -181,8 +95,16 @@
                 <label style="color:#ffcc00">✨ Gen A (Cosmético)</label>
                 <select id="sel-gen-a">
                     <option value="ninguno">Ninguno (Vacío)</option>
+                    <option value="cromatico_latente">Cromático Latente (Épico)</option>
                     <option value="aura_linaje">Aura de Linaje (Legendario)</option>
                     <option value="patron_holografico">Patrón Holográfico (Mítico)</option>
+                    <option value="brillo_bioluminiscente">Brillo Bioluminiscente (Raro)</option>
+                    <option value="forma_invertida">Forma Invertida (Épico)</option>
+                    <option value="rastro_elemental">Rastro Elemental (Raro)</option>
+                    <option value="sombra_genetica">Sombra Genética (Épico)</option>
+                    <option value="emblema_fundador">Emblema Fundador (Legendario)</option>
+                    <option value="eco_visual">Eco Visual (Raro)</option>
+                    <option value="metamorfosis_estacional">Metamorfosis Estacional (Épico)</option>
                 </select>
             </div>
 
@@ -221,10 +143,7 @@
             const display = document.getElementById("geno-display");
             const codeOutput = document.getElementById("code-output");
 
-            // Formas base
             const formasCuerpo = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
-
-            // Arrays dinámicos
             const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry"];
             const opcionesBocas = typeof dicBocas !== 'undefined' ? Object.keys(dicBocas) : ["estandar", "feliz", "colmillos"];
             const opcionesEspaldas = typeof dicAlas !== 'undefined' ? Object.keys(dicAlas) : ["ninguno"];
@@ -246,7 +165,6 @@
             rellenarSelect(selEspalda, opcionesEspaldas);
             rellenarSelect(selCabeza, opcionesCabezas);
 
-            // Extraer y poblar los genes funcionales para B y C
             let genesFuncionales = [];
             if (window.BASE_DATOS_GENES_V9) {
                 for (let cat in window.BASE_DATOS_GENES_V9) {
@@ -255,43 +173,30 @@
                     }
                 }
             } else {
-                // Fallback temporal si app.js tarda en cargar
-                genesFuncionales = [{id: "fertilidad_pura", name: "Fertilidad Pura"}, {id: "resiliencia_ultima", name: "Resiliencia Última"}];
+                genesFuncionales = [{id: "fertilidad_pura", name: "Fertilidad Pura"}];
             }
 
-            // Llenar B y C
             const addGenesToSelect = (selectElement) => {
                 selectElement.innerHTML = '<option value="ninguno">Ninguno (Vacío)</option>';
                 genesFuncionales.forEach(g => {
-                    let opt = document.createElement("option");
-                    opt.value = g.id;
-                    opt.innerText = g.name;
-                    selectElement.appendChild(opt);
+                    let opt = document.createElement("option"); opt.value = g.id; opt.innerText = g.name; selectElement.appendChild(opt);
                 });
             };
             
-            addGenesToSelect(selGenB);
-            addGenesToSelect(selGenC);
+            addGenesToSelect(selGenB); addGenesToSelect(selGenC);
 
             function renderizarGeno() {
-                // Simulación del ADN de la V9.0
                 const genBData = selGenB.value !== "ninguno" ? genesFuncionales.find(g => g.id === selGenB.value) : null;
                 const genCData = selGenC.value !== "ninguno" ? genesFuncionales.find(g => g.id === selGenC.value) : null;
 
                 const adnFalso = {
-                    id: 999, 
-                    body_shape: selForma.value,
-                    base_color: selColor.value,
-                    color: selColor.value,
-                    eye_type: selOjos.value,
-                    mouth_type: selBoca.value,
-                    wing_type: selEspalda.value,
-                    hat_type: selCabeza.value,
+                    id: Math.floor(Math.random() * 1000), 
+                    body_shape: selForma.value, base_color: selColor.value, color: selColor.value,
+                    eye_type: selOjos.value, mouth_type: selBoca.value, wing_type: selEspalda.value, hat_type: selCabeza.value,
                     scanned: chkEscaneado.checked,
                     hidden_genes: {
                         A: selGenA.value !== "ninguno" ? { id: selGenA.value, name: selGenA.options[selGenA.selectedIndex].text } : null,
-                        B: genBData,
-                        C: genCData
+                        B: genBData, C: genCData
                     }
                 };
 
@@ -303,19 +208,15 @@
                     display.innerHTML = svgString;
                     
                     let statusGen = adnFalso.scanned ? "<span style='color:#4CAF50'>REVELADO</span>" : "<span style='color:#d9534f'>BLOQUEADO</span>";
-                    
                     codeOutput.innerHTML = `
                         <div style="color:#4dd0e1; margin-bottom: 8px;">ESTADO ESCÁNER: ${statusGen}</div>
                         <span style="color:#ffcc00">GEN A:</span> ${selGenA.options[selGenA.selectedIndex].text}<br>
                         <span style="color:#80deea">GEN B:</span> ${selGenB.options[selGenB.selectedIndex].text}<br>
                         <span style="color:#8A2BE2">GEN C:</span> ${selGenC.options[selGenC.selectedIndex].text}
                     `;
-                } else {
-                    display.innerHTML = "<p style='color:#ff6b6b; font-weight:bold; text-align:center;'>Error: No se encontró SVGEngine.js.</p>";
                 }
             }
 
-            // Listeners
             [selForma, selColor, selOjos, selBoca, selEspalda, selCabeza, selGenA, selGenB, selGenC, chkEscaneado].forEach(control => {
                 control.addEventListener("change", renderizarGeno);
             });
