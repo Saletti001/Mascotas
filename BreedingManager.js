@@ -226,16 +226,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 const newBtn = document.getElementById("btn-id-scan");
                 if (newBtn) {
                     newBtn.addEventListener("click", () => {
-                        // ✨ CORRECCIÓN: Consume el ÍTEM Escáner, ya no cobra POL
                         if (window.miInventario && window.miInventario.consumeItem("dna_scanner", 1)) {
                             
+                            // Si por algún motivo el ADN no se generó bien, lo generamos aquí
                             if (!g.hidden_genes || !g.hidden_genes.hasOwnProperty('A')) {
                                 g.hidden_genes = window.generarGenesV9(g.rarity);
                             }
 
                             g.scanned = true; 
                             
-                            // ✨ CORRECCIÓN DE SINCRONIZACIÓN: Le avisa a Stats que debe actualizarse
                             if (window.miMascota && String(window.miMascota.id) === String(g.id)) {
                                 if (typeof window.verificarUmbralDespertar === 'function') window.verificarUmbralDespertar(g);
                                 if (typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
@@ -421,12 +420,21 @@ document.addEventListener("DOMContentLoaded", () => {
                     luk: typeof window.heredarStat === 'function' ? window.heredarStat(padre1.stats?.luk || 15, padre2.stats?.luk || 15) : varianza(padre1.stats?.luk || 15, padre2.stats?.luk || 15)
                 };
 
-                const heredarGenOculto = () => {
-                    const r = Math.random();
-                    if(r < 0.4 && padre1.hidden_gene) return padre1.hidden_gene;
-                    if(r < 0.8 && padre2.hidden_gene) return padre2.hidden_gene;
-                    return typeof window.generarGenOculto === 'function' ? window.generarGenOculto() : { id: "ninguno", name: "Estándar", desc: "Sin efecto especial" };
-                };
+                // ✨ CÁLCULO DE LA RAREZA DEL HIJO (ANTES DE TIRAR LOS DADOS V9)
+                let totalStats = statsHijo.hp + statsHijo.atk + statsHijo.spd + statsHijo.luk;
+                let rarezaHijo = "Común";
+                
+                if (window.TABLA_IVS) {
+                    const reqMitico = (window.TABLA_IVS["Mítico"].hp[0] + window.TABLA_IVS["Mítico"].atk[0] + window.TABLA_IVS["Mítico"].spd[0] + window.TABLA_IVS["Mítico"].luk[0]) * 0.8;
+                    const reqLegend = (window.TABLA_IVS["Legendario"].hp[0] + window.TABLA_IVS["Legendario"].atk[0] + window.TABLA_IVS["Legendario"].spd[0] + window.TABLA_IVS["Legendario"].luk[0]) * 0.8;
+                    const reqEpico = (window.TABLA_IVS["Épico"].hp[0] + window.TABLA_IVS["Épico"].atk[0] + window.TABLA_IVS["Épico"].spd[0] + window.TABLA_IVS["Épico"].luk[0]) * 0.8;
+                    const reqRaro = (window.TABLA_IVS["Raro"].hp[0] + window.TABLA_IVS["Raro"].atk[0] + window.TABLA_IVS["Raro"].spd[0] + window.TABLA_IVS["Raro"].luk[0]) * 0.8;
+                    
+                    if (totalStats >= reqMitico) rarezaHijo = "Mítico";
+                    else if (totalStats >= reqLegend) rarezaHijo = "Legendario";
+                    else if (totalStats >= reqEpico) rarezaHijo = "Épico";
+                    else if (totalStats >= reqRaro) rarezaHijo = "Raro";
+                }
 
                 const colorHijo = Math.random() > 0.5 ? (padre1.color || padre1.base_color || "#77DD77") : (padre2.color || padre2.base_color || "#77DD77");
 
@@ -442,8 +450,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     hatchDuration: 120000, 
                     hatchTime: 0, 
                     generation: genHijo, breedCount: 0, level: 1, xp: 0, xpNeeded: 100,
+                    rarity: rarezaHijo, 
                     genes: genesHijo, stats: statsHijo,
-                    hidden_genes: typeof window.generarGenesV9 === 'function' ? window.generarGenesV9("Común") : null, 
+                    // ✨ AHORA EL SISTEMA DE DADOS RECIBE LA RAREZA REAL DEL HIJO
+                    hidden_genes: typeof window.generarGenesV9 === 'function' ? window.generarGenesV9(rarezaHijo) : null, 
                     scanned: false,
                     body_shape: genesHijo.cuerpo.dom, eye_type: genesHijo.ojos.dom, mouth_type: genesHijo.boca.dom,
                     wing_type: genesHijo.espalda.dom, hat_type: genesHijo.cabeza.dom, element: genesHijo.afinidad.dom,
