@@ -26,6 +26,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if(!g.stats) g.stats = { hp: 50, atk: 15, spd: 15, luk: 15 };
         if(g.statPoints === undefined) g.statPoints = 0;
 
+        // Ampliamos ligeramente el panel para acomodar mejor la info
+        if (panelStats) {
+            panelStats.style.minWidth = "260px";
+        }
+
         const nameEl = document.getElementById("geno-name");
         if(nameEl) nameEl.innerText = g.name || "Geno";
         
@@ -88,38 +93,51 @@ document.addEventListener("DOMContentLoaded", () => {
         const sspd = document.getElementById("stat-spd"); if(sspd) sspd.innerText = Math.floor(g.stats.spd);
         const sluk = document.getElementById("stat-luk"); if(sluk) sluk.innerText = Math.floor(g.stats.luk);
 
-        // ✨ UI DE GENES V9.0 (3 SLOTS)
+        // ✨ LÓGICA VISUAL CORREGIDA: V9.0 (LISTA VERTICAL DE 3 SLOTS)
         let recContainer = document.getElementById("geno-recessive");
         if(recContainer) {
-            // Modificamos el contenedor padre para que tenga más espacio
             const parentBlock = recContainer.parentNode;
+            
+            // Forzamos el CSS directamente por JavaScript para anular cualquier 'flex-row' previo
+            parentBlock.style.display = "flex";
+            parentBlock.style.flexDirection = "column";
+            parentBlock.style.alignItems = "stretch";
+            parentBlock.style.gap = "6px";
+            parentBlock.style.marginTop = "15px";
+            parentBlock.style.paddingTop = "15px";
+            parentBlock.style.borderTop = "1px dashed rgba(77, 208, 225, 0.3)";
+            parentBlock.style.width = "100%";
             
             if (!g.scanned) {
                 parentBlock.innerHTML = `
-                    <div style="font-size: 11px; color: #aaa; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px;">Estructura Genética</div>
-                    <div style="background: rgba(0,0,0,0.5); padding: 10px; border-radius: 6px; border: 1px dashed #555; text-align: center; color: #666; font-size: 12px;">
+                    <div style="font-size: 12px; color: #4dd0e1; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; letter-spacing: 1px; text-align: center;">Estructura Genética</div>
+                    <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 1px dashed #555; text-align: center; color: #666; font-size: 12px;">
                         🔒 ADN Bloqueado<br>
-                        <span style="font-size: 10px; color: #444;">Usa el Escáner para revelar los 3 Slots.</span>
+                        <span style="font-size: 10px; color: #444; margin-top: 6px; display: inline-block;">Usa el Escáner para revelar los 3 Slots.</span>
                     </div>
                 `;
             } else {
                 const hg = g.hidden_genes || { A: null, B: null, C: null };
                 
                 const buildSlot = (slotLabel, geneData, colorBox) => {
-                    if (!geneData) return `<div style="background: rgba(0,0,0,0.3); padding: 6px; border-radius: 4px; margin-bottom: 4px; font-size: 11px; color: #555; border-left: 3px solid #333;">${slotLabel} <span style="float:right;">Vacío</span></div>`;
+                    if (!geneData) return `<div style="background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; font-size: 11px; color: #555; border-left: 3px solid #333; display: flex; justify-content: space-between; align-items: center;"><span>${slotLabel}</span> <span style="font-size:10px; font-style:italic;">Vacío</span></div>`;
+                    
                     return `
-                        <div style="background: rgba(0,0,0,0.4); padding: 6px; border-radius: 4px; margin-bottom: 4px; font-size: 11px; color: #fff; border-left: 3px solid ${colorBox};">
-                            <span style="color: ${colorBox}; font-weight: bold;">${slotLabel}</span>: ${geneData.name}
-                            <div style="color: #aaa; font-size: 9px; margin-top: 2px;">${geneData.desc}</div>
+                        <div style="background: rgba(0,0,0,0.4); padding: 8px 12px; border-radius: 6px; font-size: 11px; color: #fff; border-left: 3px solid ${colorBox}; display: flex; flex-direction: column; gap: 4px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="color: ${colorBox}; font-weight: bold; font-size: 10px; text-transform: uppercase;">${slotLabel}</span>
+                                <span style="font-weight: bold;">${geneData.name}</span>
+                            </div>
+                            <div style="color: #aaa; font-size: 10px; line-height: 1.3;">${geneData.desc}</div>
                         </div>
                     `;
                 };
 
                 parentBlock.innerHTML = `
-                    <div style="font-size: 11px; color: #aaa; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px;">Estructura Genética</div>
-                    ${buildSlot("Slot A (Cosmético)", hg.A, "#ffcc00")}
-                    ${buildSlot("Slot B (Funcional)", hg.B, "#80deea")}
-                    ${buildSlot("Slot C (Funcional)", hg.C, "#8A2BE2")}
+                    <div style="font-size: 12px; color: #4dd0e1; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; letter-spacing: 1px; text-align: center;">Estructura Genética</div>
+                    ${buildSlot("Slot A (Cosm)", hg.A, "#ffcc00")}
+                    ${buildSlot("Slot B (Func)", hg.B, "#80deea")}
+                    ${buildSlot("Slot C (Func)", hg.C, "#8A2BE2")}
                 `;
             }
         }
@@ -190,7 +208,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if (window.miMascota.scanned) { alert("El ADN ya ha sido decodificado."); return; }
             if (window.miInventario && window.miInventario.consumeItem("dna_scanner", 1)) {
                 
-                // 🛠️ AUTO-PARCHE: Si el Geno es viejo y no tiene el formato de 3 slots de la V9, se los generamos ahora mismo.
                 if (!window.miMascota.hidden_genes || !window.miMascota.hidden_genes.hasOwnProperty('A')) {
                     window.miMascota.hidden_genes = window.generarGenesV9(window.miMascota.rarity);
                 }
