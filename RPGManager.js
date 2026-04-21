@@ -95,7 +95,6 @@ document.addEventListener("DOMContentLoaded", () => {
         // ✨ UI DE GENES V9.0 (CONTENEDOR PERSISTENTE ANTI-BUGS)
         let structureContainer = document.getElementById("genetic-structure-container");
         
-        // Si no existe, buscamos el div viejo y lo reemplazamos con nuestro contenedor seguro
         if (!structureContainer) {
             let oldRecContainer = document.getElementById("geno-recessive");
             if (oldRecContainer) {
@@ -145,6 +144,18 @@ document.addEventListener("DOMContentLoaded", () => {
                     ${buildSlot("Gen B (Funcional)", hg.B, "#80deea")}
                     ${buildSlot("Gen C (Funcional)", hg.C, "#8A2BE2")}
                 `;
+            }
+        }
+
+        // ✨ OCULTAR BOTÓN DE ESCÁNER SI YA ESTÁ ESCANEADO
+        const btnScannerUI = document.getElementById("btn-use-scanner");
+        if (btnScannerUI) {
+            if (g.scanned) {
+                btnScannerUI.style.display = "none";
+            } else {
+                btnScannerUI.style.display = "block";
+                btnScannerUI.innerText = "Usar Escáner 🧬";
+                btnScannerUI.style.background = ""; // Restaurar el color por defecto del CSS
             }
         }
 
@@ -221,11 +232,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 window.miMascota.scanned = true;
                 verificarUmbralDespertar(window.miMascota);
 
-                window.actualizarPanelRPG();
-                panelStats.style.boxShadow = "0 0 20px #8B5CF6";
+                // Feedback visual antes de actualizar el panel
                 btnScanner.innerText = "ADN Revelado ✅";
                 btnScanner.style.background = "#4CAF50";
-                if(window.guardarProgreso) window.guardarProgreso();
+                
+                // Actualiza el panel (y oculta el botón) después de casi un segundo
+                setTimeout(() => {
+                    window.actualizarPanelRPG();
+                    panelStats.style.boxShadow = "0 0 20px #8B5CF6";
+                    if(window.guardarProgreso) window.guardarProgreso();
+                }, 800);
+
             } else { alert("No tienes un Escáner de ADN en el inventario."); }
         });
     }
