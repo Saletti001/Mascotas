@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const sspd = document.getElementById("stat-spd"); if(sspd) sspd.innerText = Math.floor(g.stats.spd);
         const sluk = document.getElementById("stat-luk"); if(sluk) sluk.innerText = Math.floor(g.stats.luk);
 
-        // ✨ UI DE GENES V9.0 (Texto corregido)
+        // ✨ UI DE GENES V9.0 (Cambio Slot -> Gen y corrección de texto)
         let recContainer = document.getElementById("geno-recessive");
         if(recContainer) {
             const parentBlock = recContainer.parentNode;
@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <div style="font-size: 12px; color: #4dd0e1; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; letter-spacing: 1px; text-align: center;">Estructura Genética</div>
                     <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 1px dashed #555; text-align: center; color: #666; font-size: 12px;">
                         🔒 ADN Bloqueado<br>
-                        <span style="font-size: 10px; color: #444; margin-top: 6px; display: inline-block;">Usa el Escáner para revelar los 3 Genes.</span>
+                        <span style="font-size: 10px; color: #444; margin-top: 6px; display: inline-block;">Usa el escaner para revelar los genes.</span>
                     </div>
                 `;
             } else {
