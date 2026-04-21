@@ -1,22 +1,15 @@
 // =========================================
-// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN
+// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (V9.0)
 // =========================================
-
-// Ya no inyectamos el "Geno Base" falso aquí.
-// window.miMascota se manejará exclusivamente desde SaveManager.js o app.js (Tutorial).
 
 document.addEventListener("DOMContentLoaded", () => {
     const panelStats = document.getElementById("geno-stats-panel");
     const badgePuntos = document.getElementById("stat-points-badge");
     const btnsAddStat = document.querySelectorAll(".btn-add-stat");
 
-    // ✨ LÓGICA V8.0: Gen "Umbral del Despertar"
     function verificarUmbralDespertar(g) {
-        if (g.level >= 25 && window.tieneGenActivo && window.tieneGenActivo(g, "umbral_despertar") && !g.umbralAplicado) {
-            g.stats.hp += 5;
-            g.stats.atk += 5;
-            g.stats.spd += 5;
-            g.stats.luk += 5;
+        if (g.level >= 25 && window.tieneGenActivoV9 && window.tieneGenActivoV9(g, "umbral_despertar") && !g.umbralAplicado) {
+            g.stats.hp += 5; g.stats.atk += 5; g.stats.spd += 5; g.stats.luk += 5;
             g.umbralAplicado = true;
             if(window.Sonidos) window.Sonidos.play("heal");
             alert("✨ ¡Gen Activado: Umbral del Despertar!\nLas estadísticas base de tu Geno han aumentado +5 de forma permanente.");
@@ -24,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     window.actualizarPanelRPG = function() {
-        if(!window.miMascota || window.miMascota.id === "temp") return; // No actualizamos UI si es el fantasma del tutorial
+        if(!window.miMascota || window.miMascota.id === "temp") return;
         const g = window.miMascota;
 
         if(!g.level) g.level = 1;
@@ -33,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if(!g.stats) g.stats = { hp: 50, atk: 15, spd: 15, luk: 15 };
         if(g.statPoints === undefined) g.statPoints = 0;
 
-        // Actualizamos textos básicos
         const nameEl = document.getElementById("geno-name");
         if(nameEl) nameEl.innerText = g.name || "Geno";
         
@@ -53,12 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const rarityEl = document.getElementById("geno-rarity");
         if(rarityEl) {
             rarityEl.innerText = g.rarity || "Común";
-            
-            // 🛠️ AUTO-PARCHE: Si el ID es viejo y gigante (Date.now), lo convertimos al formato nuevo corto
-            if (g.id && String(g.id).length > 10 && typeof window.generarNuevoID === 'function') {
-                g.id = window.generarNuevoID();
-            }
-
+            if (g.id && String(g.id).length > 10 && typeof window.generarNuevoID === 'function') g.id = window.generarNuevoID();
             let serialRow = document.getElementById("row-serial-id");
             if (!serialRow) {
                 serialRow = document.createElement("div");
@@ -72,97 +59,81 @@ document.addEventListener("DOMContentLoaded", () => {
         const elementEl = document.getElementById("geno-element");
         if(elementEl) elementEl.innerText = (g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal");
 
-        // --- LÓGICA: CALIDAD GENÉTICA (ACTUALIZADO A V8.0) ---
         const qualityBadge = document.getElementById("geno-quality-badge");
         if (qualityBadge) {
-            let rango = "D";
-            let pct = 0;
-            let color = "#aaa";
-
+            let rango = "D"; let pct = 0; let color = "#aaa";
             if (g.stats.rango && g.stats.calidadPorcentaje !== undefined) {
-                rango = g.stats.rango;
-                pct = g.stats.calidadPorcentaje;
+                rango = g.stats.rango; pct = g.stats.calidadPorcentaje;
             } else {
-                // ✨ AHORA LEE LA TABLA OFICIAL SEGÚN SU RAREZA
                 const limites = (window.TABLA_IVS && window.TABLA_IVS[g.rarity]) ? window.TABLA_IVS[g.rarity] : { hp: [35, 55], atk: [10, 22], spd: [8, 25], luk: [5, 15] }; 
                 let tMin = limites.hp[0] + limites.atk[0] + limites.spd[0] + limites.luk[0];
                 let tMax = limites.hp[1] + limites.atk[1] + limites.spd[1] + limites.luk[1];
-                
                 let puntosInvertidos = (g.level - 1) * 3;
-                
-                // Descontar el bono del Umbral del Despertar si está aplicado
                 let bonoUmbral = g.umbralAplicado ? 20 : 0; 
                 let tObt = (g.stats.hp + g.stats.atk + g.stats.spd + g.stats.luk) - puntosInvertidos - bonoUmbral;
 
                 pct = Math.round(((tObt - tMin) / (tMax - tMin)) * 100);
-                if (pct > 100) pct = 100;
-                if (pct < 0) pct = 0;
+                if (pct > 100) pct = 100; if (pct < 0) pct = 0;
 
-                if (pct >= 95) rango = "S";
-                else if (pct >= 80) rango = "A";
-                else if (pct >= 50) rango = "B";
-                else if (pct >= 20) rango = "C";
-                else rango = "D";
+                if (pct >= 95) rango = "S"; else if (pct >= 80) rango = "A"; else if (pct >= 50) rango = "B"; else if (pct >= 20) rango = "C"; else rango = "D";
             }
 
-            if (rango === "S") color = "#ffcc00"; 
-            else if (rango === "A") color = "#4dd0e1"; 
-            else if (rango === "B") color = "#4CAF50"; 
-            else if (rango === "C") color = "#f0ad4e"; 
-            else color = "#d9534f"; 
-
-            qualityBadge.innerText = `${rango} (${pct}%)`;
-            qualityBadge.style.color = color;
-            
-            if (rango === "S") {
-                qualityBadge.style.textShadow = "0 0 10px rgba(255, 204, 0, 0.8)";
-            } else {
-                qualityBadge.style.textShadow = "none";
-            }
+            if (rango === "S") color = "#ffcc00"; else if (rango === "A") color = "#4dd0e1"; else if (rango === "B") color = "#4CAF50"; else if (rango === "C") color = "#f0ad4e"; else color = "#d9534f"; 
+            qualityBadge.innerText = `${rango} (${pct}%)`; qualityBadge.style.color = color;
+            qualityBadge.style.textShadow = rango === "S" ? "0 0 10px rgba(255, 204, 0, 0.8)" : "none";
         }
-        // ----------------------------------------
 
-        const shp = document.getElementById("stat-hp");
-        if(shp) shp.innerText = Math.floor(g.stats.hp);
-        const satk = document.getElementById("stat-atk");
-        if(satk) satk.innerText = Math.floor(g.stats.atk);
-        const sspd = document.getElementById("stat-spd");
-        if(sspd) sspd.innerText = Math.floor(g.stats.spd);
-        const sluk = document.getElementById("stat-luk");
-        if(sluk) sluk.innerText = Math.floor(g.stats.luk);
+        const shp = document.getElementById("stat-hp"); if(shp) shp.innerText = Math.floor(g.stats.hp);
+        const satk = document.getElementById("stat-atk"); if(satk) satk.innerText = Math.floor(g.stats.atk);
+        const sspd = document.getElementById("stat-spd"); if(sspd) sspd.innerText = Math.floor(g.stats.spd);
+        const sluk = document.getElementById("stat-luk"); if(sluk) sluk.innerText = Math.floor(g.stats.luk);
 
-        // ✨ NUEVO: REVELACIÓN DEL GEN OCULTO V8.0
-        const recEl = document.getElementById("geno-recessive");
-        if(recEl) {
-            if(g.scanned) {
-                const genOcultoName = g.hidden_gene ? g.hidden_gene.name : ((g.genes && g.genes.afinidad) ? g.genes.afinidad.rec : "Normal");
-                recEl.innerText = genOcultoName;
-                recEl.style.color = "#80deea";
-                recEl.style.textShadow = "0 0 5px rgba(128,222,234,0.5)";
+        // ✨ UI DE GENES V9.0 (3 SLOTS)
+        let recContainer = document.getElementById("geno-recessive");
+        if(recContainer) {
+            // Modificamos el contenedor padre para que tenga más espacio
+            const parentBlock = recContainer.parentNode;
+            
+            if (!g.scanned) {
+                parentBlock.innerHTML = `
+                    <div style="font-size: 11px; color: #aaa; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px;">Estructura Genética</div>
+                    <div style="background: rgba(0,0,0,0.5); padding: 10px; border-radius: 6px; border: 1px dashed #555; text-align: center; color: #666; font-size: 12px;">
+                        🔒 ADN Bloqueado<br>
+                        <span style="font-size: 10px; color: #444;">Usa el Escáner para revelar los 3 Slots.</span>
+                    </div>
+                `;
             } else {
-                recEl.innerText = "???";
-                recEl.style.color = "#555";
-                recEl.style.textShadow = "none";
+                const hg = g.hidden_genes || { A: null, B: null, C: null };
+                
+                const buildSlot = (slotLabel, geneData, colorBox) => {
+                    if (!geneData) return `<div style="background: rgba(0,0,0,0.3); padding: 6px; border-radius: 4px; margin-bottom: 4px; font-size: 11px; color: #555; border-left: 3px solid #333;">${slotLabel} <span style="float:right;">Vacío</span></div>`;
+                    return `
+                        <div style="background: rgba(0,0,0,0.4); padding: 6px; border-radius: 4px; margin-bottom: 4px; font-size: 11px; color: #fff; border-left: 3px solid ${colorBox};">
+                            <span style="color: ${colorBox}; font-weight: bold;">${slotLabel}</span>: ${geneData.name}
+                            <div style="color: #aaa; font-size: 9px; margin-top: 2px;">${geneData.desc}</div>
+                        </div>
+                    `;
+                };
+
+                parentBlock.innerHTML = `
+                    <div style="font-size: 11px; color: #aaa; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 1px;">Estructura Genética</div>
+                    ${buildSlot("Slot A (Cosmético)", hg.A, "#ffcc00")}
+                    ${buildSlot("Slot B (Funcional)", hg.B, "#80deea")}
+                    ${buildSlot("Slot C (Funcional)", hg.C, "#8A2BE2")}
+                `;
             }
         }
 
         const ptsBadge = document.getElementById("stat-points-badge");
         const addBtns = document.querySelectorAll(".btn-add-stat");
-        
         if(g.statPoints > 0) {
-            if(ptsBadge) {
-                ptsBadge.innerText = `+${g.statPoints} Pts`;
-                ptsBadge.classList.remove("hidden");
-            }
+            if(ptsBadge) { ptsBadge.innerText = `+${g.statPoints} Pts`; ptsBadge.classList.remove("hidden"); }
             addBtns.forEach(b => b.classList.remove("hidden"));
         } else {
-            if(ptsBadge) ptsBadge.classList.add("hidden");
-            addBtns.forEach(b => b.classList.add("hidden"));
+            if(ptsBadge) ptsBadge.classList.add("hidden"); addBtns.forEach(b => b.classList.add("hidden"));
         }
         
-        if (typeof window.guardarJuego === 'function') {
-            window.guardarJuego();
-        }
+        if (typeof window.guardarJuego === 'function') window.guardarJuego();
     };
 
     window.ganarXP = function(cantidad) {
@@ -180,15 +151,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if(contenedor) {
                 contenedor.classList.remove("geno-idle");
                 contenedor.classList.add("happy-jump");
-                setTimeout(() => {
-                    contenedor.classList.remove("happy-jump");
-                    contenedor.classList.add("geno-idle");
-                }, 500);
+                setTimeout(() => { contenedor.classList.remove("happy-jump"); contenedor.classList.add("geno-idle"); }, 500);
             }
             if(window.Sonidos) window.Sonidos.play("heal"); 
             alert(`¡Súper Evolución! 🌟\n${window.miMascota.name} ha alcanzado el Nivel ${window.miMascota.level}.\nTienes 3 Puntos de Atributo disponibles.`);
 
-            // Comprobamos si ha desbloqueado el Umbral del Despertar al subir de nivel
             verificarUmbralDespertar(window.miMascota);
         }
         window.actualizarPanelRPG();
@@ -220,16 +187,20 @@ document.addEventListener("DOMContentLoaded", () => {
     if (btnScanner) {
         btnScanner.addEventListener("click", () => {
             if (!window.miMascota) return;
-            if (window.miMascota.scanned) { alert("El ADN recesivo ya ha sido decodificado."); return; }
+            if (window.miMascota.scanned) { alert("El ADN ya ha sido decodificado."); return; }
             if (window.miInventario && window.miInventario.consumeItem("dna_scanner", 1)) {
-                window.miMascota.scanned = true;
                 
-                // Si el Geno ya era nivel 25+ y lo acaba de escanear, recibe el bono retroactivamente.
+                // 🛠️ AUTO-PARCHE: Si el Geno es viejo y no tiene el formato de 3 slots de la V9, se los generamos ahora mismo.
+                if (!window.miMascota.hidden_genes || !window.miMascota.hidden_genes.hasOwnProperty('A')) {
+                    window.miMascota.hidden_genes = window.generarGenesV9(window.miMascota.rarity);
+                }
+
+                window.miMascota.scanned = true;
                 verificarUmbralDespertar(window.miMascota);
 
                 window.actualizarPanelRPG();
                 panelStats.style.boxShadow = "0 0 20px #8B5CF6";
-                btnScanner.innerText = "Gen Revelado ✅";
+                btnScanner.innerText = "ADN Revelado ✅";
                 btnScanner.style.background = "#4CAF50";
                 if(window.guardarProgreso) window.guardarProgreso();
             } else { alert("No tienes un Escáner de ADN en el inventario."); }
@@ -243,34 +214,24 @@ document.addEventListener("DOMContentLoaded", () => {
             setTimeout(() => btnRename.style.transform = "scale(1)", 150);
 
             const costoEsencia = 50;
-            let mensaje = window.miMascota.renames === 0 
-                ? "Bautizo Genético:\nEl primer cambio de nombre es GRATUITO.\n\n¿Cómo quieres llamar a tu Geno?" 
-                : `Cambio de Identidad:\nRenombrar cuesta ${costoEsencia} ✨.\n\nNuevo nombre:`;
+            let mensaje = window.miMascota.renames === 0 ? "Bautizo Genético:\nEl primer cambio de nombre es GRATUITO.\n\n¿Cómo quieres llamar a tu Geno?" : `Cambio de Identidad:\nRenombrar cuesta ${costoEsencia} ✨.\n\nNuevo nombre:`;
 
             if (window.miMascota.renames > 0 && (!window.miInventario || window.miInventario.vitalEssence < costoEsencia)) {
-                alert(`No tienes suficiente Esencia Vital. Cuesta ${costoEsencia} ✨.`);
-                return;
+                alert(`No tienes suficiente Esencia Vital. Cuesta ${costoEsencia} ✨.`); return;
             }
 
             const nuevoNombre = prompt(mensaje);
             if (nuevoNombre && nuevoNombre.trim().length > 0) {
                 if (nuevoNombre.trim().length > 15) { alert("El nombre es demasiado largo."); return; }
-
                 if (window.miMascota.renames > 0) window.miInventario.addEssence(-costoEsencia);
-                
-                window.miMascota.name = nuevoNombre.trim();
-                window.miMascota.renames++;
+                window.miMascota.name = nuevoNombre.trim(); window.miMascota.renames++;
                 window.actualizarPanelRPG();
                 if(window.guardarProgreso) window.guardarProgreso();
                 
                 const contenedor = document.getElementById("geno-container");
                 if(contenedor) {
-                    contenedor.classList.remove("geno-idle");
-                    contenedor.classList.add("happy-jump");
-                    setTimeout(() => {
-                        contenedor.classList.remove("happy-jump");
-                        contenedor.classList.add("geno-idle");
-                    }, 500);
+                    contenedor.classList.remove("geno-idle"); contenedor.classList.add("happy-jump");
+                    setTimeout(() => { contenedor.classList.remove("happy-jump"); contenedor.classList.add("geno-idle"); }, 500);
                 }
             }
         });

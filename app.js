@@ -6,7 +6,7 @@ window.misGenos = window.misGenos || [];
 window.maxGenoSlots = window.maxGenoSlots || 6; 
 
 // =========================================
-// TABLA DE IVs (V8.0)
+// TABLA DE IVs (V8.0 / V9.0)
 // =========================================
 window.TABLA_IVS = {
     "Común": { hp: [35, 55], atk: [10, 22], spd: [8, 25], luk: [5, 15] },
@@ -28,60 +28,95 @@ window.generarStatsPorRareza = function(rareza) {
 };
 
 // =========================================
-// BIBLIOTECA DE GENES OCULTOS (V8.0)
+// 🧬 BIBLIOTECA DE GENES CATEGORIZADA (V9.0)
 // =========================================
-window.GENES_OCULTOS = {
-    "resiliencia_ultima": { name: "Resiliencia Última", desc: "x1.4 ATK/SPD si HP < 15%" },
-    "piel_cristal": { name: "Piel de Cristal", desc: "Primer golpe recibe 0 daño" },
-    "velocidad_fantasma": { name: "Velocidad Fantasma", desc: "20% probabilidad de turno doble" },
-    "reflejo_genetico": { name: "Reflejo Genético", desc: "Devuelve 30% del daño crítico" },
-    "elemento_dual": { name: "Elemento Dual", desc: "Segundo elemento activable en combate" },
-    "afinidad_latente": { name: "Afinidad Latente", desc: "Mitiga debilidad elemental a x0.75" },
-    "fertilidad_pura": { name: "Fertilidad Pura", desc: "Límite de crías +2 (Total 9)" },
-    "dominancia_genetica": { name: "Dominancia Genética", desc: "70% dominancia en herencia de rasgos" },
-    "cooldown_acelerado": { name: "Cooldown Acelerado", desc: "-50% tiempo de descanso cría" },
-    "catalizador_rareza": { name: "Catalizador de Rareza", desc: "+2% Éxito Crítico en Reactor" },
-    "aprendiz_acelerado": { name: "Aprendiz Acelerado", desc: "x1.25 XP obtenida" },
-    "umbral_despertar": { name: "Umbral del Despertar", desc: "+5 todos los IVs al Nv. 25" },
-    "cromatico_latente": { name: "Cromático Latente", desc: "Desbloquea skin alternativa" },
-    "aura_linaje": { name: "Aura de Linaje", desc: "Aureola visual inmutable" },
-    "patron_holografico": { name: "Patrón Holográfico", desc: "Patrón de piel animado" },
-    "esencia_concentrada": { name: "Esencia Concentrada", desc: "x2 Esencia Vital al liberar" },
-    "resistencia_colapso": { name: "Resistencia al Colapso", desc: "Evita colapso total en Reactor" },
-    "gen_mentor": { name: "Gen Mentor", desc: "+15% XP para becados" },
-    "aura_liderazgo": { name: "Aura de Liderazgo", desc: "+10% ATK a todo el equipo" }
+window.BASE_DATOS_GENES_V9 = {
+    cosmetico: [
+        { id: "cromatico_latente", name: "Cromático Latente", desc: "Desbloquea skin alternativa" },
+        { id: "aura_linaje", name: "Aura de Linaje", desc: "Aureola visual inmutable" },
+        { id: "patron_holografico", name: "Patrón Holográfico", desc: "Patrón de piel animado" }
+    ],
+    combate: [
+        { id: "resiliencia_ultima", name: "Resiliencia Última", desc: "x1.4 ATK/SPD si HP < 15%" },
+        { id: "piel_cristal", name: "Piel de Cristal", desc: "Primer golpe recibe 0 daño" },
+        { id: "velocidad_fantasma", name: "Velocidad Fantasma", desc: "20% probabilidad de turno doble" },
+        { id: "reflejo_genetico", name: "Reflejo Genético", desc: "Devuelve 30% del daño crítico" }
+    ],
+    elemental: [
+        { id: "elemento_dual", name: "Elemento Dual", desc: "Segundo elemento activable en combate" },
+        { id: "afinidad_latente", name: "Afinidad Latente", desc: "Mitiga debilidad elemental a x0.75" }
+    ],
+    crianza: [
+        { id: "fertilidad_pura", name: "Fertilidad Pura", desc: "Límite de crías +2 (Total 9)" },
+        { id: "dominancia_genetica", name: "Dominancia Genética", desc: "70% dominancia en herencia" },
+        { id: "cooldown_acelerado", name: "Cooldown Acelerado", desc: "-50% tiempo de descanso cría" }
+    ],
+    progresion: [
+        { id: "aprendiz_acelerado", name: "Aprendiz Acelerado", desc: "x1.25 XP obtenida" },
+        { id: "umbral_despertar", name: "Umbral del Despertar", desc: "+5 todos los IVs al Nv. 25" }
+    ],
+    reactor_santuario: [
+        { id: "esencia_concentrada", name: "Esencia Concentrada", desc: "x2 Esencia Vital al liberar" },
+        { id: "resistencia_colapso", name: "Resistencia al Colapso", desc: "Evita colapso total en Reactor" },
+        { id: "catalizador_rareza", name: "Catalizador de Rareza", desc: "+2% Éxito Crítico en Reactor" }
+    ],
+    social: [
+        { id: "gen_mentor", name: "Gen Mentor", desc: "+15% XP para becados" },
+        { id: "aura_liderazgo", name: "Aura de Liderazgo", desc: "+10% ATK a todo el equipo" }
+    ]
 };
 
-window.generarGenOculto = function() {
-    const keys = Object.keys(window.GENES_OCULTOS);
-    const randomKey = keys[Math.floor(Math.random() * keys.length)];
-    return { id: randomKey, ...window.GENES_OCULTOS[randomKey] };
+// Generador Maestro V9.0 con regla B != C
+window.generarGenesV9 = function(rareza) {
+    const slots = { A: null, B: null, C: null };
+    
+    // Probabilidades base (Ejemplo dinámico escalado por rareza)
+    let probA = 0.05, probB = 0.20, probC = 0.10;
+    if (rareza === "Raro") { probA = 0.10; probB = 0.40; probC = 0.20; }
+    if (rareza === "Épico") { probA = 0.15; probB = 0.70; probC = 0.40; }
+    if (rareza === "Legendario") { probA = 0.20; probB = 1.00; probC = 0.70; }
+    if (rareza === "Mítico") { probA = 0.24; probB = 1.00; probC = 1.00; }
+
+    const randomFromCat = (catArray) => catArray[Math.floor(Math.random() * catArray.length)];
+    const catsFuncionales = ["combate", "elemental", "crianza", "progresion", "reactor_santuario", "social"];
+
+    // Tirada Slot A (Cosmético)
+    if (Math.random() <= probA) {
+        slots.A = randomFromCat(window.BASE_DATOS_GENES_V9.cosmetico);
+    }
+
+    // Tirada Slot B (Funcional 1)
+    let catB = null;
+    if (Math.random() <= probB) {
+        catB = catsFuncionales[Math.floor(Math.random() * catsFuncionales.length)];
+        slots.B = randomFromCat(window.BASE_DATOS_GENES_V9[catB]);
+    }
+
+    // Tirada Slot C (Funcional 2) con Regla B != C
+    if (Math.random() <= probC) {
+        // Filtrar la categoría que ya salió en B
+        const catsDisponiblesC = catsFuncionales.filter(c => c !== catB);
+        const catC = catsDisponiblesC[Math.floor(Math.random() * catsDisponiblesC.length)];
+        slots.C = randomFromCat(window.BASE_DATOS_GENES_V9[catC]);
+    }
+
+    return slots;
 };
 
-// ✨ MOTOR LÓGICO DE GENES ACTIVOS
-window.tieneGenActivo = function(geno, idGen) {
-    // Un gen SOLO funciona si existe en el Geno Y si ha sido escaneado (desbloqueado)
-    return geno && geno.scanned && geno.hidden_gene && geno.hidden_gene.id === idGen;
+// Motor de lectura de genes activos
+window.tieneGenActivoV9 = function(geno, idGen) {
+    if (!geno || !geno.scanned || !geno.hidden_genes) return false;
+    const { A, B, C } = geno.hidden_genes;
+    return (A && A.id === idGen) || (B && B.id === idGen) || (C && C.id === idGen);
 };
 
-// Utilidades para que el resto del juego lea los efectos activos
-window.getMaxCrias = function(geno) {
-    return window.tieneGenActivo(geno, "fertilidad_pura") ? 9 : 7;
-};
-
-window.getMultiplicadorXP = function(geno) {
-    return window.tieneGenActivo(geno, "aprendiz_acelerado") ? 1.25 : 1.0;
-};
-
-window.getMultiplicadorEsencia = function(geno) {
-    return window.tieneGenActivo(geno, "esencia_concentrada") ? 2.0 : 1.0;
-};
+window.getMaxCrias = function(geno) { return window.tieneGenActivoV9(geno, "fertilidad_pura") ? 9 : 7; };
+window.getMultiplicadorXP = function(geno) { return window.tieneGenActivoV9(geno, "aprendiz_acelerado") ? 1.25 : 1.0; };
+window.getMultiplicadorEsencia = function(geno) { return window.tieneGenActivoV9(geno, "esencia_concentrada") ? 2.0 : 1.0; };
 
 document.addEventListener("DOMContentLoaded", () => {
-    
     setTimeout(() => {
         const noHayPartida = !localStorage.getItem("proyecto_genos_save_v1");
-        
         if (noHayPartida) {
             const pedestal = document.getElementById("geno-container");
             if (pedestal) pedestal.innerHTML = "";
@@ -156,11 +191,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     contenedor.classList.add("happy-jump");
                     setTimeout(() => contenedor.classList.remove("happy-jump"), 500);
                 }
-                
-                // Aplicamos el multiplicador de XP si el gen está escaneado
                 const multiplicador = typeof window.getMultiplicadorXP === 'function' ? window.getMultiplicadorXP(window.miMascota) : 1.0;
                 if(window.ganarXP) window.ganarXP(Math.floor(25 * multiplicador));
-                
             } else {
                 alert("No tienes manzanas en tu mochila.");
             }
@@ -171,27 +203,19 @@ document.addEventListener("DOMContentLoaded", () => {
     if (contenedorGenoMain) {
         contenedorGenoMain.addEventListener("click", (e) => {
             if (!window.miMascota || window.miMascota.id === "temp") return;
-
             if (window.Sonidos) window.Sonidos.play("click");
-            
             contenedorGenoMain.classList.remove("geno-idle");
             contenedorGenoMain.classList.add("happy-jump");
             setTimeout(() => {
                 contenedorGenoMain.classList.remove("happy-jump");
                 contenedorGenoMain.classList.add("geno-idle");
             }, 300);
-
             const heart = document.createElement("div");
             heart.className = "heart-particle";
             heart.innerText = "❤️";
-            
             const rect = contenedorGenoMain.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            heart.style.left = `${x}px`;
-            heart.style.top = `${y}px`;
-            
+            heart.style.left = `${e.clientX - rect.left}px`;
+            heart.style.top = `${e.clientY - rect.top}px`;
             contenedorGenoMain.appendChild(heart);
             setTimeout(() => heart.remove(), 1000);
         });
@@ -200,19 +224,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnMusic = document.getElementById("btn-toggle-music");
     const musicIcon = document.getElementById("music-icon");
     const musicText = document.getElementById("music-text");
-    
     if(btnMusic) {
         btnMusic.addEventListener("click", () => {
             if(window.Sonidos) {
                 const estaSonando = window.Sonidos.toggleMusica();
                 if(estaSonando) {
-                    musicIcon.innerText = "🔊";
-                    musicText.innerText = "Música: ON";
-                    btnMusic.style.background = "#e0f7fa";
+                    musicIcon.innerText = "🔊"; musicText.innerText = "Música: ON"; btnMusic.style.background = "#e0f7fa";
                 } else {
-                    musicIcon.innerText = "🎵";
-                    musicText.innerText = "Música: OFF";
-                    btnMusic.style.background = "transparent";
+                    musicIcon.innerText = "🎵"; musicText.innerText = "Música: OFF"; btnMusic.style.background = "transparent";
                 }
             }
         });
@@ -229,11 +248,10 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // =========================================
-// VISOR DE GENOS MAESTRO (INVENTARIO CON SLOTS)
+// VISOR DE GENOS MAESTRO (INVENTARIO)
 // =========================================
 document.addEventListener("DOMContentLoaded", () => {
     if (!window.maxGenoSlots) window.maxGenoSlots = 6;
-
     const btnMisGenosMain = document.getElementById("btn-show-genos");
     const modalSwap = document.getElementById("geno-swap-modal");
     const btnCloseSwap = document.getElementById("close-swap-modal");
@@ -242,25 +260,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function renderizarInventarioGenos() {
         if (!gridSwap || !modalSwap) return;
-        
         gridSwap.innerHTML = ""; 
-        
         const todos = [];
         
         if (window.misGenos) {
             const idMascotaActual = window.miMascota ? String(window.miMascota.id) : null;
-            
             const mascota = window.misGenos.find(g => String(g.id) === idMascotaActual);
             if (mascota && !mascota.isEgg) todos.push(mascota);
-            
             const otros = window.misGenos.filter(g => String(g.id) !== idMascotaActual);
-            otros.forEach(g => {
-                if (!g.isEgg) todos.push(g);
-            });
+            otros.forEach(g => { if (!g.isEgg) todos.push(g); });
         }
 
         const slotsOcupados = todos.length;
-
         const infoCard = document.createElement("div");
         infoCard.style = "grid-column: 1 / -1; text-align: center; margin-bottom: 5px; padding-bottom: 10px; border-bottom: 1px solid #333;";
         const colorTexto = slotsOcupados > window.maxGenoSlots ? "#ff6b6b" : "#4dd0e1";
@@ -272,22 +283,18 @@ document.addEventListener("DOMContentLoaded", () => {
             card.style = "background: #1a2a36; border: 1px solid #4dd0e1; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);";
             
             if (window.miMascota && String(window.miMascota.id) === String(geno.id)) {
-                card.style.border = "2px solid #ffcc00";
-                card.style.boxShadow = "0 0 15px rgba(255, 204, 0, 0.4)";
+                card.style.border = "2px solid #ffcc00"; card.style.boxShadow = "0 0 15px rgba(255, 204, 0, 0.4)";
             } else {
                 card.onmouseover = () => card.style.boxShadow = "0 0 15px rgba(77, 208, 225, 0.4)";
                 card.onmouseout = () => card.style.boxShadow = "0 4px 10px rgba(0,0,0,0.3)";
             }
 
             const pColor = geno.color || geno.base_color || "#ccc";
-            
             let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
             svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             
             card.innerHTML = `
-                <div style="width: 70px; height: 70px; color: ${pColor}; display: flex; justify-content: center; align-items: center;">
-                    ${svg}
-                </div>
+                <div style="width: 70px; height: 70px; color: ${pColor}; display: flex; justify-content: center; align-items: center;">${svg}</div>
                 <span style="color: white; font-weight: bold; font-size: 12px; margin-top: 10px; text-align: center;">${geno.name || 'Sujeto'}</span>
             `;
             
@@ -299,51 +306,34 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 const nameEl = document.getElementById('geno-name');
                 if (nameEl) nameEl.innerText = geno.name || 'Sujeto';
-                
                 if(typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
                 modalSwap.classList.add("hidden");
                 if (typeof window.guardarJuego === 'function') window.guardarJuego();
                 else if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
             };
-            
             gridSwap.appendChild(card);
         });
 
         const slotsLibres = Math.max(0, window.maxGenoSlots - slotsOcupados);
-
         for (let i = 0; i < slotsLibres; i++) {
             const emptyCard = document.createElement("div");
             emptyCard.style = "background: rgba(26, 42, 54, 0.5); border: 1px dashed #4dd0e1; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.5;";
-            emptyCard.innerHTML = `
-                <div style="width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; font-size: 24px; color: #4dd0e1;">
-                    🧬
-                </div>
-                <span style="color: #4dd0e1; font-weight: bold; font-size: 12px; margin-top: 10px; text-align: center;">Vacío</span>
-            `;
+            emptyCard.innerHTML = `<div style="width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; font-size: 24px; color: #4dd0e1;">🧬</div><span style="color: #4dd0e1; font-weight: bold; font-size: 12px; margin-top: 10px; text-align: center;">Vacío</span>`;
             gridSwap.appendChild(emptyCard);
         }
 
         const costoExpansion = parseFloat((0.5 + (window.maxGenoSlots - 6) * 0.1).toFixed(2));
         const siguienteSlot = window.maxGenoSlots + 1;
-
         const buyCard = document.createElement("div");
         buyCard.style = "background: rgba(138, 43, 226, 0.1); border: 1px solid #8A2BE2; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;";
         buyCard.onmouseover = () => buyCard.style.boxShadow = "0 0 15px rgba(138, 43, 226, 0.4)";
         buyCard.onmouseout = () => buyCard.style.boxShadow = "none";
-        
-        buyCard.innerHTML = `
-            <div style="width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; font-size: 30px; color: #e0b0ff;">
-                ➕
-            </div>
-            <span style="color: white; font-weight: bold; font-size: 12px; margin-top: 5px; text-align: center;">Comprar Slot #${siguienteSlot}</span>
-            <span style="color: #e0b0ff; font-weight: bold; font-size: 11px; margin-top: 5px; text-align: center;">${costoExpansion} POL</span>
-        `;
+        buyCard.innerHTML = `<div style="width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; font-size: 30px; color: #e0b0ff;">➕</div><span style="color: white; font-weight: bold; font-size: 12px; margin-top: 5px; text-align: center;">Comprar Slot #${siguienteSlot}</span><span style="color: #e0b0ff; font-weight: bold; font-size: 11px; margin-top: 5px; text-align: center;">${costoExpansion} POL</span>`;
 
         buyCard.onclick = () => {
             if (window.miWallet && window.miWallet.pol >= costoExpansion) {
                 window.miWallet.pol -= costoExpansion;
                 window.maxGenoSlots += 1;
-                
                 if(typeof window.actualizarHUD === 'function') window.actualizarHUD();
                 renderizarInventarioGenos(); 
                 if (typeof window.guardarJuego === 'function') window.guardarJuego();
@@ -352,22 +342,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 alert("No tienes suficiente $POL para expandir tu inventario. ¡Consigue más jugando o recargando!");
             }
         };
-
         gridSwap.appendChild(buyCard);
     }
 
-    if (btnMisGenosMain) {
-        btnMisGenosMain.addEventListener("click", () => {
-            renderizarInventarioGenos(); 
-            modalSwap.classList.remove("hidden");
-        });
-    }
-
-    if (btnCloseSwap && modalSwap) {
-        btnCloseSwap.addEventListener("click", () => {
-            modalSwap.classList.add("hidden");
-        });
-    }
+    if (btnMisGenosMain) btnMisGenosMain.addEventListener("click", () => { renderizarInventarioGenos(); modalSwap.classList.remove("hidden"); });
+    if (btnCloseSwap && modalSwap) btnCloseSwap.addEventListener("click", () => { modalSwap.classList.add("hidden"); });
 });
 
 window.generarNuevoID = function() {
@@ -423,7 +402,7 @@ function iniciarSecuenciaBienvenida() {
         xpNeeded: 100,
         breedCount: 0,
         stats: statsV8, 
-        hidden_gene: window.generarGenOculto(), 
+        hidden_genes: window.generarGenesV9(rarezaInicial), // ✨ ESTRUCTURA 3 SLOTS V9.0
         scanned: false,
         genes: {
             cuerpo: { dom: shapeRandom, rec: formasBase[Math.floor(Math.random() * formasBase.length)] },
@@ -442,12 +421,9 @@ function iniciarSecuenciaBienvenida() {
     const svgBioNucleo = typeof generarSvgGeno === 'function' ? generarSvgGeno({ isEgg: true, color: miPrimerGeno.color, id: "genesis" }) : '🧬';
 
     modalOverlay.innerHTML = `
-        <div id="dna-capsule" style="width: 180px; height: 180px; cursor: pointer; transition: 0.3s; user-select: none;">
-            ${svgBioNucleo}
-        </div>
+        <div id="dna-capsule" style="width: 180px; height: 180px; cursor: pointer; transition: 0.3s; user-select: none;">${svgBioNucleo}</div>
         <h2 id="dna-text" style="margin-top: 20px; font-weight: bold; color: #4dd0e1; text-align: center; text-transform: uppercase; letter-spacing: 2px;">¡Bio-Núcleo Encontrado!</h2>
         <p id="dna-subtext" style="color: #aaa; text-align: center; max-width: 300px; line-height: 1.5; margin-top: 10px; font-size: 14px;">Detectada secuencia de origen. Toca para sintetizar tu primer espécimen.</p>
-        
         <div id="dna-result" style="display: none; flex-direction: column; align-items: center;">
             <div id="dna-svg-container" style="width: 200px; height: 200px; margin: 20px 0;"></div>
             <button id="btn-claim-geno" style="background: #4dd0e1; color: #1a2a36; border: none; padding: 15px 30px; font-size: 18px; font-weight: bold; border-radius: 12px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 15px rgba(77, 208, 225, 0.5); transition: 0.2s;">Integrar al Laboratorio</button>
@@ -485,9 +461,7 @@ function iniciarSecuenciaBienvenida() {
 
     btnClaim.onclick = () => {
         window.miMascota = miPrimerGeno;
-        
-        if(!window.misGenos) window.misGenos = [];
-        window.misGenos.push(miPrimerGeno);
+        if(!window.misGenos) window.misGenos = []; window.misGenos.push(miPrimerGeno);
 
         const pedestal = document.getElementById("geno-container");
         if (pedestal) {
