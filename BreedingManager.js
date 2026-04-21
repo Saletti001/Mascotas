@@ -228,7 +228,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     newBtn.addEventListener("click", () => {
                         if (window.miInventario && window.miInventario.consumeItem("dna_scanner", 1)) {
                             
-                            // Si por algún motivo el ADN no se generó bien, lo generamos aquí
                             if (!g.hidden_genes || !g.hidden_genes.hasOwnProperty('A')) {
                                 g.hidden_genes = window.generarGenesV9(g.rarity);
                             }
@@ -420,7 +419,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     luk: typeof window.heredarStat === 'function' ? window.heredarStat(padre1.stats?.luk || 15, padre2.stats?.luk || 15) : varianza(padre1.stats?.luk || 15, padre2.stats?.luk || 15)
                 };
 
-                // ✨ CÁLCULO DE LA RAREZA DEL HIJO (ANTES DE TIRAR LOS DADOS V9)
                 let totalStats = statsHijo.hp + statsHijo.atk + statsHijo.spd + statsHijo.luk;
                 let rarezaHijo = "Común";
                 
@@ -434,6 +432,51 @@ document.addEventListener("DOMContentLoaded", () => {
                     else if (totalStats >= reqLegend) rarezaHijo = "Legendario";
                     else if (totalStats >= reqEpico) rarezaHijo = "Épico";
                     else if (totalStats >= reqRaro) rarezaHijo = "Raro";
+                }
+
+                // ✨ SISTEMA DE HERENCIA DE GENES OCULTOS (Combos)
+                const tieneDominanciaP1 = window.tieneGenActivoV9 && window.tieneGenActivoV9(padre1, "dominancia_genetica");
+                const tieneDominanciaP2 = window.tieneGenActivoV9 && window.tieneGenActivoV9(padre2, "dominancia_genetica");
+
+                const intentarHeredarSlot = (slotKey) => {
+                    let g1 = padre1.hidden_genes ? padre1.hidden_genes[slotKey] : null;
+                    let g2 = padre2.hidden_genes ? padre2.hidden_genes[slotKey] : null;
+
+                    let probP1 = tieneDominanciaP1 ? 0.70 : 0.30;
+                    let probP2 = tieneDominanciaP2 ? 0.70 : 0.30;
+
+                    // 1. Alelos idénticos (Genética Pura)
+                    if (g1 && g2 && g1.id === g2.id) {
+                        if (Math.random() <= 0.75) return g1;
+                    }
+                    // 2. Choque de genes distintos
+                    else if (g1 && g2) {
+                        let rnd = Math.random();
+                        let totalProb = probP1 + probP2; 
+                        let chance1 = probP1 / totalProb;
+                        
+                        if (Math.random() <= Math.max(probP1, probP2)) {
+                            return (rnd <= chance1) ? g1 : g2;
+                        }
+                    }
+                    // 3. Solo uno lo tiene
+                    else if (g1) { if (Math.random() <= probP1) return g1; }
+                    else if (g2) { if (Math.random() <= probP2) return g2; }
+
+                    // 4. Si falla la herencia, tira los dados universales
+                    const genesMutacion = typeof window.generarGenesV9 === 'function' ? window.generarGenesV9(rarezaHijo) : {A:null, B:null, C:null};
+                    return genesMutacion[slotKey];
+                };
+
+                const hiddenGenesHeredados = {
+                    A: intentarHeredarSlot('A'),
+                    B: intentarHeredarSlot('B'),
+                    C: intentarHeredarSlot('C')
+                };
+
+                // Regla de Exclusión V9: B no puede ser igual a C (ni en ID ni en categoría)
+                if (hiddenGenesHeredados.B && hiddenGenesHeredados.C && hiddenGenesHeredados.B.id === hiddenGenesHeredados.C.id) {
+                    hiddenGenesHeredados.C = null; 
                 }
 
                 const colorHijo = Math.random() > 0.5 ? (padre1.color || padre1.base_color || "#77DD77") : (padre2.color || padre2.base_color || "#77DD77");
@@ -452,8 +495,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     generation: genHijo, breedCount: 0, level: 1, xp: 0, xpNeeded: 100,
                     rarity: rarezaHijo, 
                     genes: genesHijo, stats: statsHijo,
-                    // ✨ AHORA EL SISTEMA DE DADOS RECIBE LA RAREZA REAL DEL HIJO
-                    hidden_genes: typeof window.generarGenesV9 === 'function' ? window.generarGenesV9(rarezaHijo) : null, 
+                    hidden_genes: hiddenGenesHeredados, 
                     scanned: false,
                     body_shape: genesHijo.cuerpo.dom, eye_type: genesHijo.ojos.dom, mouth_type: genesHijo.boca.dom,
                     wing_type: genesHijo.espalda.dom, hat_type: genesHijo.cabeza.dom, element: genesHijo.afinidad.dom,
