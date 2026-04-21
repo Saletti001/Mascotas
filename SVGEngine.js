@@ -153,12 +153,12 @@ function generarSvgGeno(genesVisuales) {
             `;
         }
 
-        // ✨ EMBLEMA FUNDADOR REDISEÑADO: Flotante, Cambia de Color RGB, Estrella Giratoria
+        // ✨ EMBLEMA FUNDADOR REPOSICIONADO: Flota como un droide holográfico a la derecha para evitar superposición con sombreros
         if (idGenCosmetico === "emblema_fundador") {
             cssExtra += `
                 @keyframes emblemaGlow-${rndId} {
                     0% { filter: drop-shadow(0 0 5px #ffcc00) drop-shadow(0 0 15px #ff00ea); transform: translateY(0px) scale(0.6); }
-                    50% { filter: drop-shadow(0 0 10px #00d2ff) drop-shadow(0 0 25px #00d2ff) hue-rotate(180deg); transform: translateY(-4px) scale(0.65); }
+                    50% { filter: drop-shadow(0 0 10px #00d2ff) drop-shadow(0 0 25px #00d2ff) hue-rotate(180deg); transform: translateY(-8px) scale(0.65); }
                     100% { filter: drop-shadow(0 0 5px #ffcc00) drop-shadow(0 0 15px #ff00ea) hue-rotate(360deg); transform: translateY(0px) scale(0.6); }
                 }
                 .anim-emblema-${rndId} { 
@@ -177,7 +177,7 @@ function generarSvgGeno(genesVisuales) {
             `;
 
             capaCosmeticaFrente += `
-                <g transform="translate(65, 30)">
+                <g transform="translate(135, 20)">
                     <g class="anim-emblema-${rndId}">
                         <path d="M 15 -5 C 30 -5, 35 10, 35 15 C 35 25, 15 40, 15 40 C 15 40, -5 25, -5 15 C -5 10, 0 -5, 15 -5 Z" fill="rgba(255, 215, 0, 0.2)" stroke="#ffcc00" stroke-width="2" stroke-dasharray="4 2"/>
                         
