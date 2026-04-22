@@ -570,6 +570,14 @@
 
                         defensor.hp -= dmg;
                         if(defensor.hp < 0) defensor.hp = 0;
+                        // EVALUAR REFLEJO GENÉTICO SI EL GOLPE FUE CRÍTICO
+                        if (isCrit && defensor.genesId.includes("reflejo_genetico")) {
+                            let danoReflejado = Math.floor(dmg * 0.30);
+                        if (danoReflejado < 1) danoReflejado = 1;
+                            atacante.hp -= danoReflejado;
+                        if (atacante.hp < 0) atacante.hp = 0;
+                        addLog(`<span style="color:#ffcc00">* [Reflejo Genético] ¡${defensor.nombre} repele la agresión! ${atacante.nombre} recibe ${danoReflejado} de daño reflejado.</span>`);
+                        }
                         
                         // EVALUAR VAMPIRISMO GENÉTICO AL INFLIGIR DAÑO
                         let roboVida = 0;
