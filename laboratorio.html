@@ -174,7 +174,7 @@
 
             <select id="sel-enemy-combo" style="flex: 0.4; padding: 15px; background: #0d1a24; color: #ff9800; border: 1px solid #ff9800; border-radius: 8px; font-weight: bold; outline: none; cursor: pointer; text-transform: uppercase;">
                 <option value="aleatorio">Rival: Combo Aleatorio</option>
-                </select>
+            </select>
 
             <button id="btn-generar-combate" class="btn-fight">⚔️ Generar Rival</button>
             <button id="btn-atacar" class="btn-action" disabled>🔥 Ejecutar Turno</button>
@@ -229,7 +229,6 @@
     </div>
 
     <script>
-        // DICCIONARIO DE COMBOS V9.1
         const COMBOS_OFICIALES = [
             { ids: ["resiliencia_ultima", "aprendiz_acelerado"], nombre: "El Fénix" },
             { ids: ["piel_cristal", "reflejo_genetico"], nombre: "El Espejo Viviente" },
@@ -250,7 +249,6 @@
             return combo ? combo.nombre : null;
         }
 
-        // FÓRMULA DE CALIDAD Y PUREZA DE IVs
         function obtenerCalidad(stats, rareza) {
             const limites = window.TABLA_IVS && window.TABLA_IVS[rareza] ? window.TABLA_IVS[rareza] : { hp: [35, 55], atk: [10, 22], spd: [8, 25], luk: [5, 15] };
             let tMin = limites.hp[0] + limites.atk[0] + limites.spd[0] + limites.luk[0];
@@ -290,7 +288,6 @@
             const selGenC = document.getElementById("sel-gen-c");
             const chkEscaneado = document.getElementById("chk-escaneado");
             
-            // SELECTORES DE COMBOS
             const selPlayerCombo = document.getElementById("sel-player-combo");
             const selEnemyCombo = document.getElementById("sel-enemy-combo");
 
@@ -326,7 +323,6 @@
             rellenarSelect(selCabeza, opcionesCabezas);
             selForma.value = formasCuerpo[Math.floor(Math.random() * formasCuerpo.length)];
 
-            // Consolidar todos los genes para la Terminal
             let todosLosGenes = [];
             let genesFuncionales = [];
             if (window.BASE_DATOS_GENES_V9) {
@@ -347,7 +343,6 @@
             };
             addGenesToSelect(selGenB); addGenesToSelect(selGenC);
 
-            // LOGICA SELECTOR COMBO JUGADOR
             selPlayerCombo.addEventListener("change", (e) => {
                 if(e.target.value !== "ninguno") {
                     const combo = COMBOS_OFICIALES.find(c => c.nombre === e.target.value);
@@ -428,7 +423,7 @@
             renderizarGenoPlayer();
 
             // ==========================================
-            // MOTOR DE COMBATE INTERACTIVO (Mejorado)
+            // MOTOR DE COMBATE INTERACTIVO (CRÍTICOS Y LUK)
             // ==========================================
             const btnGenerarRival = document.getElementById("btn-generar-combate");
             const btnAtacar = document.getElementById("btn-atacar");
@@ -491,13 +486,11 @@
                 let eHiddenGenes = {A: null, B: null, C: null};
 
                 if (enemyComboSelection !== "aleatorio") {
-                    // Forzar Combo Rival
                     const comboElegido = COMBOS_OFICIALES.find(c => c.nombre === enemyComboSelection);
                     const gB = genesFuncionales.find(g => g.id === comboElegido.ids[0]);
                     const gC = genesFuncionales.find(g => g.id === comboElegido.ids[1]);
                     eHiddenGenes = { A: null, B: gB, C: gC };
                 } else {
-                    // Generación Procedural Rival
                     if (typeof window.generarGenesV9 === 'function') {
                         eHiddenGenes = window.generarGenesV9(enemyRareza);
                     } else {
@@ -581,6 +574,10 @@
                     if (defensor.hp <= 0) break;
 
                     let dmg = Math.floor(atacante.atk * (i === 1 ? 0.5 : 1) * (0.85 + Math.random() * 0.3));
+                    
+                    // Cálculo de Daño Crítico usando LUK
+                    let isCrit = Math.random() <= (0.05 + (atacante.luk * 0.002));
+                    if (isCrit) dmg = Math.floor(dmg * 1.5);
 
                     if (defensor.crystalSkin) {
                         dmg = 0;
@@ -589,7 +586,13 @@
                     } else {
                         defensor.hp -= dmg;
                         if(defensor.hp < 0) defensor.hp = 0;
-                        addLog(`> ${atacante.nombre} ataca causando <span style="color:#ff6b6b">${dmg} de daño</span>.`);
+                        
+                        if (isCrit) {
+                            addLog(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡GOLPE CRÍTICO!</span> ${atacante.nombre} ataca causando <span style="color:#ff6b6b; font-weight:bold; font-size:13px;">${dmg} de daño</span>.`);
+                        } else {
+                            addLog(`> ${atacante.nombre} ataca causando <span style="color:#ff6b6b">${dmg} de daño</span>.`);
+                        }
+                        
                         flashDamage(defensor.isPlayer);
                     }
 
