@@ -61,7 +61,7 @@
 
         /* PESTAÑA 2: COMBATE */
         .combat-arena { width: 100%; display: flex; flex-direction: column; gap: 20px; }
-        .action-bar { display: flex; gap: 15px; }
+        .action-bar { display: flex; gap: 15px; align-items: center; }
         .btn-fight { flex: 1; background: linear-gradient(90deg, #8A2BE2, #4dd0e1); color: #fff; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
         .btn-fight:hover { filter: brightness(1.2); box-shadow: 0 0 20px rgba(138, 43, 226, 0.5); }
         .btn-action { flex: 1; background: linear-gradient(90deg, #ff5722, #d84315); color: #fff; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
@@ -79,7 +79,6 @@
         .fighter-stats { background: rgba(10, 17, 24, 0.85); border: 1px solid #4dd0e1; border-radius: 8px; padding: 15px; width: 85%; text-align: left; }
         .fighter-name { font-weight: 900; color: #fff; font-size: 14px; margin-bottom: 5px; text-transform: uppercase; text-align: center; }
         
-        /* BARRAS DE VIDA Y STATS */
         .hp-bar-bg { width: 100%; height: 10px; background: #333; border-radius: 5px; margin-top: 5px; overflow: hidden; }
         .hp-bar-fill { height: 100%; background: #4CAF50; width: 100%; transition: width 0.3s ease, background-color 0.3s ease; }
         .hp-text { text-align: center; font-size: 10px; font-weight: bold; margin-top: 2px; color: #fff; }
@@ -146,7 +145,7 @@
                 <div id="geno-display"></div>
             </div>
             <div id="terminal-output" class="terminal">
-                <div class="term-title">/// TERMINAL DE DIAGNÓSTICO ///</div>
+                <div class="term-title">/// TERMINAL DE DIAGNÓSTICO ESTRATÉGICO ///</div>
                 <div id="terminal-content">Iniciando escáner...</div>
             </div>
         </div>
@@ -155,7 +154,14 @@
     <div id="tab-combat" class="tab-content combat-arena lab-container">
         
         <div class="action-bar">
-            <button id="btn-generar-combate" class="btn-fight">⚔️ Generar Rival Aleatorio</button>
+            <select id="sel-enemy-rareza" style="flex: 0.5; padding: 15px; background: #0d1a24; color: #ff6b6b; border: 1px solid #ff6b6b; border-radius: 8px; font-weight: bold; outline: none; cursor: pointer; text-transform: uppercase;">
+                <option value="Común">Rival: Común</option>
+                <option value="Raro">Rival: Raro</option>
+                <option value="Épico">Rival: Épico</option>
+                <option value="Legendario">Rival: Legendario</option>
+                <option value="Mítico">Rival: Mítico</option>
+            </select>
+            <button id="btn-generar-combate" class="btn-fight">⚔️ Generar Aleatorio</button>
             <button id="btn-atacar" class="btn-action" disabled>🔥 Ejecutar Turno</button>
         </div>
         
@@ -185,7 +191,7 @@
                 <div id="combat-enemy-svg" class="fighter-svg"></div>
                 <div class="fighter-stats">
                     <div class="fighter-name" style="color:#ff6b6b;">
-                        RIVAL CLON (<span id="c-e-rareza"></span>) <span id="c-e-calidad" style="font-size:12px; margin-left:5px;"></span>
+                        RIVAL (<span id="c-e-rareza"></span>) <span id="c-e-calidad" style="font-size:12px; margin-left:5px;"></span>
                     </div>
                     <div class="hp-bar-bg"><div id="c-e-hp-fill" class="hp-bar-fill"></div></div>
                     <div id="c-e-hp-text" class="hp-text">HP: 0 / 0</div>
@@ -289,10 +295,16 @@
             rellenarSelect(selCabeza, opcionesCabezas);
             selForma.value = formasCuerpo[Math.floor(Math.random() * formasCuerpo.length)];
 
+            // Consolidar todos los genes para la Terminal
+            let todosLosGenes = [];
             let genesFuncionales = [];
             if (window.BASE_DATOS_GENES_V9) {
                 for (let cat in window.BASE_DATOS_GENES_V9) {
-                    if (cat !== "cosmetico") window.BASE_DATOS_GENES_V9[cat].forEach(g => { genesFuncionales.push(g); });
+                    window.BASE_DATOS_GENES_V9[cat].forEach(g => {
+                        g.categoria = cat;
+                        todosLosGenes.push(g);
+                        if (cat !== "cosmetico") genesFuncionales.push(g);
+                    });
                 }
             }
 
@@ -303,6 +315,47 @@
                 });
             };
             addGenesToSelect(selGenB); addGenesToSelect(selGenC);
+
+            function actualizarTerminal() {
+                const term = document.getElementById("terminal-content");
+                if (!chkEscaneado.checked) {
+                    term.innerHTML = `<div style="color:#ff6b6b">> ERROR: ADN BLOQUEADO. Active el escáner (Toggle arriba) para revelar información genética.</div>`;
+                    return;
+                }
+
+                let log = `<div style="color:#4dd0e1; margin-bottom: 10px;">> GENERANDO REPORTE DE ESTRATEGIA Y ADN...</div>`;
+                
+                const evaluarSlot = (id, nombreSlot, colorRGB) => {
+                    if(id === "ninguno") return;
+                    const gen = todosLosGenes.find(g => g.id === id);
+                    if(gen) {
+                        log += `<div style="color:${colorRGB}; margin-top:8px;">>>> ${nombreSlot}: [${gen.name.toUpperCase()}] <<<</div>`;
+                        log += `&nbsp;&nbsp;<span style="color:#aaa">Efecto:</span> ${gen.desc}<br>`;
+                        
+                        let uso = "Proporciona ventajas estadísticas pasivas.";
+                        if(gen.categoria === "cosmetico") uso = "Cosmético Visual. Aumenta drásticamente el valor del Geno para los coleccionistas en el mercado de $POL.";
+                        else if(gen.id === "resiliencia_ultima") uso = "Ideal con builds de 'Glass Cannon'. Ponle Stats en ATK; cuando baje al 15% HP barrerá al rival.";
+                        else if(gen.id === "piel_cristal") uso = "Excelente defensa contra Genos de un solo golpe fuerte. Útil en Torneos Supervivencia.";
+                        else if(gen.id === "velocidad_fantasma") uso = "Construye este Geno con alta Velocidad (SPD) y ATK. Atacar dos veces rápido rompe bloqueos.";
+                        else if(gen.id === "fertilidad_pura") uso = "No lo desperdicies criando con comunes. Úsalo como 'Padre Fundador' de tu linaje para tener 9 crías de élite.";
+                        else if(gen.categoria === "crianza") uso = "Equípalo a tus mejores Genos y úsalos en la Incubadora para asegurar mejores crías.";
+                        else if(gen.categoria === "progresion") uso = "Acelera su nivel. Te costará mucha menos Esencia Vital y manzanas llevarlo al Nivel 50.";
+                        else if(gen.categoria === "reactor_santuario") uso = "Geno diseñado para quemar. Llévalo al Santuario o Reactor para maximizar tu ganancia de Esencia Vital.";
+                        
+                        log += `&nbsp;&nbsp;<span style="color:#4CAF50">Táctica recomendada:</span> ${uso}<br>`;
+                    }
+                };
+
+                evaluarSlot(selGenA.value, "SLOT A (COSMÉTICO)", "#ffcc00");
+                evaluarSlot(selGenB.value, "SLOT B (FUNCIONAL 1)", "#80deea");
+                evaluarSlot(selGenC.value, "SLOT C (FUNCIONAL 2)", "#8A2BE2");
+                
+                if(selGenB.value !== "ninguno" && selGenB.value === selGenC.value) {
+                    log += `<br><div style="color:#ff6b6b; font-weight:bold;">> ADVERTENCIA: Has colocado dos genes iguales. En el juego real, el Motor anula el Slot C por la regla (B != C).</div>`;
+                }
+
+                term.innerHTML = log;
+            }
 
             function obtenerAdnPlayer() {
                 const rareza = selRareza.value;
@@ -326,6 +379,7 @@
                     document.getElementById("geno-display").style.color = selColor.value; 
                     document.getElementById("geno-display").innerHTML = svgString;
                 }
+                actualizarTerminal();
             }
 
             [selRareza, selForma, selColor, selOjos, selBoca, selEspalda, selCabeza, selGenA, selGenB, selGenC, chkEscaneado].forEach(c => c.addEventListener("change", renderizarGenoPlayer));
@@ -333,16 +387,14 @@
             renderizarGenoPlayer();
 
             // ==========================================
-            // MOTOR DE COMBATE INTERACTIVO
+            // MOTOR DE COMBATE INTERACTIVO (Mejorado con Generación Procedural)
             // ==========================================
             const btnGenerarRival = document.getElementById("btn-generar-combate");
             const btnAtacar = document.getElementById("btn-atacar");
             const logCombate = document.getElementById("combat-log-content");
             const logContainer = document.getElementById("combat-log");
 
-            let playerCombat = null;
-            let enemyCombat = null;
-            let numeroTurno = 1;
+            let playerCombat = null; let enemyCombat = null; let numeroTurno = 1;
 
             function scrollToBottom() { logContainer.scrollTop = logContainer.scrollHeight; }
             function addLog(text) { logCombate.innerHTML += `<div>${text}</div>`; scrollToBottom(); }
@@ -362,16 +414,12 @@
                 else fillBar.style.background = "#f44336";
 
                 document.getElementById(`${prefix}-hp-text`).innerText = `HP: ${p.hp} / ${p.maxHp}`;
-
-                if (p.hp <= 0) {
-                    document.getElementById(esJugador ? "side-player" : "side-enemy").style.filter = "grayscale(1) brightness(0.5)";
-                }
+                if (p.hp <= 0) document.getElementById(esJugador ? "side-player" : "side-enemy").style.filter = "grayscale(1) brightness(0.5)";
             }
 
             function flashDamage(esJugador) {
                 const el = document.getElementById(esJugador ? "combat-player-svg" : "combat-enemy-svg");
-                el.classList.add("hit");
-                setTimeout(() => el.classList.remove("hit"), 150);
+                el.classList.add("hit"); setTimeout(() => el.classList.remove("hit"), 150);
             }
 
             btnGenerarRival.onclick = () => {
@@ -391,17 +439,42 @@
                     resilienciaUsada: false
                 };
 
-                let genBEnemy = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)];
-                let genCEnemy = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)];
-                while(genBEnemy.id === genCEnemy.id) { genCEnemy = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)]; }
+                // GENERACIÓN TOTALMENTE PROCEDURAL DEL RIVAL
+                const enemyRareza = document.getElementById("sel-enemy-rareza").value;
+                const enemyStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(enemyRareza) : {hp: 80, atk: 20, spd: 20, luk: 15};
+                
+                const eForma = formasCuerpo[Math.floor(Math.random() * formasCuerpo.length)];
+                const coloresRival = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77", "#ff9800", "#ffb347", "#a8e6cf"];
+                const eColor = coloresRival[Math.floor(Math.random() * coloresRival.length)];
+                
+                let eHiddenGenes = {A: null, B: null, C: null};
+                if (typeof window.generarGenesV9 === 'function') {
+                    eHiddenGenes = window.generarGenesV9(enemyRareza);
+                } else {
+                    let gB = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)];
+                    let gC = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)];
+                    while(gB.id === gC.id) gC = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)];
+                    eHiddenGenes = {A: null, B: gB, C: gC};
+                }
 
-                // El clon rival tiene las mismas estadísticas base (y rareza) pero genes distintos
-                const eAdn = { ...pAdn, id: 888, scanned: true, hidden_genes: { A: null, B: genBEnemy, C: genCEnemy } };
+                const eAdn = { 
+                    id: 888, scanned: true, rarity: enemyRareza, stats: enemyStats,
+                    body_shape: eForma, base_color: eColor, color: eColor,
+                    eye_type: opcionesOjos[Math.floor(Math.random() * opcionesOjos.length)], 
+                    mouth_type: opcionesBocas[Math.floor(Math.random() * opcionesBocas.length)], 
+                    wing_type: opcionesEspaldas[Math.floor(Math.random() * opcionesEspaldas.length)], 
+                    hat_type: opcionesCabezas[Math.floor(Math.random() * opcionesCabezas.length)],
+                    hidden_genes: eHiddenGenes 
+                };
+
+                const eGenB_id = eHiddenGenes.B ? eHiddenGenes.B.id : "ninguno";
+                const eGenC_id = eHiddenGenes.C ? eHiddenGenes.C.id : "ninguno";
+
                 enemyCombat = {
-                    nombre: "Rival Clon", isPlayer: false,
+                    nombre: "Rival Salvaje", isPlayer: false,
                     maxHp: eAdn.stats.hp, hp: eAdn.stats.hp, atk: eAdn.stats.atk, spd: eAdn.stats.spd, luk: eAdn.stats.luk,
-                    genesId: [genBEnemy.id, genCEnemy.id],
-                    crystalSkin: genBEnemy.id === "piel_cristal" || genCEnemy.id === "piel_cristal",
+                    genesId: [eGenB_id, eGenC_id],
+                    crystalSkin: eGenB_id === "piel_cristal" || eGenC_id === "piel_cristal",
                     resilienciaUsada: false
                 };
 
@@ -413,7 +486,6 @@
                 document.getElementById("c-p-rareza").innerText = pAdn.rarity;
                 document.getElementById("c-e-rareza").innerText = eAdn.rarity;
 
-                // Calidad Genética
                 let calP = obtenerCalidad(pAdn.stats, pAdn.rarity);
                 document.getElementById("c-p-calidad").innerText = `[${calP.rango} ${calP.pct}%]`;
                 document.getElementById("c-p-calidad").style.color = calP.color;
@@ -426,8 +498,8 @@
 
                 document.getElementById("c-p-genb").innerText = pAdn.hidden_genes.B ? pAdn.hidden_genes.B.name : "Vacío";
                 document.getElementById("c-p-genc").innerText = pAdn.hidden_genes.C ? pAdn.hidden_genes.C.name : "Vacío";
-                document.getElementById("c-e-genb").innerText = genBEnemy.name;
-                document.getElementById("c-e-genc").innerText = genCEnemy.name;
+                document.getElementById("c-e-genb").innerText = eHiddenGenes.B ? eHiddenGenes.B.name : "Vacío";
+                document.getElementById("c-e-genc").innerText = eHiddenGenes.C ? eHiddenGenes.C.name : "Vacío";
 
                 const comboP = detectarComboSinergico(playerCombat.genesId[0], playerCombat.genesId[1]);
                 document.getElementById("c-p-combo").style.display = comboP ? "block" : "none";
