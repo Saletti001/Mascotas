@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - MOTOR DE COMBATE V9.1 (BLINDADO Y FUSIONADO)
+// ColiseumManager.js - MOTOR DE COMBATE V9.1 (BLINDADO)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -106,7 +106,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function actualizarUICombate(p, esJugador) {
         const prefix = esJugador ? "player" : "enemy";
-        const hpPct = Math.max(0, (p.hp / p.maxHp) * 100);
+        const max = (p && p.maxHp > 0) ? p.maxHp : 1; 
+        const current = (p && p.hp >= 0) ? p.hp : 0;
+        
+        const hpPct = Math.max(0, (current / max) * 100);
         const fillBar = document.getElementById(`${prefix}-hp-bar`);
         
         if (fillBar) {
@@ -117,11 +120,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         
         const txtHp = document.getElementById(`${prefix}-hp-text`);
-        if (txtHp) txtHp.innerText = `${p.hp} / ${p.maxHp}`;
+        if (txtHp) txtHp.innerText = `${Math.floor(current)} / ${Math.floor(max)}`;
 
-        if (p.hp <= 0) {
-            const sprite = document.getElementById(`${prefix}-sprite-battle`);
-            if (sprite) sprite.style.filter = "grayscale(1) brightness(0.5)";
+        const sprite = document.getElementById(`${prefix}-sprite-battle`);
+        if (sprite) {
+            if (current <= 0) sprite.style.filter = "grayscale(1) brightness(0.5)";
+            else sprite.style.filter = "none";
         }
     }
 
@@ -133,7 +137,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================================
-    // INICIALIZACIÓN
+    // INICIALIZACIÓN DE LA ARENA
     // =========================================
     window.iniciarColiseo = function() {
         if (!window.miMascota || window.miMascota.id === "temp") {
@@ -145,7 +149,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("player-visual-box").innerHTML = "";
         document.getElementById("enemy-visual-box").innerHTML = "";
         
-        // Manejo Seguro de Nombres (Evita crasheos si falta el ID en el HTML)
+        // Evita errores si no existe el ID
         const pNameEl = document.getElementById("battle-player-name");
         if(pNameEl) pNameEl.innerText = "Tu Geno";
         
@@ -153,7 +157,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if(eNameEl) eNameEl.innerText = "---";
         else {
             const enemyBox = document.getElementById("enemy-sprite-battle");
-            if (enemyBox && enemyBox.children[1]) enemyBox.children[1].innerText = "---";
+            if (enemyBox) {
+                const textDivs = enemyBox.querySelectorAll("div");
+                if (textDivs.length > 1) textDivs[1].innerText = "---";
+            }
         }
 
         document.getElementById("player-hp-bar").style.width = "100%";
@@ -167,101 +174,125 @@ document.addEventListener("DOMContentLoaded", () => {
         btnLeave.style.display = "inline-block";
         btnLeave.disabled = false;
         battleControls.classList.add("hidden");
+        
+        // ASEGURAMOS QUE LOS BOTONES ESTÉN ACTIVOS AL INICIAR
         btnAtk.disabled = false;
         btnItem.disabled = false;
-        if(btnSkill) btnSkill.style.display = "none";
+        if(btnSkill) btnSkill.style.display = "none"; 
 
         actualizarBotonManzana();
     };
 
     btnStart.onclick = () => {
-        logCombate.innerHTML = "";
-        addLog(`<span style="color:#4dd0e1">> INICIALIZANDO SECUENCIA DE COMBATE...</span>`);
-        
-        document.getElementById("player-sprite-battle").style.filter = "none";
-        document.getElementById("enemy-sprite-battle").style.filter = "none";
-        numeroTurno = 1;
+        try {
+            logCombate.innerHTML = "";
+            addLog(`<span style="color:#4dd0e1">> INICIALIZANDO SECUENCIA DE COMBATE...</span>`);
+            
+            document.getElementById("player-sprite-battle").style.filter = "none";
+            document.getElementById("enemy-sprite-battle").style.filter = "none";
+            numeroTurno = 1;
 
-        // JUGADOR (Manejo de stats guardados antiguos para evitar crasheos)
-        const pMascota = window.miMascota;
-        const pElemento = (pMascota.genes && pMascota.genes.afinidad) ? pMascota.genes.afinidad.dom : (pMascota.element || "Normal");
-        const pGenB = (pMascota.hidden_genes && pMascota.hidden_genes.B) ? pMascota.hidden_genes.B.id : "ninguno";
-        const pGenC = (pMascota.hidden_genes && pMascota.hidden_genes.C) ? pMascota.hidden_genes.C.id : "ninguno";
-        const pStats = pMascota.stats || {hp: 80, atk: 15, spd: 15, luk: 10};
+            // ESTO EVITA EL BLOQUEO: Desbloqueamos los botones por si es la segunda batalla
+            btnAtk.disabled = false;
+            actualizarBotonManzana();
 
-        playerCombat = {
-            nombre: pMascota.name || "Tu Geno",
-            isPlayer: true,
-            maxHp: pStats.hp, hp: pStats.hp, atk: pStats.atk, spd: pStats.spd, luk: pStats.luk,
-            element: pElemento,
-            genesId: [pGenB, pGenC],
-            crystalSkin: pGenB === "piel_cristal" || pGenC === "piel_cristal",
-            resilienciaUsada: false, barreraUsada: false,
-            ultimoElementoRecibido: null, sangreFriaUsada: false,
-            escudoCibernetico: pElemento === "Cibernético", estados: []
-        };
+            // JUGADOR
+            const pMascota = window.miMascota;
+            const pElemento = (pMascota.genes && pMascota.genes.afinidad) ? pMascota.genes.afinidad.dom : (pMascota.element || "Normal");
+            
+            // Protección por si la mascota no tiene hidden_genes
+            let pGenB = "ninguno"; let pGenC = "ninguno";
+            if (pMascota.hidden_genes) {
+                if (pMascota.hidden_genes.B) pGenB = pMascota.hidden_genes.B.id;
+                if (pMascota.hidden_genes.C) pGenC = pMascota.hidden_genes.C.id;
+            }
+            
+            // Protección por si la mascota no tiene stats aún
+            const pStats = pMascota.stats || {hp: 80, atk: 15, spd: 15, luk: 10};
 
-        // ENEMIGO
-        const eRareza = pMascota.rarity || "Común";
-        const eStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(eRareza) : {hp: 50, atk: 15, spd: 15, luk: 15};
-        const elementosBase = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
-        const eElemento = elementosBase[Math.floor(Math.random() * elementosBase.length)];
-        
-        const formasCuerpo = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
-        const coloresRival = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77", "#ff9800", "#ffb347", "#a8e6cf"];
-        const eColor = coloresRival[Math.floor(Math.random() * coloresRival.length)];
-        const eForma = formasCuerpo[Math.floor(Math.random() * formasCuerpo.length)];
+            playerCombat = {
+                nombre: pMascota.name || "Tu Geno",
+                isPlayer: true,
+                maxHp: pStats.hp, hp: pStats.hp, atk: pStats.atk, spd: pStats.spd, luk: pStats.luk,
+                element: pElemento,
+                genesId: [pGenB, pGenC],
+                crystalSkin: pGenB === "piel_cristal" || pGenC === "piel_cristal",
+                resilienciaUsada: false, barreraUsada: false,
+                ultimoElementoRecibido: null, sangreFriaUsada: false,
+                escudoCibernetico: pElemento === "Cibernético", estados: []
+            };
 
-        let eHiddenGenes = {A: null, B: null, C: null};
-        if (typeof window.generarGenesV9 === 'function') eHiddenGenes = window.generarGenesV9(eRareza);
+            // ENEMIGO PROCEDURAL
+            const eRareza = pMascota.rarity || "Común";
+            const eStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(eRareza) : {hp: 50, atk: 15, spd: 15, luk: 15};
+            const elementosBase = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
+            const eElemento = elementosBase[Math.floor(Math.random() * elementosBase.length)];
+            
+            const formasCuerpo = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
+            const coloresRival = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77", "#ff9800", "#ffb347", "#a8e6cf"];
+            const eColor = coloresRival[Math.floor(Math.random() * coloresRival.length)];
+            const eForma = formasCuerpo[Math.floor(Math.random() * formasCuerpo.length)];
 
-        const eAdn = { 
-            id: 888, scanned: true, rarity: eRareza, stats: eStats, element: eElemento,
-            body_shape: eForma, base_color: eColor, color: eColor,
-            eye_type: "angry", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno",
-            hidden_genes: eHiddenGenes 
-        };
+            let eHiddenGenes = {A: null, B: null, C: null};
+            if (typeof window.generarGenesV9 === 'function') eHiddenGenes = window.generarGenesV9(eRareza);
 
-        const eGenB_id = eHiddenGenes.B ? eHiddenGenes.B.id : "ninguno";
-        const eGenC_id = eHiddenGenes.C ? eHiddenGenes.C.id : "ninguno";
+            const eAdn = { 
+                id: 888, scanned: true, rarity: eRareza, stats: eStats, element: eElemento,
+                body_shape: eForma, base_color: eColor, color: eColor,
+                eye_type: "angry", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno",
+                hidden_genes: eHiddenGenes 
+            };
 
-        enemyCombat = {
-            nombre: "Sujeto de Prueba", isPlayer: false,
-            maxHp: eAdn.stats.hp, hp: eAdn.stats.hp, atk: eAdn.stats.atk, spd: eAdn.stats.spd, luk: eAdn.stats.luk,
-            element: eAdn.element,
-            genesId: [eGenB_id, eGenC_id],
-            crystalSkin: eGenB_id === "piel_cristal" || eGenC_id === "piel_cristal",
-            resilienciaUsada: false, barreraUsada: false,
-            ultimoElementoRecibido: null, sangreFriaUsada: false,
-            escudoCibernetico: eElemento === "Cibernético", estados: []
-        };
+            const eGenB_id = eHiddenGenes.B ? eHiddenGenes.B.id : "ninguno";
+            const eGenC_id = eHiddenGenes.C ? eHiddenGenes.C.id : "ninguno";
 
-        // RENDER VISUAL
-        document.getElementById("player-visual-box").innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(pMascota).replace(/<svg[^>]*>/, '<svg width="90px" height="90px" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">') : '';
-        document.getElementById("player-visual-box").style.color = pMascota.color || pMascota.base_color;
-        
-        document.getElementById("enemy-visual-box").innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(eAdn).replace(/<svg[^>]*>/, '<svg width="90px" height="90px" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">') : '';
-        document.getElementById("enemy-visual-box").style.color = eAdn.color;
+            enemyCombat = {
+                nombre: "Rival Salvaje", isPlayer: false,
+                maxHp: eAdn.stats.hp, hp: eAdn.stats.hp, atk: eAdn.stats.atk, spd: eAdn.stats.spd, luk: eAdn.stats.luk,
+                element: eAdn.element,
+                genesId: [eGenB_id, eGenC_id],
+                crystalSkin: eGenB_id === "piel_cristal" || eGenC_id === "piel_cristal",
+                resilienciaUsada: false, barreraUsada: false,
+                ultimoElementoRecibido: null, sangreFriaUsada: false,
+                escudoCibernetico: eElemento === "Cibernético", estados: []
+            };
 
-        // Actualización segura de nombres
-        const pNameEl = document.getElementById("battle-player-name");
-        if(pNameEl) pNameEl.innerText = `${playerCombat.nombre} (Nv. ${pMascota.level || 1})`;
-        
-        const eNameEl = document.getElementById("battle-enemy-name");
-        if(eNameEl) eNameEl.innerText = `Rival ${eRareza}`;
-        else {
-            const enemyBox = document.getElementById("enemy-sprite-battle");
-            if (enemyBox && enemyBox.children[1]) enemyBox.children[1].innerText = `Rival ${eRareza}`;
+            // RENDER VISUAL SEGURO
+            if (typeof generarSvgGeno === 'function') {
+                document.getElementById("player-visual-box").innerHTML = generarSvgGeno(pMascota).replace(/<svg[^>]*>/, '<svg width="90px" height="90px" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+                document.getElementById("player-visual-box").style.color = pMascota.color || pMascota.base_color;
+                
+                document.getElementById("enemy-visual-box").innerHTML = generarSvgGeno(eAdn).replace(/<svg[^>]*>/, '<svg width="90px" height="90px" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+                document.getElementById("enemy-visual-box").style.color = eAdn.color;
+            }
+
+            // ACTUALIZACIÓN DE NOMBRES SEGURA
+            const pNameEl = document.getElementById("battle-player-name");
+            if(pNameEl) pNameEl.innerText = `${playerCombat.nombre} (Nv. ${pMascota.level || 1})`;
+            
+            const eNameEl = document.getElementById("battle-enemy-name");
+            if(eNameEl) eNameEl.innerText = `Rival ${eRareza}`;
+            else {
+                const enemyBox = document.getElementById("enemy-sprite-battle");
+                if (enemyBox) {
+                    const textDivs = enemyBox.querySelectorAll("div");
+                    if (textDivs.length > 1) textDivs[1].innerText = `Rival ${eRareza}`;
+                }
+            }
+
+            actualizarUICombate(playerCombat, true);
+            actualizarUICombate(enemyCombat, false);
+
+            btnStart.style.display = "none";
+            btnLeave.style.display = "none";
+            battleControls.classList.remove("hidden");
+            
+            addLog(`<br><span style="color:#8A2BE2; font-weight:bold;">--- LISTOS PARA COMBATE ---</span>`);
+            
+        } catch (error) {
+            console.error("Error crítico al iniciar combate:", error);
+            addLog(`<span style="color:#ff3333">> ERROR DEL SISTEMA. Revisa la consola F12.</span>`);
         }
-
-        actualizarUICombate(playerCombat, true);
-        actualizarUICombate(enemyCombat, false);
-
-        btnStart.style.display = "none";
-        btnLeave.style.display = "none";
-        battleControls.classList.remove("hidden");
-        
-        addLog(`<br><span style="color:#8A2BE2; font-weight:bold;">--- LISTOS PARA COMBATE ---</span>`);
     };
 
     // =========================================
@@ -493,6 +524,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 btnLeave.style.display = "inline-block";
             }, 1000);
         } else {
+            // AQUÍ DESBLOQUEAMOS PARA EL SIGUIENTE TURNO (Si la batalla sigue viva)
             btnAtk.disabled = false;
             actualizarBotonManzana();
         }
