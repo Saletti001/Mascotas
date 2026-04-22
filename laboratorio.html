@@ -68,25 +68,24 @@
         .btn-action:hover { filter: brightness(1.2); box-shadow: 0 0 20px rgba(255, 87, 34, 0.5); }
         .btn-action:disabled { background: #333; color: #888; cursor: not-allowed; box-shadow: none; filter: none; }
 
-        .arena-screen { display: flex; justify-content: space-between; background-color: #31c4d8; background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px); border-radius: 10px; border: 2px solid #4dd0e1; min-height: 350px; position: relative; overflow: hidden; box-shadow: inset 0 0 50px rgba(0,0,0,0.4); padding: 20px; }
-        .fighter-side { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; transition: 0.3s;}
-        .fighter-svg { width: 220px; height: 220px; z-index: 1; margin-bottom: 20px; transition: 0.1s;}
+        .arena-screen { display: flex; justify-content: space-between; align-items: center; background-color: #31c4d8; background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px); border-radius: 10px; border: 2px solid #4dd0e1; min-height: 350px; position: relative; overflow: hidden; box-shadow: inset 0 0 50px rgba(0,0,0,0.4); padding: 20px; }
+        
+        .fighter-side { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; transition: 0.3s; }
+        .fighter-svg { width: 200px; height: 200px; z-index: 1; margin-bottom: 10px; transition: 0.1s;}
         .fighter-svg.hit { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5); transform: scale(0.95); }
         
-        .pedestal-combat { position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; z-index: 0; }
-        .pedestal-combat .pedestal-shadow { width: 140px; height: 35px; top: 15px; }
+        .vs-badge { position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%); font-size: 40px; font-weight: 900; font-style: italic; color: #ffcc00; text-shadow: 0 0 20px rgba(255,0,0,0.8); z-index: 2; }
         
-        .vs-badge { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); font-size: 40px; font-weight: 900; font-style: italic; color: #ffcc00; text-shadow: 0 0 20px rgba(255,0,0,0.8); z-index: 2; }
+        .fighter-stats { background: rgba(10, 17, 24, 0.85); border: 1px solid #4dd0e1; border-radius: 8px; padding: 15px; width: 85%; text-align: left; }
+        .fighter-name { font-weight: 900; color: #fff; font-size: 14px; margin-bottom: 5px; text-transform: uppercase; text-align: center; }
         
-        .fighter-stats { background: rgba(10, 17, 24, 0.85); border: 1px solid #4dd0e1; border-radius: 8px; padding: 15px; width: 80%; text-align: left; }
-        .fighter-name { font-weight: 900; color: #fff; font-size: 16px; margin-bottom: 5px; text-transform: uppercase; text-align: center; }
-        .fighter-genes { font-size: 11px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #333; }
-        
-        /* BARRAS DE VIDA */
+        /* BARRAS DE VIDA Y STATS */
         .hp-bar-bg { width: 100%; height: 10px; background: #333; border-radius: 5px; margin-top: 5px; overflow: hidden; }
         .hp-bar-fill { height: 100%; background: #4CAF50; width: 100%; transition: width 0.3s ease, background-color 0.3s ease; }
         .hp-text { text-align: center; font-size: 10px; font-weight: bold; margin-top: 2px; color: #fff; }
+        .stats-row { display: flex; justify-content: space-around; color: #ff6b6b; font-size: 11px; font-weight: bold; margin-top: 8px; }
 
+        .fighter-genes { font-size: 11px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #333; }
         .combo-badge { background: linear-gradient(90deg, #ff9800, #ff5722); color: white; text-align: center; padding: 5px; border-radius: 4px; font-weight: bold; font-size: 11px; text-transform: uppercase; margin-top: 10px; box-shadow: 0 0 10px rgba(255, 152, 0, 0.6); display: none; }
         
         .switch-container { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 8px; border: 1px solid #333; }
@@ -164,13 +163,14 @@
             <div class="vs-badge">VS</div>
             
             <div class="fighter-side" id="side-player">
-                <div class="pedestal-combat"><div class="pedestal-shadow"><div class="pedestal-core"></div></div></div>
                 <div id="combat-player-svg" class="fighter-svg"></div>
                 <div class="fighter-stats">
-                    <div class="fighter-name" style="color:#4dd0e1;">TU GENO (<span id="c-p-rareza"></span>)</div>
+                    <div class="fighter-name" style="color:#4dd0e1;">
+                        TU GENO (<span id="c-p-rareza"></span>) <span id="c-p-calidad" style="font-size:12px; margin-left:5px;"></span>
+                    </div>
                     <div class="hp-bar-bg"><div id="c-p-hp-fill" class="hp-bar-fill"></div></div>
                     <div id="c-p-hp-text" class="hp-text">HP: 0 / 0</div>
-                    <div style="display:flex; justify-content:space-between; color:#ff6b6b; font-size:12px; font-weight:bold; margin-top:8px;">
+                    <div class="stats-row">
                         <span id="c-p-atk"></span> <span id="c-p-spd"></span> <span id="c-p-luk"></span>
                     </div>
                     <div class="fighter-genes">
@@ -182,13 +182,14 @@
             </div>
 
             <div class="fighter-side" id="side-enemy">
-                <div class="pedestal-combat"><div class="pedestal-shadow"><div class="pedestal-core"></div></div></div>
                 <div id="combat-enemy-svg" class="fighter-svg"></div>
                 <div class="fighter-stats">
-                    <div class="fighter-name" style="color:#ff6b6b;">RIVAL CLON (<span id="c-e-rareza"></span>)</div>
+                    <div class="fighter-name" style="color:#ff6b6b;">
+                        RIVAL CLON (<span id="c-e-rareza"></span>) <span id="c-e-calidad" style="font-size:12px; margin-left:5px;"></span>
+                    </div>
                     <div class="hp-bar-bg"><div id="c-e-hp-fill" class="hp-bar-fill"></div></div>
                     <div id="c-e-hp-text" class="hp-text">HP: 0 / 0</div>
-                    <div style="display:flex; justify-content:space-between; color:#ff6b6b; font-size:12px; font-weight:bold; margin-top:8px;">
+                    <div class="stats-row">
                         <span id="c-e-atk"></span> <span id="c-e-spd"></span> <span id="c-e-luk"></span>
                     </div>
                     <div class="fighter-genes">
@@ -226,6 +227,25 @@
             if(!genB || !genC || genB === "ninguno" || genC === "ninguno") return null;
             const combo = COMBOS_OFICIALES.find(c => c.ids.includes(genB) && c.ids.includes(genC));
             return combo ? combo.nombre : null;
+        }
+
+        // FÓRMULA DE CALIDAD Y PUREZA DE IVs
+        function obtenerCalidad(stats, rareza) {
+            const limites = window.TABLA_IVS && window.TABLA_IVS[rareza] ? window.TABLA_IVS[rareza] : { hp: [35, 55], atk: [10, 22], spd: [8, 25], luk: [5, 15] };
+            let tMin = limites.hp[0] + limites.atk[0] + limites.spd[0] + limites.luk[0];
+            let tMax = limites.hp[1] + limites.atk[1] + limites.spd[1] + limites.luk[1];
+            let tObt = stats.hp + stats.atk + stats.spd + stats.luk;
+            
+            let pct = Math.round(((tObt - tMin) / (tMax - tMin)) * 100);
+            if (pct > 100) pct = 100; if (pct < 0) pct = 0;
+            
+            let rango = "D"; let color = "#d9534f";
+            if (pct >= 95) { rango = "S"; color = "#ffcc00"; }
+            else if (pct >= 80) { rango = "A"; color = "#4dd0e1"; }
+            else if (pct >= 50) { rango = "B"; color = "#4CAF50"; }
+            else if (pct >= 20) { rango = "C"; color = "#f0ad4e"; }
+            
+            return { rango, pct, color };
         }
 
         setTimeout(() => {
@@ -331,6 +351,7 @@
                 const prefix = esJugador ? "c-p" : "c-e";
                 document.getElementById(`${prefix}-atk`).innerText = `⚔️ ${p.atk}`;
                 document.getElementById(`${prefix}-spd`).innerText = `⚡ ${p.spd}`;
+                document.getElementById(`${prefix}-luk`).innerText = `🍀 ${p.luk}`;
                 
                 const hpPct = Math.max(0, (p.hp / p.maxHp) * 100);
                 const fillBar = document.getElementById(`${prefix}-hp-fill`);
@@ -357,16 +378,14 @@
                 logCombate.innerHTML = "";
                 addLog(`<span style="color:#4dd0e1">> INICIALIZANDO ARENA HOLOGRÁFICA...</span>`);
                 
-                // Reiniciar Filtros
                 document.getElementById("side-player").style.filter = "none";
                 document.getElementById("side-enemy").style.filter = "none";
                 numeroTurno = 1;
 
                 const pAdn = obtenerAdnPlayer();
                 playerCombat = {
-                    nombre: "Tu Geno",
-                    isPlayer: true,
-                    maxHp: pAdn.stats.hp, hp: pAdn.stats.hp, atk: pAdn.stats.atk, spd: pAdn.stats.spd,
+                    nombre: "Tu Geno", isPlayer: true,
+                    maxHp: pAdn.stats.hp, hp: pAdn.stats.hp, atk: pAdn.stats.atk, spd: pAdn.stats.spd, luk: pAdn.stats.luk,
                     genesId: [pAdn.hidden_genes.B?.id, pAdn.hidden_genes.C?.id],
                     crystalSkin: pAdn.hidden_genes.B?.id === "piel_cristal" || pAdn.hidden_genes.C?.id === "piel_cristal",
                     resilienciaUsada: false
@@ -376,28 +395,37 @@
                 let genCEnemy = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)];
                 while(genBEnemy.id === genCEnemy.id) { genCEnemy = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)]; }
 
+                // El clon rival tiene las mismas estadísticas base (y rareza) pero genes distintos
                 const eAdn = { ...pAdn, id: 888, scanned: true, hidden_genes: { A: null, B: genBEnemy, C: genCEnemy } };
                 enemyCombat = {
-                    nombre: "Rival Clon",
-                    isPlayer: false,
-                    maxHp: eAdn.stats.hp, hp: eAdn.stats.hp, atk: eAdn.stats.atk, spd: eAdn.stats.spd,
+                    nombre: "Rival Clon", isPlayer: false,
+                    maxHp: eAdn.stats.hp, hp: eAdn.stats.hp, atk: eAdn.stats.atk, spd: eAdn.stats.spd, luk: eAdn.stats.luk,
                     genesId: [genBEnemy.id, genCEnemy.id],
                     crystalSkin: genBEnemy.id === "piel_cristal" || genCEnemy.id === "piel_cristal",
                     resilienciaUsada: false
                 };
 
-                // Render Visuales
                 document.getElementById("combat-player-svg").innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(pAdn).replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">') : '';
                 document.getElementById("combat-player-svg").style.color = pAdn.color;
                 document.getElementById("combat-enemy-svg").innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(eAdn).replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">') : '';
                 document.getElementById("combat-enemy-svg").style.color = eAdn.color;
 
-                // Setup Textos UI
                 document.getElementById("c-p-rareza").innerText = pAdn.rarity;
+                document.getElementById("c-e-rareza").innerText = eAdn.rarity;
+
+                // Calidad Genética
+                let calP = obtenerCalidad(pAdn.stats, pAdn.rarity);
+                document.getElementById("c-p-calidad").innerText = `[${calP.rango} ${calP.pct}%]`;
+                document.getElementById("c-p-calidad").style.color = calP.color;
+                document.getElementById("c-p-calidad").style.textShadow = calP.rango === "S" ? "0 0 10px rgba(255,204,0,0.8)" : "none";
+
+                let calE = obtenerCalidad(eAdn.stats, eAdn.rarity);
+                document.getElementById("c-e-calidad").innerText = `[${calE.rango} ${calE.pct}%]`;
+                document.getElementById("c-e-calidad").style.color = calE.color;
+                document.getElementById("c-e-calidad").style.textShadow = calE.rango === "S" ? "0 0 10px rgba(255,204,0,0.8)" : "none";
+
                 document.getElementById("c-p-genb").innerText = pAdn.hidden_genes.B ? pAdn.hidden_genes.B.name : "Vacío";
                 document.getElementById("c-p-genc").innerText = pAdn.hidden_genes.C ? pAdn.hidden_genes.C.name : "Vacío";
-                
-                document.getElementById("c-e-rareza").innerText = eAdn.rarity;
                 document.getElementById("c-e-genb").innerText = genBEnemy.name;
                 document.getElementById("c-e-genc").innerText = genCEnemy.name;
 
@@ -442,7 +470,6 @@
                         flashDamage(defensor.isPlayer);
                     }
 
-                    // Chequeo Resiliencia Última
                     if (defensor.hp > 0 && defensor.hp <= (defensor.maxHp * 0.15) && defensor.genesId.includes("resiliencia_ultima") && !defensor.resilienciaUsada) {
                         defensor.resilienciaUsada = true;
                         defensor.atk = Math.floor(defensor.atk * 1.4);
@@ -456,26 +483,19 @@
             btnAtacar.onclick = () => {
                 addLog(`<br><span style="color:#4dd0e1">[TURNO ${numeroTurno}]</span>`);
                 
-                let primero = playerCombat;
-                let segundo = enemyCombat;
-
-                if (enemyCombat.spd > playerCombat.spd) {
-                    primero = enemyCombat; segundo = playerCombat;
-                } else if (enemyCombat.spd === playerCombat.spd && Math.random() > 0.5) {
-                    primero = enemyCombat; segundo = playerCombat;
-                }
+                let primero = playerCombat; let segundo = enemyCombat;
+                if (enemyCombat.spd > playerCombat.spd) { primero = enemyCombat; segundo = playerCombat; } 
+                else if (enemyCombat.spd === playerCombat.spd && Math.random() > 0.5) { primero = enemyCombat; segundo = playerCombat; }
 
                 procesarAtaque(primero, segundo);
                 
-                // Si el segundo sobrevivió, contraataca
                 if (segundo.hp > 0) {
                     setTimeout(() => {
                         procesarAtaque(segundo, primero);
                         checkEndGame();
                     }, 500);
-                } else {
-                    checkEndGame();
-                }
+                } else { checkEndGame(); }
+                
                 numeroTurno++;
             };
 
