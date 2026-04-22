@@ -87,25 +87,23 @@
         input:checked + .slider { background-color: #ffcc00; }
         input:checked + .slider:before { transform: translateX(20px); }
 
-        /* ANIMACIÓN DE TEXTO FLOTANTE DE DAÑO */
+        /* ANIMACIÓN DE TEXTO FLOTANTE */
         @keyframes floatUpFade {
             0% { opacity: 1; transform: translateY(0) scale(1.5); }
-            100% { opacity: 0; transform: translateY(-60px) scale(1); }
+            10% { transform: translateY(-10px) scale(1.8); }
+            100% { opacity: 0; transform: translateY(-90px) scale(1); }
         }
-        .floating-dmg {
+        .floating-text {
             position: absolute;
-            color: #ff0000;
             font-weight: 900;
-            font-size: 28px;
-            text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
             z-index: 100;
             pointer-events: none;
-            animation: floatUpFade 1.2s ease-out forwards;
+            animation: floatUpFade 1.3s ease-out forwards;
+            text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 5px rgba(0,0,0,0.8);
         }
-        .floating-heal {
-            color: #4CAF50;
-            font-size: 24px;
-        }
+        .text-dmg { color: #ff3333; font-size: 32px; }
+        .text-heal { color: #4CAF50; font-size: 28px; }
+        .text-crit { color: #ffcc00; font-size: 36px; font-style: italic; text-transform: uppercase; letter-spacing: 2px; }
     </style>
 </head>
 <body>
@@ -276,21 +274,28 @@
             return { rango, pct, color };
         }
 
-        // NUEVA FUNCIÓN: TEXTO FLOTANTE DE DAÑO
-        function mostrarDanoFlotante(esJugador, amount, isHeal = false) {
+        // ==========================================
+        // NUEVA FUNCIÓN: TEXTO FLOTANTE UNIVERSAL
+        // ==========================================
+        function mostrarTextoFlotante(esJugador, texto, claseAdicional, delayMs = 0) {
             const sideId = esJugador ? "side-player" : "side-enemy";
             const sideEl = document.getElementById(sideId);
             
-            const floater = document.createElement("div");
-            floater.className = isHeal ? "floating-dmg floating-heal" : "floating-dmg";
-            floater.innerText = isHeal ? `+${amount}` : `-${amount}`;
-            
-            const offsetX = (Math.random() - 0.5) * 60; // Desplazamiento aleatorio para que no se superpongan
-            floater.style.top = "40%";
-            floater.style.left = `calc(50% + ${offsetX}px)`;
-            
-            sideEl.appendChild(floater);
-            setTimeout(() => floater.remove(), 1200);
+            setTimeout(() => {
+                const floater = document.createElement("div");
+                floater.className = `floating-text ${claseAdicional}`;
+                floater.innerText = texto;
+                
+                // Mayor dispersión (X e Y aleatorios en un área amplia)
+                const offsetX = (Math.random() - 0.5) * 140; 
+                const offsetY = (Math.random() - 0.5) * 80;
+                
+                floater.style.top = `calc(35% + ${offsetY}px)`;
+                floater.style.left = `calc(50% + ${offsetX}px)`;
+                
+                sideEl.appendChild(floater);
+                setTimeout(() => floater.remove(), 1300);
+            }, delayMs);
         }
 
         setTimeout(() => {
@@ -587,50 +592,43 @@
                 for(let i=0; i<ataques; i++) {
                     if (defensor.hp <= 0) break;
 
-                    // 1. Calcular Daño Base y Elementos
                     let dmg = Math.floor(atacante.atk * (i === 1 ? 0.5 : 1) * (0.85 + Math.random() * 0.3));
                     let multElem = obtenerMultiplicadorElemental(atacante.element, defensor.element);
                     dmg = Math.floor(dmg * multElem);
 
-                    // 2. Calcular Crítico
                     let isCrit = Math.random() <= (0.05 + (atacante.luk * 0.002));
                     if (isCrit) dmg = Math.floor(dmg * 1.5);
 
-                    // 3. Evaluar Defensas Absolutas (Piel de Cristal)
                     if (defensor.crystalSkin) {
                         dmg = 0; defensor.crystalSkin = false;
                         addLog(`<span style="color:#80deea">* [Piel de Cristal] ${defensor.nombre} absorbió el impacto (Daño: 0).</span>`);
                     } else {
                         
-                        // 4. Evaluar Barrera Límite ANTES de restar HP
                         if (defensor.hp - dmg <= 0 && defensor.genesId.includes("barrera_limite") && !defensor.barreraUsada) {
                             dmg = defensor.hp - 1; 
                             defensor.barreraUsada = true;
                             addLog(`<span style="color:#ff5722">* [Barrera Límite] ¡${defensor.nombre} sobrevive a un golpe fatal con 1 HP!</span>`);
                         }
 
-                        // 5. APLICAR DAÑO PRINCIPAL
                         defensor.hp -= dmg;
                         if(defensor.hp < 0) defensor.hp = 0;
                         
-                        // 6. LOGUEAR EL ATAQUE PRINCIPAL PRIMERO
                         let tipoGolpe = "";
                         if (multElem === 1.5) tipoGolpe = ` <span style="color:#4CAF50; font-weight:bold;">(¡Súper Efectivo!)</span>`;
                         else if (multElem === 0.5) tipoGolpe = ` <span style="color:#888; font-weight:bold;">(Poco efectivo...)</span>`;
 
                         if (isCrit) {
                             addLog(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${atacante.nombre} causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} de daño</span>.${tipoGolpe}`);
+                            // ANIMACIÓN DE CRÍTICO
+                            mostrarTextoFlotante(defensor.isPlayer, "CRITICAL!", "text-crit");
+                            mostrarTextoFlotante(defensor.isPlayer, `-${dmg}`, "text-dmg", 100);
                         } else {
                             addLog(`> ${atacante.nombre} causa <span style="color:#ff6b6b">${dmg} de daño</span>.${tipoGolpe}`);
+                            if (dmg > 0) mostrarTextoFlotante(defensor.isPlayer, `-${dmg}`, "text-dmg");
                         }
                         
-                        // ANIMACIÓN VISUAL DEL DAÑO
-                        if (dmg > 0) {
-                            mostrarDanoFlotante(defensor.isPlayer, dmg, false);
-                            flashDamage(defensor.isPlayer);
-                        }
+                        if (dmg > 0) flashDamage(defensor.isPlayer);
 
-                        // 7. Evaluar Vampirismo (Curación posterior)
                         let roboVida = 0;
                         if (atacante.genesId.includes("vampirismo_genetico") && dmg > 0) {
                             roboVida = Math.floor(dmg * 0.15);
@@ -639,10 +637,9 @@
                             if (atacante.hp > atacante.maxHp) atacante.hp = atacante.maxHp;
                             
                             addLog(`<span style="color:#e0b0ff">* [Vampirismo] ${atacante.nombre} se cura ${roboVida} HP.</span>`);
-                            mostrarDanoFlotante(atacante.isPlayer, roboVida, true);
+                            mostrarTextoFlotante(atacante.isPlayer, `+${roboVida}`, "text-heal", 200);
                         }
 
-                        // 8. Evaluar REFLEJO GENÉTICO (Daño posterior)
                         if (isCrit && defensor.genesId.includes("reflejo_genetico") && dmg > 0) {
                             let danoReflejado = Math.floor(dmg * 0.30);
                             if (danoReflejado < 1) danoReflejado = 1;
@@ -651,20 +648,17 @@
                             if (atacante.hp < 0) atacante.hp = 0;
                             
                             addLog(`<span style="color:#ffcc00">* [Reflejo Genético] ¡${defensor.nombre} repele la agresión! ${atacante.nombre} recibe ${danoReflejado} de daño reflejado.</span>`);
-                            mostrarDanoFlotante(atacante.isPlayer, danoReflejado, false);
+                            mostrarTextoFlotante(atacante.isPlayer, `-${danoReflejado}`, "text-dmg", 300);
                             flashDamage(atacante.isPlayer);
                         }
                     }
 
-                    // 9. Chequeo de Resiliencia Última
                     if (defensor.hp > 0 && defensor.hp <= (defensor.maxHp * 0.15) && defensor.genesId.includes("resiliencia_ultima") && !defensor.resilienciaUsada) {
                         defensor.resilienciaUsada = true;
                         defensor.atk = Math.floor(defensor.atk * 1.4); defensor.spd = Math.floor(defensor.spd * 1.4);
                         addLog(`<span style="color:#ffcc00">* [Resiliencia Última] ¡${defensor.nombre} entra en modo Berserker! (ATK y SPD x1.4)</span>`);
                     }
                 }
-                
-                // Actualizar UI al final de la ronda de ataques
                 actualizarUICombate(atacante, atacante.isPlayer);
                 actualizarUICombate(defensor, defensor.isPlayer);
             }
@@ -682,7 +676,7 @@
                     setTimeout(() => {
                         procesarAtaque(segundo, primero);
                         checkEndGame();
-                    }, 800); // Pequeño retraso para que las animaciones respiren
+                    }, 800); 
                 } else { checkEndGame(); }
                 
                 numeroTurno++;
