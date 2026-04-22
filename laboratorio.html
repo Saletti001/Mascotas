@@ -40,6 +40,7 @@
         .control-group.special-a { border-left: 3px solid #ffcc00; background: rgba(255, 204, 0, 0.05); }
         .control-group.special-b { border-left: 3px solid #80deea; background: rgba(128, 222, 234, 0.05); }
         .control-group.special-c { border-left: 3px solid #8A2BE2; background: rgba(138, 43, 226, 0.05); }
+        .control-group.special-combo { border-left: 3px solid #ff5722; background: rgba(255, 87, 34, 0.05); }
         label { font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
         select, input[type="color"] { padding: 10px; background: #0d1a24; color: #fff; border: 1px solid #333; border-radius: 8px; font-size: 14px; outline: none; cursor: pointer; width: 100%; box-sizing: border-box; }
         select:focus, input:focus { border-color: #4dd0e1; }
@@ -111,6 +112,7 @@
                 <span style="font-size: 12px; color: #fff; font-weight: bold;">ADN Escaneado (Revelar Genes)</span>
                 <label class="switch"><input type="checkbox" id="chk-escaneado" checked><span class="slider"></span></label>
             </div>
+            
             <div class="control-group">
                 <label style="color:#ff6b6b">Rareza (Afecta Stats Base)</label>
                 <select id="sel-rareza">
@@ -118,6 +120,14 @@
                     <option value="Épico">Épico</option><option value="Legendario">Legendario</option><option value="Mítico">Mítico</option>
                 </select>
             </div>
+            
+            <div class="control-group special-combo">
+                <label style="color:#ff5722">🔥 Forzar Combo Sinérgico</label>
+                <select id="sel-player-combo">
+                    <option value="ninguno">Manual (Sin Combo)</option>
+                    </select>
+            </div>
+
             <div class="control-group"><label>Forma Base</label><select id="sel-forma"></select></div>
             <div class="control-group"><label>Color Base</label><input type="color" id="sel-color" value="#ff6b6b"></div>
             <div class="control-group"><label>Ojos</label><select id="sel-ojos"></select></div>
@@ -154,14 +164,19 @@
     <div id="tab-combat" class="tab-content combat-arena lab-container">
         
         <div class="action-bar">
-            <select id="sel-enemy-rareza" style="flex: 0.5; padding: 15px; background: #0d1a24; color: #ff6b6b; border: 1px solid #ff6b6b; border-radius: 8px; font-weight: bold; outline: none; cursor: pointer; text-transform: uppercase;">
+            <select id="sel-enemy-rareza" style="flex: 0.3; padding: 15px; background: #0d1a24; color: #ff6b6b; border: 1px solid #ff6b6b; border-radius: 8px; font-weight: bold; outline: none; cursor: pointer; text-transform: uppercase;">
                 <option value="Común">Rival: Común</option>
                 <option value="Raro">Rival: Raro</option>
                 <option value="Épico">Rival: Épico</option>
                 <option value="Legendario">Rival: Legendario</option>
                 <option value="Mítico">Rival: Mítico</option>
             </select>
-            <button id="btn-generar-combate" class="btn-fight">⚔️ Generar Aleatorio</button>
+
+            <select id="sel-enemy-combo" style="flex: 0.4; padding: 15px; background: #0d1a24; color: #ff9800; border: 1px solid #ff9800; border-radius: 8px; font-weight: bold; outline: none; cursor: pointer; text-transform: uppercase;">
+                <option value="aleatorio">Rival: Combo Aleatorio</option>
+                </select>
+
+            <button id="btn-generar-combate" class="btn-fight">⚔️ Generar Rival</button>
             <button id="btn-atacar" class="btn-action" disabled>🔥 Ejecutar Turno</button>
         </div>
         
@@ -275,6 +290,22 @@
             const selGenC = document.getElementById("sel-gen-c");
             const chkEscaneado = document.getElementById("chk-escaneado");
             
+            // SELECTORES DE COMBOS
+            const selPlayerCombo = document.getElementById("sel-player-combo");
+            const selEnemyCombo = document.getElementById("sel-enemy-combo");
+
+            COMBOS_OFICIALES.forEach(combo => {
+                let opt1 = document.createElement("option");
+                opt1.value = combo.nombre;
+                opt1.innerText = combo.nombre;
+                selPlayerCombo.appendChild(opt1);
+
+                let opt2 = document.createElement("option");
+                opt2.value = combo.nombre;
+                opt2.innerText = `Rival: ${combo.nombre}`;
+                selEnemyCombo.appendChild(opt2);
+            });
+            
             const formasCuerpo = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
             const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry"];
             const opcionesBocas = typeof dicBocas !== 'undefined' ? Object.keys(dicBocas) : ["estandar", "feliz", "colmillos"];
@@ -315,6 +346,16 @@
                 });
             };
             addGenesToSelect(selGenB); addGenesToSelect(selGenC);
+
+            // LOGICA SELECTOR COMBO JUGADOR
+            selPlayerCombo.addEventListener("change", (e) => {
+                if(e.target.value !== "ninguno") {
+                    const combo = COMBOS_OFICIALES.find(c => c.nombre === e.target.value);
+                    selGenB.value = combo.ids[0];
+                    selGenC.value = combo.ids[1];
+                }
+                renderizarGenoPlayer();
+            });
 
             function actualizarTerminal() {
                 const term = document.getElementById("terminal-content");
@@ -387,7 +428,7 @@
             renderizarGenoPlayer();
 
             // ==========================================
-            // MOTOR DE COMBATE INTERACTIVO (Mejorado con Generación Procedural)
+            // MOTOR DE COMBATE INTERACTIVO (Mejorado)
             // ==========================================
             const btnGenerarRival = document.getElementById("btn-generar-combate");
             const btnAtacar = document.getElementById("btn-atacar");
@@ -439,8 +480,8 @@
                     resilienciaUsada: false
                 };
 
-                // GENERACIÓN TOTALMENTE PROCEDURAL DEL RIVAL
                 const enemyRareza = document.getElementById("sel-enemy-rareza").value;
+                const enemyComboSelection = document.getElementById("sel-enemy-combo").value;
                 const enemyStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(enemyRareza) : {hp: 80, atk: 20, spd: 20, luk: 15};
                 
                 const eForma = formasCuerpo[Math.floor(Math.random() * formasCuerpo.length)];
@@ -448,13 +489,23 @@
                 const eColor = coloresRival[Math.floor(Math.random() * coloresRival.length)];
                 
                 let eHiddenGenes = {A: null, B: null, C: null};
-                if (typeof window.generarGenesV9 === 'function') {
-                    eHiddenGenes = window.generarGenesV9(enemyRareza);
+
+                if (enemyComboSelection !== "aleatorio") {
+                    // Forzar Combo Rival
+                    const comboElegido = COMBOS_OFICIALES.find(c => c.nombre === enemyComboSelection);
+                    const gB = genesFuncionales.find(g => g.id === comboElegido.ids[0]);
+                    const gC = genesFuncionales.find(g => g.id === comboElegido.ids[1]);
+                    eHiddenGenes = { A: null, B: gB, C: gC };
                 } else {
-                    let gB = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)];
-                    let gC = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)];
-                    while(gB.id === gC.id) gC = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)];
-                    eHiddenGenes = {A: null, B: gB, C: gC};
+                    // Generación Procedural Rival
+                    if (typeof window.generarGenesV9 === 'function') {
+                        eHiddenGenes = window.generarGenesV9(enemyRareza);
+                    } else {
+                        let gB = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)];
+                        let gC = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)];
+                        while(gB.id === gC.id) gC = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)];
+                        eHiddenGenes = {A: null, B: gB, C: gC};
+                    }
                 }
 
                 const eAdn = { 
