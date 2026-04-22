@@ -448,7 +448,6 @@
 
             function renderizarGenoPlayer() {
                 const adn = obtenerAdnPlayer();
-                // USAMOS LA FUNCIÓN SEGURA AQUÍ
                 document.getElementById("geno-display").innerHTML = inyectarSvgSeguro(adn);
                 document.getElementById("geno-display").style.color = selColor.value; 
                 actualizarTerminal();
@@ -485,7 +484,7 @@
                 else if (hpPct > 20) fillBar.style.background = "#ffeb3b";
                 else fillBar.style.background = "#f44336";
 
-                document.getElementById(`${prefix}-hp-text`).innerText = `HP: ${p.hp} / ${p.maxHp}`;
+                document.getElementById(`${prefix}-hp-text`).innerText = `HP: ${Math.floor(p.hp)} / ${p.maxHp}`;
                 if (p.hp <= 0) document.getElementById(esJugador ? "side-player" : "side-enemy").style.filter = "grayscale(1) brightness(0.5)";
             }
 
@@ -565,7 +564,6 @@
                     escudoCibernetico: eElemento === "Cibernético", estados: []
                 };
 
-                // USAMOS LA FUNCIÓN SEGURA AQUÍ TAMBIÉN
                 document.getElementById("combat-player-svg").innerHTML = inyectarSvgSeguro(pAdn);
                 document.getElementById("combat-player-svg").style.color = pAdn.color;
                 
@@ -590,12 +588,16 @@
                 document.getElementById("c-e-genb").innerText = eHiddenGenes.B ? eHiddenGenes.B.name : "Vacío";
                 document.getElementById("c-e-genc").innerText = eHiddenGenes.C ? eHiddenGenes.C.name : "Vacío";
 
+                // SOLUCIÓN DEL ERROR AQUI: Declarar las variables FUERA del IF
+                let comboP = null;
+                let comboE = null;
+
                 if (window.detectarComboSinergico) {
-                    const comboP = window.detectarComboSinergico(playerCombat.genesId[0], playerCombat.genesId[1]);
+                    comboP = window.detectarComboSinergico(playerCombat.genesId[0], playerCombat.genesId[1]);
                     document.getElementById("c-p-combo").style.display = comboP ? "block" : "none";
                     if(comboP) document.getElementById("c-p-combo").innerText = `🔥 COMBO: ${comboP}`;
 
-                    const comboE = window.detectarComboSinergico(enemyCombat.genesId[0], enemyCombat.genesId[1]);
+                    comboE = window.detectarComboSinergico(enemyCombat.genesId[0], enemyCombat.genesId[1]);
                     document.getElementById("c-e-combo").style.display = comboE ? "block" : "none";
                     if(comboE) document.getElementById("c-e-combo").innerText = `🔥 COMBO: ${comboE}`;
                 }
