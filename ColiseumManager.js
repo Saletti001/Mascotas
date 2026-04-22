@@ -1,9 +1,9 @@
 // =========================================
-// ColiseumManager.js - MOTOR DE COMBATE V9.1 (FUSIONADO CON "JUGO" VISUAL Y SONORO)
+// ColiseumManager.js - MOTOR DE COMBATE V9.1 (BLINDADO Y FUSIONADO)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Inyectar CSS para animaciones flotantes (manteniendo tus clases en base.css/ui.css)
+    // Inyectar CSS para animaciones flotantes
     if (!document.getElementById("combat-styles")) {
         const style = document.createElement("style");
         style.id = "combat-styles";
@@ -144,8 +144,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("player-visual-box").innerHTML = "";
         document.getElementById("enemy-visual-box").innerHTML = "";
-        document.getElementById("battle-player-name").innerText = "Tu Geno";
-        document.getElementById("battle-enemy-name").innerText = "---";
+        
+        // Manejo Seguro de Nombres (Evita crasheos si falta el ID en el HTML)
+        const pNameEl = document.getElementById("battle-player-name");
+        if(pNameEl) pNameEl.innerText = "Tu Geno";
+        
+        const eNameEl = document.getElementById("battle-enemy-name");
+        if(eNameEl) eNameEl.innerText = "---";
+        else {
+            const enemyBox = document.getElementById("enemy-sprite-battle");
+            if (enemyBox && enemyBox.children[1]) enemyBox.children[1].innerText = "---";
+        }
+
         document.getElementById("player-hp-bar").style.width = "100%";
         document.getElementById("enemy-hp-bar").style.width = "100%";
         document.getElementById("player-hp-text").innerText = "HP";
@@ -153,12 +163,13 @@ document.addEventListener("DOMContentLoaded", () => {
         
         logCombate.innerHTML = "¡Bienvenido a la Arena Nexo!<br>Prepárate para combatir.";
         btnStart.style.display = "block";
+        btnStart.innerText = "Entrar a la Arena";
         btnLeave.style.display = "inline-block";
         btnLeave.disabled = false;
         battleControls.classList.add("hidden");
         btnAtk.disabled = false;
         btnItem.disabled = false;
-        if(btnSkill) btnSkill.style.display = "none"; // Por ahora ocultamos la habilidad activa manual a favor de las pasivas
+        if(btnSkill) btnSkill.style.display = "none";
 
         actualizarBotonManzana();
     };
@@ -171,16 +182,17 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("enemy-sprite-battle").style.filter = "none";
         numeroTurno = 1;
 
-        // JUGADOR
+        // JUGADOR (Manejo de stats guardados antiguos para evitar crasheos)
         const pMascota = window.miMascota;
         const pElemento = (pMascota.genes && pMascota.genes.afinidad) ? pMascota.genes.afinidad.dom : (pMascota.element || "Normal");
         const pGenB = (pMascota.hidden_genes && pMascota.hidden_genes.B) ? pMascota.hidden_genes.B.id : "ninguno";
         const pGenC = (pMascota.hidden_genes && pMascota.hidden_genes.C) ? pMascota.hidden_genes.C.id : "ninguno";
+        const pStats = pMascota.stats || {hp: 80, atk: 15, spd: 15, luk: 10};
 
         playerCombat = {
             nombre: pMascota.name || "Tu Geno",
             isPlayer: true,
-            maxHp: pMascota.stats.hp, hp: pMascota.stats.hp, atk: pMascota.stats.atk, spd: pMascota.stats.spd, luk: pMascota.stats.luk,
+            maxHp: pStats.hp, hp: pStats.hp, atk: pStats.atk, spd: pStats.spd, luk: pStats.luk,
             element: pElemento,
             genesId: [pGenB, pGenC],
             crystalSkin: pGenB === "piel_cristal" || pGenC === "piel_cristal",
@@ -231,8 +243,16 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("enemy-visual-box").innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(eAdn).replace(/<svg[^>]*>/, '<svg width="90px" height="90px" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">') : '';
         document.getElementById("enemy-visual-box").style.color = eAdn.color;
 
-        document.getElementById("battle-player-name").innerText = `${playerCombat.nombre} (Nv. ${pMascota.level || 1})`;
-        document.getElementById("battle-enemy-name").innerText = `Rival ${eRareza}`;
+        // Actualización segura de nombres
+        const pNameEl = document.getElementById("battle-player-name");
+        if(pNameEl) pNameEl.innerText = `${playerCombat.nombre} (Nv. ${pMascota.level || 1})`;
+        
+        const eNameEl = document.getElementById("battle-enemy-name");
+        if(eNameEl) eNameEl.innerText = `Rival ${eRareza}`;
+        else {
+            const enemyBox = document.getElementById("enemy-sprite-battle");
+            if (enemyBox && enemyBox.children[1]) enemyBox.children[1].innerText = `Rival ${eRareza}`;
+        }
 
         actualizarUICombate(playerCombat, true);
         actualizarUICombate(enemyCombat, false);
@@ -304,14 +324,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     addLog(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${atacante.nombre} causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} de daño</span>.${tipoGolpe}`);
                     mostrarTextoFlotante(defensor.isPlayer, "CRITICAL!", "text-crit");
                     mostrarTextoFlotante(defensor.isPlayer, `-${dmg}`, "text-dmg", 150);
-                    if(window.Sonidos) window.Sonidos.play("hit"); // SONIDO
-                    sacudirPantalla(); // SACUDIDA FUERTE
+                    if(window.Sonidos) window.Sonidos.play("hit"); 
+                    sacudirPantalla(); 
                 } else {
                     addLog(`> ${atacante.nombre} causa <span style="color:#ff6b6b">${dmg} de daño</span>.${tipoGolpe}`);
                     if (dmg > 0) {
                         mostrarTextoFlotante(defensor.isPlayer, `-${dmg}`, "text-dmg");
-                        if(window.Sonidos) window.Sonidos.play("hit"); // SONIDO
-                        sacudirPantalla(); // SACUDIDA NORMAL
+                        if(window.Sonidos) window.Sonidos.play("hit"); 
+                        sacudirPantalla(); 
                     }
                 }
                 
@@ -391,7 +411,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================================
-    // BOTONES DE JUGADOR
+    // ACCIONES DE BOTONES
     // =========================================
     btnItem.onclick = () => {
         if (!playerCombat || playerCombat.hp <= 0) return;
@@ -468,6 +488,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if(window.guardarProgreso) window.guardarProgreso();
 
             setTimeout(() => {
+                btnStart.style.display = "inline-block";
+                btnStart.innerText = "Buscar otro rival";
                 btnLeave.style.display = "inline-block";
             }, 1000);
         } else {
