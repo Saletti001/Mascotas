@@ -24,38 +24,15 @@
         }
         h1 { color: #4dd0e1; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(77, 208, 225, 0.5); margin-bottom: 5px; }
         
-        /* PESTAÑAS (TABS) */
-        .tabs-container {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .tab-btn {
-            background: #1a2a36;
-            color: #aaa;
-            border: 1px solid #333;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: 0.3s;
-        }
-        .tab-btn.active {
-            background: rgba(77, 208, 225, 0.1);
-            color: #4dd0e1;
-            border-color: #4dd0e1;
-            box-shadow: 0 0 15px rgba(77, 208, 225, 0.3);
-        }
+        .tabs-container { display: flex; gap: 15px; margin-bottom: 20px; }
+        .tab-btn { background: #1a2a36; color: #aaa; border: 1px solid #333; padding: 12px 25px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s; }
+        .tab-btn.active { background: rgba(77, 208, 225, 0.1); color: #4dd0e1; border-color: #4dd0e1; box-shadow: 0 0 15px rgba(77, 208, 225, 0.3); }
 
         .tab-content { display: none; width: 100%; max-width: 1200px; }
         .tab-content.active { display: flex; gap: 30px; align-items: stretch; }
 
         .lab-container { background: #1a2a36; padding: 25px; border-radius: 15px; border: 1px solid #4dd0e1; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         
-        /* CONTROLES PESTAÑA 1 */
         .controls { flex: 1; display: flex; flex-direction: column; gap: 15px; max-height: 700px; overflow-y: auto; padding-right: 15px; }
         .controls::-webkit-scrollbar { width: 6px; }
         .controls::-webkit-scrollbar-thumb { background: #4dd0e1; border-radius: 4px; }
@@ -82,11 +59,19 @@
         .terminal::-webkit-scrollbar-thumb { background: #00ffcc; }
         .term-title { color: #fff; font-weight: bold; margin-bottom: 10px; text-align: center; border-bottom: 1px dashed #1e3a5f; padding-bottom: 5px; }
 
-        /* ESTILOS PESTAÑA 2 (COMBATE) */
+        /* PESTAÑA 2: COMBATE */
         .combat-arena { width: 100%; display: flex; flex-direction: column; gap: 20px; }
+        .action-bar { display: flex; gap: 15px; }
+        .btn-fight { flex: 1; background: linear-gradient(90deg, #8A2BE2, #4dd0e1); color: #fff; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .btn-fight:hover { filter: brightness(1.2); box-shadow: 0 0 20px rgba(138, 43, 226, 0.5); }
+        .btn-action { flex: 1; background: linear-gradient(90deg, #ff5722, #d84315); color: #fff; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        .btn-action:hover { filter: brightness(1.2); box-shadow: 0 0 20px rgba(255, 87, 34, 0.5); }
+        .btn-action:disabled { background: #333; color: #888; cursor: not-allowed; box-shadow: none; filter: none; }
+
         .arena-screen { display: flex; justify-content: space-between; background-color: #31c4d8; background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px); border-radius: 10px; border: 2px solid #4dd0e1; min-height: 350px; position: relative; overflow: hidden; box-shadow: inset 0 0 50px rgba(0,0,0,0.4); padding: 20px; }
-        .fighter-side { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; }
-        .fighter-svg { width: 220px; height: 220px; z-index: 1; margin-bottom: 20px; }
+        .fighter-side { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; transition: 0.3s;}
+        .fighter-svg { width: 220px; height: 220px; z-index: 1; margin-bottom: 20px; transition: 0.1s;}
+        .fighter-svg.hit { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5); transform: scale(0.95); }
         
         .pedestal-combat { position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; z-index: 0; }
         .pedestal-combat .pedestal-shadow { width: 140px; height: 35px; top: 15px; }
@@ -97,10 +82,12 @@
         .fighter-name { font-weight: 900; color: #fff; font-size: 16px; margin-bottom: 5px; text-transform: uppercase; text-align: center; }
         .fighter-genes { font-size: 11px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #333; }
         
+        /* BARRAS DE VIDA */
+        .hp-bar-bg { width: 100%; height: 10px; background: #333; border-radius: 5px; margin-top: 5px; overflow: hidden; }
+        .hp-bar-fill { height: 100%; background: #4CAF50; width: 100%; transition: width 0.3s ease, background-color 0.3s ease; }
+        .hp-text { text-align: center; font-size: 10px; font-weight: bold; margin-top: 2px; color: #fff; }
+
         .combo-badge { background: linear-gradient(90deg, #ff9800, #ff5722); color: white; text-align: center; padding: 5px; border-radius: 4px; font-weight: bold; font-size: 11px; text-transform: uppercase; margin-top: 10px; box-shadow: 0 0 10px rgba(255, 152, 0, 0.6); display: none; }
-        
-        .btn-fight { background: linear-gradient(90deg, #8A2BE2, #4dd0e1); color: #fff; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; transition: 0.2s; }
-        .btn-fight:hover { filter: brightness(1.2); box-shadow: 0 0 20px rgba(138, 43, 226, 0.5); }
         
         .switch-container { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 8px; border: 1px solid #333; }
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
@@ -156,32 +143,35 @@
 
         <div class="viewer-container">
             <div class="viewer">
-                <div class="pedestal-container">
-                    <div class="pedestal-ring"></div><div class="pedestal-light"></div>
-                    <div class="pedestal-shadow"><div class="pedestal-core"></div></div>
-                </div>
+                <div class="pedestal-container"><div class="pedestal-ring"></div><div class="pedestal-light"></div><div class="pedestal-shadow"><div class="pedestal-core"></div></div></div>
                 <div id="geno-display"></div>
             </div>
             <div id="terminal-output" class="terminal">
-                <div class="term-title">/// TERMINAL DE DIAGNÓSTICO BIOMÉTRICO ///</div>
+                <div class="term-title">/// TERMINAL DE DIAGNÓSTICO ///</div>
                 <div id="terminal-content">Iniciando escáner...</div>
             </div>
         </div>
     </div>
 
     <div id="tab-combat" class="tab-content combat-arena lab-container">
-        <button id="btn-generar-combate" class="btn-fight">⚔️ Generar Rival Aleatorio</button>
+        
+        <div class="action-bar">
+            <button id="btn-generar-combate" class="btn-fight">⚔️ Generar Rival Aleatorio</button>
+            <button id="btn-atacar" class="btn-action" disabled>🔥 Ejecutar Turno</button>
+        </div>
         
         <div class="arena-screen">
             <div class="vs-badge">VS</div>
             
-            <div class="fighter-side">
+            <div class="fighter-side" id="side-player">
                 <div class="pedestal-combat"><div class="pedestal-shadow"><div class="pedestal-core"></div></div></div>
                 <div id="combat-player-svg" class="fighter-svg"></div>
                 <div class="fighter-stats">
-                    <div class="fighter-name" style="color:#4dd0e1;">TU GENO (<span id="combat-player-rareza"></span>)</div>
-                    <div style="display:flex; justify-content:space-between; color:#ff6b6b; font-size:12px; font-weight:bold; margin-top:5px;">
-                        <span id="c-p-hp"></span> <span id="c-p-atk"></span> <span id="c-p-spd"></span> <span id="c-p-luk"></span>
+                    <div class="fighter-name" style="color:#4dd0e1;">TU GENO (<span id="c-p-rareza"></span>)</div>
+                    <div class="hp-bar-bg"><div id="c-p-hp-fill" class="hp-bar-fill"></div></div>
+                    <div id="c-p-hp-text" class="hp-text">HP: 0 / 0</div>
+                    <div style="display:flex; justify-content:space-between; color:#ff6b6b; font-size:12px; font-weight:bold; margin-top:8px;">
+                        <span id="c-p-atk"></span> <span id="c-p-spd"></span> <span id="c-p-luk"></span>
                     </div>
                     <div class="fighter-genes">
                         <div style="color:#80deea">B: <span id="c-p-genb"></span></div>
@@ -191,13 +181,15 @@
                 </div>
             </div>
 
-            <div class="fighter-side">
+            <div class="fighter-side" id="side-enemy">
                 <div class="pedestal-combat"><div class="pedestal-shadow"><div class="pedestal-core"></div></div></div>
                 <div id="combat-enemy-svg" class="fighter-svg"></div>
                 <div class="fighter-stats">
-                    <div class="fighter-name" style="color:#ff6b6b;">RIVAL CLON (<span id="combat-enemy-rareza"></span>)</div>
-                    <div style="display:flex; justify-content:space-between; color:#ff6b6b; font-size:12px; font-weight:bold; margin-top:5px;">
-                        <span id="c-e-hp"></span> <span id="c-e-atk"></span> <span id="c-e-spd"></span> <span id="c-e-luk"></span>
+                    <div class="fighter-name" style="color:#ff6b6b;">RIVAL CLON (<span id="c-e-rareza"></span>)</div>
+                    <div class="hp-bar-bg"><div id="c-e-hp-fill" class="hp-bar-fill"></div></div>
+                    <div id="c-e-hp-text" class="hp-text">HP: 0 / 0</div>
+                    <div style="display:flex; justify-content:space-between; color:#ff6b6b; font-size:12px; font-weight:bold; margin-top:8px;">
+                        <span id="c-e-atk"></span> <span id="c-e-spd"></span> <span id="c-e-luk"></span>
                     </div>
                     <div class="fighter-genes">
                         <div style="color:#80deea">B: <span id="c-e-genb"></span></div>
@@ -208,14 +200,14 @@
             </div>
         </div>
 
-        <div id="combat-log" class="terminal" style="height: 180px;">
-            <div class="term-title">/// SIMULADOR DE COLISIÓN GENÉTICA ///</div>
-            <div id="combat-log-content">> Presiona "Generar Rival Aleatorio" para iniciar simulación.</div>
+        <div id="combat-log" class="terminal" style="height: 200px;">
+            <div class="term-title">/// REGISTRO DE BATALLA ///</div>
+            <div id="combat-log-content">> Esperando combatientes...</div>
         </div>
     </div>
 
     <script>
-        // DICCIONARIO DE COMBOS V9.1 (Mapeo rápido para el simulador)
+        // DICCIONARIO DE COMBOS V9.1
         const COMBOS_OFICIALES = [
             { ids: ["resiliencia_ultima", "aprendiz_acelerado"], nombre: "El Fénix" },
             { ids: ["piel_cristal", "reflejo_genetico"], nombre: "El Espejo Viviente" },
@@ -232,14 +224,11 @@
 
         function detectarComboSinergico(genB, genC) {
             if(!genB || !genC || genB === "ninguno" || genC === "ninguno") return null;
-            const combo = COMBOS_OFICIALES.find(c => 
-                (c.ids.includes(genB) && c.ids.includes(genC))
-            );
+            const combo = COMBOS_OFICIALES.find(c => c.ids.includes(genB) && c.ids.includes(genC));
             return combo ? combo.nombre : null;
         }
 
         setTimeout(() => {
-            // PESTAÑAS LOGIC
             const btnAdn = document.getElementById("btn-tab-adn");
             const btnCombat = document.getElementById("btn-tab-combat");
             const tabAdn = document.getElementById("tab-adn");
@@ -248,7 +237,6 @@
             btnAdn.onclick = () => { btnAdn.classList.add("active"); btnCombat.classList.remove("active"); tabAdn.classList.add("active"); tabCombat.classList.remove("active"); };
             btnCombat.onclick = () => { btnCombat.classList.add("active"); btnAdn.classList.remove("active"); tabCombat.classList.add("active"); tabAdn.classList.remove("active"); };
 
-            // VARIABLES PESTAÑA 1
             const selRareza = document.getElementById("sel-rareza");
             const selForma = document.getElementById("sel-forma");
             const selColor = document.getElementById("sel-color");
@@ -256,15 +244,11 @@
             const selBoca = document.getElementById("sel-boca");
             const selEspalda = document.getElementById("sel-espalda");
             const selCabeza = document.getElementById("sel-cabeza");
-            
             const selGenA = document.getElementById("sel-gen-a");
             const selGenB = document.getElementById("sel-gen-b");
             const selGenC = document.getElementById("sel-gen-c");
             const chkEscaneado = document.getElementById("chk-escaneado");
             
-            const display = document.getElementById("geno-display");
-            const terminal = document.getElementById("terminal-content");
-
             const formasCuerpo = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
             const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry"];
             const opcionesBocas = typeof dicBocas !== 'undefined' ? Object.keys(dicBocas) : ["estandar", "feliz", "colmillos"];
@@ -301,102 +285,209 @@
             addGenesToSelect(selGenB); addGenesToSelect(selGenC);
 
             function obtenerAdnPlayer() {
-                const rarezaElegida = selRareza.value;
-                const baseStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(rarezaElegida) : {hp: 50, atk: 15, spd: 15, luk: 15};
+                const rareza = selRareza.value;
+                const stats = window.generarStatsPorRareza ? window.generarStatsPorRareza(rareza) : {hp: 100, atk: 25, spd: 20, luk: 15};
                 const genBData = selGenB.value !== "ninguno" ? genesFuncionales.find(g => g.id === selGenB.value) : null;
                 const genCData = selGenC.value !== "ninguno" ? genesFuncionales.find(g => g.id === selGenC.value) : null;
 
                 return {
-                    id: 999, rarity: rarezaElegida, stats: baseStats,
+                    id: 999, rarity: rareza, stats: stats,
                     body_shape: selForma.value, base_color: selColor.value, color: selColor.value,
                     eye_type: selOjos.value, mouth_type: selBoca.value, wing_type: selEspalda.value, hat_type: selCabeza.value,
                     scanned: chkEscaneado.checked,
-                    hidden_genes: {
-                        A: selGenA.value !== "ninguno" ? { id: selGenA.value, name: selGenA.options[selGenA.selectedIndex].text } : null,
-                        B: genBData, C: genCData
-                    }
+                    hidden_genes: { A: selGenA.value !== "ninguno" ? { id: selGenA.value } : null, B: genBData, C: genCData }
                 };
             }
 
             function renderizarGenoPlayer() {
                 const adn = obtenerAdnPlayer();
                 if (typeof generarSvgGeno === 'function') {
-                    let svgString = generarSvgGeno(adn);
-                    svgString = svgString.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
-                    display.style.color = selColor.value; 
-                    display.innerHTML = svgString;
+                    let svgString = generarSvgGeno(adn).replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+                    document.getElementById("geno-display").style.color = selColor.value; 
+                    document.getElementById("geno-display").innerHTML = svgString;
                 }
             }
 
-            [selRareza, selForma, selColor, selOjos, selBoca, selEspalda, selCabeza, selGenA, selGenB, selGenC, chkEscaneado].forEach(control => {
-                control.addEventListener("change", renderizarGenoPlayer);
-            });
+            [selRareza, selForma, selColor, selOjos, selBoca, selEspalda, selCabeza, selGenA, selGenB, selGenC, chkEscaneado].forEach(c => c.addEventListener("change", renderizarGenoPlayer));
             if (selColor) selColor.addEventListener("input", renderizarGenoPlayer);
             renderizarGenoPlayer();
 
             // ==========================================
-            // LOGICA DE SIMULADOR DE COMBATE
+            // MOTOR DE COMBATE INTERACTIVO
             // ==========================================
             const btnGenerarRival = document.getElementById("btn-generar-combate");
+            const btnAtacar = document.getElementById("btn-atacar");
             const logCombate = document.getElementById("combat-log-content");
+            const logContainer = document.getElementById("combat-log");
+
+            let playerCombat = null;
+            let enemyCombat = null;
+            let numeroTurno = 1;
+
+            function scrollToBottom() { logContainer.scrollTop = logContainer.scrollHeight; }
+            function addLog(text) { logCombate.innerHTML += `<div>${text}</div>`; scrollToBottom(); }
+
+            function actualizarUICombate(p, esJugador) {
+                const prefix = esJugador ? "c-p" : "c-e";
+                document.getElementById(`${prefix}-atk`).innerText = `⚔️ ${p.atk}`;
+                document.getElementById(`${prefix}-spd`).innerText = `⚡ ${p.spd}`;
+                
+                const hpPct = Math.max(0, (p.hp / p.maxHp) * 100);
+                const fillBar = document.getElementById(`${prefix}-hp-fill`);
+                fillBar.style.width = `${hpPct}%`;
+                
+                if (hpPct > 50) fillBar.style.background = "#4CAF50";
+                else if (hpPct > 20) fillBar.style.background = "#ffeb3b";
+                else fillBar.style.background = "#f44336";
+
+                document.getElementById(`${prefix}-hp-text`).innerText = `HP: ${p.hp} / ${p.maxHp}`;
+
+                if (p.hp <= 0) {
+                    document.getElementById(esJugador ? "side-player" : "side-enemy").style.filter = "grayscale(1) brightness(0.5)";
+                }
+            }
+
+            function flashDamage(esJugador) {
+                const el = document.getElementById(esJugador ? "combat-player-svg" : "combat-enemy-svg");
+                el.classList.add("hit");
+                setTimeout(() => el.classList.remove("hit"), 150);
+            }
 
             btnGenerarRival.onclick = () => {
-                logCombate.innerHTML = `<div style="color:#4dd0e1">> INICIALIZANDO SIMULACIÓN HOLOGRÁFICA...</div>`;
+                logCombate.innerHTML = "";
+                addLog(`<span style="color:#4dd0e1">> INICIALIZANDO ARENA HOLOGRÁFICA...</span>`);
                 
-                const playerAdn = obtenerAdnPlayer();
-                
-                // Actualizar UI Jugador
-                document.getElementById("combat-player-svg").innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(playerAdn).replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">') : '';
-                document.getElementById("combat-player-svg").style.color = playerAdn.color;
-                document.getElementById("combat-player-rareza").innerText = playerAdn.rarity;
-                document.getElementById("c-p-hp").innerText = `❤️ ${playerAdn.stats.hp}`;
-                document.getElementById("c-p-atk").innerText = `⚔️ ${playerAdn.stats.atk}`;
-                document.getElementById("c-p-spd").innerText = `⚡ ${playerAdn.stats.spd}`;
-                document.getElementById("c-p-luk").innerText = `🍀 ${playerAdn.stats.luk}`;
-                document.getElementById("c-p-genb").innerText = playerAdn.hidden_genes.B ? playerAdn.hidden_genes.B.name : "Vacío";
-                document.getElementById("c-p-genc").innerText = playerAdn.hidden_genes.C ? playerAdn.hidden_genes.C.name : "Vacío";
-                
-                const comboP = detectarComboSinergico(playerAdn.hidden_genes.B?.id, playerAdn.hidden_genes.C?.id);
-                const badgeP = document.getElementById("c-p-combo");
-                if(comboP) { badgeP.style.display = "block"; badgeP.innerText = `🔥 COMBO: ${comboP}`; } else { badgeP.style.display = "none"; }
+                // Reiniciar Filtros
+                document.getElementById("side-player").style.filter = "none";
+                document.getElementById("side-enemy").style.filter = "none";
+                numeroTurno = 1;
 
-                // Crear Enemigo Clon
+                const pAdn = obtenerAdnPlayer();
+                playerCombat = {
+                    nombre: "Tu Geno",
+                    isPlayer: true,
+                    maxHp: pAdn.stats.hp, hp: pAdn.stats.hp, atk: pAdn.stats.atk, spd: pAdn.stats.spd,
+                    genesId: [pAdn.hidden_genes.B?.id, pAdn.hidden_genes.C?.id],
+                    crystalSkin: pAdn.hidden_genes.B?.id === "piel_cristal" || pAdn.hidden_genes.C?.id === "piel_cristal",
+                    resilienciaUsada: false
+                };
+
                 let genBEnemy = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)];
                 let genCEnemy = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)];
-                while(genBEnemy.id === genCEnemy.id) { genCEnemy = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)]; } // Regla B!=C
+                while(genBEnemy.id === genCEnemy.id) { genCEnemy = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)]; }
 
-                const enemyAdn = { ...playerAdn, id: 888, scanned: true, hidden_genes: { A: null, B: genBEnemy, C: genCEnemy } };
+                const eAdn = { ...pAdn, id: 888, scanned: true, hidden_genes: { A: null, B: genBEnemy, C: genCEnemy } };
+                enemyCombat = {
+                    nombre: "Rival Clon",
+                    isPlayer: false,
+                    maxHp: eAdn.stats.hp, hp: eAdn.stats.hp, atk: eAdn.stats.atk, spd: eAdn.stats.spd,
+                    genesId: [genBEnemy.id, genCEnemy.id],
+                    crystalSkin: genBEnemy.id === "piel_cristal" || genCEnemy.id === "piel_cristal",
+                    resilienciaUsada: false
+                };
+
+                // Render Visuales
+                document.getElementById("combat-player-svg").innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(pAdn).replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">') : '';
+                document.getElementById("combat-player-svg").style.color = pAdn.color;
+                document.getElementById("combat-enemy-svg").innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(eAdn).replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">') : '';
+                document.getElementById("combat-enemy-svg").style.color = eAdn.color;
+
+                // Setup Textos UI
+                document.getElementById("c-p-rareza").innerText = pAdn.rarity;
+                document.getElementById("c-p-genb").innerText = pAdn.hidden_genes.B ? pAdn.hidden_genes.B.name : "Vacío";
+                document.getElementById("c-p-genc").innerText = pAdn.hidden_genes.C ? pAdn.hidden_genes.C.name : "Vacío";
                 
-                document.getElementById("combat-enemy-svg").innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(enemyAdn).replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">') : '';
-                document.getElementById("combat-enemy-svg").style.color = enemyAdn.color;
-                document.getElementById("combat-enemy-rareza").innerText = enemyAdn.rarity;
-                document.getElementById("c-e-hp").innerText = `❤️ ${enemyAdn.stats.hp}`;
-                document.getElementById("c-e-atk").innerText = `⚔️ ${enemyAdn.stats.atk}`;
-                document.getElementById("c-e-spd").innerText = `⚡ ${enemyAdn.stats.spd}`;
-                document.getElementById("c-e-luk").innerText = `🍀 ${enemyAdn.stats.luk}`;
+                document.getElementById("c-e-rareza").innerText = eAdn.rarity;
                 document.getElementById("c-e-genb").innerText = genBEnemy.name;
                 document.getElementById("c-e-genc").innerText = genCEnemy.name;
 
-                const comboE = detectarComboSinergico(genBEnemy.id, genCEnemy.id);
-                const badgeE = document.getElementById("c-e-combo");
-                if(comboE) { badgeE.style.display = "block"; badgeE.innerText = `🔥 COMBO: ${comboE}`; } else { badgeE.style.display = "none"; }
+                const comboP = detectarComboSinergico(playerCombat.genesId[0], playerCombat.genesId[1]);
+                document.getElementById("c-p-combo").style.display = comboP ? "block" : "none";
+                if(comboP) document.getElementById("c-p-combo").innerText = `🔥 COMBO: ${comboP}`;
 
-                // Log Fake de Combate (Retrasos para inmersión)
-                setTimeout(() => { logCombate.innerHTML += `<br>> Cargando Clon Rival... <span style="color:#ff6b6b">ADN Alterado Detectado.</span>`; }, 500);
-                setTimeout(() => { 
-                    logCombate.innerHTML += `<br>> <span style="color:#ffcc00">Sinergia Rival:</span> ${comboE ? `¡Peligro! Combo ${comboE} activado.` : `Ningún combo detectado.`}`; 
-                }, 1200);
-                setTimeout(() => { 
-                    logCombate.innerHTML += `<br><br><div style="color:#8A2BE2; font-weight:bold; text-align:center;">--- INICIANDO FASE DE COMBATE ---</div>`; 
-                    
-                    let atacaPrimero = playerAdn.stats.spd >= enemyAdn.stats.spd ? "Tu Geno" : "El Rival Clon";
-                    logCombate.innerHTML += `<br>> <span style="color:#4dd0e1">[TURNO 1]</span> ${atacaPrimero} ataca primero debido a su velocidad.`;
-                    
-                    if (playerAdn.hidden_genes.B?.id === "piel_cristal" || playerAdn.hidden_genes.C?.id === "piel_cristal") {
-                        logCombate.innerHTML += `<br>> <span style="color:#80deea">* Gen Pasivo [Piel de Cristal]:</span> Tu Geno absorbió el primer impacto. Recibe 0 de Daño.`;
-                    }
-                }, 2200);
+                const comboE = detectarComboSinergico(enemyCombat.genesId[0], enemyCombat.genesId[1]);
+                document.getElementById("c-e-combo").style.display = comboE ? "block" : "none";
+                if(comboE) document.getElementById("c-e-combo").innerText = `🔥 COMBO: ${comboE}`;
+
+                actualizarUICombate(playerCombat, true);
+                actualizarUICombate(enemyCombat, false);
+
+                btnAtacar.disabled = false;
+                addLog(`> <span style="color:#ffcc00">Sinergia Rival:</span> ${comboE ? `¡Peligro! Combo ${comboE} activado.` : `Ningún combo detectado.`}`);
+                addLog(`<br><span style="color:#8A2BE2; font-weight:bold;">--- LISTOS PARA COMBATE ---</span>`);
             };
+
+            function procesarAtaque(atacante, defensor) {
+                if (atacante.hp <= 0 || defensor.hp <= 0) return;
+
+                let ataques = 1;
+                if (atacante.genesId.includes("velocidad_fantasma") && Math.random() <= 0.20) {
+                    ataques = 2;
+                    addLog(`<span style="color:#b19cd9">* [Velocidad Fantasma] ¡${atacante.nombre} ataca rápido dos veces!</span>`);
+                }
+
+                for(let i=0; i<ataques; i++) {
+                    if (defensor.hp <= 0) break;
+
+                    let dmg = Math.floor(atacante.atk * (i === 1 ? 0.5 : 1) * (0.85 + Math.random() * 0.3));
+
+                    if (defensor.crystalSkin) {
+                        dmg = 0;
+                        defensor.crystalSkin = false;
+                        addLog(`<span style="color:#80deea">* [Piel de Cristal] ${defensor.nombre} absorbió el impacto (Daño: 0).</span>`);
+                    } else {
+                        defensor.hp -= dmg;
+                        if(defensor.hp < 0) defensor.hp = 0;
+                        addLog(`> ${atacante.nombre} ataca causando <span style="color:#ff6b6b">${dmg} de daño</span>.`);
+                        flashDamage(defensor.isPlayer);
+                    }
+
+                    // Chequeo Resiliencia Última
+                    if (defensor.hp > 0 && defensor.hp <= (defensor.maxHp * 0.15) && defensor.genesId.includes("resiliencia_ultima") && !defensor.resilienciaUsada) {
+                        defensor.resilienciaUsada = true;
+                        defensor.atk = Math.floor(defensor.atk * 1.4);
+                        defensor.spd = Math.floor(defensor.spd * 1.4);
+                        addLog(`<span style="color:#ffcc00">* [Resiliencia Última] ¡${defensor.nombre} entra en modo Berserker! (ATK y SPD x1.4)</span>`);
+                    }
+                }
+                actualizarUICombate(defensor, defensor.isPlayer);
+            }
+
+            btnAtacar.onclick = () => {
+                addLog(`<br><span style="color:#4dd0e1">[TURNO ${numeroTurno}]</span>`);
+                
+                let primero = playerCombat;
+                let segundo = enemyCombat;
+
+                if (enemyCombat.spd > playerCombat.spd) {
+                    primero = enemyCombat; segundo = playerCombat;
+                } else if (enemyCombat.spd === playerCombat.spd && Math.random() > 0.5) {
+                    primero = enemyCombat; segundo = playerCombat;
+                }
+
+                procesarAtaque(primero, segundo);
+                
+                // Si el segundo sobrevivió, contraataca
+                if (segundo.hp > 0) {
+                    setTimeout(() => {
+                        procesarAtaque(segundo, primero);
+                        checkEndGame();
+                    }, 500);
+                } else {
+                    checkEndGame();
+                }
+                numeroTurno++;
+            };
+
+            function checkEndGame() {
+                if (playerCombat.hp <= 0 || enemyCombat.hp <= 0) {
+                    btnAtacar.disabled = true;
+                    addLog(`<br><span style="color:#ffcc00; font-size: 16px; font-weight: bold;">--- FIN DEL COMBATE ---</span>`);
+                    if (playerCombat.hp > 0) addLog(`<span style="color:#4CAF50">🏆 ¡TU GENO HA GANADO!</span>`);
+                    else if (enemyCombat.hp > 0) addLog(`<span style="color:#f44336">💀 TU GENO HA SIDO DERROTADO.</span>`);
+                    else addLog(`<span style="color:#aaa">🤝 DOBLE K.O. EMPATE.</span>`);
+                }
+            }
 
         }, 500); 
     </script>
