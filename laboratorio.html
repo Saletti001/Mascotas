@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🔬 Laboratorio de Pruebas Genos V9.1</title>
     
+    <script src="genes.js"></script>
     <script src="genoma.js"></script>
     <script src="caras.js"></script> 
     <script src="accesorios.js"></script> 
@@ -12,16 +13,7 @@
     <script src="app.js"></script>
 
     <style>
-        body {
-            background-color: #0a1118;
-            color: #fff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+        body { background-color: #0a1118; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
         h1 { color: #4dd0e1; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(77, 208, 225, 0.5); margin-bottom: 5px; }
         
         .tabs-container { display: flex; gap: 15px; margin-bottom: 20px; }
@@ -60,7 +52,6 @@
         .terminal::-webkit-scrollbar-thumb { background: #00ffcc; }
         .term-title { color: #fff; font-weight: bold; margin-bottom: 10px; text-align: center; border-bottom: 1px dashed #1e3a5f; padding-bottom: 5px; }
 
-        /* PESTAÑA 2: COMBATE */
         .combat-arena { width: 100%; display: flex; flex-direction: column; gap: 20px; }
         .action-bar { display: flex; gap: 15px; align-items: center; }
         .btn-fight { flex: 1; background: linear-gradient(90deg, #8A2BE2, #4dd0e1); color: #fff; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
@@ -124,12 +115,9 @@
             <div class="control-group">
                 <label style="color:#4CAF50">Elemento Base</label>
                 <select id="sel-elemento">
-                    <option value="Biomutante">🧬 Biomutante</option>
-                    <option value="Viral">🦠 Viral</option>
-                    <option value="Cibernético">⚙️ Cibernético</option>
-                    <option value="Radiactivo">☢️ Radiactivo</option>
-                    <option value="Tóxico">🧪 Tóxico</option>
-                    <option value="Sintético">🤖 Sintético</option>
+                    <option value="Biomutante">🧬 Biomutante</option><option value="Viral">🦠 Viral</option>
+                    <option value="Cibernético">⚙️ Cibernético</option><option value="Radiactivo">☢️ Radiactivo</option>
+                    <option value="Tóxico">🧪 Tóxico</option><option value="Sintético">🤖 Sintético</option>
                 </select>
             </div>
             
@@ -241,36 +229,13 @@
     </div>
 
     <script>
-        const COMBOS_OFICIALES = [
-            { ids: ["resiliencia_ultima", "aprendiz_acelerado"], nombre: "El Fénix" },
-            { ids: ["piel_cristal", "reflejo_genetico"], nombre: "El Espejo Viviente" },
-            { ids: ["resistencia_colapso", "catalizador_rareza"], nombre: "El Alquimista" },
-            { ids: ["dominancia_genetica", "aprendiz_acelerado"], nombre: "El Criador Real" },
-            { ids: ["barrera_limite", "vampirismo_genetico"], nombre: "El Inmortal" },
-            { ids: ["armadura_adaptativa", "catalizador_afinidad"], nombre: "La Fortaleza Elemental" },
-            { ids: ["velocidad_fantasma", "sangre_fria"], nombre: "El Fantasma Práctico" },
-            { ids: ["cooldown_acelerado", "resonancia_nivel"], nombre: "El Acelerador Total" },
-            { ids: ["gen_dominante_puro", "memoria_genetica"], nombre: "El Gran Linaje" },
-            { ids: ["especialista_elite", "aceleracion_final"], nombre: "La Máquina Imparable" },
-            { ids: ["alquimista_natural", "catalizador_critico"], nombre: "El Reactor Monstruoso" }
-        ];
-
         const elementosBase = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
 
         function obtenerMultiplicadorElemental(atkElement, defElement) {
-            const ventajas = {
-                "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo",
-                "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante"
-            };
-            if (ventajas[atkElement] === defElement) return 1.5; // Ventaja
-            if (ventajas[defElement] === atkElement) return 0.5; // Resistencia
-            return 1.0; // Neutro
-        }
-
-        function detectarComboSinergico(genB, genC) {
-            if(!genB || !genC || genB === "ninguno" || genC === "ninguno") return null;
-            const combo = COMBOS_OFICIALES.find(c => c.ids.includes(genB) && c.ids.includes(genC));
-            return combo ? combo.nombre : null;
+            const ventajas = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
+            if (ventajas[atkElement] === defElement) return 1.5; 
+            if (ventajas[defElement] === atkElement) return 0.5; 
+            return 1.0; 
         }
 
         function obtenerCalidad(stats, rareza) {
@@ -316,10 +281,13 @@
             const selPlayerCombo = document.getElementById("sel-player-combo");
             const selEnemyCombo = document.getElementById("sel-enemy-combo");
 
-            COMBOS_OFICIALES.forEach(combo => {
-                let opt1 = document.createElement("option"); opt1.value = combo.nombre; opt1.innerText = combo.nombre; selPlayerCombo.appendChild(opt1);
-                let opt2 = document.createElement("option"); opt2.value = combo.nombre; opt2.innerText = `Rival: ${combo.nombre}`; selEnemyCombo.appendChild(opt2);
-            });
+            // Rellenar desde la base de datos en `genes.js`
+            if (window.COMBOS_OFICIALES) {
+                window.COMBOS_OFICIALES.forEach(combo => {
+                    let opt1 = document.createElement("option"); opt1.value = combo.nombre; opt1.innerText = combo.nombre; selPlayerCombo.appendChild(opt1);
+                    let opt2 = document.createElement("option"); opt2.value = combo.nombre; opt2.innerText = `Rival: ${combo.nombre}`; selEnemyCombo.appendChild(opt2);
+                });
+            }
             
             const formasCuerpo = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
             const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry"];
@@ -361,8 +329,8 @@
             addGenesToSelect(selGenB); addGenesToSelect(selGenC);
 
             selPlayerCombo.addEventListener("change", (e) => {
-                if(e.target.value !== "ninguno") {
-                    const combo = COMBOS_OFICIALES.find(c => c.nombre === e.target.value);
+                if(e.target.value !== "ninguno" && window.COMBOS_OFICIALES) {
+                    const combo = window.COMBOS_OFICIALES.find(c => c.nombre === e.target.value);
                     selGenB.value = combo.ids[0]; selGenC.value = combo.ids[1];
                 }
                 renderizarGenoPlayer();
@@ -385,6 +353,8 @@
                         else if(gen.id === "resiliencia_ultima") uso = "Ideal con builds de 'Glass Cannon'. Ponle Stats en ATK; cuando baje al 15% HP barrerá al rival.";
                         else if(gen.id === "piel_cristal") uso = "Excelente defensa contra Genos de un solo golpe fuerte.";
                         else if(gen.id === "velocidad_fantasma") uso = "Construye este Geno con alta Velocidad (SPD) y ATK.";
+                        else if(gen.id === "barrera_limite") uso = "Te asegura resistir el peor ataque posible. Combinarlo con genes de curación es letal.";
+                        else if(gen.id === "vampirismo_genetico") uso = "Asegúrate de que tu Geno tenga mucho ATK para que la cura valga la pena.";
                         log += `&nbsp;&nbsp;<span style="color:#4CAF50">Táctica recomendada:</span> ${uso}<br>`;
                     }
                 };
@@ -475,7 +445,7 @@
                     element: pAdn.element,
                     genesId: [pAdn.hidden_genes.B?.id, pAdn.hidden_genes.C?.id],
                     crystalSkin: pAdn.hidden_genes.B?.id === "piel_cristal" || pAdn.hidden_genes.C?.id === "piel_cristal",
-                    resilienciaUsada: false
+                    resilienciaUsada: false, barreraUsada: false
                 };
 
                 const enemyRareza = document.getElementById("sel-enemy-rareza").value;
@@ -489,8 +459,8 @@
                 
                 let eHiddenGenes = {A: null, B: null, C: null};
 
-                if (enemyComboSelection !== "aleatorio") {
-                    const comboElegido = COMBOS_OFICIALES.find(c => c.nombre === enemyComboSelection);
+                if (enemyComboSelection !== "aleatorio" && window.COMBOS_OFICIALES) {
+                    const comboElegido = window.COMBOS_OFICIALES.find(c => c.nombre === enemyComboSelection);
                     const gB = genesFuncionales.find(g => g.id === comboElegido.ids[0]);
                     const gC = genesFuncionales.find(g => g.id === comboElegido.ids[1]);
                     eHiddenGenes = { A: null, B: gB, C: gC };
@@ -524,7 +494,7 @@
                     element: eAdn.element,
                     genesId: [eGenB_id, eGenC_id],
                     crystalSkin: eGenB_id === "piel_cristal" || eGenC_id === "piel_cristal",
-                    resilienciaUsada: false
+                    resilienciaUsada: false, barreraUsada: false
                 };
 
                 document.getElementById("combat-player-svg").innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(pAdn).replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">') : '';
@@ -550,19 +520,20 @@
                 document.getElementById("c-e-genb").innerText = eHiddenGenes.B ? eHiddenGenes.B.name : "Vacío";
                 document.getElementById("c-e-genc").innerText = eHiddenGenes.C ? eHiddenGenes.C.name : "Vacío";
 
-                const comboP = detectarComboSinergico(playerCombat.genesId[0], playerCombat.genesId[1]);
-                document.getElementById("c-p-combo").style.display = comboP ? "block" : "none";
-                if(comboP) document.getElementById("c-p-combo").innerText = `🔥 COMBO: ${comboP}`;
+                if (window.detectarComboSinergico) {
+                    const comboP = window.detectarComboSinergico(playerCombat.genesId[0], playerCombat.genesId[1]);
+                    document.getElementById("c-p-combo").style.display = comboP ? "block" : "none";
+                    if(comboP) document.getElementById("c-p-combo").innerText = `🔥 COMBO: ${comboP}`;
 
-                const comboE = detectarComboSinergico(enemyCombat.genesId[0], enemyCombat.genesId[1]);
-                document.getElementById("c-e-combo").style.display = comboE ? "block" : "none";
-                if(comboE) document.getElementById("c-e-combo").innerText = `🔥 COMBO: ${comboE}`;
+                    const comboE = window.detectarComboSinergico(enemyCombat.genesId[0], enemyCombat.genesId[1]);
+                    document.getElementById("c-e-combo").style.display = comboE ? "block" : "none";
+                    if(comboE) document.getElementById("c-e-combo").innerText = `🔥 COMBO: ${comboE}`;
+                }
 
                 actualizarUICombate(playerCombat, true);
                 actualizarUICombate(enemyCombat, false);
 
                 btnAtacar.disabled = false;
-                addLog(`> <span style="color:#ffcc00">Sinergia Rival:</span> ${comboE ? `¡Peligro! Combo ${comboE} activado.` : `Ningún combo detectado.`}`);
                 addLog(`<br><span style="color:#8A2BE2; font-weight:bold;">--- LISTOS PARA COMBATE ---</span>`);
             };
 
@@ -579,40 +550,51 @@
                     if (defensor.hp <= 0) break;
 
                     let dmg = Math.floor(atacante.atk * (i === 1 ? 0.5 : 1) * (0.85 + Math.random() * 0.3));
-                    
-                    // Cálculo Elemental
                     let multElem = obtenerMultiplicadorElemental(atacante.element, defensor.element);
                     dmg = Math.floor(dmg * multElem);
 
-                    // Cálculo Crítico (LUK)
                     let isCrit = Math.random() <= (0.05 + (atacante.luk * 0.002));
                     if (isCrit) dmg = Math.floor(dmg * 1.5);
 
                     if (defensor.crystalSkin) {
-                        dmg = 0;
-                        defensor.crystalSkin = false;
+                        dmg = 0; defensor.crystalSkin = false;
                         addLog(`<span style="color:#80deea">* [Piel de Cristal] ${defensor.nombre} absorbió el impacto (Daño: 0).</span>`);
                     } else {
+                        
+                        // EVALUAR BARRERA LÍMITE ANTES DE RESTAR HP
+                        if (defensor.hp - dmg <= 0 && defensor.genesId.includes("barrera_limite") && !defensor.barreraUsada) {
+                            dmg = defensor.hp - 1; 
+                            defensor.barreraUsada = true;
+                            addLog(`<span style="color:#ff5722">* [Barrera Límite] ¡${defensor.nombre} sobrevive a un golpe fatal con 1 HP!</span>`);
+                        }
+
                         defensor.hp -= dmg;
                         if(defensor.hp < 0) defensor.hp = 0;
                         
+                        // EVALUAR VAMPIRISMO GENÉTICO AL INFLIGIR DAÑO
+                        let roboVida = 0;
+                        if (atacante.genesId.includes("vampirismo_genetico") && dmg > 0) {
+                            roboVida = Math.floor(dmg * 0.15);
+                            if (roboVida < 1) roboVida = 1;
+                            atacante.hp += roboVida;
+                            if (atacante.hp > atacante.maxHp) atacante.hp = atacante.maxHp;
+                        }
+
                         let tipoGolpe = "";
                         if (multElem === 1.5) tipoGolpe = ` <span style="color:#4CAF50; font-weight:bold;">(¡Súper Efectivo!)</span>`;
-                        else if (multElem === 0.5) tipoGolpe = ` <span style="color:#888; font-weight:bold;">(Es poco efectivo...)</span>`;
+                        else if (multElem === 0.5) tipoGolpe = ` <span style="color:#888; font-weight:bold;">(Poco efectivo...)</span>`;
 
-                        if (isCrit) {
-                            addLog(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${atacante.nombre} causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} de daño</span>.${tipoGolpe}`);
-                        } else {
-                            addLog(`> ${atacante.nombre} causa <span style="color:#ff6b6b">${dmg} de daño</span>.${tipoGolpe}`);
-                        }
+                        if (isCrit) addLog(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${atacante.nombre} causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} de daño</span>.${tipoGolpe}`);
+                        else addLog(`> ${atacante.nombre} causa <span style="color:#ff6b6b">${dmg} de daño</span>.${tipoGolpe}`);
+
+                        if (roboVida > 0) addLog(`<span style="color:#e0b0ff">* [Vampirismo] ${atacante.nombre} se cura ${roboVida} HP.</span>`);
                         
                         flashDamage(defensor.isPlayer);
                     }
 
                     if (defensor.hp > 0 && defensor.hp <= (defensor.maxHp * 0.15) && defensor.genesId.includes("resiliencia_ultima") && !defensor.resilienciaUsada) {
                         defensor.resilienciaUsada = true;
-                        defensor.atk = Math.floor(defensor.atk * 1.4);
-                        defensor.spd = Math.floor(defensor.spd * 1.4);
+                        defensor.atk = Math.floor(defensor.atk * 1.4); defensor.spd = Math.floor(defensor.spd * 1.4);
                         addLog(`<span style="color:#ffcc00">* [Resiliencia Última] ¡${defensor.nombre} entra en modo Berserker! (ATK y SPD x1.4)</span>`);
                     }
                 }

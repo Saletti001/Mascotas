@@ -1,12 +1,13 @@
 // =========================================
-// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN
+// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V9.1 LITE)
+// Requiere cargar 'genes.js' previamente en el HTML.
 // =========================================
 
 window.misGenos = window.misGenos || []; 
 window.maxGenoSlots = window.maxGenoSlots || 6; 
 
 // =========================================
-// TABLA DE IVs (V8.0 / V9.0)
+// TABLA DE IVs (V9.1)
 // =========================================
 window.TABLA_IVS = {
     "Común": { hp: [35, 55], atk: [10, 22], spd: [8, 25], luk: [5, 15] },
@@ -28,65 +29,22 @@ window.generarStatsPorRareza = function(rareza) {
 };
 
 // =========================================
-// 🧬 BIBLIOTECA DE GENES CATEGORIZADA (V9.0)
-// =========================================
-window.BASE_DATOS_GENES_V9 = {
-    cosmetico: [
-        { id: "cromatico_latente", name: "Cromático Latente", desc: "Desbloquea skin alternativo invertido" },
-        { id: "aura_linaje", name: "Aura de Linaje", desc: "Aureola visual permanente" },
-        { id: "patron_holografico", name: "Patrón Holográfico", desc: "Patrón de piel animado único" },
-        { id: "brillo_bioluminiscente", name: "Brillo Bioluminiscente", desc: "Brillo pulsante activo" },
-        { id: "forma_invertida", name: "Forma Invertida", desc: "Paleta en negativo fotográfico" },
-        { id: "rastro_elemental", name: "Rastro Elemental", desc: "Rastro visual al moverse" },
-        { id: "sombra_genetica", name: "Sombra Genética", desc: "Sombra con animación independiente" },
-        { id: "emblema_fundador", name: "Emblema Fundador", desc: "Insignia élite integrada" },
-        { id: "eco_visual", name: "Eco Visual", desc: "Réplica translúcida con retraso" },
-        { id: "metamorfosis_estacional", name: "Metamorfosis Estacional", desc: "Cambio de tonalidad estacional" }
-    ],
-    combate: [
-        { id: "resiliencia_ultima", name: "Resiliencia Última", desc: "x1.4 ATK/SPD si HP < 15%" },
-        { id: "piel_cristal", name: "Piel de Cristal", desc: "Primer golpe recibe 0 daño" },
-        { id: "velocidad_fantasma", name: "Velocidad Fantasma", desc: "20% probabilidad de turno doble" },
-        { id: "reflejo_genetico", name: "Reflejo Genético", desc: "Devuelve 30% del daño crítico" }
-    ],
-    elemental: [
-        { id: "elemento_dual", name: "Elemento Dual", desc: "Segundo elemento activable en combate" },
-        { id: "afinidad_latente", name: "Afinidad Latente", desc: "Mitiga debilidad elemental a x0.75" }
-    ],
-    crianza: [
-        { id: "fertilidad_pura", name: "Fertilidad Pura", desc: "Límite de crías +2 (Total 9)" },
-        { id: "dominancia_genetica", name: "Dominancia Genética", desc: "70% dominancia en herencia" },
-        { id: "cooldown_acelerado", name: "Cooldown Acelerado", desc: "-50% tiempo de descanso cría" }
-    ],
-    progresion: [
-        { id: "aprendiz_acelerado", name: "Aprendiz Acelerado", desc: "x1.25 XP obtenida" },
-        { id: "umbral_despertar", name: "Umbral del Despertar", desc: "+5 todos los IVs al Nv. 25" }
-    ],
-    reactor_santuario: [
-        { id: "esencia_concentrada", name: "Esencia Concentrada", desc: "x2 Esencia Vital al liberar" },
-        { id: "resistencia_colapso", name: "Resistencia al Colapso", desc: "Evita colapso total en Reactor" },
-        { id: "catalizador_rareza", name: "Catalizador de Rareza", desc: "+2% Éxito Crítico en Reactor" }
-    ],
-    social: [
-        { id: "gen_mentor", name: "Gen Mentor", desc: "+15% XP para becados" },
-        { id: "aura_liderazgo", name: "Aura de Liderazgo", desc: "+10% ATK a todo el equipo" }
-    ]
-};
-
-// =========================================
-// ✨ GENERADOR MAESTRO V9.0 (SISTEMA DE DOS DADOS)
+// ✨ GENERADOR MAESTRO V9.1 (SISTEMA DE DOS DADOS)
 // =========================================
 window.generarGenesV9 = function(rareza) {
     const slots = { A: null, B: null, C: null };
     
-    // Probabilidades base de DESBLOQUEAR los slots
-    let probA = 0.05, probB = 0.20, probC = 0.10;
-    if (rareza === "Raro") { probA = 0.10; probB = 0.40; probC = 0.20; }
-    if (rareza === "Épico") { probA = 0.15; probB = 0.70; probC = 0.40; }
-    if (rareza === "Legendario") { probA = 0.20; probB = 1.00; probC = 0.70; }
-    if (rareza === "Mítico") { probA = 0.24; probB = 1.00; probC = 1.00; }
+    // Probabilidades base de DESBLOQUEAR los slots según rareza
+    let probA = 0.05, probB = 0.22, probC = 0.06;
+    if (rareza === "Raro") { probA = 0.08; probB = 0.35; probC = 0.12; }
+    if (rareza === "Épico") { probA = 0.12; probB = 0.52; probC = 0.22; }
+    if (rareza === "Legendario") { probA = 0.17; probB = 0.68; probC = 0.35; }
+    if (rareza === "Mítico") { probA = 0.24; probB = 0.82; probC = 0.52; }
 
-    const randomFromCat = (catArray) => catArray[Math.floor(Math.random() * catArray.length)];
+    const randomFromCat = (catArray) => {
+        if (!catArray || catArray.length === 0) return null;
+        return catArray[Math.floor(Math.random() * catArray.length)];
+    };
     const catsFuncionales = ["combate", "elemental", "crianza", "progresion", "reactor_santuario", "social"];
 
     // 🎲 DADO 1: PRIVILEGIO (¿Se desbloquea el Slot A?)
@@ -113,18 +71,20 @@ window.generarGenesV9 = function(rareza) {
             idElegido = "patron_holografico";
         }
 
-        slots.A = window.BASE_DATOS_GENES_V9.cosmetico.find(g => g.id === idElegido);
+        if (window.BASE_DATOS_GENES_V9 && window.BASE_DATOS_GENES_V9.cosmetico) {
+            slots.A = window.BASE_DATOS_GENES_V9.cosmetico.find(g => g.id === idElegido);
+        }
     }
 
     // Tirada Slot B (Funcional 1)
     let catB = null;
-    if (Math.random() <= probB) {
+    if (Math.random() <= probB && window.BASE_DATOS_GENES_V9) {
         catB = catsFuncionales[Math.floor(Math.random() * catsFuncionales.length)];
         slots.B = randomFromCat(window.BASE_DATOS_GENES_V9[catB]);
     }
 
-    // Tirada Slot C (Funcional 2) con Regla B != C
-    if (Math.random() <= probC) {
+    // Tirada Slot C (Funcional 2) con Regla de Exclusión: B != C
+    if (Math.random() <= probC && window.BASE_DATOS_GENES_V9) {
         const catsDisponiblesC = catsFuncionales.filter(c => c !== catB);
         const catC = catsDisponiblesC[Math.floor(Math.random() * catsDisponiblesC.length)];
         slots.C = randomFromCat(window.BASE_DATOS_GENES_V9[catC]);
@@ -140,10 +100,14 @@ window.tieneGenActivoV9 = function(geno, idGen) {
     return (A && A.id === idGen) || (B && B.id === idGen) || (C && C.id === idGen);
 };
 
+// Funciones Auxiliares de Genes Pasivos
 window.getMaxCrias = function(geno) { return window.tieneGenActivoV9(geno, "fertilidad_pura") ? 9 : 7; };
 window.getMultiplicadorXP = function(geno) { return window.tieneGenActivoV9(geno, "aprendiz_acelerado") ? 1.25 : 1.0; };
 window.getMultiplicadorEsencia = function(geno) { return window.tieneGenActivoV9(geno, "esencia_concentrada") ? 2.0 : 1.0; };
 
+// =========================================
+// EVENTOS DE INTERFAZ DOM Y UI
+// =========================================
 document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
         const noHayPartida = !localStorage.getItem("proyecto_genos_save_v1");
@@ -413,7 +377,7 @@ function iniciarSecuenciaBienvenida() {
 
     const esGordo = Math.random() <= 0.001; 
     const rarezaInicial = esGordo ? "Legendario" : "Común";
-    const statsV8 = window.generarStatsPorRareza(rarezaInicial);
+    const statsV9 = window.generarStatsPorRareza(rarezaInicial);
 
     const miPrimerGeno = {
         id: window.generarNuevoID(),
@@ -431,7 +395,7 @@ function iniciarSecuenciaBienvenida() {
         xp: 0,
         xpNeeded: 100,
         breedCount: 0,
-        stats: statsV8, 
+        stats: statsV9, 
         hidden_genes: window.generarGenesV9(rarezaInicial), 
         scanned: false,
         genes: {
