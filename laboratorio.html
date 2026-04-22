@@ -23,12 +23,42 @@
             align-items: center;
         }
         h1 { color: #4dd0e1; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(77, 208, 225, 0.5); margin-bottom: 5px; }
-        .lab-container { display: flex; gap: 30px; background: #1a2a36; padding: 25px; border-radius: 15px; border: 1px solid #4dd0e1; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 1200px; width: 100%; align-items: stretch;}
         
+        /* PESTAÑAS (TABS) */
+        .tabs-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            background: #1a2a36;
+            color: #aaa;
+            border: 1px solid #333;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+        .tab-btn.active {
+            background: rgba(77, 208, 225, 0.1);
+            color: #4dd0e1;
+            border-color: #4dd0e1;
+            box-shadow: 0 0 15px rgba(77, 208, 225, 0.3);
+        }
+
+        .tab-content { display: none; width: 100%; max-width: 1200px; }
+        .tab-content.active { display: flex; gap: 30px; align-items: stretch; }
+
+        .lab-container { background: #1a2a36; padding: 25px; border-radius: 15px; border: 1px solid #4dd0e1; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        /* CONTROLES PESTAÑA 1 */
         .controls { flex: 1; display: flex; flex-direction: column; gap: 15px; max-height: 700px; overflow-y: auto; padding-right: 15px; }
         .controls::-webkit-scrollbar { width: 6px; }
         .controls::-webkit-scrollbar-thumb { background: #4dd0e1; border-radius: 4px; }
-        
         .control-group { display: flex; flex-direction: column; gap: 5px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border-left: 3px solid #4dd0e1; }
         .control-group.special-a { border-left: 3px solid #ffcc00; background: rgba(255, 204, 0, 0.05); }
         .control-group.special-b { border-left: 3px solid #80deea; background: rgba(128, 222, 234, 0.05); }
@@ -37,59 +67,41 @@
         select, input[type="color"] { padding: 10px; background: #0d1a24; color: #fff; border: 1px solid #333; border-radius: 8px; font-size: 14px; outline: none; cursor: pointer; width: 100%; box-sizing: border-box; }
         select:focus, input:focus { border-color: #4dd0e1; }
         
-        .viewer-container {
-            flex: 1.5;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        /* VISOR VISUAL */
-        .viewer { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            background-color: #31c4d8;
-            background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px);
-            border-radius: 10px; 
-            border: 2px solid #4dd0e1; 
-            min-height: 400px; 
-            position: relative; 
-            overflow: hidden;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.2);
-        }
-
+        .viewer-container { flex: 1.5; display: flex; flex-direction: column; gap: 15px; }
+        .viewer { display: flex; flex-direction: column; align-items: center; justify-content: center; background-color: #31c4d8; background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px); border-radius: 10px; border: 2px solid #4dd0e1; min-height: 400px; position: relative; overflow: hidden; box-shadow: inset 0 0 30px rgba(0,0,0,0.2); }
+        
         .pedestal-container { position: absolute; top: 65%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; z-index: 0; }
         .pedestal-ring { width: 220px; height: 50px; border: 1px dashed rgba(255, 255, 255, 0.7); border-radius: 50%; position: absolute; top: -120px; }
         .pedestal-light { width: 130px; height: 140px; background: linear-gradient(to top, rgba(255, 255, 255, 0.5), transparent); position: absolute; top: -100px; }
         .pedestal-shadow { width: 170px; height: 45px; background: #111b24; border-radius: 50%; box-shadow: 0 10px 20px rgba(0,0,0,0.4); display: flex; justify-content: center; align-items: center; position: absolute; top: 25px; }
         .pedestal-core { width: 50px; height: 4px; background: #80deea; border-radius: 4px; box-shadow: 0 0 10px #80deea, 0 0 20px #80deea; }
-        
         #geno-display { width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; z-index: 1; position: relative; margin-bottom: 60px; }
 
-        /* CONSOLA DE DIAGNÓSTICO (NUEVO) */
-        .terminal {
-            background: #0d161c;
-            border: 1px solid #1e3a5f;
-            border-left: 4px solid #00ffcc;
-            border-radius: 8px;
-            padding: 15px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 12px;
-            color: #00ffcc;
-            height: 250px;
-            overflow-y: auto;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
-            line-height: 1.6;
-        }
+        .terminal { background: #0d161c; border: 1px solid #1e3a5f; border-left: 4px solid #00ffcc; border-radius: 8px; padding: 15px; font-family: 'Courier New', Courier, monospace; font-size: 12px; color: #00ffcc; height: 250px; overflow-y: auto; box-shadow: inset 0 0 15px rgba(0,0,0,0.8); line-height: 1.6; }
         .terminal::-webkit-scrollbar { width: 4px; }
         .terminal::-webkit-scrollbar-thumb { background: #00ffcc; }
         .term-title { color: #fff; font-weight: bold; margin-bottom: 10px; text-align: center; border-bottom: 1px dashed #1e3a5f; padding-bottom: 5px; }
-        .log-section { margin-top: 10px; }
-        .log-highlight { color: #ffcc00; font-weight: bold; }
-        .log-stats { color: #ff6b6b; }
 
+        /* ESTILOS PESTAÑA 2 (COMBATE) */
+        .combat-arena { width: 100%; display: flex; flex-direction: column; gap: 20px; }
+        .arena-screen { display: flex; justify-content: space-between; background-color: #31c4d8; background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px); border-radius: 10px; border: 2px solid #4dd0e1; min-height: 350px; position: relative; overflow: hidden; box-shadow: inset 0 0 50px rgba(0,0,0,0.4); padding: 20px; }
+        .fighter-side { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; }
+        .fighter-svg { width: 220px; height: 220px; z-index: 1; margin-bottom: 20px; }
+        
+        .pedestal-combat { position: absolute; top: 60%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; z-index: 0; }
+        .pedestal-combat .pedestal-shadow { width: 140px; height: 35px; top: 15px; }
+        
+        .vs-badge { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); font-size: 40px; font-weight: 900; font-style: italic; color: #ffcc00; text-shadow: 0 0 20px rgba(255,0,0,0.8); z-index: 2; }
+        
+        .fighter-stats { background: rgba(10, 17, 24, 0.85); border: 1px solid #4dd0e1; border-radius: 8px; padding: 15px; width: 80%; text-align: left; }
+        .fighter-name { font-weight: 900; color: #fff; font-size: 16px; margin-bottom: 5px; text-transform: uppercase; text-align: center; }
+        .fighter-genes { font-size: 11px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed #333; }
+        
+        .combo-badge { background: linear-gradient(90deg, #ff9800, #ff5722); color: white; text-align: center; padding: 5px; border-radius: 4px; font-weight: bold; font-size: 11px; text-transform: uppercase; margin-top: 10px; box-shadow: 0 0 10px rgba(255, 152, 0, 0.6); display: none; }
+        
+        .btn-fight { background: linear-gradient(90deg, #8A2BE2, #4dd0e1); color: #fff; border: none; padding: 15px; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 2px; transition: 0.2s; }
+        .btn-fight:hover { filter: brightness(1.2); box-shadow: 0 0 20px rgba(138, 43, 226, 0.5); }
+        
         .switch-container { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 8px; border: 1px solid #333; }
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
@@ -102,99 +114,54 @@
 <body>
 
     <h1>🔬 Laboratorio Genético V9.1</h1>
-    <p style="color: #aaa; margin-bottom: 20px; font-size: 14px;">Entorno de prueba visual y matemático para el ADN Funcional y Cosmético.</p>
+    
+    <div class="tabs-container">
+        <button id="btn-tab-adn" class="tab-btn active">🔬 ADN y Morfología</button>
+        <button id="btn-tab-combat" class="tab-btn">⚔️ Simulación de Combate</button>
+    </div>
 
-    <div class="lab-container">
+    <div id="tab-adn" class="tab-content lab-container active">
         <div class="controls">
-            
             <div class="switch-container">
                 <span style="font-size: 12px; color: #fff; font-weight: bold;">ADN Escaneado (Revelar Genes)</span>
-                <label class="switch">
-                    <input type="checkbox" id="chk-escaneado" checked>
-                    <span class="slider"></span>
-                </label>
+                <label class="switch"><input type="checkbox" id="chk-escaneado" checked><span class="slider"></span></label>
             </div>
-
             <div class="control-group">
                 <label style="color:#ff6b6b">Rareza (Afecta Stats Base)</label>
                 <select id="sel-rareza">
-                    <option value="Común">Común</option>
-                    <option value="Raro">Raro</option>
-                    <option value="Épico">Épico</option>
-                    <option value="Legendario">Legendario</option>
-                    <option value="Mítico">Mítico</option>
+                    <option value="Común">Común</option><option value="Raro">Raro</option>
+                    <option value="Épico">Épico</option><option value="Legendario">Legendario</option><option value="Mítico">Mítico</option>
                 </select>
             </div>
-
-            <div class="control-group">
-                <label>Forma Base (Cuerpo)</label>
-                <select id="sel-forma"></select>
-            </div>
-            
-            <div class="control-group">
-                <label>Color Base</label>
-                <input type="color" id="sel-color" value="#ff6b6b">
-            </div>
-
-            <div class="control-group">
-                <label>Ojos</label>
-                <select id="sel-ojos"></select>
-            </div>
-
-            <div class="control-group">
-                <label>Boca</label>
-                <select id="sel-boca"></select>
-            </div>
-
-            <div class="control-group">
-                <label>Espalda / Alas</label>
-                <select id="sel-espalda"></select>
-            </div>
-            
-            <div class="control-group">
-                <label>Accesorio / Cabeza</label>
-                <select id="sel-cabeza"></select>
-            </div>
-
+            <div class="control-group"><label>Forma Base</label><select id="sel-forma"></select></div>
+            <div class="control-group"><label>Color Base</label><input type="color" id="sel-color" value="#ff6b6b"></div>
+            <div class="control-group"><label>Ojos</label><select id="sel-ojos"></select></div>
+            <div class="control-group"><label>Boca</label><select id="sel-boca"></select></div>
+            <div class="control-group"><label>Espalda / Alas</label><select id="sel-espalda"></select></div>
+            <div class="control-group"><label>Accesorio / Cabeza</label><select id="sel-cabeza"></select></div>
             <div class="control-group special-a">
                 <label style="color:#ffcc00">✨ Gen A (Cosmético)</label>
                 <select id="sel-gen-a">
-                    <option value="ninguno">Ninguno (Vacío)</option>
-                    <option value="cromatico_latente">Cromático Latente (Épico)</option>
-                    <option value="aura_linaje">Aura de Linaje (Legendario)</option>
-                    <option value="patron_holografico">Patrón Holográfico (Mítico)</option>
-                    <option value="brillo_bioluminiscente">Brillo Bioluminiscente (Raro)</option>
-                    <option value="forma_invertida">Forma Invertida (Épico)</option>
-                    <option value="rastro_elemental">Rastro Elemental (Raro)</option>
-                    <option value="sombra_genetica">Sombra Genética (Épico)</option>
-                    <option value="emblema_fundador">Emblema Fundador (Legendario)</option>
-                    <option value="eco_visual">Eco Visual (Raro)</option>
+                    <option value="ninguno">Ninguno (Vacío)</option><option value="cromatico_latente">Cromático Latente (Épico)</option>
+                    <option value="aura_linaje">Aura de Linaje (Legendario)</option><option value="patron_holografico">Patrón Holográfico (Mítico)</option>
+                    <option value="brillo_bioluminiscente">Brillo Bioluminiscente (Raro)</option><option value="forma_invertida">Forma Invertida (Épico)</option>
+                    <option value="rastro_elemental">Rastro Elemental (Raro)</option><option value="sombra_genetica">Sombra Genética (Épico)</option>
+                    <option value="emblema_fundador">Emblema Fundador (Legendario)</option><option value="eco_visual">Eco Visual (Raro)</option>
                     <option value="metamorfosis_estacional">Metamorfosis Estacional (Épico)</option>
                 </select>
             </div>
-
-            <div class="control-group special-b">
-                <label style="color:#80deea">⚙️ Gen B (Funcional 1)</label>
-                <select id="sel-gen-b"><option value="ninguno">Ninguno (Vacío)</option></select>
-            </div>
-
-            <div class="control-group special-c">
-                <label style="color:#8A2BE2">⚙️ Gen C (Funcional 2)</label>
-                <select id="sel-gen-c"><option value="ninguno">Ninguno (Vacío)</option></select>
-            </div>
-            
+            <div class="control-group special-b"><label style="color:#80deea">⚙️ Gen B (Funcional 1)</label><select id="sel-gen-b"><option value="ninguno">Ninguno (Vacío)</option></select></div>
+            <div class="control-group special-c"><label style="color:#8A2BE2">⚙️ Gen C (Funcional 2)</label><select id="sel-gen-c"><option value="ninguno">Ninguno (Vacío)</option></select></div>
         </div>
 
         <div class="viewer-container">
             <div class="viewer">
                 <div class="pedestal-container">
-                    <div class="pedestal-ring"></div>
-                    <div class="pedestal-light"></div>
+                    <div class="pedestal-ring"></div><div class="pedestal-light"></div>
                     <div class="pedestal-shadow"><div class="pedestal-core"></div></div>
                 </div>
                 <div id="geno-display"></div>
             </div>
-            
             <div id="terminal-output" class="terminal">
                 <div class="term-title">/// TERMINAL DE DIAGNÓSTICO BIOMÉTRICO ///</div>
                 <div id="terminal-content">Iniciando escáner...</div>
@@ -202,8 +169,86 @@
         </div>
     </div>
 
+    <div id="tab-combat" class="tab-content combat-arena lab-container">
+        <button id="btn-generar-combate" class="btn-fight">⚔️ Generar Rival Aleatorio</button>
+        
+        <div class="arena-screen">
+            <div class="vs-badge">VS</div>
+            
+            <div class="fighter-side">
+                <div class="pedestal-combat"><div class="pedestal-shadow"><div class="pedestal-core"></div></div></div>
+                <div id="combat-player-svg" class="fighter-svg"></div>
+                <div class="fighter-stats">
+                    <div class="fighter-name" style="color:#4dd0e1;">TU GENO (<span id="combat-player-rareza"></span>)</div>
+                    <div style="display:flex; justify-content:space-between; color:#ff6b6b; font-size:12px; font-weight:bold; margin-top:5px;">
+                        <span id="c-p-hp"></span> <span id="c-p-atk"></span> <span id="c-p-spd"></span> <span id="c-p-luk"></span>
+                    </div>
+                    <div class="fighter-genes">
+                        <div style="color:#80deea">B: <span id="c-p-genb"></span></div>
+                        <div style="color:#8A2BE2">C: <span id="c-p-genc"></span></div>
+                    </div>
+                    <div id="c-p-combo" class="combo-badge">🔥 COMBO: </div>
+                </div>
+            </div>
+
+            <div class="fighter-side">
+                <div class="pedestal-combat"><div class="pedestal-shadow"><div class="pedestal-core"></div></div></div>
+                <div id="combat-enemy-svg" class="fighter-svg"></div>
+                <div class="fighter-stats">
+                    <div class="fighter-name" style="color:#ff6b6b;">RIVAL CLON (<span id="combat-enemy-rareza"></span>)</div>
+                    <div style="display:flex; justify-content:space-between; color:#ff6b6b; font-size:12px; font-weight:bold; margin-top:5px;">
+                        <span id="c-e-hp"></span> <span id="c-e-atk"></span> <span id="c-e-spd"></span> <span id="c-e-luk"></span>
+                    </div>
+                    <div class="fighter-genes">
+                        <div style="color:#80deea">B: <span id="c-e-genb"></span></div>
+                        <div style="color:#8A2BE2">C: <span id="c-e-genc"></span></div>
+                    </div>
+                    <div id="c-e-combo" class="combo-badge">🔥 COMBO: </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="combat-log" class="terminal" style="height: 180px;">
+            <div class="term-title">/// SIMULADOR DE COLISIÓN GENÉTICA ///</div>
+            <div id="combat-log-content">> Presiona "Generar Rival Aleatorio" para iniciar simulación.</div>
+        </div>
+    </div>
+
     <script>
+        // DICCIONARIO DE COMBOS V9.1 (Mapeo rápido para el simulador)
+        const COMBOS_OFICIALES = [
+            { ids: ["resiliencia_ultima", "aprendiz_acelerado"], nombre: "El Fénix" },
+            { ids: ["piel_cristal", "reflejo_genetico"], nombre: "El Espejo Viviente" },
+            { ids: ["resistencia_colapso", "catalizador_rareza"], nombre: "El Alquimista" },
+            { ids: ["dominancia_genetica", "aprendiz_acelerado"], nombre: "El Criador Real" },
+            { ids: ["barrera_limite", "vampirismo_genetico"], nombre: "El Inmortal" },
+            { ids: ["armadura_adaptativa", "catalizador_afinidad"], nombre: "La Fortaleza Elemental" },
+            { ids: ["velocidad_fantasma", "sangre_fria"], nombre: "El Fantasma Práctico" },
+            { ids: ["cooldown_acelerado", "resonancia_nivel"], nombre: "El Acelerador Total" },
+            { ids: ["gen_dominante_puro", "memoria_genetica"], nombre: "El Gran Linaje" },
+            { ids: ["especialista_elite", "aceleracion_final"], nombre: "La Máquina Imparable" },
+            { ids: ["alquimista_natural", "catalizador_critico"], nombre: "El Reactor Monstruoso" }
+        ];
+
+        function detectarComboSinergico(genB, genC) {
+            if(!genB || !genC || genB === "ninguno" || genC === "ninguno") return null;
+            const combo = COMBOS_OFICIALES.find(c => 
+                (c.ids.includes(genB) && c.ids.includes(genC))
+            );
+            return combo ? combo.nombre : null;
+        }
+
         setTimeout(() => {
+            // PESTAÑAS LOGIC
+            const btnAdn = document.getElementById("btn-tab-adn");
+            const btnCombat = document.getElementById("btn-tab-combat");
+            const tabAdn = document.getElementById("tab-adn");
+            const tabCombat = document.getElementById("tab-combat");
+
+            btnAdn.onclick = () => { btnAdn.classList.add("active"); btnCombat.classList.remove("active"); tabAdn.classList.add("active"); tabCombat.classList.remove("active"); };
+            btnCombat.onclick = () => { btnCombat.classList.add("active"); btnAdn.classList.remove("active"); tabCombat.classList.add("active"); tabAdn.classList.remove("active"); };
+
+            // VARIABLES PESTAÑA 1
             const selRareza = document.getElementById("sel-rareza");
             const selForma = document.getElementById("sel-forma");
             const selColor = document.getElementById("sel-color");
@@ -229,17 +274,14 @@
             function rellenarSelect(selectElement, arrayData) {
                 selectElement.innerHTML = "";
                 arrayData.forEach(item => {
-                    const option = document.createElement("option");
-                    option.value = item;
+                    const option = document.createElement("option"); option.value = item;
                     option.innerText = item.charAt(0).toUpperCase() + item.slice(1).replace(/_/g, " ");
                     selectElement.appendChild(option);
                 });
             }
 
-            rellenarSelect(selForma, formasCuerpo);
-            rellenarSelect(selOjos, opcionesOjos);
-            rellenarSelect(selBoca, opcionesBocas);
-            rellenarSelect(selEspalda, opcionesEspaldas);
+            rellenarSelect(selForma, formasCuerpo); rellenarSelect(selOjos, opcionesOjos);
+            rellenarSelect(selBoca, opcionesBocas); rellenarSelect(selEspalda, opcionesEspaldas);
             rellenarSelect(selCabeza, opcionesCabezas);
             selForma.value = formasCuerpo[Math.floor(Math.random() * formasCuerpo.length)];
 
@@ -258,88 +300,14 @@
             };
             addGenesToSelect(selGenB); addGenesToSelect(selGenC);
 
-            function diagnosticarGenes(stats, genB, genC) {
-                let log = `<div class="log-section">> GENERANDO REPORTE DE SISTEMA...</div>`;
-                log += `<div>> RAREZA DEL SUJETO: <span class="log-highlight">${selRareza.value.toUpperCase()}</span></div>`;
-                log += `<div>> IVs BASE (Generados por app.js):</div>`;
-                log += `<div class="log-stats">&nbsp;&nbsp;❤️ HP: ${stats.hp} | ⚔️ ATK: ${stats.atk} | ⚡ SPD: ${stats.spd} | 🍀 LUK: ${stats.luk}</div>`;
-
-                if(!chkEscaneado.checked) {
-                    log += `<br><div style="color:#ff6b6b">> ERROR: ADN BLOQUEADO. Active el escáner para ver la lógica de los genes.</div>`;
-                    return log;
-                }
-
-                const evaluarGen = (g) => {
-                    if(!g) return;
-                    log += `<br><div style="color:#00a8ff">>>> ANALIZANDO GEN: [${g.name.toUpperCase()}] <<<</div>`;
-                    
-                    switch(g.id) {
-                        case "aprendiz_acelerado":
-                            log += `&nbsp;&nbsp;[PROGRESIÓN] La función getMultiplicadorXP() devolverá 1.25 en lugar de 1.0.<br>`;
-                            log += `&nbsp;&nbsp;* Simulación: Al comer una manzana, ganará 31 XP en lugar de 25 XP.`;
-                            break;
-                        case "fertilidad_pura":
-                            log += `&nbsp;&nbsp;[CRIANZA] La función getMaxCrias() alterada.<br>`;
-                            log += `&nbsp;&nbsp;* Simulación: El límite máximo de reproducciones será 9 (Base: 7).`;
-                            break;
-                        case "esencia_concentrada":
-                            log += `&nbsp;&nbsp;[SANTUARIO] La función getMultiplicadorEsencia() devolverá 2.0.<br>`;
-                            log += `&nbsp;&nbsp;* Simulación: Al liberarlo, entregará el doble de Esencia Vital (✨).`;
-                            break;
-                        case "umbral_despertar":
-                            log += `&nbsp;&nbsp;[PROGRESIÓN] Función verificarUmbralDespertar() en escucha.<br>`;
-                            log += `&nbsp;&nbsp;* Simulación: Al llegar a Nivel 25, inyectará +5 permanente a todos los IVs.<br>`;
-                            log += `&nbsp;&nbsp;* Stats Proyectadas Nv.25: ❤️${stats.hp+5} | ⚔️${stats.atk+5} | ⚡${stats.spd+5} | 🍀${stats.luk+5}`;
-                            break;
-                        case "piel_cristal":
-                            log += `&nbsp;&nbsp;[COMBATE] Flag de daño inicial anulado.<br>`;
-                            log += `&nbsp;&nbsp;* Simulación: En Coliseo, el primer ataque enemigo aplicará 0 de daño.`;
-                            break;
-                        case "resiliencia_ultima":
-                            let umbralHP = Math.floor(stats.hp * 0.15);
-                            let buffATK = Math.floor(stats.atk * 1.4);
-                            let buffSPD = Math.floor(stats.spd * 1.4);
-                            log += `&nbsp;&nbsp;[COMBATE] Evento condicional de vida detectado.<br>`;
-                            log += `&nbsp;&nbsp;* Simulación: Si en batalla el HP cae a ${umbralHP} o menos (15%), el ataque subirá a ${buffATK} y la velocidad a ${buffSPD}.`;
-                            break;
-                        case "dominancia_genetica":
-                            log += `&nbsp;&nbsp;[CRIANZA] Motor de herencia genética sobrecargado.<br>`;
-                            log += `&nbsp;&nbsp;* Simulación: Al incubar, tiene 70% de probabilidad de imponer sus genes a la cría (Base: 30%).`;
-                            break;
-                        case "cooldown_acelerado":
-                            log += `&nbsp;&nbsp;[CRIANZA] Temporizador de descanso alterado.<br>`;
-                            log += `&nbsp;&nbsp;* Simulación: El tiempo de espera tras criar se reduce a la mitad.`;
-                            break;
-                        default:
-                            log += `&nbsp;&nbsp;[PASIVA] Efecto: "${g.desc}" listo para ejecución en el módulo correspondiente.`;
-                    }
-                };
-
-                if (selGenA.value !== "ninguno") {
-                    log += `<br><div style="color:#ffcc00">>>> ANALIZANDO GEN: [COSMÉTICO] <<<</div>`;
-                    log += `&nbsp;&nbsp;[VISUAL] Renderizando efecto visual. Sin impacto en Stats matemáticas.`;
-                }
-
-                evaluarGen(genB); evaluarGen(genC);
-                
-                if(genB && genC && genB.id === genC.id) {
-                    log += `<br><div style="color:#ff6b6b; font-weight:bold;">> ADVERTENCIA: Conflicto genético. El motor 'app.js' anulará el Slot C (Regla B!=C) durante la cría.</div>`;
-                }
-
-                return log;
-            }
-
-            function renderizarGeno() {
+            function obtenerAdnPlayer() {
                 const rarezaElegida = selRareza.value;
                 const baseStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(rarezaElegida) : {hp: 50, atk: 15, spd: 15, luk: 15};
-
                 const genBData = selGenB.value !== "ninguno" ? genesFuncionales.find(g => g.id === selGenB.value) : null;
                 const genCData = selGenC.value !== "ninguno" ? genesFuncionales.find(g => g.id === selGenC.value) : null;
 
-                const adnFalso = {
-                    id: Math.floor(Math.random() * 1000), 
-                    rarity: rarezaElegida,
-                    stats: baseStats,
+                return {
+                    id: 999, rarity: rarezaElegida, stats: baseStats,
                     body_shape: selForma.value, base_color: selColor.value, color: selColor.value,
                     eye_type: selOjos.value, mouth_type: selBoca.value, wing_type: selEspalda.value, hat_type: selCabeza.value,
                     scanned: chkEscaneado.checked,
@@ -348,24 +316,88 @@
                         B: genBData, C: genCData
                     }
                 };
+            }
 
+            function renderizarGenoPlayer() {
+                const adn = obtenerAdnPlayer();
                 if (typeof generarSvgGeno === 'function') {
-                    let svgString = generarSvgGeno(adnFalso);
+                    let svgString = generarSvgGeno(adn);
                     svgString = svgString.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
                     display.style.color = selColor.value; 
                     display.innerHTML = svgString;
-
-                    // Actualizar Terminal de Diagnóstico
-                    terminal.innerHTML = diagnosticarGenes(baseStats, genBData, genCData);
                 }
             }
 
             [selRareza, selForma, selColor, selOjos, selBoca, selEspalda, selCabeza, selGenA, selGenB, selGenC, chkEscaneado].forEach(control => {
-                control.addEventListener("change", renderizarGeno);
+                control.addEventListener("change", renderizarGenoPlayer);
             });
-            if (selColor) selColor.addEventListener("input", renderizarGeno);
+            if (selColor) selColor.addEventListener("input", renderizarGenoPlayer);
+            renderizarGenoPlayer();
 
-            renderizarGeno();
+            // ==========================================
+            // LOGICA DE SIMULADOR DE COMBATE
+            // ==========================================
+            const btnGenerarRival = document.getElementById("btn-generar-combate");
+            const logCombate = document.getElementById("combat-log-content");
+
+            btnGenerarRival.onclick = () => {
+                logCombate.innerHTML = `<div style="color:#4dd0e1">> INICIALIZANDO SIMULACIÓN HOLOGRÁFICA...</div>`;
+                
+                const playerAdn = obtenerAdnPlayer();
+                
+                // Actualizar UI Jugador
+                document.getElementById("combat-player-svg").innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(playerAdn).replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">') : '';
+                document.getElementById("combat-player-svg").style.color = playerAdn.color;
+                document.getElementById("combat-player-rareza").innerText = playerAdn.rarity;
+                document.getElementById("c-p-hp").innerText = `❤️ ${playerAdn.stats.hp}`;
+                document.getElementById("c-p-atk").innerText = `⚔️ ${playerAdn.stats.atk}`;
+                document.getElementById("c-p-spd").innerText = `⚡ ${playerAdn.stats.spd}`;
+                document.getElementById("c-p-luk").innerText = `🍀 ${playerAdn.stats.luk}`;
+                document.getElementById("c-p-genb").innerText = playerAdn.hidden_genes.B ? playerAdn.hidden_genes.B.name : "Vacío";
+                document.getElementById("c-p-genc").innerText = playerAdn.hidden_genes.C ? playerAdn.hidden_genes.C.name : "Vacío";
+                
+                const comboP = detectarComboSinergico(playerAdn.hidden_genes.B?.id, playerAdn.hidden_genes.C?.id);
+                const badgeP = document.getElementById("c-p-combo");
+                if(comboP) { badgeP.style.display = "block"; badgeP.innerText = `🔥 COMBO: ${comboP}`; } else { badgeP.style.display = "none"; }
+
+                // Crear Enemigo Clon
+                let genBEnemy = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)];
+                let genCEnemy = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)];
+                while(genBEnemy.id === genCEnemy.id) { genCEnemy = genesFuncionales[Math.floor(Math.random() * genesFuncionales.length)]; } // Regla B!=C
+
+                const enemyAdn = { ...playerAdn, id: 888, scanned: true, hidden_genes: { A: null, B: genBEnemy, C: genCEnemy } };
+                
+                document.getElementById("combat-enemy-svg").innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(enemyAdn).replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">') : '';
+                document.getElementById("combat-enemy-svg").style.color = enemyAdn.color;
+                document.getElementById("combat-enemy-rareza").innerText = enemyAdn.rarity;
+                document.getElementById("c-e-hp").innerText = `❤️ ${enemyAdn.stats.hp}`;
+                document.getElementById("c-e-atk").innerText = `⚔️ ${enemyAdn.stats.atk}`;
+                document.getElementById("c-e-spd").innerText = `⚡ ${enemyAdn.stats.spd}`;
+                document.getElementById("c-e-luk").innerText = `🍀 ${enemyAdn.stats.luk}`;
+                document.getElementById("c-e-genb").innerText = genBEnemy.name;
+                document.getElementById("c-e-genc").innerText = genCEnemy.name;
+
+                const comboE = detectarComboSinergico(genBEnemy.id, genCEnemy.id);
+                const badgeE = document.getElementById("c-e-combo");
+                if(comboE) { badgeE.style.display = "block"; badgeE.innerText = `🔥 COMBO: ${comboE}`; } else { badgeE.style.display = "none"; }
+
+                // Log Fake de Combate (Retrasos para inmersión)
+                setTimeout(() => { logCombate.innerHTML += `<br>> Cargando Clon Rival... <span style="color:#ff6b6b">ADN Alterado Detectado.</span>`; }, 500);
+                setTimeout(() => { 
+                    logCombate.innerHTML += `<br>> <span style="color:#ffcc00">Sinergia Rival:</span> ${comboE ? `¡Peligro! Combo ${comboE} activado.` : `Ningún combo detectado.`}`; 
+                }, 1200);
+                setTimeout(() => { 
+                    logCombate.innerHTML += `<br><br><div style="color:#8A2BE2; font-weight:bold; text-align:center;">--- INICIANDO FASE DE COMBATE ---</div>`; 
+                    
+                    let atacaPrimero = playerAdn.stats.spd >= enemyAdn.stats.spd ? "Tu Geno" : "El Rival Clon";
+                    logCombate.innerHTML += `<br>> <span style="color:#4dd0e1">[TURNO 1]</span> ${atacaPrimero} ataca primero debido a su velocidad.`;
+                    
+                    if (playerAdn.hidden_genes.B?.id === "piel_cristal" || playerAdn.hidden_genes.C?.id === "piel_cristal") {
+                        logCombate.innerHTML += `<br>> <span style="color:#80deea">* Gen Pasivo [Piel de Cristal]:</span> Tu Geno absorbió el primer impacto. Recibe 0 de Daño.`;
+                    }
+                }, 2200);
+            };
+
         }, 500); 
     </script>
 </body>
