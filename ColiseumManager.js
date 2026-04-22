@@ -42,6 +42,26 @@ document.addEventListener("DOMContentLoaded", () => {
     let numeroTurno = 1;
 
     // =========================================
+    // NUEVA FUNCIÓN: INYECCIÓN DE SVG SIN DESTRUIR CLASES
+    // =========================================
+    function inyectarSvgSeguro(mascotaData, size) {
+        if (typeof generarSvgGeno !== 'function') return '';
+        let svgString = generarSvgGeno(mascotaData);
+        
+        let tempDiv = document.createElement('div');
+        tempDiv.innerHTML = svgString;
+        
+        let svgEl = tempDiv.querySelector('svg');
+        if (svgEl) {
+            svgEl.setAttribute('width', size);
+            svgEl.setAttribute('height', size);
+            svgEl.setAttribute('viewBox', '-20 0 200 160');
+            svgEl.style.overflow = 'visible';
+        }
+        return tempDiv.innerHTML;
+    }
+
+    // =========================================
     // FUNCIONES DE "JUGO" (VISUALES Y SONIDO)
     // =========================================
     function scrollToBottom() { logCombate.scrollTop = logCombate.scrollHeight; }
@@ -149,7 +169,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("player-visual-box").innerHTML = "";
         document.getElementById("enemy-visual-box").innerHTML = "";
         
-        // Evita errores si no existe el ID
         const pNameEl = document.getElementById("battle-player-name");
         if(pNameEl) pNameEl.innerText = "Tu Geno";
         
@@ -175,7 +194,6 @@ document.addEventListener("DOMContentLoaded", () => {
         btnLeave.disabled = false;
         battleControls.classList.add("hidden");
         
-        // ASEGURAMOS QUE LOS BOTONES ESTÉN ACTIVOS AL INICIAR
         btnAtk.disabled = false;
         btnItem.disabled = false;
         if(btnSkill) btnSkill.style.display = "none"; 
@@ -192,7 +210,6 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("enemy-sprite-battle").style.filter = "none";
             numeroTurno = 1;
 
-            // ESTO EVITA EL BLOQUEO: Desbloqueamos los botones por si es la segunda batalla
             btnAtk.disabled = false;
             actualizarBotonManzana();
 
@@ -200,14 +217,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const pMascota = window.miMascota;
             const pElemento = (pMascota.genes && pMascota.genes.afinidad) ? pMascota.genes.afinidad.dom : (pMascota.element || "Normal");
             
-            // Protección por si la mascota no tiene hidden_genes
             let pGenB = "ninguno"; let pGenC = "ninguno";
             if (pMascota.hidden_genes) {
                 if (pMascota.hidden_genes.B) pGenB = pMascota.hidden_genes.B.id;
                 if (pMascota.hidden_genes.C) pGenC = pMascota.hidden_genes.C.id;
             }
             
-            // Protección por si la mascota no tiene stats aún
             const pStats = pMascota.stats || {hp: 80, atk: 15, spd: 15, luk: 10};
 
             playerCombat = {
@@ -257,16 +272,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 escudoCibernetico: eElemento === "Cibernético", estados: []
             };
 
-            // RENDER VISUAL SEGURO
-            if (typeof generarSvgGeno === 'function') {
-                document.getElementById("player-visual-box").innerHTML = generarSvgGeno(pMascota).replace(/<svg[^>]*>/, '<svg width="90px" height="90px" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
-                document.getElementById("player-visual-box").style.color = pMascota.color || pMascota.base_color;
-                
-                document.getElementById("enemy-visual-box").innerHTML = generarSvgGeno(eAdn).replace(/<svg[^>]*>/, '<svg width="90px" height="90px" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
-                document.getElementById("enemy-visual-box").style.color = eAdn.color;
-            }
+            // RENDER VISUAL CON LA NUEVA FUNCIÓN SEGURA
+            document.getElementById("player-visual-box").innerHTML = inyectarSvgSeguro(pMascota, "90px");
+            document.getElementById("player-visual-box").style.color = pMascota.color || pMascota.base_color;
+            
+            document.getElementById("enemy-visual-box").innerHTML = inyectarSvgSeguro(eAdn, "90px");
+            document.getElementById("enemy-visual-box").style.color = eAdn.color;
 
-            // ACTUALIZACIÓN DE NOMBRES SEGURA
             const pNameEl = document.getElementById("battle-player-name");
             if(pNameEl) pNameEl.innerText = `${playerCombat.nombre} (Nv. ${pMascota.level || 1})`;
             
@@ -524,7 +536,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 btnLeave.style.display = "inline-block";
             }, 1000);
         } else {
-            // AQUÍ DESBLOQUEAMOS PARA EL SIGUIENTE TURNO (Si la batalla sigue viva)
             btnAtk.disabled = false;
             actualizarBotonManzana();
         }
