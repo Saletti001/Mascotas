@@ -42,7 +42,8 @@ window.BASE_DATOS_GENES_V9 = {
         { id: "aprendiz_acelerado", name: "Aprendiz Acelerado", desc: "x1.25 XP obtenida" },
         { id: "umbral_despertar", name: "Umbral del Despertar", desc: "+5 todos los IVs al Nv. 25" },
         { id: "resonancia_nivel", name: "Resonancia de Nivel", desc: "+1 a stat líder cada 10 niveles." },
-        { id: "especialista_elite", name: "Especialista de Élite", desc: "Rompe el límite. Permite Nivel 60." },
+        // AQUI ESTÁ EL CAMBIO A NIVEL 55:
+        { id: "especialista_elite", name: "Especialista de Élite", desc: "Rompe el límite. Permite Nivel 55." },
         { id: "aceleracion_final", name: "Aceleración Final", desc: "Últimos 10 niveles requieren 40% menos XP." }
     ],
     reactor_santuario: [

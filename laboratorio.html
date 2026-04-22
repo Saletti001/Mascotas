@@ -389,7 +389,6 @@
                     if(gen) {
                         log += `<div style="color:${colorRGB}; margin-top:8px;">>>> ${nombreSlot}: [${gen.name.toUpperCase()}] <<<</div>`;
                         log += `&nbsp;&nbsp;<span style="color:#aaa">Efecto:</span> ${gen.desc}<br>`;
-                        
                         let uso = "Proporciona ventajas estadísticas pasivas.";
                         if(gen.categoria === "cosmetico") uso = "Cosmético Visual. Aumenta drásticamente el valor del Geno.";
                         else if(gen.id === "resiliencia_ultima") uso = "Ideal con builds de 'Glass Cannon'. Ponle Stats en ATK; cuando baje al 15% HP barrerá al rival.";
@@ -398,8 +397,8 @@
                         else if(gen.id === "barrera_limite") uso = "Te asegura resistir el peor ataque posible. Combinarlo con genes de curación es letal.";
                         else if(gen.id === "vampirismo_genetico") uso = "Asegúrate de que tu Geno tenga mucho ATK para que la cura valga la pena.";
                         else if(gen.id === "reflejo_genetico") uso = "Excelente defensa contra críticos. Devuelve el 30% del daño recibido instantáneamente.";
-                        // AQUÍ AGREGAMOS LA TÁCTICA PARA EL ESPECIALISTA DE ÉLITE
-                        else if(gen.id === "especialista_elite") uso = "El Gen del campeón definitivo. Te dará 30 puntos de atributos extra, pero requerirá meses de entrenamiento y recursos.";
+                        // AQUI ESTÁ EL CONSEJO ACTUALIZADO
+                        else if(gen.id === "especialista_elite") uso = "El Gen del campeón definitivo. Te dará 15 puntos de atributos extra, pero requerirá meses de entrenamiento y recursos.";
                         
                         log += `&nbsp;&nbsp;<span style="color:#4CAF50">Táctica recomendada:</span> ${uso}<br>`;
                     }
