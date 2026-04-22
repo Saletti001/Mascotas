@@ -120,12 +120,24 @@
                     <option value="Épico">Épico</option><option value="Legendario">Legendario</option><option value="Mítico">Mítico</option>
                 </select>
             </div>
+
+            <div class="control-group">
+                <label style="color:#4CAF50">Elemento Base</label>
+                <select id="sel-elemento">
+                    <option value="Biomutante">🧬 Biomutante</option>
+                    <option value="Viral">🦠 Viral</option>
+                    <option value="Cibernético">⚙️ Cibernético</option>
+                    <option value="Radiactivo">☢️ Radiactivo</option>
+                    <option value="Tóxico">🧪 Tóxico</option>
+                    <option value="Sintético">🤖 Sintético</option>
+                </select>
+            </div>
             
             <div class="control-group special-combo">
                 <label style="color:#ff5722">🔥 Forzar Combo Sinérgico</label>
                 <select id="sel-player-combo">
                     <option value="ninguno">Manual (Sin Combo)</option>
-                    </select>
+                </select>
             </div>
 
             <div class="control-group"><label>Forma Base</label><select id="sel-forma"></select></div>
@@ -165,10 +177,8 @@
         
         <div class="action-bar">
             <select id="sel-enemy-rareza" style="flex: 0.3; padding: 15px; background: #0d1a24; color: #ff6b6b; border: 1px solid #ff6b6b; border-radius: 8px; font-weight: bold; outline: none; cursor: pointer; text-transform: uppercase;">
-                <option value="Común">Rival: Común</option>
-                <option value="Raro">Rival: Raro</option>
-                <option value="Épico">Rival: Épico</option>
-                <option value="Legendario">Rival: Legendario</option>
+                <option value="Común">Rival: Común</option><option value="Raro">Rival: Raro</option>
+                <option value="Épico">Rival: Épico</option><option value="Legendario">Rival: Legendario</option>
                 <option value="Mítico">Rival: Mítico</option>
             </select>
 
@@ -189,6 +199,7 @@
                     <div class="fighter-name" style="color:#4dd0e1;">
                         TU GENO (<span id="c-p-rareza"></span>) <span id="c-p-calidad" style="font-size:12px; margin-left:5px;"></span>
                     </div>
+                    <div style="font-size: 11px; text-align: center; color: #aaa; margin-bottom: 5px;">Elemento: <span id="c-p-elem" style="color: #fff;"></span></div>
                     <div class="hp-bar-bg"><div id="c-p-hp-fill" class="hp-bar-fill"></div></div>
                     <div id="c-p-hp-text" class="hp-text">HP: 0 / 0</div>
                     <div class="stats-row">
@@ -208,6 +219,7 @@
                     <div class="fighter-name" style="color:#ff6b6b;">
                         RIVAL (<span id="c-e-rareza"></span>) <span id="c-e-calidad" style="font-size:12px; margin-left:5px;"></span>
                     </div>
+                    <div style="font-size: 11px; text-align: center; color: #aaa; margin-bottom: 5px;">Elemento: <span id="c-e-elem" style="color: #fff;"></span></div>
                     <div class="hp-bar-bg"><div id="c-e-hp-fill" class="hp-bar-fill"></div></div>
                     <div id="c-e-hp-text" class="hp-text">HP: 0 / 0</div>
                     <div class="stats-row">
@@ -243,6 +255,18 @@
             { ids: ["alquimista_natural", "catalizador_critico"], nombre: "El Reactor Monstruoso" }
         ];
 
+        const elementosBase = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
+
+        function obtenerMultiplicadorElemental(atkElement, defElement) {
+            const ventajas = {
+                "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo",
+                "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante"
+            };
+            if (ventajas[atkElement] === defElement) return 1.5; // Ventaja
+            if (ventajas[defElement] === atkElement) return 0.5; // Resistencia
+            return 1.0; // Neutro
+        }
+
         function detectarComboSinergico(genB, genC) {
             if(!genB || !genC || genB === "ninguno" || genC === "ninguno") return null;
             const combo = COMBOS_OFICIALES.find(c => c.ids.includes(genB) && c.ids.includes(genC));
@@ -277,6 +301,7 @@
             btnCombat.onclick = () => { btnCombat.classList.add("active"); btnAdn.classList.remove("active"); tabCombat.classList.add("active"); tabAdn.classList.remove("active"); };
 
             const selRareza = document.getElementById("sel-rareza");
+            const selElemento = document.getElementById("sel-elemento");
             const selForma = document.getElementById("sel-forma");
             const selColor = document.getElementById("sel-color");
             const selOjos = document.getElementById("sel-ojos");
@@ -292,15 +317,8 @@
             const selEnemyCombo = document.getElementById("sel-enemy-combo");
 
             COMBOS_OFICIALES.forEach(combo => {
-                let opt1 = document.createElement("option");
-                opt1.value = combo.nombre;
-                opt1.innerText = combo.nombre;
-                selPlayerCombo.appendChild(opt1);
-
-                let opt2 = document.createElement("option");
-                opt2.value = combo.nombre;
-                opt2.innerText = `Rival: ${combo.nombre}`;
-                selEnemyCombo.appendChild(opt2);
+                let opt1 = document.createElement("option"); opt1.value = combo.nombre; opt1.innerText = combo.nombre; selPlayerCombo.appendChild(opt1);
+                let opt2 = document.createElement("option"); opt2.value = combo.nombre; opt2.innerText = `Rival: ${combo.nombre}`; selEnemyCombo.appendChild(opt2);
             });
             
             const formasCuerpo = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
@@ -328,8 +346,7 @@
             if (window.BASE_DATOS_GENES_V9) {
                 for (let cat in window.BASE_DATOS_GENES_V9) {
                     window.BASE_DATOS_GENES_V9[cat].forEach(g => {
-                        g.categoria = cat;
-                        todosLosGenes.push(g);
+                        g.categoria = cat; todosLosGenes.push(g);
                         if (cat !== "cosmetico") genesFuncionales.push(g);
                     });
                 }
@@ -346,18 +363,14 @@
             selPlayerCombo.addEventListener("change", (e) => {
                 if(e.target.value !== "ninguno") {
                     const combo = COMBOS_OFICIALES.find(c => c.nombre === e.target.value);
-                    selGenB.value = combo.ids[0];
-                    selGenC.value = combo.ids[1];
+                    selGenB.value = combo.ids[0]; selGenC.value = combo.ids[1];
                 }
                 renderizarGenoPlayer();
             });
 
             function actualizarTerminal() {
                 const term = document.getElementById("terminal-content");
-                if (!chkEscaneado.checked) {
-                    term.innerHTML = `<div style="color:#ff6b6b">> ERROR: ADN BLOQUEADO. Active el escáner (Toggle arriba) para revelar información genética.</div>`;
-                    return;
-                }
+                if (!chkEscaneado.checked) { term.innerHTML = `<div style="color:#ff6b6b">> ERROR: ADN BLOQUEADO. Active el escáner.</div>`; return; }
 
                 let log = `<div style="color:#4dd0e1; margin-bottom: 10px;">> GENERANDO REPORTE DE ESTRATEGIA Y ADN...</div>`;
                 
@@ -367,17 +380,11 @@
                     if(gen) {
                         log += `<div style="color:${colorRGB}; margin-top:8px;">>>> ${nombreSlot}: [${gen.name.toUpperCase()}] <<<</div>`;
                         log += `&nbsp;&nbsp;<span style="color:#aaa">Efecto:</span> ${gen.desc}<br>`;
-                        
                         let uso = "Proporciona ventajas estadísticas pasivas.";
-                        if(gen.categoria === "cosmetico") uso = "Cosmético Visual. Aumenta drásticamente el valor del Geno para los coleccionistas en el mercado de $POL.";
+                        if(gen.categoria === "cosmetico") uso = "Cosmético Visual. Aumenta drásticamente el valor del Geno.";
                         else if(gen.id === "resiliencia_ultima") uso = "Ideal con builds de 'Glass Cannon'. Ponle Stats en ATK; cuando baje al 15% HP barrerá al rival.";
-                        else if(gen.id === "piel_cristal") uso = "Excelente defensa contra Genos de un solo golpe fuerte. Útil en Torneos Supervivencia.";
-                        else if(gen.id === "velocidad_fantasma") uso = "Construye este Geno con alta Velocidad (SPD) y ATK. Atacar dos veces rápido rompe bloqueos.";
-                        else if(gen.id === "fertilidad_pura") uso = "No lo desperdicies criando con comunes. Úsalo como 'Padre Fundador' de tu linaje para tener 9 crías de élite.";
-                        else if(gen.categoria === "crianza") uso = "Equípalo a tus mejores Genos y úsalos en la Incubadora para asegurar mejores crías.";
-                        else if(gen.categoria === "progresion") uso = "Acelera su nivel. Te costará mucha menos Esencia Vital y manzanas llevarlo al Nivel 50.";
-                        else if(gen.categoria === "reactor_santuario") uso = "Geno diseñado para quemar. Llévalo al Santuario o Reactor para maximizar tu ganancia de Esencia Vital.";
-                        
+                        else if(gen.id === "piel_cristal") uso = "Excelente defensa contra Genos de un solo golpe fuerte.";
+                        else if(gen.id === "velocidad_fantasma") uso = "Construye este Geno con alta Velocidad (SPD) y ATK.";
                         log += `&nbsp;&nbsp;<span style="color:#4CAF50">Táctica recomendada:</span> ${uso}<br>`;
                     }
                 };
@@ -385,11 +392,6 @@
                 evaluarSlot(selGenA.value, "SLOT A (COSMÉTICO)", "#ffcc00");
                 evaluarSlot(selGenB.value, "SLOT B (FUNCIONAL 1)", "#80deea");
                 evaluarSlot(selGenC.value, "SLOT C (FUNCIONAL 2)", "#8A2BE2");
-                
-                if(selGenB.value !== "ninguno" && selGenB.value === selGenC.value) {
-                    log += `<br><div style="color:#ff6b6b; font-weight:bold;">> ADVERTENCIA: Has colocado dos genes iguales. En el juego real, el Motor anula el Slot C por la regla (B != C).</div>`;
-                }
-
                 term.innerHTML = log;
             }
 
@@ -400,7 +402,7 @@
                 const genCData = selGenC.value !== "ninguno" ? genesFuncionales.find(g => g.id === selGenC.value) : null;
 
                 return {
-                    id: 999, rarity: rareza, stats: stats,
+                    id: 999, rarity: rareza, stats: stats, element: selElemento.value,
                     body_shape: selForma.value, base_color: selColor.value, color: selColor.value,
                     eye_type: selOjos.value, mouth_type: selBoca.value, wing_type: selEspalda.value, hat_type: selCabeza.value,
                     scanned: chkEscaneado.checked,
@@ -418,12 +420,12 @@
                 actualizarTerminal();
             }
 
-            [selRareza, selForma, selColor, selOjos, selBoca, selEspalda, selCabeza, selGenA, selGenB, selGenC, chkEscaneado].forEach(c => c.addEventListener("change", renderizarGenoPlayer));
+            [selRareza, selElemento, selForma, selColor, selOjos, selBoca, selEspalda, selCabeza, selGenA, selGenB, selGenC, chkEscaneado].forEach(c => c.addEventListener("change", renderizarGenoPlayer));
             if (selColor) selColor.addEventListener("input", renderizarGenoPlayer);
             renderizarGenoPlayer();
 
             // ==========================================
-            // MOTOR DE COMBATE INTERACTIVO (CRÍTICOS Y LUK)
+            // MOTOR DE COMBATE INTERACTIVO
             // ==========================================
             const btnGenerarRival = document.getElementById("btn-generar-combate");
             const btnAtacar = document.getElementById("btn-atacar");
@@ -470,6 +472,7 @@
                 playerCombat = {
                     nombre: "Tu Geno", isPlayer: true,
                     maxHp: pAdn.stats.hp, hp: pAdn.stats.hp, atk: pAdn.stats.atk, spd: pAdn.stats.spd, luk: pAdn.stats.luk,
+                    element: pAdn.element,
                     genesId: [pAdn.hidden_genes.B?.id, pAdn.hidden_genes.C?.id],
                     crystalSkin: pAdn.hidden_genes.B?.id === "piel_cristal" || pAdn.hidden_genes.C?.id === "piel_cristal",
                     resilienciaUsada: false
@@ -482,6 +485,7 @@
                 const eForma = formasCuerpo[Math.floor(Math.random() * formasCuerpo.length)];
                 const coloresRival = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77", "#ff9800", "#ffb347", "#a8e6cf"];
                 const eColor = coloresRival[Math.floor(Math.random() * coloresRival.length)];
+                const eElement = elementosBase[Math.floor(Math.random() * elementosBase.length)];
                 
                 let eHiddenGenes = {A: null, B: null, C: null};
 
@@ -502,7 +506,7 @@
                 }
 
                 const eAdn = { 
-                    id: 888, scanned: true, rarity: enemyRareza, stats: enemyStats,
+                    id: 888, scanned: true, rarity: enemyRareza, stats: enemyStats, element: eElement,
                     body_shape: eForma, base_color: eColor, color: eColor,
                     eye_type: opcionesOjos[Math.floor(Math.random() * opcionesOjos.length)], 
                     mouth_type: opcionesBocas[Math.floor(Math.random() * opcionesBocas.length)], 
@@ -517,6 +521,7 @@
                 enemyCombat = {
                     nombre: "Rival Salvaje", isPlayer: false,
                     maxHp: eAdn.stats.hp, hp: eAdn.stats.hp, atk: eAdn.stats.atk, spd: eAdn.stats.spd, luk: eAdn.stats.luk,
+                    element: eAdn.element,
                     genesId: [eGenB_id, eGenC_id],
                     crystalSkin: eGenB_id === "piel_cristal" || eGenC_id === "piel_cristal",
                     resilienciaUsada: false
@@ -528,17 +533,17 @@
                 document.getElementById("combat-enemy-svg").style.color = eAdn.color;
 
                 document.getElementById("c-p-rareza").innerText = pAdn.rarity;
+                document.getElementById("c-p-elem").innerText = pAdn.element;
                 document.getElementById("c-e-rareza").innerText = eAdn.rarity;
+                document.getElementById("c-e-elem").innerText = eAdn.element;
 
                 let calP = obtenerCalidad(pAdn.stats, pAdn.rarity);
                 document.getElementById("c-p-calidad").innerText = `[${calP.rango} ${calP.pct}%]`;
                 document.getElementById("c-p-calidad").style.color = calP.color;
-                document.getElementById("c-p-calidad").style.textShadow = calP.rango === "S" ? "0 0 10px rgba(255,204,0,0.8)" : "none";
-
+                
                 let calE = obtenerCalidad(eAdn.stats, eAdn.rarity);
                 document.getElementById("c-e-calidad").innerText = `[${calE.rango} ${calE.pct}%]`;
                 document.getElementById("c-e-calidad").style.color = calE.color;
-                document.getElementById("c-e-calidad").style.textShadow = calE.rango === "S" ? "0 0 10px rgba(255,204,0,0.8)" : "none";
 
                 document.getElementById("c-p-genb").innerText = pAdn.hidden_genes.B ? pAdn.hidden_genes.B.name : "Vacío";
                 document.getElementById("c-p-genc").innerText = pAdn.hidden_genes.C ? pAdn.hidden_genes.C.name : "Vacío";
@@ -575,7 +580,11 @@
 
                     let dmg = Math.floor(atacante.atk * (i === 1 ? 0.5 : 1) * (0.85 + Math.random() * 0.3));
                     
-                    // Cálculo de Daño Crítico usando LUK
+                    // Cálculo Elemental
+                    let multElem = obtenerMultiplicadorElemental(atacante.element, defensor.element);
+                    dmg = Math.floor(dmg * multElem);
+
+                    // Cálculo Crítico (LUK)
                     let isCrit = Math.random() <= (0.05 + (atacante.luk * 0.002));
                     if (isCrit) dmg = Math.floor(dmg * 1.5);
 
@@ -587,10 +596,14 @@
                         defensor.hp -= dmg;
                         if(defensor.hp < 0) defensor.hp = 0;
                         
+                        let tipoGolpe = "";
+                        if (multElem === 1.5) tipoGolpe = ` <span style="color:#4CAF50; font-weight:bold;">(¡Súper Efectivo!)</span>`;
+                        else if (multElem === 0.5) tipoGolpe = ` <span style="color:#888; font-weight:bold;">(Es poco efectivo...)</span>`;
+
                         if (isCrit) {
-                            addLog(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡GOLPE CRÍTICO!</span> ${atacante.nombre} ataca causando <span style="color:#ff6b6b; font-weight:bold; font-size:13px;">${dmg} de daño</span>.`);
+                            addLog(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${atacante.nombre} causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} de daño</span>.${tipoGolpe}`);
                         } else {
-                            addLog(`> ${atacante.nombre} ataca causando <span style="color:#ff6b6b">${dmg} de daño</span>.`);
+                            addLog(`> ${atacante.nombre} causa <span style="color:#ff6b6b">${dmg} de daño</span>.${tipoGolpe}`);
                         }
                         
                         flashDamage(defensor.isPlayer);
