@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔬 Laboratorio de Pruebas Genos V9</title>
+    <title>🔬 Laboratorio de Pruebas Genos V9.1</title>
     
     <script src="genoma.js"></script>
     <script src="caras.js"></script> 
@@ -23,10 +23,12 @@
             align-items: center;
         }
         h1 { color: #4dd0e1; text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(77, 208, 225, 0.5); margin-bottom: 5px; }
-        .lab-container { display: flex; gap: 40px; background: #1a2a36; padding: 30px; border-radius: 15px; border: 1px solid #4dd0e1; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 1000px; width: 100%; }
-        .controls { flex: 1; display: flex; flex-direction: column; gap: 15px; max-height: 650px; overflow-y: auto; padding-right: 15px; }
+        .lab-container { display: flex; gap: 30px; background: #1a2a36; padding: 25px; border-radius: 15px; border: 1px solid #4dd0e1; box-shadow: 0 10px 30px rgba(0,0,0,0.5); max-width: 1200px; width: 100%; align-items: stretch;}
+        
+        .controls { flex: 1; display: flex; flex-direction: column; gap: 15px; max-height: 700px; overflow-y: auto; padding-right: 15px; }
         .controls::-webkit-scrollbar { width: 6px; }
         .controls::-webkit-scrollbar-thumb { background: #4dd0e1; border-radius: 4px; }
+        
         .control-group { display: flex; flex-direction: column; gap: 5px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border-left: 3px solid #4dd0e1; }
         .control-group.special-a { border-left: 3px solid #ffcc00; background: rgba(255, 204, 0, 0.05); }
         .control-group.special-b { border-left: 3px solid #80deea; background: rgba(128, 222, 234, 0.05); }
@@ -35,113 +37,60 @@
         select, input[type="color"] { padding: 10px; background: #0d1a24; color: #fff; border: 1px solid #333; border-radius: 8px; font-size: 14px; outline: none; cursor: pointer; width: 100%; box-sizing: border-box; }
         select:focus, input:focus { border-color: #4dd0e1; }
         
-        /* ✨ VISOR MEJORADO: CLON EXACTO DE LA PANTALLA PRINCIPAL */
+        .viewer-container {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* VISOR VISUAL */
         .viewer { 
-            flex: 1.2; 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
-            /* Fondo cian brillante con scanlines */
             background-color: #31c4d8;
-            background-image: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(0, 0, 0, 0.06) 2px,
-                rgba(0, 0, 0, 0.06) 4px
-            );
+            background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px);
             border-radius: 10px; 
             border: 2px solid #4dd0e1; 
-            padding: 20px; 
-            min-height: 500px; 
+            min-height: 400px; 
             position: relative; 
             overflow: hidden;
             box-shadow: inset 0 0 30px rgba(0,0,0,0.2);
         }
 
-        /* 🏛️ Elementos del Pedestal Holográfico */
-        .pedestal-container {
-            position: absolute;
-            top: 65%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            z-index: 0;
-        }
+        .pedestal-container { position: absolute; top: 65%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; z-index: 0; }
+        .pedestal-ring { width: 220px; height: 50px; border: 1px dashed rgba(255, 255, 255, 0.7); border-radius: 50%; position: absolute; top: -120px; }
+        .pedestal-light { width: 130px; height: 140px; background: linear-gradient(to top, rgba(255, 255, 255, 0.5), transparent); position: absolute; top: -100px; }
+        .pedestal-shadow { width: 170px; height: 45px; background: #111b24; border-radius: 50%; box-shadow: 0 10px 20px rgba(0,0,0,0.4); display: flex; justify-content: center; align-items: center; position: absolute; top: 25px; }
+        .pedestal-core { width: 50px; height: 4px; background: #80deea; border-radius: 4px; box-shadow: 0 0 10px #80deea, 0 0 20px #80deea; }
+        
+        #geno-display { width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; z-index: 1; position: relative; margin-bottom: 60px; }
 
-        /* Anillo superior punteado */
-        .pedestal-ring {
-            width: 220px;
-            height: 50px;
-            border: 1px dashed rgba(255, 255, 255, 0.7);
-            border-radius: 50%;
-            position: absolute;
-            top: -120px;
-        }
-
-        /* Cilindro de luz blanca */
-        .pedestal-light {
-            width: 130px;
-            height: 140px;
-            background: linear-gradient(to top, rgba(255, 255, 255, 0.5), transparent);
-            position: absolute;
-            top: -100px;
-        }
-
-        /* Base oscura del pedestal */
-        .pedestal-shadow {
-            width: 170px;
-            height: 45px;
-            background: #111b24;
-            border-radius: 50%;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: absolute;
-            top: 25px;
-        }
-
-        /* Luz de neón interior del pedestal */
-        .pedestal-core {
-            width: 50px;
-            height: 4px;
-            background: #80deea;
-            border-radius: 4px;
-            box-shadow: 0 0 10px #80deea, 0 0 20px #80deea;
-        }
-
-        #geno-display { 
-            width: 300px; 
-            height: 300px; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            z-index: 1; /* El Geno va por encima del pedestal */
-            position: relative;
-            margin-bottom: 60px; /* Lo elevamos un poco para que pose sobre el pedestal */
-        }
-
-        #code-output {
-            position: absolute;
-            bottom: 15px;
-            width: 85%;
-            font-size: 12px;
-            font-weight: bold;
-            text-align: center;
-            background: rgba(10, 17, 24, 0.9); /* Fondo oscuro para que el texto se lea sobre el cian */
-            padding: 12px;
+        /* CONSOLA DE DIAGNÓSTICO (NUEVO) */
+        .terminal {
+            background: #0d161c;
+            border: 1px solid #1e3a5f;
+            border-left: 4px solid #00ffcc;
             border-radius: 8px;
-            line-height: 1.4;
-            border: 1px solid #4dd0e1;
-            z-index: 2;
-            color: #fff;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            color: #00ffcc;
+            height: 250px;
+            overflow-y: auto;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+            line-height: 1.6;
         }
+        .terminal::-webkit-scrollbar { width: 4px; }
+        .terminal::-webkit-scrollbar-thumb { background: #00ffcc; }
+        .term-title { color: #fff; font-weight: bold; margin-bottom: 10px; text-align: center; border-bottom: 1px dashed #1e3a5f; padding-bottom: 5px; }
+        .log-section { margin-top: 10px; }
+        .log-highlight { color: #ffcc00; font-weight: bold; }
+        .log-stats { color: #ff6b6b; }
 
-        .switch-container { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 8px; }
+        .switch-container { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 8px; border: 1px solid #333; }
         .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #333; transition: .4s; border-radius: 20px; }
@@ -152,18 +101,29 @@
 </head>
 <body>
 
-    <h1>🔬 Laboratorio Genético V9.0</h1>
-    <p style="color: #aaa; margin-bottom: 30px; font-size: 14px;">Entorno de prueba para motor morfológico y los 10 Genes Cosméticos.</p>
+    <h1>🔬 Laboratorio Genético V9.1</h1>
+    <p style="color: #aaa; margin-bottom: 20px; font-size: 14px;">Entorno de prueba visual y matemático para el ADN Funcional y Cosmético.</p>
 
     <div class="lab-container">
         <div class="controls">
             
             <div class="switch-container">
+                <span style="font-size: 12px; color: #fff; font-weight: bold;">ADN Escaneado (Revelar Genes)</span>
                 <label class="switch">
                     <input type="checkbox" id="chk-escaneado" checked>
                     <span class="slider"></span>
                 </label>
-                <span style="font-size: 12px; color: #fff; font-weight: bold;">ADN Escaneado (Revelado)</span>
+            </div>
+
+            <div class="control-group">
+                <label style="color:#ff6b6b">Rareza (Afecta Stats Base)</label>
+                <select id="sel-rareza">
+                    <option value="Común">Común</option>
+                    <option value="Raro">Raro</option>
+                    <option value="Épico">Épico</option>
+                    <option value="Legendario">Legendario</option>
+                    <option value="Mítico">Mítico</option>
+                </select>
             </div>
 
             <div class="control-group">
@@ -173,7 +133,8 @@
             
             <div class="control-group">
                 <label>Color Base</label>
-                <input type="color" id="sel-color" value="#ff6b6b"> </div>
+                <input type="color" id="sel-color" value="#ff6b6b">
+            </div>
 
             <div class="control-group">
                 <label>Ojos</label>
@@ -224,23 +185,26 @@
             
         </div>
 
-        <div class="viewer">
-            <div class="pedestal-container">
-                <div class="pedestal-ring"></div>
-                <div class="pedestal-light"></div>
-                <div class="pedestal-shadow">
-                    <div class="pedestal-core"></div>
+        <div class="viewer-container">
+            <div class="viewer">
+                <div class="pedestal-container">
+                    <div class="pedestal-ring"></div>
+                    <div class="pedestal-light"></div>
+                    <div class="pedestal-shadow"><div class="pedestal-core"></div></div>
                 </div>
+                <div id="geno-display"></div>
             </div>
             
-            <div id="geno-display"></div>
-            
-            <div id="code-output">Cargando motor...</div>
+            <div id="terminal-output" class="terminal">
+                <div class="term-title">/// TERMINAL DE DIAGNÓSTICO BIOMÉTRICO ///</div>
+                <div id="terminal-content">Iniciando escáner...</div>
+            </div>
         </div>
     </div>
 
     <script>
         setTimeout(() => {
+            const selRareza = document.getElementById("sel-rareza");
             const selForma = document.getElementById("sel-forma");
             const selColor = document.getElementById("sel-color");
             const selOjos = document.getElementById("sel-ojos");
@@ -254,7 +218,7 @@
             const chkEscaneado = document.getElementById("chk-escaneado");
             
             const display = document.getElementById("geno-display");
-            const codeOutput = document.getElementById("code-output");
+            const terminal = document.getElementById("terminal-content");
 
             const formasCuerpo = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
             const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry"];
@@ -277,19 +241,13 @@
             rellenarSelect(selBoca, opcionesBocas);
             rellenarSelect(selEspalda, opcionesEspaldas);
             rellenarSelect(selCabeza, opcionesCabezas);
-
-            // Generamos aleatoriamente la forma para que no siempre sea Gota
             selForma.value = formasCuerpo[Math.floor(Math.random() * formasCuerpo.length)];
 
             let genesFuncionales = [];
             if (window.BASE_DATOS_GENES_V9) {
                 for (let cat in window.BASE_DATOS_GENES_V9) {
-                    if (cat !== "cosmetico") {
-                        window.BASE_DATOS_GENES_V9[cat].forEach(g => { genesFuncionales.push(g); });
-                    }
+                    if (cat !== "cosmetico") window.BASE_DATOS_GENES_V9[cat].forEach(g => { genesFuncionales.push(g); });
                 }
-            } else {
-                genesFuncionales = [{id: "fertilidad_pura", name: "Fertilidad Pura"}];
             }
 
             const addGenesToSelect = (selectElement) => {
@@ -298,15 +256,90 @@
                     let opt = document.createElement("option"); opt.value = g.id; opt.innerText = g.name; selectElement.appendChild(opt);
                 });
             };
-            
             addGenesToSelect(selGenB); addGenesToSelect(selGenC);
 
+            function diagnosticarGenes(stats, genB, genC) {
+                let log = `<div class="log-section">> GENERANDO REPORTE DE SISTEMA...</div>`;
+                log += `<div>> RAREZA DEL SUJETO: <span class="log-highlight">${selRareza.value.toUpperCase()}</span></div>`;
+                log += `<div>> IVs BASE (Generados por app.js):</div>`;
+                log += `<div class="log-stats">&nbsp;&nbsp;❤️ HP: ${stats.hp} | ⚔️ ATK: ${stats.atk} | ⚡ SPD: ${stats.spd} | 🍀 LUK: ${stats.luk}</div>`;
+
+                if(!chkEscaneado.checked) {
+                    log += `<br><div style="color:#ff6b6b">> ERROR: ADN BLOQUEADO. Active el escáner para ver la lógica de los genes.</div>`;
+                    return log;
+                }
+
+                const evaluarGen = (g) => {
+                    if(!g) return;
+                    log += `<br><div style="color:#00a8ff">>>> ANALIZANDO GEN: [${g.name.toUpperCase()}] <<<</div>`;
+                    
+                    switch(g.id) {
+                        case "aprendiz_acelerado":
+                            log += `&nbsp;&nbsp;[PROGRESIÓN] La función getMultiplicadorXP() devolverá 1.25 en lugar de 1.0.<br>`;
+                            log += `&nbsp;&nbsp;* Simulación: Al comer una manzana, ganará 31 XP en lugar de 25 XP.`;
+                            break;
+                        case "fertilidad_pura":
+                            log += `&nbsp;&nbsp;[CRIANZA] La función getMaxCrias() alterada.<br>`;
+                            log += `&nbsp;&nbsp;* Simulación: El límite máximo de reproducciones será 9 (Base: 7).`;
+                            break;
+                        case "esencia_concentrada":
+                            log += `&nbsp;&nbsp;[SANTUARIO] La función getMultiplicadorEsencia() devolverá 2.0.<br>`;
+                            log += `&nbsp;&nbsp;* Simulación: Al liberarlo, entregará el doble de Esencia Vital (✨).`;
+                            break;
+                        case "umbral_despertar":
+                            log += `&nbsp;&nbsp;[PROGRESIÓN] Función verificarUmbralDespertar() en escucha.<br>`;
+                            log += `&nbsp;&nbsp;* Simulación: Al llegar a Nivel 25, inyectará +5 permanente a todos los IVs.<br>`;
+                            log += `&nbsp;&nbsp;* Stats Proyectadas Nv.25: ❤️${stats.hp+5} | ⚔️${stats.atk+5} | ⚡${stats.spd+5} | 🍀${stats.luk+5}`;
+                            break;
+                        case "piel_cristal":
+                            log += `&nbsp;&nbsp;[COMBATE] Flag de daño inicial anulado.<br>`;
+                            log += `&nbsp;&nbsp;* Simulación: En Coliseo, el primer ataque enemigo aplicará 0 de daño.`;
+                            break;
+                        case "resiliencia_ultima":
+                            let umbralHP = Math.floor(stats.hp * 0.15);
+                            let buffATK = Math.floor(stats.atk * 1.4);
+                            let buffSPD = Math.floor(stats.spd * 1.4);
+                            log += `&nbsp;&nbsp;[COMBATE] Evento condicional de vida detectado.<br>`;
+                            log += `&nbsp;&nbsp;* Simulación: Si en batalla el HP cae a ${umbralHP} o menos (15%), el ataque subirá a ${buffATK} y la velocidad a ${buffSPD}.`;
+                            break;
+                        case "dominancia_genetica":
+                            log += `&nbsp;&nbsp;[CRIANZA] Motor de herencia genética sobrecargado.<br>`;
+                            log += `&nbsp;&nbsp;* Simulación: Al incubar, tiene 70% de probabilidad de imponer sus genes a la cría (Base: 30%).`;
+                            break;
+                        case "cooldown_acelerado":
+                            log += `&nbsp;&nbsp;[CRIANZA] Temporizador de descanso alterado.<br>`;
+                            log += `&nbsp;&nbsp;* Simulación: El tiempo de espera tras criar se reduce a la mitad.`;
+                            break;
+                        default:
+                            log += `&nbsp;&nbsp;[PASIVA] Efecto: "${g.desc}" listo para ejecución en el módulo correspondiente.`;
+                    }
+                };
+
+                if (selGenA.value !== "ninguno") {
+                    log += `<br><div style="color:#ffcc00">>>> ANALIZANDO GEN: [COSMÉTICO] <<<</div>`;
+                    log += `&nbsp;&nbsp;[VISUAL] Renderizando efecto visual. Sin impacto en Stats matemáticas.`;
+                }
+
+                evaluarGen(genB); evaluarGen(genC);
+                
+                if(genB && genC && genB.id === genC.id) {
+                    log += `<br><div style="color:#ff6b6b; font-weight:bold;">> ADVERTENCIA: Conflicto genético. El motor 'app.js' anulará el Slot C (Regla B!=C) durante la cría.</div>`;
+                }
+
+                return log;
+            }
+
             function renderizarGeno() {
+                const rarezaElegida = selRareza.value;
+                const baseStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(rarezaElegida) : {hp: 50, atk: 15, spd: 15, luk: 15};
+
                 const genBData = selGenB.value !== "ninguno" ? genesFuncionales.find(g => g.id === selGenB.value) : null;
                 const genCData = selGenC.value !== "ninguno" ? genesFuncionales.find(g => g.id === selGenC.value) : null;
 
                 const adnFalso = {
                     id: Math.floor(Math.random() * 1000), 
+                    rarity: rarezaElegida,
+                    stats: baseStats,
                     body_shape: selForma.value, base_color: selColor.value, color: selColor.value,
                     eye_type: selOjos.value, mouth_type: selBoca.value, wing_type: selEspalda.value, hat_type: selCabeza.value,
                     scanned: chkEscaneado.checked,
@@ -319,21 +352,15 @@
                 if (typeof generarSvgGeno === 'function') {
                     let svgString = generarSvgGeno(adnFalso);
                     svgString = svgString.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
-                    
                     display.style.color = selColor.value; 
                     display.innerHTML = svgString;
-                    
-                    let statusGen = adnFalso.scanned ? "<span style='color:#4CAF50'>REVELADO</span>" : "<span style='color:#d9534f'>BLOQUEADO</span>";
-                    codeOutput.innerHTML = `
-                        <div style="color:#4dd0e1; margin-bottom: 8px;">ESTADO ESCÁNER: ${statusGen}</div>
-                        <span style="color:#ffcc00">GEN A:</span> ${selGenA.options[selGenA.selectedIndex].text}<br>
-                        <span style="color:#80deea">GEN B:</span> ${selGenB.options[selGenB.selectedIndex].text}<br>
-                        <span style="color:#8A2BE2">GEN C:</span> ${selGenC.options[selGenC.selectedIndex].text}
-                    `;
+
+                    // Actualizar Terminal de Diagnóstico
+                    terminal.innerHTML = diagnosticarGenes(baseStats, genBData, genCData);
                 }
             }
 
-            [selForma, selColor, selOjos, selBoca, selEspalda, selCabeza, selGenA, selGenB, selGenC, chkEscaneado].forEach(control => {
+            [selRareza, selForma, selColor, selOjos, selBoca, selEspalda, selCabeza, selGenA, selGenB, selGenC, chkEscaneado].forEach(control => {
                 control.addEventListener("change", renderizarGeno);
             });
             if (selColor) selColor.addEventListener("input", renderizarGeno);
