@@ -275,18 +275,38 @@
         }
 
         // ==========================================
-        // NUEVA FUNCIÓN: TEXTO FLOTANTE UNIVERSAL
+        // NUEVA FUNCIÓN: INYECCIÓN DE SVG SIN DESTRUIR CLASES
+        // ==========================================
+        function inyectarSvgSeguro(adnData) {
+            if (typeof generarSvgGeno !== 'function') return '';
+            let svgString = generarSvgGeno(adnData);
+            
+            let tempDiv = document.createElement('div');
+            tempDiv.innerHTML = svgString;
+            
+            let svgEl = tempDiv.querySelector('svg');
+            if (svgEl) {
+                svgEl.setAttribute('width', '100%');
+                svgEl.setAttribute('height', '100%');
+                svgEl.setAttribute('viewBox', '-20 0 200 160');
+                svgEl.style.overflow = 'visible';
+            }
+            return tempDiv.innerHTML;
+        }
+
+        // ==========================================
+        // TEXTO FLOTANTE UNIVERSAL
         // ==========================================
         function mostrarTextoFlotante(esJugador, texto, claseAdicional, delayMs = 0) {
             const sideId = esJugador ? "side-player" : "side-enemy";
             const sideEl = document.getElementById(sideId);
+            if(!sideEl) return;
             
             setTimeout(() => {
                 const floater = document.createElement("div");
                 floater.className = `floating-text ${claseAdicional}`;
                 floater.innerText = texto;
                 
-                // Mayor dispersión (X e Y aleatorios en un área amplia)
                 const offsetX = (Math.random() - 0.5) * 140; 
                 const offsetY = (Math.random() - 0.5) * 80;
                 
@@ -428,11 +448,9 @@
 
             function renderizarGenoPlayer() {
                 const adn = obtenerAdnPlayer();
-                if (typeof generarSvgGeno === 'function') {
-                    let svgString = generarSvgGeno(adn).replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
-                    document.getElementById("geno-display").style.color = selColor.value; 
-                    document.getElementById("geno-display").innerHTML = svgString;
-                }
+                // USAMOS LA FUNCIÓN SEGURA AQUÍ
+                document.getElementById("geno-display").innerHTML = inyectarSvgSeguro(adn);
+                document.getElementById("geno-display").style.color = selColor.value; 
                 actualizarTerminal();
             }
 
@@ -544,12 +562,14 @@
                     crystalSkin: eGenB_id === "piel_cristal" || eGenC_id === "piel_cristal",
                     resilienciaUsada: false, barreraUsada: false,
                     ultimoElementoRecibido: null, sangreFriaUsada: false,
-                    escudoCibernetico: eAdn.element === "Cibernético", estados: []
+                    escudoCibernetico: eElemento === "Cibernético", estados: []
                 };
 
-                document.getElementById("combat-player-svg").innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(pAdn).replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">') : '';
+                // USAMOS LA FUNCIÓN SEGURA AQUÍ TAMBIÉN
+                document.getElementById("combat-player-svg").innerHTML = inyectarSvgSeguro(pAdn);
                 document.getElementById("combat-player-svg").style.color = pAdn.color;
-                document.getElementById("combat-enemy-svg").innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(eAdn).replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">') : '';
+                
+                document.getElementById("combat-enemy-svg").innerHTML = inyectarSvgSeguro(eAdn);
                 document.getElementById("combat-enemy-svg").style.color = eAdn.color;
 
                 document.getElementById("c-p-rareza").innerText = pAdn.rarity;
@@ -604,25 +624,21 @@
                     let multElem = obtenerMultiplicadorElemental(atacante.element, defensor.element);
                     dmg = Math.floor(dmg * multElem);
 
-                    // Bonificación Sintética a los críticos
                     let probCrit = 0.05 + (atacante.luk * 0.002);
                     if (atacante.element === "Sintético") probCrit += 0.15;
-
                     let isCrit = Math.random() <= probCrit;
                     if (isCrit) dmg = Math.floor(dmg * 1.5);
 
-                    // Escudo Cibernético (Pasiva Elemental)
                     if (defensor.escudoCibernetico) {
                         dmg = Math.floor(dmg * 0.9);
                         defensor.escudoCibernetico = false;
                         addLog(`<span style="color:#00d2ff">* [Escudo Cibernético] ${defensor.nombre} absorbe 10% del impacto.</span>`);
                     }
 
-                    // Armadura Adaptativa (Gen Oculto)
                     if (defensor.genesId.includes("armadura_adaptativa")) {
                         if (defensor.ultimoElementoRecibido === atacante.element) {
                             dmg = Math.floor(dmg * 0.6);
-                            addLog(`<span style="color:#77DD77">* [Armadura Adaptativa] ¡${defensor.nombre} resiste el ataque de ${atacante.element}! (-40% Daño)</span>`);
+                            addLog(`<span style="color:#77DD77">* [Armadura Adaptativa] ¡Resiste el ataque de ${atacante.element}! (-40% Daño)</span>`);
                         }
                         defensor.ultimoElementoRecibido = atacante.element;
                     }
@@ -656,7 +672,6 @@
                         
                         if (dmg > 0) flashDamage(defensor.isPlayer);
 
-                        // Efectos de Estado Elementales y Sangre Fría
                         if (dmg > 0) {
                             let efectoAplicar = null;
                             if (atacante.element === "Radiactivo" && Math.random() <= 0.25) efectoAplicar = "Quemadura";
@@ -666,18 +681,12 @@
                             if (efectoAplicar) {
                                 if (defensor.genesId.includes("sangre_fria") && !defensor.sangreFriaUsada) {
                                     defensor.sangreFriaUsada = true;
-                                    addLog(`<span style="color:#00d2ff">* [Sangre Fría] ¡${defensor.nombre} inmuniza el estado alterado (${efectoAplicar})!</span>`);
+                                    addLog(`<span style="color:#00d2ff">* [Sangre Fría] ¡${defensor.nombre} inmuniza el estado alterado!</span>`);
                                 } else if (!defensor.estados.includes(efectoAplicar)) {
                                     defensor.estados.push(efectoAplicar);
-                                    if (efectoAplicar === "Debilidad") {
-                                        defensor.atk = Math.floor(defensor.atk * 0.8);
-                                        addLog(`<span style="color:#a8e6cf">🧪 [Tóxico] ${defensor.nombre} sufre Debilidad (-20% ATK).</span>`);
-                                    } else if (efectoAplicar === "Infección") {
-                                        defensor.spd = Math.floor(defensor.spd * 0.8);
-                                        addLog(`<span style="color:#b19cd9">🦠 [Viral] ${defensor.nombre} sufre Infección (-20% SPD).</span>`);
-                                    } else {
-                                        addLog(`<span style="color:#ff9800">☢️ [Radiactivo] ${defensor.nombre} sufre Quemadura.</span>`);
-                                    }
+                                    addLog(`<span style="color:#ff9800">* ${defensor.nombre} sufre ${efectoAplicar}.</span>`);
+                                    if (efectoAplicar === "Debilidad") defensor.atk = Math.floor(defensor.atk * 0.8);
+                                    if (efectoAplicar === "Infección") defensor.spd = Math.floor(defensor.spd * 0.8);
                                 }
                             }
                         }
@@ -688,7 +697,6 @@
                             if (roboVida < 1) roboVida = 1;
                             atacante.hp += roboVida;
                             if (atacante.hp > atacante.maxHp) atacante.hp = atacante.maxHp;
-                            
                             addLog(`<span style="color:#e0b0ff">* [Vampirismo] ${atacante.nombre} se cura ${roboVida} HP.</span>`);
                             mostrarTextoFlotante(atacante.isPlayer, `+${roboVida}`, "text-heal", 200);
                         }
@@ -696,11 +704,9 @@
                         if (isCrit && defensor.genesId.includes("reflejo_genetico") && dmg > 0) {
                             let danoReflejado = Math.floor(dmg * 0.30);
                             if (danoReflejado < 1) danoReflejado = 1;
-                            
                             atacante.hp -= danoReflejado;
                             if (atacante.hp < 0) atacante.hp = 0;
-                            
-                            addLog(`<span style="color:#ffcc00">* [Reflejo Genético] ¡${defensor.nombre} repele la agresión! ${atacante.nombre} recibe ${danoReflejado} de daño reflejado.</span>`);
+                            addLog(`<span style="color:#ffcc00">* [Reflejo Genético] ¡${defensor.nombre} devuelve ${danoReflejado} de daño!</span>`);
                             mostrarTextoFlotante(atacante.isPlayer, `-${danoReflejado}`, "text-dmg", 300);
                             flashDamage(atacante.isPlayer);
                         }
@@ -709,7 +715,7 @@
                     if (defensor.hp > 0 && defensor.hp <= (defensor.maxHp * 0.15) && defensor.genesId.includes("resiliencia_ultima") && !defensor.resilienciaUsada) {
                         defensor.resilienciaUsada = true;
                         defensor.atk = Math.floor(defensor.atk * 1.4); defensor.spd = Math.floor(defensor.spd * 1.4);
-                        addLog(`<span style="color:#ffcc00">* [Resiliencia Última] ¡${defensor.nombre} entra en modo Berserker! (ATK y SPD x1.4)</span>`);
+                        addLog(`<span style="color:#ffcc00">* [Resiliencia Última] ¡${defensor.nombre} entra en modo Berserker!</span>`);
                     }
                 }
                 actualizarUICombate(atacante, atacante.isPlayer);
@@ -718,24 +724,19 @@
 
             function procesarEfectosFinTurno(fighter) {
                 if (fighter.hp <= 0) return;
-                
-                // Regeneración Biomutante
                 if (fighter.element === "Biomutante" && fighter.hp < fighter.maxHp) {
                     let regen = Math.floor(fighter.maxHp * 0.03);
                     if (regen < 1) regen = 1;
                     fighter.hp += regen;
                     if (fighter.hp > fighter.maxHp) fighter.hp = fighter.maxHp;
-                    addLog(`<span style="color:#4CAF50">🧬 [Biomutante] ${fighter.nombre} regenera ${regen} HP.</span>`);
                     mostrarTextoFlotante(fighter.isPlayer, `+${regen}`, "text-heal", 500);
                 }
-                
-                // Quemadura Radiactiva
                 if (fighter.estados.includes("Quemadura")) {
                     let burnDmg = Math.floor(fighter.maxHp * 0.02);
                     if (burnDmg < 1) burnDmg = 1;
                     fighter.hp -= burnDmg;
                     if (fighter.hp < 0) fighter.hp = 0;
-                    addLog(`<span style="color:#ff9800">🔥 [Quemadura] ${fighter.nombre} pierde ${burnDmg} HP por la radiación.</span>`);
+                    addLog(`<span style="color:#ff9800">🔥 [Quemadura] ${fighter.nombre} pierde ${burnDmg} HP.</span>`);
                     mostrarTextoFlotante(fighter.isPlayer, `-${burnDmg}`, "text-dmg", 700);
                     flashDamage(fighter.isPlayer);
                 }
@@ -744,6 +745,7 @@
 
             btnAtacar.onclick = () => {
                 addLog(`<br><span style="color:#4dd0e1">[TURNO ${numeroTurno}]</span>`);
+                btnAtacar.disabled = true; 
                 
                 let primero = playerCombat; let segundo = enemyCombat;
                 if (enemyCombat.spd > playerCombat.spd) { primero = enemyCombat; segundo = playerCombat; } 
@@ -754,17 +756,13 @@
                 if (segundo.hp > 0) {
                     setTimeout(() => {
                         procesarAtaque(segundo, primero);
-                        
-                        // Evaluar fin de turno para ambos
                         setTimeout(() => {
                             procesarEfectosFinTurno(primero);
                             procesarEfectosFinTurno(segundo);
                             checkEndGame();
                         }, 800);
-                        
                     }, 800); 
                 } else { checkEndGame(); }
-                
                 numeroTurno++;
             };
 
@@ -775,6 +773,8 @@
                     if (playerCombat.hp > 0) addLog(`<span style="color:#4CAF50">🏆 ¡TU GENO HA GANADO!</span>`);
                     else if (enemyCombat.hp > 0) addLog(`<span style="color:#f44336">💀 TU GENO HA SIDO DERROTADO.</span>`);
                     else addLog(`<span style="color:#aaa">🤝 DOBLE K.O. EMPATE.</span>`);
+                } else {
+                    btnAtacar.disabled = false;
                 }
             }
 
