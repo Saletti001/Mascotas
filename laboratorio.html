@@ -397,7 +397,8 @@
                         else if(gen.id === "barrera_limite") uso = "Te asegura resistir el peor ataque posible. Combinarlo con genes de curación es letal.";
                         else if(gen.id === "vampirismo_genetico") uso = "Asegúrate de que tu Geno tenga mucho ATK para que la cura valga la pena.";
                         else if(gen.id === "reflejo_genetico") uso = "Excelente defensa contra críticos. Devuelve el 30% del daño recibido instantáneamente.";
-                        // AQUI ESTÁ EL CONSEJO ACTUALIZADO
+                        else if(gen.id === "armadura_adaptativa") uso = "Ideal para contrarrestar equipos que dependen de un solo elemento. Reduce 40% el daño de ataques consecutivos del mismo elemento.";
+                        else if(gen.id === "sangre_fria") uso = "Bloquea pasivas elementales (Quemadura Radiactiva, Veneno Tóxico, Infección). Un salvavidas táctico total.";
                         else if(gen.id === "especialista_elite") uso = "El Gen del campeón definitivo. Te dará 15 puntos de atributos extra, pero requerirá meses de entrenamiento y recursos.";
                         
                         log += `&nbsp;&nbsp;<span style="color:#4CAF50">Táctica recomendada:</span> ${uso}<br>`;
@@ -409,7 +410,6 @@
                 evaluarSlot(selGenC.value, "SLOT C (FUNCIONAL 2)", "#8A2BE2");
                 term.innerHTML = log;
             }
-
 
             function obtenerAdnPlayer() {
                 const rareza = selRareza.value;
@@ -491,7 +491,9 @@
                     element: pAdn.element,
                     genesId: [pAdn.hidden_genes.B?.id, pAdn.hidden_genes.C?.id],
                     crystalSkin: pAdn.hidden_genes.B?.id === "piel_cristal" || pAdn.hidden_genes.C?.id === "piel_cristal",
-                    resilienciaUsada: false, barreraUsada: false
+                    resilienciaUsada: false, barreraUsada: false,
+                    ultimoElementoRecibido: null, sangreFriaUsada: false,
+                    escudoCibernetico: pAdn.element === "Cibernético", estados: []
                 };
 
                 const enemyRareza = document.getElementById("sel-enemy-rareza").value;
@@ -540,7 +542,9 @@
                     element: eAdn.element,
                     genesId: [eGenB_id, eGenC_id],
                     crystalSkin: eGenB_id === "piel_cristal" || eGenC_id === "piel_cristal",
-                    resilienciaUsada: false, barreraUsada: false
+                    resilienciaUsada: false, barreraUsada: false,
+                    ultimoElementoRecibido: null, sangreFriaUsada: false,
+                    escudoCibernetico: eAdn.element === "Cibernético", estados: []
                 };
 
                 document.getElementById("combat-player-svg").innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(pAdn).replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">') : '';
@@ -600,8 +604,28 @@
                     let multElem = obtenerMultiplicadorElemental(atacante.element, defensor.element);
                     dmg = Math.floor(dmg * multElem);
 
-                    let isCrit = Math.random() <= (0.05 + (atacante.luk * 0.002));
+                    // Bonificación Sintética a los críticos
+                    let probCrit = 0.05 + (atacante.luk * 0.002);
+                    if (atacante.element === "Sintético") probCrit += 0.15;
+
+                    let isCrit = Math.random() <= probCrit;
                     if (isCrit) dmg = Math.floor(dmg * 1.5);
+
+                    // Escudo Cibernético (Pasiva Elemental)
+                    if (defensor.escudoCibernetico) {
+                        dmg = Math.floor(dmg * 0.9);
+                        defensor.escudoCibernetico = false;
+                        addLog(`<span style="color:#00d2ff">* [Escudo Cibernético] ${defensor.nombre} absorbe 10% del impacto.</span>`);
+                    }
+
+                    // Armadura Adaptativa (Gen Oculto)
+                    if (defensor.genesId.includes("armadura_adaptativa")) {
+                        if (defensor.ultimoElementoRecibido === atacante.element) {
+                            dmg = Math.floor(dmg * 0.6);
+                            addLog(`<span style="color:#77DD77">* [Armadura Adaptativa] ¡${defensor.nombre} resiste el ataque de ${atacante.element}! (-40% Daño)</span>`);
+                        }
+                        defensor.ultimoElementoRecibido = atacante.element;
+                    }
 
                     if (defensor.crystalSkin) {
                         dmg = 0; defensor.crystalSkin = false;
@@ -623,15 +647,40 @@
 
                         if (isCrit) {
                             addLog(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${atacante.nombre} causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} de daño</span>.${tipoGolpe}`);
-                            // ANIMACIÓN DE CRÍTICO
                             mostrarTextoFlotante(defensor.isPlayer, "CRITICAL!", "text-crit");
-                            mostrarTextoFlotante(defensor.isPlayer, `-${dmg}`, "text-dmg", 100);
+                            mostrarTextoFlotante(defensor.isPlayer, `-${dmg}`, "text-dmg", 150);
                         } else {
                             addLog(`> ${atacante.nombre} causa <span style="color:#ff6b6b">${dmg} de daño</span>.${tipoGolpe}`);
                             if (dmg > 0) mostrarTextoFlotante(defensor.isPlayer, `-${dmg}`, "text-dmg");
                         }
                         
                         if (dmg > 0) flashDamage(defensor.isPlayer);
+
+                        // Efectos de Estado Elementales y Sangre Fría
+                        if (dmg > 0) {
+                            let efectoAplicar = null;
+                            if (atacante.element === "Radiactivo" && Math.random() <= 0.25) efectoAplicar = "Quemadura";
+                            if (atacante.element === "Tóxico" && Math.random() <= 0.25) efectoAplicar = "Debilidad";
+                            if (atacante.element === "Viral" && Math.random() <= 0.25) efectoAplicar = "Infección";
+
+                            if (efectoAplicar) {
+                                if (defensor.genesId.includes("sangre_fria") && !defensor.sangreFriaUsada) {
+                                    defensor.sangreFriaUsada = true;
+                                    addLog(`<span style="color:#00d2ff">* [Sangre Fría] ¡${defensor.nombre} inmuniza el estado alterado (${efectoAplicar})!</span>`);
+                                } else if (!defensor.estados.includes(efectoAplicar)) {
+                                    defensor.estados.push(efectoAplicar);
+                                    if (efectoAplicar === "Debilidad") {
+                                        defensor.atk = Math.floor(defensor.atk * 0.8);
+                                        addLog(`<span style="color:#a8e6cf">🧪 [Tóxico] ${defensor.nombre} sufre Debilidad (-20% ATK).</span>`);
+                                    } else if (efectoAplicar === "Infección") {
+                                        defensor.spd = Math.floor(defensor.spd * 0.8);
+                                        addLog(`<span style="color:#b19cd9">🦠 [Viral] ${defensor.nombre} sufre Infección (-20% SPD).</span>`);
+                                    } else {
+                                        addLog(`<span style="color:#ff9800">☢️ [Radiactivo] ${defensor.nombre} sufre Quemadura.</span>`);
+                                    }
+                                }
+                            }
+                        }
 
                         let roboVida = 0;
                         if (atacante.genesId.includes("vampirismo_genetico") && dmg > 0) {
@@ -667,6 +716,32 @@
                 actualizarUICombate(defensor, defensor.isPlayer);
             }
 
+            function procesarEfectosFinTurno(fighter) {
+                if (fighter.hp <= 0) return;
+                
+                // Regeneración Biomutante
+                if (fighter.element === "Biomutante" && fighter.hp < fighter.maxHp) {
+                    let regen = Math.floor(fighter.maxHp * 0.03);
+                    if (regen < 1) regen = 1;
+                    fighter.hp += regen;
+                    if (fighter.hp > fighter.maxHp) fighter.hp = fighter.maxHp;
+                    addLog(`<span style="color:#4CAF50">🧬 [Biomutante] ${fighter.nombre} regenera ${regen} HP.</span>`);
+                    mostrarTextoFlotante(fighter.isPlayer, `+${regen}`, "text-heal", 500);
+                }
+                
+                // Quemadura Radiactiva
+                if (fighter.estados.includes("Quemadura")) {
+                    let burnDmg = Math.floor(fighter.maxHp * 0.02);
+                    if (burnDmg < 1) burnDmg = 1;
+                    fighter.hp -= burnDmg;
+                    if (fighter.hp < 0) fighter.hp = 0;
+                    addLog(`<span style="color:#ff9800">🔥 [Quemadura] ${fighter.nombre} pierde ${burnDmg} HP por la radiación.</span>`);
+                    mostrarTextoFlotante(fighter.isPlayer, `-${burnDmg}`, "text-dmg", 700);
+                    flashDamage(fighter.isPlayer);
+                }
+                actualizarUICombate(fighter, fighter.isPlayer);
+            }
+
             btnAtacar.onclick = () => {
                 addLog(`<br><span style="color:#4dd0e1">[TURNO ${numeroTurno}]</span>`);
                 
@@ -679,7 +754,14 @@
                 if (segundo.hp > 0) {
                     setTimeout(() => {
                         procesarAtaque(segundo, primero);
-                        checkEndGame();
+                        
+                        // Evaluar fin de turno para ambos
+                        setTimeout(() => {
+                            procesarEfectosFinTurno(primero);
+                            procesarEfectosFinTurno(segundo);
+                            checkEndGame();
+                        }, 800);
+                        
                     }, 800); 
                 } else { checkEndGame(); }
                 
