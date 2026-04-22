@@ -1,13 +1,114 @@
 // =========================================
-// ColiseumManager.js - MOTOR DE COMBATE V9.1 (BLINDADO)
+// ColiseumManager.js - MOTOR DE COMBATE V9.1 (UI RENOVADA Y COSMÉTICOS ARREGLADOS)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Inyectar CSS para animaciones flotantes
-    if (!document.getElementById("combat-styles")) {
+    // INYECCIÓN DE ESTILOS DE ALTA FIDELIDAD PARA EL COLISEO
+    if (!document.getElementById("coliseum-overhaul-styles")) {
         const style = document.createElement("style");
-        style.id = "combat-styles";
+        style.id = "coliseum-overhaul-styles";
         style.innerHTML = `
+            /* OVERHAUL VISUAL DEL ÁREA DE BATALLA */
+            #battle-area {
+                background: linear-gradient(135deg, #0a1118 0%, #1a2a36 100%) !important;
+                border: 2px solid #4dd0e1 !important;
+                box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 0 20px rgba(77, 208, 225, 0.2) !important;
+                border-radius: 16px !important;
+                padding: 25px 15px !important;
+                position: relative;
+                overflow: hidden !important; 
+            }
+            
+            /* PANELES DE LOS LUCHADORES */
+            #player-sprite-battle, #enemy-sprite-battle { 
+                background: rgba(13, 22, 30, 0.8) !important; 
+                padding: 15px !important; 
+                border-radius: 12px !important; 
+                width: 38% !important; 
+                position: relative; 
+                transition: 0.3s; 
+                box-shadow: 0 8px 20px rgba(0,0,0,0.5) !important;
+                border: 1px solid rgba(255,255,255,0.05) !important;
+                backdrop-filter: blur(4px);
+            }
+            #player-sprite-battle { border-bottom: 3px solid #4dd0e1 !important; }
+            #enemy-sprite-battle { border-bottom: 3px solid #ff6b6b !important; }
+            
+            /* CAJAS DE LOS GENOS (Desbordamiento visible para auras y brillos) */
+            #player-visual-box, #enemy-visual-box {
+                width: 90px !important; 
+                height: 90px !important; 
+                margin: 0 auto !important; 
+                display: flex; 
+                justify-content: center; 
+                align-items: center; 
+                position: relative;
+                overflow: visible !important; /* CRÍTICO PARA COSMÉTICOS */
+            }
+            #player-visual-box svg, #enemy-visual-box svg {
+                width: 100% !important;
+                height: 100% !important;
+                overflow: visible !important;
+            }
+
+            /* TIPOGRAFÍA DE NOMBRES */
+            #battle-player-name { color: #4dd0e1 !important; font-size: 13px !important; text-transform: uppercase; letter-spacing: 1px; margin-top: 15px !important; }
+            #battle-enemy-name { color: #ff6b6b !important; font-size: 13px !important; text-transform: uppercase; letter-spacing: 1px; margin-top: 15px !important; }
+
+            /* BARRAS DE HP NEON */
+            #player-sprite-battle > div:nth-child(3), #enemy-sprite-battle > div:nth-child(3) {
+                background: #000 !important;
+                border: 1px solid #333 !important;
+                box-shadow: inset 0 0 5px rgba(0,0,0,0.8) !important;
+                height: 12px !important;
+                border-radius: 6px !important;
+                width: 90% !important;
+                margin: 8px auto 0 auto !important;
+            }
+            #player-hp-bar { background: linear-gradient(90deg, #00d2ff, #4dd0e1) !important; box-shadow: 0 0 10px rgba(77,208,225,0.6) !important; }
+            #enemy-hp-bar { background: linear-gradient(90deg, #ff6b6b, #d9534f) !important; box-shadow: 0 0 10px rgba(255,107,107,0.6) !important; }
+            #player-hp-text, #enemy-hp-text { font-size: 11px !important; color: #fff !important; font-weight: bold; margin-top: 4px !important; text-shadow: 0 1px 2px #000; }
+
+            /* LOG DE BATALLA HACKER */
+            #battle-log { 
+                background: #0d161c !important; 
+                border: 1px solid #1e3a5f !important; 
+                border-left: 4px solid #4dd0e1 !important; 
+                color: #00ffcc !important; 
+                border-radius: 8px !important; 
+                font-family: 'Courier New', monospace !important; 
+                font-size: 12px !important; 
+                padding: 15px !important; 
+                box-shadow: inset 0 0 15px rgba(0,0,0,0.8) !important; 
+                margin-top: 20px !important;
+                height: 130px !important;
+            }
+
+            /* BOTONES DE ACCIÓN MEJORADOS */
+            #btn-action-atk { 
+                background: linear-gradient(90deg, #ff5722, #d84315) !important; 
+                box-shadow: 0 4px 15px rgba(255, 87, 34, 0.4) !important; 
+                border: 1px solid #ff9800 !important; 
+                color: white !important; 
+                border-radius: 10px !important;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                transition: 0.2s;
+            }
+            #btn-action-item { 
+                background: linear-gradient(90deg, #4CAF50, #2E7D32) !important; 
+                box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4) !important; 
+                border: 1px solid #81c784 !important; 
+                color: white !important; 
+                border-radius: 10px !important;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                transition: 0.2s;
+            }
+            #btn-action-atk:active, #btn-action-item:active { transform: scale(0.95); }
+            #btn-action-atk:disabled, #btn-action-item:disabled { background: #333 !important; border-color: #555 !important; box-shadow: none !important; color: #888 !important; transform: none; }
+
+            /* ANIMACIONES DE COMBATE Y TEXTO FLOTANTE */
             @keyframes floatUpFade {
                 0% { opacity: 1; transform: translateY(0) scale(1.5); }
                 10% { transform: translateY(-10px) scale(1.8); }
@@ -21,8 +122,17 @@ document.addEventListener("DOMContentLoaded", () => {
             .text-dmg { color: #ff3333; font-size: 28px; }
             .text-heal { color: #4CAF50; font-size: 24px; }
             .text-crit { color: #ffcc00; font-size: 32px; font-style: italic; text-transform: uppercase; letter-spacing: 2px; }
-            .hit-effect { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5); transform: scale(0.95); transition: 0.1s; }
-            #player-sprite-battle, #enemy-sprite-battle { position: relative; transition: 0.3s; }
+            .hit-effect { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5); transform: scale(0.90); transition: 0.1s; }
+            
+            /* EL LOGO VS */
+            .vs-badge-battle {
+                font-size: 28px !important;
+                font-weight: 900 !important;
+                font-style: italic !important;
+                color: #ffcc00 !important;
+                text-shadow: 0 0 20px rgba(255,0,0,0.8) !important;
+                z-index: 2;
+            }
         `;
         document.head.appendChild(style);
     }
@@ -41,31 +151,17 @@ document.addEventListener("DOMContentLoaded", () => {
     let enemyCombat = null;
     let numeroTurno = 1;
 
-    // =========================================
-    // NUEVA FUNCIÓN: INYECCIÓN DE SVG SIN DESTRUIR CLASES
-    // =========================================
-    function inyectarSvgSeguro(mascotaData, size) {
-        if (typeof generarSvgGeno !== 'function') return '';
-        let svgString = generarSvgGeno(mascotaData);
-        
-        let tempDiv = document.createElement('div');
-        tempDiv.innerHTML = svgString;
-        
-        let svgEl = tempDiv.querySelector('svg');
-        if (svgEl) {
-            svgEl.setAttribute('width', size);
-            svgEl.setAttribute('height', size);
-            svgEl.setAttribute('viewBox', '-20 0 200 160');
-            svgEl.style.overflow = 'visible';
-        }
-        return tempDiv.innerHTML;
+    // APLICAR CLASE AL LOGO VS DEL HTML ORIGINAL
+    const flexContainer = document.querySelector("#battle-area > div");
+    if (flexContainer && flexContainer.children[1] && flexContainer.children[1].innerText === "VS") {
+        flexContainer.children[1].className = "vs-badge-battle";
     }
 
     // =========================================
     // FUNCIONES DE "JUGO" (VISUALES Y SONIDO)
     // =========================================
     function scrollToBottom() { logCombate.scrollTop = logCombate.scrollHeight; }
-    function addLog(text) { logCombate.innerHTML += `<div style="margin-top: 4px;">${text}</div>`; scrollToBottom(); }
+    function addLog(text) { logCombate.innerHTML += `<div style="margin-top: 6px;">${text}</div>`; scrollToBottom(); }
 
     function sacudirPantalla() {
         if(battleArea) {
@@ -134,9 +230,10 @@ document.addEventListener("DOMContentLoaded", () => {
         
         if (fillBar) {
             fillBar.style.width = `${hpPct}%`;
-            if (hpPct > 50) fillBar.style.background = "#4CAF50";
-            else if (hpPct > 20) fillBar.style.background = "#ffeb3b";
-            else fillBar.style.background = "#f44336";
+            // Colores más vibrantes para el overhaul
+            if (hpPct > 50) fillBar.style.background = esJugador ? "linear-gradient(90deg, #00d2ff, #4dd0e1)" : "linear-gradient(90deg, #ff6b6b, #d9534f)";
+            else if (hpPct > 20) fillBar.style.background = "linear-gradient(90deg, #ffca28, #f57f17)";
+            else fillBar.style.background = "linear-gradient(90deg, #f44336, #b71c1c)";
         }
         
         const txtHp = document.getElementById(`${prefix}-hp-text`);
@@ -144,7 +241,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const sprite = document.getElementById(`${prefix}-sprite-battle`);
         if (sprite) {
-            if (current <= 0) sprite.style.filter = "grayscale(1) brightness(0.5)";
+            if (current <= 0) sprite.style.filter = "grayscale(1) brightness(0.3)";
             else sprite.style.filter = "none";
         }
     }
@@ -187,7 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("player-hp-text").innerText = "HP";
         document.getElementById("enemy-hp-text").innerText = "HP";
         
-        logCombate.innerHTML = "¡Bienvenido a la Arena Nexo!<br>Prepárate para combatir.";
+        logCombate.innerHTML = `<span style="color:#aaa;">> Conectando con los servidores del Coliseo...</span><br><span style="color:#4dd0e1">> Arena lista. Esperando combatientes.</span>`;
         btnStart.style.display = "block";
         btnStart.innerText = "Entrar a la Arena";
         btnLeave.style.display = "inline-block";
@@ -272,23 +369,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 escudoCibernetico: eElemento === "Cibernético", estados: []
             };
 
-            // RENDER VISUAL CON LA NUEVA FUNCIÓN SEGURA
-            document.getElementById("player-visual-box").innerHTML = inyectarSvgSeguro(pMascota, "90px");
-            document.getElementById("player-visual-box").style.color = pMascota.color || pMascota.base_color;
-            
-            document.getElementById("enemy-visual-box").innerHTML = inyectarSvgSeguro(eAdn, "90px");
-            document.getElementById("enemy-visual-box").style.color = eAdn.color;
+            // RENDER VISUAL PURO (SIN MODIFICAR EL DOM INTERNO DEL SVG)
+            if (typeof generarSvgGeno === 'function') {
+                document.getElementById("player-visual-box").innerHTML = generarSvgGeno(pMascota);
+                document.getElementById("enemy-visual-box").innerHTML = generarSvgGeno(eAdn);
+            }
 
             const pNameEl = document.getElementById("battle-player-name");
-            if(pNameEl) pNameEl.innerText = `${playerCombat.nombre} (Nv. ${pMascota.level || 1})`;
+            if(pNameEl) pNameEl.innerHTML = `${playerCombat.nombre} <span style="color:#aaa; font-size:10px;">(Nv. ${pMascota.level || 1})</span>`;
             
             const eNameEl = document.getElementById("battle-enemy-name");
-            if(eNameEl) eNameEl.innerText = `Rival ${eRareza}`;
+            if(eNameEl) eNameEl.innerHTML = `Rival ${eRareza} <span style="color:#aaa; font-size:10px;">(${eElemento})</span>`;
             else {
                 const enemyBox = document.getElementById("enemy-sprite-battle");
                 if (enemyBox) {
                     const textDivs = enemyBox.querySelectorAll("div");
-                    if (textDivs.length > 1) textDivs[1].innerText = `Rival ${eRareza}`;
+                    if (textDivs.length > 1) textDivs[1].innerHTML = `Rival ${eRareza} <span style="color:#aaa; font-size:10px;">(${eElemento})</span>`;
                 }
             }
 
@@ -299,7 +395,7 @@ document.addEventListener("DOMContentLoaded", () => {
             btnLeave.style.display = "none";
             battleControls.classList.remove("hidden");
             
-            addLog(`<br><span style="color:#8A2BE2; font-weight:bold;">--- LISTOS PARA COMBATE ---</span>`);
+            addLog(`<br><span style="color:#ffcc00; font-weight:bold;">--- BATTLE START ---</span>`);
             
         } catch (error) {
             console.error("Error crítico al iniciar combate:", error);
