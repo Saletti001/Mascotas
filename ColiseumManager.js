@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - MOTOR DE COMBATE V9.2.4 (SISTEMA DE HABILIDADES Y COOLDOWNS)
+// ColiseumManager.js - MOTOR DE COMBATE V9.2.5 (RIVALES PROCEDURALES COMPLETOS)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -170,7 +170,7 @@ document.addEventListener("DOMContentLoaded", () => {
             /* NUEVOS BOTONES DE COMBATE (RECTANGULARES Y MÁS PEQUEÑOS) */
             .battle-btn {
                 flex: 1 !important;
-                padding: 10px 5px !important; /* Mitad de tamaño vertical */
+                padding: 10px 5px !important; 
                 border-radius: 8px !important;
                 text-transform: uppercase !important;
                 letter-spacing: 0.5px !important;
@@ -242,7 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let playerCombat = null;
     let enemyCombat = null;
     let numeroTurno = 1;
-    let cooldownEspecial = 0; // NUEVO: Contador de turnos para el ataque especial
+    let cooldownEspecial = 0; // Contador de turnos para el ataque especial
 
     // =========================================
     // OBTENER ELEMENTOS DE LA UI DE FORMA SEGURA
@@ -487,7 +487,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     escudoCibernetico: pElemento === "Cibernético", estados: []
                 };
 
-                // ENEMIGO PROCEDURAL
+                // ENEMIGO PROCEDURAL (AHORA CON OJOS/BOCAS/NOMBRES ALEATORIOS)
                 const eRareza = pMascota.rarity || "Común";
                 const eStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(eRareza) : {hp: 50, atk: 15, spd: 15, luk: 15};
                 const elementosBase = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
@@ -498,13 +498,24 @@ document.addEventListener("DOMContentLoaded", () => {
                 const eColor = coloresRival[Math.floor(Math.random() * coloresRival.length)];
                 const eForma = formasCuerpo[Math.floor(Math.random() * formasCuerpo.length)];
 
+                // Caras Aleatorias
+                const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry"];
+                const opcionesBocas = typeof dicBocas !== 'undefined' ? Object.keys(dicBocas) : ["estandar", "feliz", "colmillos"];
+                const eOjos = opcionesOjos[Math.floor(Math.random() * opcionesOjos.length)];
+                const eBoca = opcionesBocas[Math.floor(Math.random() * opcionesBocas.length)];
+
+                // Nombre Aleatorio
+                const prefijos = ["Nex", "Crio", "Bio", "Zar", "Vor", "Kael", "Lum", "Pyro", "Grav", "Aero", "Tox", "Muta", "Viro"];
+                const sufijos = ["core", "morph", "tron", "lith", "pex", "byte", "spark", "fang", "claw", "pulse", "shade", "vibe", "gen"];
+                const randomName = prefijos[Math.floor(Math.random() * prefijos.length)] + sufijos[Math.floor(Math.random() * sufijos.length)];
+
                 let eHiddenGenes = {A: null, B: null, C: null};
                 if (typeof window.generarGenesV9 === 'function') eHiddenGenes = window.generarGenesV9(eRareza);
 
                 const eAdn = { 
                     id: 888, scanned: true, rarity: eRareza, stats: eStats, element: eElemento,
                     body_shape: eForma, base_color: eColor, color: eColor,
-                    eye_type: "angry", mouth_type: "colmillos", wing_type: "ninguno", hat_type: "ninguno",
+                    eye_type: eOjos, mouth_type: eBoca, wing_type: "ninguno", hat_type: "ninguno",
                     hidden_genes: eHiddenGenes 
                 };
 
@@ -512,7 +523,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 const eGenC_id = eHiddenGenes.C ? eHiddenGenes.C.id : "ninguno";
 
                 enemyCombat = {
-                    nombre: "Rival Salvaje", isPlayer: false,
+                    nombre: randomName, // Asignamos el nombre procedural
+                    isPlayer: false,
                     maxHp: eAdn.stats.hp, hp: eAdn.stats.hp, atk: eAdn.stats.atk, spd: eAdn.stats.spd, luk: eAdn.stats.luk,
                     element: eAdn.element,
                     genesId: [eGenB_id, eGenC_id],
@@ -529,12 +541,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 if(pNameEl) pNameEl.innerHTML = `<strong>${playerCombat.nombre}</strong><br><span style="color:#aaa; font-size:10px;">(Nv. ${pMascota.level || 1})</span>`;
                 
                 const eNameEl = document.getElementById("battle-enemy-name");
-                if(eNameEl) eNameEl.innerHTML = `<strong>Rival ${eRareza}</strong><br><span style="color:#aaa; font-size:10px;">(${eElemento})</span>`;
+                if(eNameEl) eNameEl.innerHTML = `<strong>${enemyCombat.nombre}</strong><br><span style="color:#aaa; font-size:10px;">(${eElemento} - ${eRareza})</span>`;
                 else {
                     const enemyBox = document.getElementById("enemy-sprite-battle");
                     if (enemyBox) {
                         const textDivs = enemyBox.querySelectorAll("div");
-                        if (textDivs.length > 1) textDivs[1].innerHTML = `<strong>Rival ${eRareza}</strong><br><span style="color:#aaa; font-size:10px;">(${eElemento})</span>`;
+                        if (textDivs.length > 1) textDivs[1].innerHTML = `<strong>${enemyCombat.nombre}</strong><br><span style="color:#aaa; font-size:10px;">(${eElemento} - ${eRareza})</span>`;
                     }
                 }
 
