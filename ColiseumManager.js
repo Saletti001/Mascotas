@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - MOTOR DE COMBATE V9.2.6 (ANIMACIONES DE ATAQUE Y BOCA CONECTADAS)
+// ColiseumManager.js - MOTOR DE COMBATE V9.2.7 (RIVAL PROCEDURAL Y UI DEFINITIVA)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 margin: 0 -20px 15px -20px !important; 
             }
 
-            #player-sprite-battle, #enemy-sprite-battle { 
+            #player-sprite-battle, #enemy-sprite-battle, .fighter-left, .fighter-right { 
                 background: rgba(45, 65, 85, 0.6) !important; 
                 padding: 15px 10px !important; 
                 width: 44% !important; 
@@ -83,11 +83,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 backdrop-filter: blur(2px);
             }
             
-            #player-sprite-battle { border-top: 3px solid #4dd0e1 !important; border-bottom: 3px solid #4dd0e1 !important; border-radius: 0 12px 12px 0 !important; border-left: none !important; }
-            #enemy-sprite-battle { border-top: 3px solid #ff6b6b !important; border-bottom: 3px solid #ff6b6b !important; border-radius: 12px 0 0 12px !important; border-right: none !important; }
+            #player-sprite-battle, .fighter-left { border-top: 3px solid #4dd0e1 !important; border-bottom: 3px solid #4dd0e1 !important; border-radius: 0 12px 12px 0 !important; border-left: none !important; }
+            #enemy-sprite-battle, .fighter-right { border-top: 3px solid #ff6b6b !important; border-bottom: 3px solid #ff6b6b !important; border-radius: 12px 0 0 12px !important; border-right: none !important; }
             
             /* CAJAS DE LOS GENOS */
-            #player-visual-box, #enemy-visual-box {
+            #player-visual-box, #enemy-visual-box, .fighter-sprite {
                 width: 120px !important; 
                 height: 120px !important; 
                 margin: 0 auto auto auto !important; 
@@ -100,54 +100,40 @@ document.addEventListener("DOMContentLoaded", () => {
             #player-visual-box svg, #enemy-visual-box svg { width: 100% !important; height: 100% !important; overflow: visible !important; transition: 0.2s; }
 
             /* ========================================= */
-            /* NUEVAS ANIMACIONES DE ATAQUE Y BOCA       */
+            /* ANIMACIONES DE ATAQUE Y BOCA              */
             /* ========================================= */
-            @keyframes animarBoca {
-                0% { transform: scale(1); }
-                50% { transform: scale(1.6); }
-                100% { transform: scale(1); }
-            }
-            @keyframes animarEmbestida {
-                0% { transform: scale(1) translateY(0); }
-                50% { transform: scale(1.1) translateY(-10px); }
-                100% { transform: scale(1) translateY(0); }
-            }
+            @keyframes animarBoca { 0% { transform: scale(1); } 50% { transform: scale(1.6); } 100% { transform: scale(1); } }
+            @keyframes animarEmbestida { 0% { transform: scale(1) translateY(0); } 50% { transform: scale(1.1) translateY(-10px); } 100% { transform: scale(1) translateY(0); } }
             
-            /* Busca cualquier capa SVG que se llame boca o mouth y la anima desde su centro */
-            .anim-gritar [id*="boca"], .anim-gritar [class*="boca"], .anim-gritar [id*="mouth"], .anim-gritar [class*="mouth"] {
-                transform-origin: center !important;
-                transform-box: fill-box !important;
-                animation: animarBoca 0.4s ease-in-out !important;
-            }
-            /* Si no encuentra la boca, hace que todo el Geno de un pequeño salto/embestida */
-            .anim-gritar svg {
-                animation: animarEmbestida 0.4s ease-in-out !important;
-            }
+            .anim-gritar [id*="boca"], .anim-gritar [class*="boca"], .anim-gritar [id*="mouth"], .anim-gritar [class*="mouth"] { transform-origin: center !important; transform-box: fill-box !important; animation: animarBoca 0.4s ease-in-out !important; }
+            .anim-gritar svg { animation: animarEmbestida 0.4s ease-in-out !important; }
 
             /* TIPOGRAFÍA DE NOMBRES */
-            #battle-player-name, #battle-enemy-name { font-size: 13px !important; text-transform: uppercase; letter-spacing: 1px; margin-top: 15px !important; text-align: center !important; width: 100% !important; line-height: 1.3 !important; }
-            #battle-player-name { color: #4dd0e1 !important; }
-            #battle-enemy-name { color: #ff6b6b !important; }
+            #battle-player-name, #battle-enemy-name, .fighter-name { 
+                font-size: 13px !important; text-transform: uppercase; letter-spacing: 1px; margin-top: 15px !important; text-align: center !important; width: 100% !important; line-height: 1.3 !important; 
+            }
+            #battle-player-name, .fighter-left .fighter-name { color: #4dd0e1 !important; }
+            #battle-enemy-name, .fighter-right .fighter-name { color: #ff6b6b !important; }
 
             /* BARRAS DE HP NEON */
-            #player-sprite-battle > div:nth-child(3), #enemy-sprite-battle > div:nth-child(3) { background: #000 !important; border: 1px solid #333 !important; box-shadow: inset 0 0 5px rgba(0,0,0,0.8) !important; height: 12px !important; border-radius: 6px !important; width: 90% !important; margin: 8px auto 0 auto !important; }
-            #player-hp-bar { background: linear-gradient(90deg, #00d2ff, #4dd0e1) !important; box-shadow: 0 0 10px rgba(77,208,225,0.6) !important; }
-            #enemy-hp-bar { background: linear-gradient(90deg, #ff6b6b, #d9534f) !important; box-shadow: 0 0 10px rgba(255,107,107,0.6) !important; }
-            #player-hp-text, #enemy-hp-text { font-size: 11px !important; color: #fff !important; font-weight: bold; margin-top: 4px !important; text-shadow: 0 1px 2px #000; text-align: center; width: 100%; }
+            .hp-bar-container { background: #000 !important; border: 1px solid #333 !important; box-shadow: inset 0 0 5px rgba(0,0,0,0.8) !important; height: 12px !important; border-radius: 6px !important; width: 90% !important; margin: 8px auto 0 auto !important; }
+            .hp-bar-fill-green { background: linear-gradient(90deg, #00d2ff, #4dd0e1) !important; box-shadow: 0 0 10px rgba(77,208,225,0.6) !important; height: 100%; border-radius: 6px;}
+            .hp-bar-fill-red { background: linear-gradient(90deg, #ff6b6b, #d9534f) !important; box-shadow: 0 0 10px rgba(255,107,107,0.6) !important; height: 100%; border-radius: 6px;}
+            .hp-text { font-size: 11px !important; color: #fff !important; font-weight: bold; margin-top: 4px !important; text-shadow: 0 1px 2px #000; text-align: center; width: 100%; }
 
             /* LOG DE BATALLA HACKER */
-            #battle-log { 
+            #battle-log, .battle-log-container { 
                 background: #0d161c !important; border: 1px solid #1e3a5f !important; border-left: 4px solid #4dd0e1 !important; border-right: 4px solid #ff6b6b !important; 
                 color: #00ffcc !important; border-radius: 8px !important; font-family: 'Courier New', monospace !important; font-size: 12px !important; 
                 padding: 15px !important; box-shadow: inset 0 0 15px rgba(0,0,0,0.8) !important; margin-top: 10px !important; height: 130px !important; 
                 overflow-y: scroll !important; -ms-overflow-style: none; scrollbar-width: none; width: 100%; box-sizing: border-box;
             }
-            #battle-log::-webkit-scrollbar { display: none !important; }
+            #battle-log::-webkit-scrollbar, .battle-log-container::-webkit-scrollbar { display: none !important; }
 
             /* CONTENEDOR DE BOTONES DINÁMICO */
-            #battle-controls { width: 100% !important; display: flex; gap: 8px !important; justify-content: center !important; margin-top: 15px !important; }
+            #battle-controls, .controls-container { width: 100% !important; display: flex; gap: 8px !important; justify-content: center !important; margin-top: 15px !important; }
 
-            /* NUEVOS BOTONES DE COMBATE */
+            /* NUEVOS BOTONES DE COMBATE (3 BOTONES MÁS PEQUEÑOS) */
             .battle-btn { flex: 1 !important; padding: 10px 5px !important; border-radius: 8px !important; text-transform: uppercase !important; letter-spacing: 0.5px !important; transition: 0.2s !important; font-weight: 900 !important; font-size: 11px !important; color: white !important; cursor: pointer !important; border: 1px solid transparent !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important; }
             .atk-btn { background: linear-gradient(90deg, #ff5722, #d84315) !important; border-color: #ff9800 !important; box-shadow: 0 4px 10px rgba(255, 87, 34, 0.3) !important; }
             .special-btn { background: linear-gradient(90deg, #9c27b0, #6a1b9a) !important; border-color: #e040fb !important; box-shadow: 0 4px 10px rgba(156, 39, 176, 0.3) !important; }
@@ -162,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
             #btn-leave-battle { background-color: #111b24 !important; border: 1px solid #1e3a5f !important; color: #4dd0e1 !important; padding: 15px 30px !important; border-radius: 8px !important; text-transform: uppercase !important; font-weight: bold !important; letter-spacing: 1px !important; cursor: pointer !important; margin: 20px auto !important; display: block !important; transition: 0.2s !important; width: max-content !important; box-shadow: none !important; animation: none !important; }
             #btn-leave-battle:hover { background-color: #1e3a5f !important; color: #fff !important; }
             
-            /* EFECTOS FLOTANTES Y HIT */
+            /* EFECTOS FLOTANTES */
             @keyframes floatUpFade { 0% { opacity: 1; transform: translateY(0) scale(1.5); } 10% { transform: translateY(-10px) scale(1.8); } 100% { opacity: 0; transform: translateY(-80px) scale(1); } }
             .floating-text { position: absolute; font-weight: 900; z-index: 100; pointer-events: none; animation: floatUpFade 1.3s ease-out forwards; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 5px rgba(0,0,0,0.8); }
             .text-dmg { color: #ff3333; font-size: 28px; }
@@ -181,15 +167,23 @@ document.addEventListener("DOMContentLoaded", () => {
     let cooldownEspecial = 0; 
 
     // =========================================
-    // OBTENER ELEMENTOS DE LA UI
+    // OBTENER ELEMENTOS DE LA UI DE FORMA ROBUSTA
     // =========================================
     function getUI() {
         return {
-            log: document.getElementById("battle-log"),
-            btnStart: document.getElementById("btn-start-battle"),
-            btnLeave: document.getElementById("btn-leave-battle"),
-            controls: document.getElementById("battle-controls"),
-            area: document.getElementById("battle-area"),
+            log: document.getElementById("battle-log") || document.querySelector(".battle-log-container"),
+            btnStart: document.getElementById("btn-start-battle") || document.querySelector(".btn-primary"),
+            btnLeave: document.getElementById("btn-leave-battle") || document.querySelector(".btn-secondary"),
+            controls: document.getElementById("battle-controls") || document.querySelector(".controls-container"),
+            area: document.getElementById("battle-area") || document.querySelector(".coliseum-card"),
+            pName: document.getElementById("battle-player-name") || document.querySelector(".fighter-left .fighter-name"),
+            eName: document.getElementById("battle-enemy-name") || document.querySelector(".fighter-right .fighter-name"),
+            pVisual: document.getElementById("player-visual-box") || document.querySelector(".fighter-left .fighter-sprite"),
+            eVisual: document.getElementById("enemy-visual-box") || document.querySelector(".fighter-right .fighter-sprite"),
+            pBar: document.getElementById("player-hp-bar") || document.querySelector(".fighter-left .hp-bar-fill-green"),
+            eBar: document.getElementById("enemy-hp-bar") || document.querySelector(".fighter-right .hp-bar-fill-red"),
+            pTxt: document.getElementById("player-hp-text") || document.querySelector(".fighter-left .hp-text"),
+            eTxt: document.getElementById("enemy-hp-text") || document.querySelector(".fighter-right .hp-text")
         };
     }
 
@@ -206,19 +200,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function efectoCuracion(elementId) {
-        const el = document.getElementById(elementId);
-        if(el) {
-            el.classList.remove("heal-effect");
-            void el.offsetWidth;
-            el.classList.add("heal-effect");
-            setTimeout(() => el.classList.remove("heal-effect"), 600);
-        }
-    }
-
     function mostrarTextoFlotante(esJugador, texto, claseAdicional, delayMs = 0) {
-        const sideId = esJugador ? "player-sprite-battle" : "enemy-sprite-battle";
-        const sideEl = document.getElementById(sideId);
+        const sideEl = esJugador ? (document.getElementById("player-sprite-battle") || document.querySelector(".fighter-left")) : (document.getElementById("enemy-sprite-battle") || document.querySelector(".fighter-right"));
         if(!sideEl) return;
         
         setTimeout(() => {
@@ -236,18 +219,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function flashDamage(esJugador) {
-        const sideId = esJugador ? "player-visual-box" : "enemy-visual-box";
-        const el = document.getElementById(sideId);
+        const ui = getUI();
+        const el = esJugador ? ui.pVisual : ui.eVisual;
         if(el) {
             el.classList.add("hit-effect"); 
             setTimeout(() => el.classList.remove("hit-effect"), 150);
         }
     }
 
-    // NUEVA FUNCIÓN: Animar al atacar
+    // NUEVA FUNCIÓN: Animar al atacar (Activa las bocas)
     function animarAtaqueGeno(esJugador) {
-        const sideId = esJugador ? "player-visual-box" : "enemy-visual-box";
-        const el = document.getElementById(sideId);
+        const ui = getUI();
+        const el = esJugador ? ui.pVisual : ui.eVisual;
         if(el) {
             el.classList.add("anim-gritar");
             setTimeout(() => el.classList.remove("anim-gritar"), 500);
@@ -255,13 +238,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function actualizarUICombate(p, esJugador) {
-        const prefix = esJugador ? "player" : "enemy";
+        const ui = getUI();
         const max = (p && p.maxHp > 0) ? p.maxHp : 1; 
         const current = (p && p.hp >= 0) ? p.hp : 0;
-        
         const hpPct = Math.max(0, (current / max) * 100);
-        const fillBar = document.getElementById(`${prefix}-hp-bar`);
         
+        const fillBar = esJugador ? ui.pBar : ui.eBar;
         if (fillBar) {
             fillBar.style.width = `${hpPct}%`;
             if (hpPct > 50) fillBar.style.background = esJugador ? "linear-gradient(90deg, #00d2ff, #4dd0e1)" : "linear-gradient(90deg, #ff6b6b, #d9534f)";
@@ -269,10 +251,10 @@ document.addEventListener("DOMContentLoaded", () => {
             else fillBar.style.background = "linear-gradient(90deg, #f44336, #b71c1c)";
         }
         
-        const txtHp = document.getElementById(`${prefix}-hp-text`);
+        const txtHp = esJugador ? ui.pTxt : ui.eTxt;
         if (txtHp) txtHp.innerText = `${Math.floor(current)} / ${Math.floor(max)}`;
 
-        const sprite = document.getElementById(`${prefix}-sprite-battle`);
+        const sprite = esJugador ? (document.getElementById("player-sprite-battle") || document.querySelector(".fighter-left")) : (document.getElementById("enemy-sprite-battle") || document.querySelector(".fighter-right"));
         if (sprite) {
             if (current <= 0) sprite.style.filter = "grayscale(1) brightness(0.3)";
             else sprite.style.filter = "none";
@@ -302,7 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================================
-    // INICIALIZACIÓN
+    // INICIALIZACIÓN PRINCIPAL (ESTADO 1: ESPERANDO)
     // =========================================
     window.iniciarColiseo = function() {
         const ui = getUI();
@@ -313,18 +295,19 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        // --- APLICAR DISEÑO Y UNIFICAR ELEMENTOS ---
         if (ui.area) {
             let currentScreen = ui.area.closest('.screen, .coliseum-screen, .view') || ui.area.parentElement;
             if (currentScreen) {
                 currentScreen.classList.add("coliseum-cyan-theme");
                 let title = currentScreen.querySelector("h2, h1");
-                if(title && title.id !== "battle-player-name" && title.id !== "battle-enemy-name" && title.parentElement !== ui.area) {
+                if(title && title.parentElement !== ui.area) {
                     title.classList.add("coliseum-title-inside");
                     ui.area.insertBefore(title, ui.area.firstChild);
                 }
             }
 
-            const flexContainer = ui.area.querySelector("div");
+            const flexContainer = ui.area.querySelector(".fighters-vs-container") || ui.area.querySelector("div");
             if (flexContainer) {
                 flexContainer.classList.add("fighters-wrapper");
                 for (let i = 0; i < flexContainer.children.length; i++) {
@@ -339,6 +322,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (ui.btnLeave && currentScreen && ui.btnLeave.parentElement !== currentScreen) currentScreen.appendChild(ui.btnLeave);
         }
 
+        // --- INYECCIÓN DINÁMICA DE LOS 3 BOTONES DE COMBATE ---
         if (ui.controls) {
             ui.controls.innerHTML = `
                 <button id="btn-action-atk" class="battle-btn atk-btn">⚔️ ATACAR</button>
@@ -350,22 +334,20 @@ document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("btn-action-buff").onclick = () => ejecutarRonda("tactica");
         }
 
-        document.getElementById("player-visual-box").innerHTML = "";
-        document.getElementById("enemy-visual-box").innerHTML = "";
+        if(ui.pVisual) ui.pVisual.innerHTML = "";
+        if(ui.eVisual) ui.eVisual.innerHTML = "";
         
-        const pNameEl = document.getElementById("battle-player-name");
-        if(pNameEl) pNameEl.innerText = "Tu Geno";
-        
-        const eNameEl = document.getElementById("battle-enemy-name");
-        if(eNameEl) eNameEl.innerText = "---";
+        if(ui.pName) ui.pName.innerText = "Tu Geno";
+        if(ui.eName) ui.eName.innerText = "---";
 
-        document.getElementById("player-hp-bar").style.width = "100%";
-        document.getElementById("enemy-hp-bar").style.width = "100%";
-        document.getElementById("player-hp-text").innerText = "HP";
-        document.getElementById("enemy-hp-text").innerText = "HP";
+        if(ui.pBar) ui.pBar.style.width = "100%";
+        if(ui.eBar) ui.eBar.style.width = "100%";
+        if(ui.pTxt) ui.pTxt.innerText = "HP";
+        if(ui.eTxt) ui.eTxt.innerText = "HP";
         
         if(ui.log) ui.log.innerHTML = `<span style="color:#aaa;">> Conectando con los servidores del Coliseo...</span><br><span style="color:#4dd0e1">> Arena lista. Esperando combatientes.</span>`;
         
+        // --- MOSTRAR START Y OCULTAR CONTROLES FORZOSAMENTE ---
         if(ui.btnStart) ui.btnStart.style.setProperty("display", "block", "important");
         if(ui.btnLeave) ui.btnLeave.style.setProperty("display", "block", "important");
         if(ui.controls) ui.controls.style.setProperty("display", "none", "important");
@@ -374,9 +356,9 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     // =========================================
-    // INICIAR COMBATE
+    // INICIAR COMBATE (ESTADO 2: PELEANDO)
     // =========================================
-    const btnStartElement = document.getElementById("btn-start-battle");
+    const btnStartElement = document.getElementById("btn-start-battle") || document.querySelector(".btn-primary");
     if(btnStartElement) {
         btnStartElement.addEventListener("click", () => {
             const ui = getUI();
@@ -384,11 +366,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 if(ui.log) ui.log.innerHTML = "";
                 addLog(`<span style="color:#4dd0e1">> INICIALIZANDO SECUENCIA DE COMBATE...</span>`);
                 
-                document.getElementById("player-sprite-battle").style.filter = "none";
-                document.getElementById("enemy-sprite-battle").style.filter = "none";
+                const pSprite = document.getElementById("player-sprite-battle") || document.querySelector(".fighter-left");
+                const eSprite = document.getElementById("enemy-sprite-battle") || document.querySelector(".fighter-right");
+                if(pSprite) pSprite.style.filter = "none";
+                if(eSprite) eSprite.style.filter = "none";
+                
                 numeroTurno = 1;
                 cooldownEspecial = 0;
-
                 actualizarBotonesCombate();
 
                 // JUGADOR
@@ -415,7 +399,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     escudoCibernetico: pElemento === "Cibernético", estados: []
                 };
 
-                // ENEMIGO PROCEDURAL 
+                // ENEMIGO PROCEDURAL ALEATORIO
                 const eRareza = pMascota.rarity || "Común";
                 const eStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(eRareza) : {hp: 50, atk: 15, spd: 15, luk: 15};
                 const elementosBase = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
@@ -426,6 +410,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const eColor = coloresRival[Math.floor(Math.random() * coloresRival.length)];
                 const eForma = formasCuerpo[Math.floor(Math.random() * formasCuerpo.length)];
 
+                // Caras y Nombres Aleatorios
                 const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry"];
                 const opcionesBocas = typeof dicBocas !== 'undefined' ? Object.keys(dicBocas) : ["estandar", "feliz", "colmillos"];
                 const eOjos = opcionesOjos[Math.floor(Math.random() * opcionesOjos.length)];
@@ -460,18 +445,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     escudoCibernetico: eElemento === "Cibernético", estados: []
                 };
 
-                document.getElementById("player-visual-box").innerHTML = inyectarSvgSeguro(pMascota);
-                document.getElementById("enemy-visual-box").innerHTML = inyectarSvgSeguro(eAdn);
+                if(ui.pVisual) ui.pVisual.innerHTML = inyectarSvgSeguro(pMascota);
+                if(ui.eVisual) ui.eVisual.innerHTML = inyectarSvgSeguro(eAdn);
 
-                const pNameEl = document.getElementById("battle-player-name");
-                if(pNameEl) pNameEl.innerHTML = `<strong>${playerCombat.nombre}</strong><br><span style="color:#aaa; font-size:10px;">(Nv. ${pMascota.level || 1})</span>`;
-                
-                const eNameEl = document.getElementById("battle-enemy-name");
-                if(eNameEl) eNameEl.innerHTML = `<strong>${enemyCombat.nombre}</strong><br><span style="color:#aaa; font-size:10px;">(${eElemento} - ${eRareza})</span>`;
+                // SOBRESCRIBIR LA UI FUERTEMENTE
+                if(ui.pName) ui.pName.innerHTML = `<strong>${playerCombat.nombre}</strong><br><span style="color:#aaa; font-size:10px; font-weight:normal;">(Nv. ${pMascota.level || 1})</span>`;
+                if(ui.eName) ui.eName.innerHTML = `<strong>${enemyCombat.nombre}</strong><br><span style="color:#aaa; font-size:10px; font-weight:normal;">(${eRareza} - ${eElemento})</span>`;
 
                 actualizarUICombate(playerCombat, true);
                 actualizarUICombate(enemyCombat, false);
 
+                // --- MOSTRAR CONTROLES Y OCULTAR BOTÓN DE INICIO FORZOSAMENTE ---
                 if(ui.btnStart) ui.btnStart.style.setProperty("display", "none", "important");
                 if(ui.controls) ui.controls.style.setProperty("display", "flex", "important");
                 
@@ -487,6 +471,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================================
     // LÓGICA DE TURNOS Y HABILIDADES
     // =========================================
+    
     function actualizarBotonesCombate() {
         const btnAtk = document.getElementById("btn-action-atk");
         const btnSpecial = document.getElementById("btn-action-special");
@@ -552,7 +537,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function ejecutarAccion(atacante, defensor, accionElegida) {
         if (atacante.hp <= 0 || defensor.hp <= 0) return;
 
-        // Dispara la animación CSS en la caja SVG del atacante
+        // Dispara la animación de boca
         animarAtaqueGeno(atacante.isPlayer);
 
         if (atacante.isPlayer) {
@@ -570,7 +555,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 atacante.hp = Math.min(atacante.maxHp, atacante.hp + cura);
                 mostrarTextoFlotante(true, `+${cura}`, "text-heal");
                 addLog(`<span style="color:#4CAF50">* Recupera ${cura} HP y prepara su estrategia.</span>`);
-                efectoCuracion("player-sprite-battle");
                 actualizarUICombate(atacante, true);
             } else {
                 procesarAtaque(atacante, defensor); 
@@ -686,7 +670,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (atacante.hp > atacante.maxHp) atacante.hp = atacante.maxHp;
                     addLog(`<span style="color:#e0b0ff">* [Vampirismo] ${atacante.nombre} se cura ${roboVida} HP.</span>`);
                     mostrarTextoFlotante(atacante.isPlayer, `+${roboVida}`, "text-heal", 200);
-                    efectoCuracion(atacante.isPlayer ? "player-sprite-battle" : "enemy-sprite-battle");
                 }
 
                 if (isCrit && defensor.genesId.includes("reflejo_genetico") && dmg > 0) {
@@ -718,7 +701,6 @@ document.addEventListener("DOMContentLoaded", () => {
             fighter.hp += regen;
             if (fighter.hp > fighter.maxHp) fighter.hp = fighter.maxHp;
             mostrarTextoFlotante(fighter.isPlayer, `+${regen}`, "text-heal", 500);
-            efectoCuracion(fighter.isPlayer ? "player-sprite-battle" : "enemy-sprite-battle");
         }
         
         if (fighter.estados.includes("Quemadura")) {
