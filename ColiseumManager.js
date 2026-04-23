@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - MOTOR DE COMBATE V9.1.2 (UI CORREGIDA Y TIMING)
+// ColiseumManager.js - MOTOR DE COMBATE V9.1.3 (UI PULIDA Y CLARIDAD DE ESTADOS)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -10,8 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
         style.innerHTML = `
             /* OVERHAUL VISUAL DEL ÁREA DE BATALLA */
             #battle-area {
-                /* Usamos un fondo semi-transparente para que se vea el fondo principal de tu app */
-                background: rgba(0, 0, 0, 0.25) !important; 
+                background: rgba(0, 0, 0, 0.3) !important; 
                 backdrop-filter: blur(4px) !important;
                 border: 2px solid #4dd0e1 !important;
                 box-shadow: inset 0 0 30px rgba(0,0,0,0.5), 0 0 20px rgba(77, 208, 225, 0.2) !important;
@@ -21,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 overflow: hidden !important; 
             }
             
-            /* PANELES DE LOS LUCHADORES (Altura forzada para que sean idénticos) */
+            /* PANELES DE LOS LUCHADORES */
             #player-sprite-battle, #enemy-sprite-battle { 
                 background: rgba(13, 22, 30, 0.8) !important; 
                 padding: 15px 10px !important; 
@@ -33,7 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 border: 1px solid rgba(255,255,255,0.05) !important;
                 backdrop-filter: blur(4px);
                 
-                /* Solución al desajuste de cajas */
                 display: flex !important;
                 flex-direction: column !important;
                 justify-content: flex-end !important;
@@ -60,7 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 overflow: visible !important;
             }
 
-            /* TIPOGRAFÍA DE NOMBRES (Ajuste para nombres largos) */
+            /* TIPOGRAFÍA DE NOMBRES */
             #battle-player-name, #battle-enemy-name { 
                 font-size: 12px !important; 
                 text-transform: uppercase; 
@@ -87,7 +85,7 @@ document.addEventListener("DOMContentLoaded", () => {
             #enemy-hp-bar { background: linear-gradient(90deg, #ff6b6b, #d9534f) !important; box-shadow: 0 0 10px rgba(255,107,107,0.6) !important; }
             #player-hp-text, #enemy-hp-text { font-size: 11px !important; color: #fff !important; font-weight: bold; margin-top: 4px !important; text-shadow: 0 1px 2px #000; text-align: center; width: 100%; }
 
-            /* LOG DE BATALLA HACKER */
+            /* LOG DE BATALLA HACKER (SCROLL OCULTO) */
             #battle-log { 
                 background: #0d161c !important; 
                 border: 1px solid #1e3a5f !important; 
@@ -100,6 +98,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 box-shadow: inset 0 0 15px rgba(0,0,0,0.8) !important; 
                 margin-top: 20px !important;
                 height: 130px !important;
+                overflow-y: scroll !important;
+                -ms-overflow-style: none;  /* IE and Edge */
+                scrollbar-width: none;  /* Firefox */
+            }
+            #battle-log::-webkit-scrollbar { 
+                display: none !important; /* Chrome, Safari y Opera */
             }
 
             /* BOTONES DE ACCIÓN MEJORADOS */
@@ -170,11 +174,17 @@ document.addEventListener("DOMContentLoaded", () => {
     let enemyCombat = null;
     let numeroTurno = 1;
 
-    // APLICAR CLASE AL LOGO VS DEL HTML ORIGINAL
+    // INYECTAR EL FONDO CIAN AL CONTENEDOR PADRE DEL COLISEO
+    if (battleArea && battleArea.parentElement) {
+        battleArea.parentElement.style.backgroundColor = "#31c4d8";
+        battleArea.parentElement.style.backgroundImage = "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px)";
+        // Si el contenedor padre no ocupa toda la altura, forzamos un mínimo
+        battleArea.parentElement.style.minHeight = "100vh";
+    }
+
     const flexContainer = document.querySelector("#battle-area > div");
     if (flexContainer && flexContainer.children[1] && flexContainer.children[1].innerText === "VS") {
         flexContainer.children[1].className = "vs-badge-battle";
-        // Aseguramos que el contenedor padre distribuya el espacio correctamente
         flexContainer.style.display = "flex";
         flexContainer.style.alignItems = "center";
         flexContainer.style.justifyContent = "space-between";
@@ -216,7 +226,6 @@ document.addEventListener("DOMContentLoaded", () => {
             floater.innerText = texto;
             const offsetX = (Math.random() - 0.5) * 80; 
             const offsetY = (Math.random() - 0.5) * 40;
-            // Ajustamos el inicio de la animación flotante
             floater.style.top = `calc(20% + ${offsetY}px)`;
             floater.style.left = `calc(50% + ${offsetX}px)`;
             floater.style.transform = "translate(-50%, -50%)";
@@ -407,11 +416,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 escudoCibernetico: eElemento === "Cibernético", estados: []
             };
 
-            // RENDER VISUAL
-            if (typeof generarSvgGeno === 'function') {
-                document.getElementById("player-visual-box").innerHTML = inyectarSvgSeguro(pMascota);
-                document.getElementById("enemy-visual-box").innerHTML = inyectarSvgSeguro(eAdn);
-            }
+            document.getElementById("player-visual-box").innerHTML = inyectarSvgSeguro(pMascota);
+            document.getElementById("enemy-visual-box").innerHTML = inyectarSvgSeguro(eAdn);
 
             const pNameEl = document.getElementById("battle-player-name");
             if(pNameEl) pNameEl.innerHTML = `<strong>${playerCombat.nombre}</strong><br><span style="color:#aaa; font-size:10px;">(Nv. ${pMascota.level || 1})</span>`;
@@ -526,9 +532,19 @@ document.addEventListener("DOMContentLoaded", () => {
                             addLog(`<span style="color:#00d2ff">* [Sangre Fría] ¡${defensor.nombre} inmuniza el estado alterado!</span>`);
                         } else if (!defensor.estados.includes(efectoAplicar)) {
                             defensor.estados.push(efectoAplicar);
-                            addLog(`<span style="color:#ff9800">* ${defensor.nombre} sufre ${efectoAplicar}.</span>`);
-                            if (efectoAplicar === "Debilidad") defensor.atk = Math.floor(defensor.atk * 0.8);
-                            if (efectoAplicar === "Infección") defensor.spd = Math.floor(defensor.spd * 0.8);
+                            
+                            // MEJORA: CÁLCULO Y VISUALIZACIÓN EXACTA DEL ESTADO ALTERADO
+                            if (efectoAplicar === "Debilidad") {
+                                let atkPerdido = defensor.atk - Math.floor(defensor.atk * 0.8);
+                                defensor.atk = Math.floor(defensor.atk * 0.8);
+                                addLog(`<span style="color:#ff9800">* ${defensor.nombre} sufre ${efectoAplicar} (-${atkPerdido} ATK).</span>`);
+                            } else if (efectoAplicar === "Infección") {
+                                let spdPerdida = defensor.spd - Math.floor(defensor.spd * 0.8);
+                                defensor.spd = Math.floor(defensor.spd * 0.8);
+                                addLog(`<span style="color:#ff9800">* ${defensor.nombre} sufre ${efectoAplicar} (-${spdPerdida} SPD).</span>`);
+                            } else {
+                                addLog(`<span style="color:#ff9800">* ${defensor.nombre} sufre ${efectoAplicar} (Daño continuo).</span>`);
+                            }
                         }
                     }
                 }
@@ -611,7 +627,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     setTimeout(() => {
                         procesarEfectosFinTurno(playerCombat);
                         procesarEfectosFinTurno(enemyCombat);
-                        // SOLUCIÓN TIMING: Esperamos antes de chequear el fin
                         setTimeout(checkEndGame, 600);
                     }, 800);
                 }
@@ -635,12 +650,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 setTimeout(() => {
                     procesarEfectosFinTurno(primero);
                     procesarEfectosFinTurno(segundo);
-                    // SOLUCIÓN TIMING: Esperamos a que terminen los efectos
                     setTimeout(checkEndGame, 600);
                 }, 800);
             }, 800); 
         } else { 
-            // SOLUCIÓN TIMING: Si muere en el primer golpe, igual esperamos a la animación
             setTimeout(checkEndGame, 1000); 
         }
         numeroTurno++;
@@ -659,7 +672,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 if(window.Sonidos) window.Sonidos.play("coin"); 
                 
-                // Estos disparan las alertas, por eso era importante retrasar esta función
                 if (window.ganarXP) window.ganarXP(xpGanada);
                 if (window.miInventario && typeof window.miInventario.addEssence === 'function') window.miInventario.addEssence(evGanada);
                 
