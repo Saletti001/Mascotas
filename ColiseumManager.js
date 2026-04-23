@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - MOTOR DE COMBATE V9.1.4 (FONDO CIAN Y FIXES)
+// ColiseumManager.js - MOTOR DE COMBATE V9.1.5 (UI IDÉNTICA A CRIANZA)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const style = document.createElement("style");
         style.id = "coliseum-overhaul-styles";
         style.innerHTML = `
-            /* FONDO CIAN GLOBAL PARA LA PANTALLA DEL COLISEO */
+            /* FONDO TURQUESA GLOBAL (ESTILO CRIANZA) */
             .coliseum-cyan-theme {
                 background-color: #31c4d8 !important;
                 background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px) !important;
@@ -16,30 +16,51 @@ document.addEventListener("DOMContentLoaded", () => {
                 min-height: 100vh !important;
             }
 
-            /* OVERHAUL VISUAL DEL ÁREA DE BATALLA */
+            /* CAJA OSCURA PRINCIPAL DEL COLISEO (ESTILO CRIANZA) */
             #battle-area {
-                background: rgba(0, 0, 0, 0.3) !important; 
-                backdrop-filter: blur(4px) !important;
-                border: 2px solid #4dd0e1 !important;
-                box-shadow: inset 0 0 30px rgba(0,0,0,0.5), 0 0 20px rgba(77, 208, 225, 0.2) !important;
-                border-radius: 16px !important;
-                padding: 25px 15px !important;
+                background-color: rgba(13, 22, 30, 0.95) !important; 
+                border: 1px solid #1e3a5f !important;
+                border-radius: 12px !important;
+                padding: 15px 20px 25px 20px !important; /* Más espacio arriba para el título */
                 position: relative;
                 overflow: hidden !important; 
+                box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            /* NUEVO ESTILO DEL TÍTULO DENTRO DE LA CAJA */
+            .coliseum-title-inside {
+                color: #4dd0e1 !important;
+                text-align: center !important;
+                font-size: 16px !important;
+                margin-top: 0 !important;
+                margin-bottom: 20px !important;
+                text-transform: uppercase !important;
+                font-weight: bold !important;
+                letter-spacing: 2px !important;
+                width: 100% !important;
+                border-bottom: 1px dashed rgba(77, 208, 225, 0.3);
+                padding-bottom: 10px;
             }
             
             /* PANELES DE LOS LUCHADORES */
+            .fighters-wrapper {
+                display: flex !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                width: 100% !important;
+            }
+
             #player-sprite-battle, #enemy-sprite-battle { 
-                background: rgba(13, 22, 30, 0.8) !important; 
+                background: rgba(0, 0, 0, 0.3) !important; 
                 padding: 15px 10px !important; 
                 border-radius: 12px !important; 
                 width: 42% !important; 
                 position: relative; 
                 transition: 0.3s; 
-                box-shadow: 0 8px 20px rgba(0,0,0,0.5) !important;
                 border: 1px solid rgba(255,255,255,0.05) !important;
-                backdrop-filter: blur(4px);
-                
                 display: flex !important;
                 flex-direction: column !important;
                 justify-content: flex-end !important;
@@ -107,34 +128,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 margin-top: 20px !important;
                 height: 130px !important;
                 overflow-y: scroll !important;
-                -ms-overflow-style: none;  /* IE and Edge */
-                scrollbar-width: none;  /* Firefox */
+                -ms-overflow-style: none;  
+                scrollbar-width: none;  
+                width: 100%;
+                box-sizing: border-box;
             }
-            #battle-log::-webkit-scrollbar { 
-                display: none !important; /* Chrome, Safari y Opera */
-            }
+            #battle-log::-webkit-scrollbar { display: none !important; }
 
             /* BOTONES DE ACCIÓN MEJORADOS */
-            #btn-action-atk { 
-                background: linear-gradient(90deg, #ff5722, #d84315) !important; 
-                box-shadow: 0 4px 15px rgba(255, 87, 34, 0.4) !important; 
-                border: 1px solid #ff9800 !important; 
-                color: white !important; 
-                border-radius: 10px !important;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                transition: 0.2s;
-            }
-            #btn-action-item { 
-                background: linear-gradient(90deg, #4CAF50, #2E7D32) !important; 
-                box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4) !important; 
-                border: 1px solid #81c784 !important; 
-                color: white !important; 
-                border-radius: 10px !important;
-                text-transform: uppercase;
-                letter-spacing: 1px;
-                transition: 0.2s;
-            }
+            #btn-action-atk { background: linear-gradient(90deg, #ff5722, #d84315) !important; box-shadow: 0 4px 15px rgba(255, 87, 34, 0.4) !important; border: 1px solid #ff9800 !important; color: white !important; border-radius: 10px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
+            #btn-action-item { background: linear-gradient(90deg, #4CAF50, #2E7D32) !important; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4) !important; border: 1px solid #81c784 !important; color: white !important; border-radius: 10px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
             #btn-action-atk:active, #btn-action-item:active { transform: scale(0.95); }
             #btn-action-atk:disabled, #btn-action-item:disabled { background: #333 !important; border-color: #555 !important; box-shadow: none !important; color: #888 !important; transform: none; }
 
@@ -144,26 +147,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 10% { transform: translateY(-10px) scale(1.8); }
                 100% { opacity: 0; transform: translateY(-80px) scale(1); }
             }
-            .floating-text {
-                position: absolute; font-weight: 900; z-index: 100; pointer-events: none;
-                animation: floatUpFade 1.3s ease-out forwards;
-                text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 5px rgba(0,0,0,0.8);
-            }
+            .floating-text { position: absolute; font-weight: 900; z-index: 100; pointer-events: none; animation: floatUpFade 1.3s ease-out forwards; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 5px rgba(0,0,0,0.8); }
             .text-dmg { color: #ff3333; font-size: 28px; }
             .text-heal { color: #4CAF50; font-size: 24px; }
             .text-crit { color: #ffcc00; font-size: 32px; font-style: italic; text-transform: uppercase; letter-spacing: 2px; }
             .hit-effect { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5); transform: scale(0.90); transition: 0.1s; }
             
             /* EL LOGO VS */
-            .vs-badge-battle {
-                font-size: 28px !important;
-                font-weight: 900 !important;
-                font-style: italic !important;
-                color: #ffcc00 !important;
-                text-shadow: 0 0 20px rgba(255,0,0,0.8) !important;
-                z-index: 2;
-                margin: 0 10px !important;
-            }
+            .vs-badge-battle { font-size: 28px !important; font-weight: 900 !important; font-style: italic !important; color: #ffcc00 !important; text-shadow: 0 0 20px rgba(255,0,0,0.8) !important; z-index: 2; margin: 0 10px !important; }
         `;
         document.head.appendChild(style);
     }
@@ -182,30 +173,32 @@ document.addEventListener("DOMContentLoaded", () => {
     let enemyCombat = null;
     let numeroTurno = 1;
 
-    // APLICAR CLASE AL LOGO VS DEL HTML ORIGINAL
-    const flexContainer = document.querySelector("#battle-area > div");
-    if (flexContainer && flexContainer.children[1] && flexContainer.children[1].innerText === "VS") {
-        flexContainer.children[1].className = "vs-badge-battle";
-        flexContainer.style.display = "flex";
-        flexContainer.style.alignItems = "center";
-        flexContainer.style.justifyContent = "space-between";
-    }
-
     // =========================================
-    // INYECTAR FONDO CIAN GLOBAL
+    // INYECTAR FONDO Y MOVER TÍTULO AL VUELO
     // =========================================
     if (battleArea) {
-        // Buscamos la capa padre (la pantalla) para aplicarle el color cian
+        // Pintar el fondo principal color Turquesa Crianza
         let parent = battleArea.parentElement;
         while(parent && parent.tagName !== 'BODY') {
             if(parent.id.includes('room') || parent.classList.contains('screen') || parent.classList.contains('view')) {
                 parent.classList.add("coliseum-cyan-theme");
+                // Buscar el título y meterlo en la caja oscura
+                let title = parent.querySelector("h2");
+                if(title && title.parentElement !== battleArea) {
+                    title.classList.add("coliseum-title-inside");
+                    battleArea.insertBefore(title, battleArea.firstChild);
+                }
                 break;
             }
             parent = parent.parentElement;
         }
-        // Fallback por seguridad
-        if(battleArea.parentElement) battleArea.parentElement.classList.add("coliseum-cyan-theme");
+        
+        // Estructurar los combatientes para que queden alineados
+        const flexContainer = battleArea.querySelector("div");
+        if (flexContainer && flexContainer.children[1] && flexContainer.children[1].innerText === "VS") {
+            flexContainer.classList.add("fighters-wrapper");
+            flexContainer.children[1].className = "vs-badge-battle";
+        }
     }
 
     // =========================================
@@ -551,7 +544,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         } else if (!defensor.estados.includes(efectoAplicar)) {
                             defensor.estados.push(efectoAplicar);
                             
-                            // MEJORA: CÁLCULO Y VISUALIZACIÓN EXACTA DEL ESTADO ALTERADO
                             if (efectoAplicar === "Debilidad") {
                                 let atkPerdido = defensor.atk - Math.floor(defensor.atk * 0.8);
                                 defensor.atk = Math.floor(defensor.atk * 0.8);
