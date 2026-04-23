@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - MOTOR DE COMBATE V9.1.9 (NAVEGACIÓN REPARADA Y BOTONES PULIDOS)
+// ColiseumManager.js - MOTOR DE COMBATE V9.2.0 (UI POLISH: GLOW Y ANIMACIONES)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -18,11 +18,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 box-sizing: border-box !important;
             }
 
-            /* ANIMACIÓN DE LUZ DE NEÓN PARA EL CONTORNO */
+            /* ANIMACIÓN DE LUZ DE NEÓN PARA EL CONTORNO (POTENCIADA) */
             @keyframes arenaGlow {
-                0% { box-shadow: 0 0 10px rgba(77, 208, 225, 0.3), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.4); }
-                50% { box-shadow: 0 0 25px rgba(77, 208, 225, 0.9), 0 0 5px rgba(255, 255, 255, 0.5), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 1); }
-                100% { box-shadow: 0 0 10px rgba(77, 208, 225, 0.3), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.4); }
+                0% { box-shadow: 0 0 20px rgba(77, 208, 225, 0.6), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.6); }
+                50% { box-shadow: 0 0 40px rgba(77, 208, 225, 1), 0 0 10px rgba(255, 255, 255, 0.7), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 1); }
+                100% { box-shadow: 0 0 20px rgba(77, 208, 225, 0.6), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.6); }
+            }
+
+            /* ANIMACIÓN EXCLUSIVA PARA BOTONES TIPO "NEXO" */
+            @keyframes buttonPulseNexo {
+                0% { box-shadow: 0 0 5px rgba(77, 208, 225, 0.3); border-color: rgba(77, 208, 225, 0.5); }
+                50% { box-shadow: 0 0 15px rgba(77, 208, 225, 0.8), inset 0 0 5px rgba(255,255,255,0.2); border-color: rgba(255, 255, 255, 0.8); }
+                100% { box-shadow: 0 0 5px rgba(77, 208, 225, 0.3); border-color: rgba(77, 208, 225, 0.5); }
             }
 
             /* CAJA OSCURA PRINCIPAL UNIFICADA */
@@ -38,9 +45,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 align-items: center !important;
                 width: 92% !important; 
                 max-width: 500px !important;
-                margin: 0 auto !important; /* Centrado automático sin forzar al padre */
+                margin: 0 auto !important; /* Centrado automático */
                 box-sizing: border-box !important;
-                animation: arenaGlow 2.5s infinite ease-in-out !important; 
+                animation: arenaGlow 3s infinite ease-in-out !important; /* Animación de la arena aplicada */
             }
 
             /* TÍTULO DENTRO DE LA CAJA */
@@ -176,9 +183,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 display: none;
             }
 
-            /* BOTÓN DE RETIRADA REPARADO (AFUERA DE LA CAJA) */
+            /* BOTÓN DE RETIRADA REPARADO (CON ANIMACIÓN TIPO NEXO) */
             #btn-leave-battle {
-                background: #111b24 !important;
+                background: #0a1118 !important; /* Azul muy oscuro para contraste */
                 border: 1px solid #4dd0e1 !important;
                 color: #4dd0e1 !important;
                 padding: 12px 30px !important;
@@ -191,17 +198,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 display: block;
                 transition: 0.3s;
                 width: max-content;
+                animation: buttonPulseNexo 3s infinite ease-in-out !important; /* Animación tipo Nexo aplicada */
+                box-sizing: border-box !important;
             }
             #btn-leave-battle:hover { 
                 background: #4dd0e1 !important; 
                 color: #0a1118 !important; 
-                box-shadow: 0 0 15px rgba(77, 208, 225, 0.5) !important;
+                box-shadow: 0 0 15px rgba(77, 208, 225, 0.8) !important;
+                border-color: #fff !important;
             }
             
             #btn-action-atk:active, #btn-action-item:active, #btn-start-battle:active, #btn-leave-battle:active { transform: scale(0.95); }
             #btn-action-atk:disabled, #btn-action-item:disabled { background: #333 !important; border-color: #555 !important; box-shadow: none !important; color: #888 !important; transform: none; cursor: not-allowed; }
 
-            /* ANIMACIONES Y EFECTOS */
+            /* ANIMACIONES Y EFECTOS FLOTANTES */
             @keyframes floatUpFade { 0% { opacity: 1; transform: translateY(0) scale(1.5); } 10% { transform: translateY(-10px) scale(1.8); } 100% { opacity: 0; transform: translateY(-80px) scale(1); } }
             .floating-text { position: absolute; font-weight: 900; z-index: 100; pointer-events: none; animation: floatUpFade 1.3s ease-out forwards; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 5px rgba(0,0,0,0.8); }
             .text-dmg { color: #ff3333; font-size: 28px; }
@@ -533,6 +543,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 actualizarUICombate(playerCombat, true);
                 actualizarUICombate(enemyCombat, false);
 
+                // Alternar vista de botones
                 if(ui.btnStart) ui.btnStart.style.display = "none";
                 if(ui.controls) {
                     ui.controls.classList.remove("hidden");
