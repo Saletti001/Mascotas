@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - MOTOR DE COMBATE V9.2.2 (UI COHERENTE Y BOTONES REPARADOS)
+// ColiseumManager.js - MOTOR DE COMBATE V9.2.3 (PANELES PEGADOS A LOS BORDES Y MÁS GRANDES)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 border-radius: 16px !important;
                 padding: 20px !important; 
                 position: relative;
-                overflow: hidden !important; 
+                overflow: hidden !important; /* Vital para que los paneles cortados se adapten a la curva */
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: center !important;
@@ -59,36 +59,47 @@ document.addEventListener("DOMContentLoaded", () => {
                 display: block !important;
             }
             
-            /* PANELES DE LOS LUCHADORES */
+            /* PANELES DE LOS LUCHADORES (Expandidos a los bordes) */
             .fighters-wrapper {
                 display: flex !important;
                 align-items: center !important;
                 justify-content: space-between !important;
-                width: 100% !important;
-                margin-bottom: 15px !important;
+                width: calc(100% + 40px) !important; /* Compensa el padding de 20px del battle-area */
+                margin: 0 -20px 15px -20px !important; /* Se estira hasta pegar a la pared */
             }
 
+            /* COLOR MÁS CLARO Y AJUSTES DE CAJA */
             #player-sprite-battle, #enemy-sprite-battle { 
-                background: rgba(0, 0, 0, 0.3) !important; 
+                background: rgba(45, 65, 85, 0.6) !important; /* Azul-gris más claro */
                 padding: 15px 10px !important; 
-                border-radius: 12px !important; 
-                width: 42% !important; 
+                width: 44% !important; /* Un poco más anchos */
                 position: relative; 
                 transition: 0.3s; 
-                border: 1px solid rgba(255,255,255,0.05) !important;
+                border: 1px solid rgba(255,255,255,0.15) !important;
                 display: flex !important;
                 flex-direction: column !important;
                 justify-content: flex-end !important;
                 align-items: center !important;
-                min-height: 210px !important; 
+                min-height: 230px !important; /* Más altos */
+                backdrop-filter: blur(2px);
             }
-            #player-sprite-battle { border-bottom: 3px solid #4dd0e1 !important; }
-            #enemy-sprite-battle { border-bottom: 3px solid #ff6b6b !important; }
             
-            /* CAJAS DE LOS GENOS */
+            /* BORRAR RADIOS LATERALES PARA QUE PAREZCAN SALIR DEL MARCO */
+            #player-sprite-battle { 
+                border-bottom: 3px solid #4dd0e1 !important; 
+                border-radius: 0 12px 12px 0 !important; 
+                border-left: none !important;
+            }
+            #enemy-sprite-battle { 
+                border-bottom: 3px solid #ff6b6b !important; 
+                border-radius: 12px 0 0 12px !important; 
+                border-right: none !important;
+            }
+            
+            /* CAJAS DE LOS GENOS (MÁS GRANDES) */
             #player-visual-box, #enemy-visual-box {
-                width: 90px !important; 
-                height: 90px !important; 
+                width: 120px !important; /* Aumentado */
+                height: 120px !important; /* Aumentado */
                 margin: 0 auto auto auto !important; 
                 display: flex; 
                 justify-content: center; 
@@ -100,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             /* TIPOGRAFÍA DE NOMBRES */
             #battle-player-name, #battle-enemy-name { 
-                font-size: 12px !important; 
+                font-size: 13px !important; 
                 text-transform: uppercase; 
                 letter-spacing: 1px; 
                 margin-top: 15px !important; 
@@ -177,26 +188,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
             /* BOTÓN DE RETIRADA (ESTILO COHERENTE CON CRIANZA) */
             #btn-leave-battle {
-                background-color: #111b24 !important; /* Color oscuro sólido */
-                border: 1px solid #1e3a5f !important; /* Borde sutil */
-                color: #4dd0e1 !important; /* Texto cian */
+                background-color: #111b24 !important; 
+                border: 1px solid #1e3a5f !important; 
+                color: #4dd0e1 !important; 
                 padding: 15px 30px !important;
                 border-radius: 8px !important;
                 text-transform: uppercase !important;
                 font-weight: bold !important;
                 letter-spacing: 1px !important;
                 cursor: pointer !important;
-                margin: 20px auto !important; /* Centrado fuera de la arena */
+                margin: 20px auto !important; 
                 display: block !important;
                 transition: 0.2s !important;
                 width: max-content !important;
-                box-shadow: none !important; /* Sin sombras raras */
-                animation: none !important; /* Sin animaciones */
+                box-shadow: none !important; 
+                animation: none !important; 
             }
-            #btn-leave-battle:hover { 
-                background-color: #1e3a5f !important; 
-                color: #fff !important; 
-            }
+            #btn-leave-battle:hover { background-color: #1e3a5f !important; color: #fff !important; }
             
             #btn-action-atk:active, #btn-action-item:active, #btn-start-battle:active, #btn-leave-battle:active { transform: scale(0.95); }
             #btn-action-atk:disabled, #btn-action-item:disabled { background: #333 !important; border-color: #555 !important; box-shadow: none !important; color: #888 !important; transform: none; cursor: not-allowed; }
@@ -223,7 +231,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================================
     function getUI() {
         const btnAtk = document.getElementById("btn-action-atk");
-        // Si existe el botón Atacar, su contenedor padre son los controles de batalla
         const controlsContainer = document.getElementById("battle-controls") || (btnAtk ? btnAtk.parentElement : null);
         return {
             log: document.getElementById("battle-log"),
