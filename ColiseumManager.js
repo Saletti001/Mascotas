@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - MOTOR DE COMBATE V9.2.3 (BORDES SIMÉTRICOS Y OPTIMIZACIÓN DE ESPACIO)
+// ColiseumManager.js - MOTOR DE COMBATE V9.2.4 (SISTEMA DE HABILIDADES Y COOLDOWNS)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 display: block !important;
             }
             
-            /* PANELES DE LOS LUCHADORES (Expandidos a los bordes) */
+            /* PANELES DE LOS LUCHADORES */
             .fighters-wrapper {
                 display: flex !important;
                 align-items: center !important;
@@ -68,7 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 margin: 0 -20px 15px -20px !important; 
             }
 
-            /* COLOR Y ESTRUCTURA DE LOS PANELES */
             #player-sprite-battle, #enemy-sprite-battle { 
                 background: rgba(45, 65, 85, 0.6) !important; 
                 padding: 15px 10px !important; 
@@ -84,21 +83,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 backdrop-filter: blur(2px);
             }
             
-            /* BORDES SIMÉTRICOS (ARRIBA Y ABAJO) PEGADOS AL EXTREMO */
             #player-sprite-battle { 
-                border-top: 3px solid #4dd0e1 !important; /* NUEVO: Borde superior Cian */
+                border-top: 3px solid #4dd0e1 !important; 
                 border-bottom: 3px solid #4dd0e1 !important; 
                 border-radius: 0 12px 12px 0 !important; 
                 border-left: none !important;
             }
             #enemy-sprite-battle { 
-                border-top: 3px solid #ff6b6b !important; /* NUEVO: Borde superior Rojo */
+                border-top: 3px solid #ff6b6b !important; 
                 border-bottom: 3px solid #ff6b6b !important; 
                 border-radius: 12px 0 0 12px !important; 
                 border-right: none !important;
             }
             
-            /* CAJAS DE LOS GENOS (MÁS GRANDES) */
+            /* CAJAS DE LOS GENOS */
             #player-visual-box, #enemy-visual-box {
                 width: 120px !important; 
                 height: 120px !important; 
@@ -138,12 +136,12 @@ document.addEventListener("DOMContentLoaded", () => {
             #enemy-hp-bar { background: linear-gradient(90deg, #ff6b6b, #d9534f) !important; box-shadow: 0 0 10px rgba(255,107,107,0.6) !important; }
             #player-hp-text, #enemy-hp-text { font-size: 11px !important; color: #fff !important; font-weight: bold; margin-top: 4px !important; text-shadow: 0 1px 2px #000; text-align: center; width: 100%; }
 
-            /* LOG DE BATALLA HACKER CON BORDES DUALES (CIAN / ROJO) */
+            /* LOG DE BATALLA HACKER */
             #battle-log { 
                 background: #0d161c !important; 
                 border: 1px solid #1e3a5f !important; 
-                border-left: 4px solid #4dd0e1 !important; /* Borde Jugador */
-                border-right: 4px solid #ff6b6b !important; /* NUEVO: Borde Enemigo */
+                border-left: 4px solid #4dd0e1 !important; 
+                border-right: 4px solid #ff6b6b !important; 
                 color: #00ffcc !important; 
                 border-radius: 8px !important; 
                 font-family: 'Courier New', monospace !important; 
@@ -160,19 +158,37 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             #battle-log::-webkit-scrollbar { display: none !important; }
 
-            /* CONTENEDOR DE BOTONES (ESTRUCTURA) */
+            /* CONTENEDOR DE BOTONES DINÁMICO */
             #battle-controls {
                 width: 100% !important;
-                display: flex; /* Sin !important para que JS pueda forzar el hide */
-                gap: 10px !important;
+                display: flex; 
+                gap: 8px !important;
                 justify-content: center !important;
                 margin-top: 15px !important;
             }
 
-            /* BOTONES DE ACCIÓN MEJORADOS */
-            #btn-action-atk { flex: 1 !important; background: linear-gradient(90deg, #ff5722, #d84315) !important; box-shadow: 0 4px 15px rgba(255, 87, 34, 0.4) !important; border: 1px solid #ff9800 !important; color: white !important; border-radius: 8px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; padding: 15px !important; font-weight: bold !important; cursor: pointer; }
-            #btn-action-item { flex: 1 !important; background: linear-gradient(90deg, #4CAF50, #2E7D32) !important; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4) !important; border: 1px solid #81c784 !important; color: white !important; border-radius: 8px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; padding: 15px !important; font-weight: bold !important; cursor: pointer; }
+            /* NUEVOS BOTONES DE COMBATE (RECTANGULARES Y MÁS PEQUEÑOS) */
+            .battle-btn {
+                flex: 1 !important;
+                padding: 10px 5px !important; /* Mitad de tamaño vertical */
+                border-radius: 8px !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.5px !important;
+                transition: 0.2s !important;
+                font-weight: 900 !important;
+                font-size: 11px !important;
+                color: white !important;
+                cursor: pointer !important;
+                border: 1px solid transparent !important;
+                text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important;
+            }
+            .atk-btn { background: linear-gradient(90deg, #ff5722, #d84315) !important; border-color: #ff9800 !important; box-shadow: 0 4px 10px rgba(255, 87, 34, 0.3) !important; }
+            .special-btn { background: linear-gradient(90deg, #9c27b0, #6a1b9a) !important; border-color: #e040fb !important; box-shadow: 0 4px 10px rgba(156, 39, 176, 0.3) !important; }
+            .buff-btn { background: linear-gradient(90deg, #009688, #00695c) !important; border-color: #26a69a !important; box-shadow: 0 4px 10px rgba(0, 150, 136, 0.3) !important; }
             
+            .battle-btn:active { transform: scale(0.95) !important; }
+            .battle-btn:disabled { background: #333 !important; border-color: #555 !important; box-shadow: none !important; color: #888 !important; transform: none !important; cursor: not-allowed !important; text-shadow: none !important; }
+
             #btn-start-battle { 
                 background: linear-gradient(90deg, #E91E63, #C2185B) !important; 
                 box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4) !important; 
@@ -210,9 +226,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             #btn-leave-battle:hover { background-color: #1e3a5f !important; color: #fff !important; }
             
-            #btn-action-atk:active, #btn-action-item:active, #btn-start-battle:active, #btn-leave-battle:active { transform: scale(0.95); }
-            #btn-action-atk:disabled, #btn-action-item:disabled { background: #333 !important; border-color: #555 !important; box-shadow: none !important; color: #888 !important; transform: none; cursor: not-allowed; }
-
             /* ANIMACIONES Y EFECTOS FLOTANTES */
             @keyframes floatUpFade { 0% { opacity: 1; transform: translateY(0) scale(1.5); } 10% { transform: translateY(-10px) scale(1.8); } 100% { opacity: 0; transform: translateY(-80px) scale(1); } }
             .floating-text { position: absolute; font-weight: 900; z-index: 100; pointer-events: none; animation: floatUpFade 1.3s ease-out forwards; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 5px rgba(0,0,0,0.8); }
@@ -229,22 +242,18 @@ document.addEventListener("DOMContentLoaded", () => {
     let playerCombat = null;
     let enemyCombat = null;
     let numeroTurno = 1;
+    let cooldownEspecial = 0; // NUEVO: Contador de turnos para el ataque especial
 
     // =========================================
     // OBTENER ELEMENTOS DE LA UI DE FORMA SEGURA
     // =========================================
     function getUI() {
-        const btnAtk = document.getElementById("btn-action-atk");
-        const controlsContainer = document.getElementById("battle-controls") || (btnAtk ? btnAtk.parentElement : null);
         return {
             log: document.getElementById("battle-log"),
             btnStart: document.getElementById("btn-start-battle"),
             btnLeave: document.getElementById("btn-leave-battle"),
-            controls: controlsContainer,
+            controls: document.getElementById("battle-controls"),
             area: document.getElementById("battle-area"),
-            btnAtk: btnAtk,
-            btnItem: document.getElementById("btn-action-item"),
-            btnSkill: document.getElementById("btn-action-skill")
         };
     }
 
@@ -297,18 +306,6 @@ document.addEventListener("DOMContentLoaded", () => {
             el.classList.add("hit-effect"); 
             setTimeout(() => el.classList.remove("hit-effect"), 150);
         }
-    }
-
-    function actualizarBotonManzana() {
-        const ui = getUI();
-        if(!ui.btnItem) return;
-        let manzanas = 0;
-        if (window.miInventario && window.miInventario.slots) {
-            const item = window.miInventario.slots.find(i => i.id === "apple_01");
-            if (item) manzanas = item.cantidad || item.count || 0;
-        }
-        ui.btnItem.innerText = `🍎 Curar (+25 HP) [x${manzanas}]`;
-        ui.btnItem.disabled = manzanas <= 0;
     }
 
     function actualizarUICombate(p, esJugador) {
@@ -403,6 +400,20 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
+        // --- INYECCIÓN DINÁMICA DE LOS 3 BOTONES DE COMBATE ---
+        if (ui.controls) {
+            ui.controls.innerHTML = `
+                <button id="btn-action-atk" class="battle-btn atk-btn">⚔️ ATACAR</button>
+                <button id="btn-action-special" class="battle-btn special-btn">✨ ESPECIAL</button>
+                <button id="btn-action-buff" class="battle-btn buff-btn">🛡️ TÁCTICA</button>
+            `;
+            // Asignar Event Listeners directamente
+            document.getElementById("btn-action-atk").onclick = () => ejecutarRonda("ataque");
+            document.getElementById("btn-action-special").onclick = () => ejecutarRonda("especial");
+            document.getElementById("btn-action-buff").onclick = () => ejecutarRonda("tactica");
+        }
+        // --------------------------------------------------------
+
         document.getElementById("player-visual-box").innerHTML = "";
         document.getElementById("enemy-visual-box").innerHTML = "";
         
@@ -429,13 +440,9 @@ document.addEventListener("DOMContentLoaded", () => {
         // --- MOSTRAR START Y OCULTAR CONTROLES FORZOSAMENTE ---
         if(ui.btnStart) ui.btnStart.style.setProperty("display", "block", "important");
         if(ui.btnLeave) ui.btnLeave.style.setProperty("display", "block", "important");
-        
         if(ui.controls) ui.controls.style.setProperty("display", "none", "important");
         
-        if(ui.btnAtk) ui.btnAtk.disabled = false;
-        if(ui.btnItem) ui.btnItem.disabled = false;
-
-        actualizarBotonManzana();
+        cooldownEspecial = 0; // Reiniciar estado
     };
 
     // =========================================
@@ -452,9 +459,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 document.getElementById("player-sprite-battle").style.filter = "none";
                 document.getElementById("enemy-sprite-battle").style.filter = "none";
                 numeroTurno = 1;
+                cooldownEspecial = 0;
 
-                if(ui.btnAtk) ui.btnAtk.disabled = false;
-                actualizarBotonManzana();
+                actualizarBotonesCombate(); // Habilitar botones nuevos
 
                 // JUGADOR
                 const pMascota = window.miMascota;
@@ -548,8 +555,100 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================================
-    // LÓGICA CENTRAL DE TURNOS
+    // LÓGICA DE TURNOS Y HABILIDADES
     // =========================================
+    
+    function actualizarBotonesCombate() {
+        const btnAtk = document.getElementById("btn-action-atk");
+        const btnSpecial = document.getElementById("btn-action-special");
+        const btnBuff = document.getElementById("btn-action-buff");
+
+        if (btnAtk) btnAtk.disabled = false;
+        if (btnBuff) btnBuff.disabled = false;
+
+        if (btnSpecial) {
+            if (cooldownEspecial > 0) {
+                btnSpecial.disabled = true;
+                btnSpecial.innerText = `⏳ ESPERA (${cooldownEspecial})`;
+            } else {
+                btnSpecial.disabled = false;
+                btnSpecial.innerText = `✨ ESPECIAL`;
+            }
+        }
+    }
+
+    function deshabilitarBotones() {
+        ["btn-action-atk", "btn-action-special", "btn-action-buff"].forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) btn.disabled = true;
+        });
+    }
+
+    function ejecutarRonda(accionJugador) {
+        addLog(`<br><span style="color:#4dd0e1">[TURNO ${numeroTurno}]</span>`);
+        deshabilitarBotones();
+        
+        let playerGoesFirst = playerCombat.spd >= enemyCombat.spd;
+        if (playerCombat.spd === enemyCombat.spd) playerGoesFirst = Math.random() > 0.5;
+
+        let ejecutor1 = playerGoesFirst ? playerCombat : enemyCombat;
+        let ejecutor2 = playerGoesFirst ? enemyCombat : playerCombat;
+        let accion1 = playerGoesFirst ? accionJugador : "ataque";
+        let accion2 = playerGoesFirst ? "ataque" : accionJugador;
+
+        ejecutarAccion(ejecutor1, ejecutor2, accion1);
+        
+        if (ejecutor2.hp > 0) {
+            setTimeout(() => {
+                ejecutarAccion(ejecutor2, ejecutor1, accion2);
+                finalizarRonda();
+            }, 800);
+        } else {
+            finalizarRonda();
+        }
+
+        function finalizarRonda() {
+            setTimeout(() => {
+                procesarEfectosFinTurno(playerCombat);
+                procesarEfectosFinTurno(enemyCombat);
+                
+                if (cooldownEspecial > 0) cooldownEspecial--;
+                numeroTurno++;
+                
+                setTimeout(checkEndGame, 600);
+            }, 800);
+        }
+    }
+
+    function ejecutarAccion(atacante, defensor, accionElegida) {
+        if (atacante.hp <= 0 || defensor.hp <= 0) return;
+
+        if (atacante.isPlayer) {
+            if (accionElegida === "especial") {
+                cooldownEspecial = 3;
+                addLog(`<span style="color:#e040fb">> ¡${atacante.nombre} usa un ATAQUE ESPECIAL!</span>`);
+                let atkOriginal = atacante.atk;
+                atacante.atk = Math.floor(atacante.atk * 1.5); // 50% extra dmg
+                procesarAtaque(atacante, defensor);
+                atacante.atk = atkOriginal;
+            } else if (accionElegida === "tactica") {
+                addLog(`<span style="color:#26a69a">> ¡${atacante.nombre} aplica una TÁCTICA!</span>`);
+                // Placeholder buff: Cura un 15%
+                let cura = Math.floor(atacante.maxHp * 0.15); 
+                if (cura < 1) cura = 1;
+                atacante.hp = Math.min(atacante.maxHp, atacante.hp + cura);
+                mostrarTextoFlotante(true, `+${cura}`, "text-heal");
+                addLog(`<span style="color:#4CAF50">* Recupera ${cura} HP y prepara su estrategia.</span>`);
+                efectoCuracion("player-sprite-battle");
+                actualizarUICombate(atacante, true);
+            } else {
+                procesarAtaque(atacante, defensor); // Ataque normal
+            }
+        } else {
+            procesarAtaque(atacante, defensor); // Enemigo siempre ataca normal por ahora
+        }
+    }
+
     function procesarAtaque(atacante, defensor) {
         if (atacante.hp <= 0 || defensor.hp <= 0) return;
 
@@ -702,77 +801,10 @@ document.addEventListener("DOMContentLoaded", () => {
         actualizarUICombate(fighter, fighter.isPlayer);
     }
 
-    // =========================================
-    // ACCIONES DE BOTONES
-    // =========================================
-    const btnItemElement = document.getElementById("btn-action-item");
-    if(btnItemElement) {
-        btnItemElement.addEventListener("click", () => {
-            const ui = getUI();
-            if (!playerCombat || playerCombat.hp <= 0) return;
-            if (window.miInventario && window.miInventario.consumeItem("apple_01", 1)) {
-                playerCombat.hp += 25;
-                if (playerCombat.hp > playerCombat.maxHp) playerCombat.hp = playerCombat.maxHp;
-                addLog(`<span style="color:#4CAF50">🍎 Has usado una Manzana. Recuperas 25 HP.</span>`);
-                mostrarTextoFlotante(true, "+25", "text-heal");
-                
-                if(window.Sonidos) window.Sonidos.play("heal"); 
-                efectoCuracion("player-sprite-battle");
-                
-                actualizarUICombate(playerCombat, true);
-                actualizarBotonManzana();
-                if(ui.btnAtk) ui.btnAtk.disabled = true; 
-                if(ui.btnItem) ui.btnItem.disabled = true;
-                
-                setTimeout(() => {
-                    if (enemyCombat.hp > 0) {
-                        procesarAtaque(enemyCombat, playerCombat);
-                        setTimeout(() => {
-                            procesarEfectosFinTurno(playerCombat);
-                            procesarEfectosFinTurno(enemyCombat);
-                            setTimeout(checkEndGame, 600);
-                        }, 800);
-                    }
-                }, 800);
-            }
-        });
-    }
-
-    const btnAtkElement = document.getElementById("btn-action-atk");
-    if(btnAtkElement) {
-        btnAtkElement.addEventListener("click", () => {
-            const ui = getUI();
-            addLog(`<br><span style="color:#4dd0e1">[TURNO ${numeroTurno}]</span>`);
-            if(ui.btnAtk) ui.btnAtk.disabled = true; 
-            if(ui.btnItem) ui.btnItem.disabled = true;
-            
-            let primero = playerCombat; let segundo = enemyCombat;
-            if (enemyCombat.spd > playerCombat.spd) { primero = enemyCombat; segundo = playerCombat; } 
-            else if (enemyCombat.spd === playerCombat.spd && Math.random() > 0.5) { primero = enemyCombat; segundo = playerCombat; }
-
-            procesarAtaque(primero, segundo);
-            
-            if (segundo.hp > 0) {
-                setTimeout(() => {
-                    procesarAtaque(segundo, primero);
-                    setTimeout(() => {
-                        procesarEfectosFinTurno(primero);
-                        procesarEfectosFinTurno(segundo);
-                        setTimeout(checkEndGame, 600);
-                    }, 800);
-                }, 800); 
-            } else { 
-                setTimeout(checkEndGame, 1000); 
-            }
-            numeroTurno++;
-        });
-    }
-
     function checkEndGame() {
         const ui = getUI();
         if (playerCombat.hp <= 0 || enemyCombat.hp <= 0) {
-            if(ui.btnAtk) ui.btnAtk.disabled = true; 
-            if(ui.btnItem) ui.btnItem.disabled = true;
+            deshabilitarBotones();
             addLog(`<br><span style="color:#ffcc00; font-size: 16px; font-weight: bold;">--- FIN DEL COMBATE ---</span>`);
             
             if (playerCombat.hp > 0) {
@@ -803,8 +835,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }, 1000);
         } else {
-            if(ui.btnAtk) ui.btnAtk.disabled = false;
-            actualizarBotonManzana();
+            actualizarBotonesCombate(); // Reactivar al inicio del nuevo turno
         }
     }
 });
