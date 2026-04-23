@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - MOTOR DE COMBATE V9.2.0 (UI POLISH: GLOW Y ANIMACIONES)
+// ColiseumManager.js - MOTOR DE COMBATE V9.2.1 (CORRECCIÓN DE BOTONES Y HOVER)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -8,6 +8,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const style = document.createElement("style");
         style.id = "coliseum-final-polish-styles";
         style.innerHTML = `
+            /* CLASE DE OCULTAMIENTO FORZADO */
+            .coliseum-hidden {
+                display: none !important;
+            }
+
             /* FONDO TURQUESA GLOBAL (SIN INTERFERIR CON EL DISPLAY DEL ROUTER) */
             .coliseum-cyan-theme {
                 background-color: #31c4d8 !important;
@@ -47,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 max-width: 500px !important;
                 margin: 0 auto !important; /* Centrado automático */
                 box-sizing: border-box !important;
-                animation: arenaGlow 3s infinite ease-in-out !important; /* Animación de la arena aplicada */
+                animation: arenaGlow 3s infinite ease-in-out !important; 
             }
 
             /* TÍTULO DENTRO DE LA CAJA */
@@ -153,10 +158,10 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             #battle-log::-webkit-scrollbar { display: none !important; }
 
-            /* CONTENEDOR DE BOTONES (DENTRO DE LA CAJA) */
+            /* CONTENEDOR DE BOTONES (Se elimina el display flex !important para permitir a JS ocultarlo) */
             #battle-controls {
                 width: 100% !important;
-                display: flex !important;
+                display: flex;
                 gap: 10px !important;
                 justify-content: center !important;
                 margin-top: 15px !important;
@@ -180,13 +185,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 cursor: pointer; 
                 width: 100%; 
                 margin-top: 15px !important;
-                display: none;
             }
 
-            /* BOTÓN DE RETIRADA REPARADO (CON ANIMACIÓN TIPO NEXO) */
+            /* BOTÓN DE RETIRADA REPARADO (HOVER CONTRASTANTE) */
             #btn-leave-battle {
                 background: #0a1118 !important; /* Azul muy oscuro para contraste */
-                border: 1px solid #4dd0e1 !important;
+                border: 2px solid #1e3a5f !important;
                 color: #4dd0e1 !important;
                 padding: 12px 30px !important;
                 border-radius: 8px !important;
@@ -194,18 +198,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 font-weight: bold;
                 letter-spacing: 1px;
                 cursor: pointer;
-                margin: 20px auto !important; /* Centrado fuera de la caja */
+                margin: 15px auto 30px auto !important; /* Más pegado arriba, más espacio abajo */
                 display: block;
                 transition: 0.3s;
                 width: max-content;
-                animation: buttonPulseNexo 3s infinite ease-in-out !important; /* Animación tipo Nexo aplicada */
+                animation: buttonPulseNexo 3s infinite ease-in-out !important;
                 box-sizing: border-box !important;
             }
             #btn-leave-battle:hover { 
-                background: #4dd0e1 !important; 
-                color: #0a1118 !important; 
+                background: #1e3a5f !important; /* Azul oscuro aclarado (no cian) */
+                color: #ffffff !important; /* Texto blanco puro */
                 box-shadow: 0 0 15px rgba(77, 208, 225, 0.8) !important;
-                border-color: #fff !important;
+                border-color: #4dd0e1 !important;
             }
             
             #btn-action-atk:active, #btn-action-item:active, #btn-start-battle:active, #btn-leave-battle:active { transform: scale(0.95); }
@@ -370,10 +374,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (ui.area) {
             let currentScreen = ui.area.closest('.screen, .coliseum-screen, .view') || ui.area.parentElement;
             if (currentScreen) {
-                // Solo pintamos esta pantalla, sin forzar display: flex que rompa el router
                 currentScreen.classList.add("coliseum-cyan-theme");
                 
-                // Mover Título Adentro de la caja oscura
+                // Mover Título
                 let title = currentScreen.querySelector("h2, h1");
                 if(title && title.id !== "battle-player-name" && title.id !== "battle-enemy-name" && title.parentElement !== ui.area) {
                     title.classList.add("coliseum-title-inside");
@@ -381,7 +384,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-            // Convertir contenedor de luchadores a flex
+            // Convertir contenedor de luchadores
             const flexContainer = ui.area.querySelector("div");
             if (flexContainer) {
                 flexContainer.classList.add("fighters-wrapper");
@@ -399,12 +402,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (ui.btnStart && ui.btnStart.parentElement !== ui.area) {
                 ui.area.appendChild(ui.btnStart);
             }
-            // Asegurar que el botón de Retirarse se quede AFUERA
+            // Asegurar que Retirarse se quede AFUERA
             if (ui.btnLeave && currentScreen && ui.btnLeave.parentElement !== currentScreen) {
                 currentScreen.appendChild(ui.btnLeave);
             }
         }
-        // -----------------------------------------------------------------
 
         document.getElementById("player-visual-box").innerHTML = "";
         document.getElementById("enemy-visual-box").innerHTML = "";
@@ -429,20 +431,14 @@ document.addEventListener("DOMContentLoaded", () => {
         
         if(ui.log) ui.log.innerHTML = `<span style="color:#aaa;">> Conectando con los servidores del Coliseo...</span><br><span style="color:#4dd0e1">> Arena lista. Esperando combatientes.</span>`;
         
-        if(ui.btnStart) {
-            ui.btnStart.style.display = "block";
-            ui.btnStart.innerText = "Entrar a la Arena";
-        }
-        if(ui.btnLeave) {
-            ui.btnLeave.style.display = "block";
-            ui.btnLeave.disabled = false;
-        }
-        
-        if(ui.controls) ui.controls.style.display = "none";
+        // ESTADO INICIAL DE BOTONES
+        if(ui.btnStart) ui.btnStart.classList.remove("coliseum-hidden");
+        if(ui.controls) ui.controls.classList.add("coliseum-hidden"); // OCULTAR CONTROLES
+        if(ui.btnLeave) ui.btnLeave.classList.remove("coliseum-hidden");
         
         if(ui.btnAtk) ui.btnAtk.disabled = false;
         if(ui.btnItem) ui.btnItem.disabled = false;
-        if(ui.btnSkill) ui.btnSkill.style.display = "none"; 
+        if(ui.btnSkill) ui.btnSkill.classList.add("coliseum-hidden"); 
 
         actualizarBotonManzana();
     };
@@ -543,12 +539,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 actualizarUICombate(playerCombat, true);
                 actualizarUICombate(enemyCombat, false);
 
-                // Alternar vista de botones
-                if(ui.btnStart) ui.btnStart.style.display = "none";
-                if(ui.controls) {
-                    ui.controls.classList.remove("hidden");
-                    ui.controls.style.display = "flex";
-                }
+                // Alternar vista de botones con la clase robusta
+                if(ui.btnStart) ui.btnStart.classList.add("coliseum-hidden");
+                if(ui.controls) ui.controls.classList.remove("coliseum-hidden");
                 
                 addLog(`<br><span style="color:#ffcc00; font-weight:bold;">--- BATTLE START ---</span>`);
                 
@@ -808,10 +801,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             setTimeout(() => {
                 if(ui.btnStart) {
-                    ui.btnStart.style.display = "block";
+                    ui.btnStart.classList.remove("coliseum-hidden");
                     ui.btnStart.innerText = "Buscar otro rival";
                 }
-                if(ui.controls) ui.controls.style.display = "none";
+                if(ui.controls) ui.controls.classList.add("coliseum-hidden");
             }, 1000);
         } else {
             if(ui.btnAtk) ui.btnAtk.disabled = false;
