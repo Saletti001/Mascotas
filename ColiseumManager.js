@@ -1,23 +1,20 @@
 // =========================================
-// ColiseumManager.js - MOTOR DE COMBATE V9.1.9 (UI UNIFICADA Y CUADRADA)
+// ColiseumManager.js - MOTOR DE COMBATE V9.1.9 (NAVEGACIÓN REPARADA Y BOTONES PULIDOS)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. INYECTAR ESTILOS GLOBALES
+    // 1. INYECTAR ESTILOS GLOBALES DE FORMA SEGURA Y NO INVASIVA
     if (!document.getElementById("coliseum-final-polish-styles")) {
         const style = document.createElement("style");
         style.id = "coliseum-final-polish-styles";
         style.innerHTML = `
-            /* FONDO TURQUESA GLOBAL (ESTILO CRIANZA) */
+            /* FONDO TURQUESA GLOBAL (SIN INTERFERIR CON EL DISPLAY DEL ROUTER) */
             .coliseum-cyan-theme {
                 background-color: #31c4d8 !important;
                 background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px) !important;
                 background-size: auto !important;
                 min-height: 100vh !important;
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: center !important;
-                padding: 20px 0 !important; 
+                padding-top: 20px !important; 
                 box-sizing: border-box !important;
             }
 
@@ -39,9 +36,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: center !important;
-                width: 92% !important; /* Margen para ver el fondo cian */
+                width: 92% !important; 
                 max-width: 500px !important;
-                margin: 0 auto !important; 
+                margin: 0 auto !important; /* Centrado automático sin forzar al padre */
                 box-sizing: border-box !important;
                 animation: arenaGlow 2.5s infinite ease-in-out !important; 
             }
@@ -149,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             #battle-log::-webkit-scrollbar { display: none !important; }
 
-            /* CONTENEDOR DE BOTONES (AHORA DENTRO DE LA CAJA) */
+            /* CONTENEDOR DE BOTONES (DENTRO DE LA CAJA) */
             #battle-controls {
                 width: 100% !important;
                 display: flex !important;
@@ -179,7 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 display: none;
             }
 
-            /* BOTÓN DE RETIRADA (AFUERA DE LA CAJA) */
+            /* BOTÓN DE RETIRADA REPARADO (AFUERA DE LA CAJA) */
             #btn-leave-battle {
                 background: #111b24 !important;
                 border: 1px solid #4dd0e1 !important;
@@ -190,12 +187,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 font-weight: bold;
                 letter-spacing: 1px;
                 cursor: pointer;
-                margin-top: 20px !important;
-                transition: 0.2s;
+                margin: 20px auto !important; /* Centrado fuera de la caja */
+                display: block;
+                transition: 0.3s;
+                width: max-content;
             }
-            #btn-leave-battle:hover { background: rgba(77, 208, 225, 0.1) !important; }
+            #btn-leave-battle:hover { 
+                background: #4dd0e1 !important; 
+                color: #0a1118 !important; 
+                box-shadow: 0 0 15px rgba(77, 208, 225, 0.5) !important;
+            }
             
-            #btn-action-atk:active, #btn-action-item:active, #btn-start-battle:active { transform: scale(0.95); }
+            #btn-action-atk:active, #btn-action-item:active, #btn-start-battle:active, #btn-leave-battle:active { transform: scale(0.95); }
             #btn-action-atk:disabled, #btn-action-item:disabled { background: #333 !important; border-color: #555 !important; box-shadow: none !important; color: #888 !important; transform: none; cursor: not-allowed; }
 
             /* ANIMACIONES Y EFECTOS */
@@ -353,13 +356,14 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // --- 1. APLICAR DISEÑO Y UNIFICAR ELEMENTOS DENTRO DE LA CAJA ---
+        // --- 1. APLICAR DISEÑO Y UNIFICAR ELEMENTOS ---
         if (ui.area) {
             let currentScreen = ui.area.closest('.screen, .coliseum-screen, .view') || ui.area.parentElement;
             if (currentScreen) {
+                // Solo pintamos esta pantalla, sin forzar display: flex que rompa el router
                 currentScreen.classList.add("coliseum-cyan-theme");
                 
-                // Mover Título Adentro
+                // Mover Título Adentro de la caja oscura
                 let title = currentScreen.querySelector("h2, h1");
                 if(title && title.id !== "battle-player-name" && title.id !== "battle-enemy-name" && title.parentElement !== ui.area) {
                     title.classList.add("coliseum-title-inside");
@@ -378,15 +382,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-            // --- LA MAGIA: MOVER LOS BOTONES DENTRO DE LA CAJA NEÓN ---
+            // Mover los controles dentro de la caja oscura
             if (ui.controls && ui.controls.parentElement !== ui.area) {
                 ui.area.appendChild(ui.controls);
             }
             if (ui.btnStart && ui.btnStart.parentElement !== ui.area) {
                 ui.area.appendChild(ui.btnStart);
             }
-            // Asegurar que el botón "Retirarse" quede FUERA de la caja (Abajo del todo)
-            if (ui.btnLeave && currentScreen) {
+            // Asegurar que el botón de Retirarse se quede AFUERA
+            if (ui.btnLeave && currentScreen && ui.btnLeave.parentElement !== currentScreen) {
                 currentScreen.appendChild(ui.btnLeave);
             }
         }
@@ -424,7 +428,6 @@ document.addEventListener("DOMContentLoaded", () => {
             ui.btnLeave.disabled = false;
         }
         
-        // Ocultar controles de batalla hasta que empiece
         if(ui.controls) ui.controls.style.display = "none";
         
         if(ui.btnAtk) ui.btnAtk.disabled = false;
@@ -530,7 +533,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 actualizarUICombate(playerCombat, true);
                 actualizarUICombate(enemyCombat, false);
 
-                // Alternar vista de botones
                 if(ui.btnStart) ui.btnStart.style.display = "none";
                 if(ui.controls) {
                     ui.controls.classList.remove("hidden");
