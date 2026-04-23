@@ -1,19 +1,14 @@
 // =========================================
-// ColiseumManager.js - MOTOR DE COMBATE V9.2.1 (CORRECCIÓN DE BOTONES Y HOVER)
+// ColiseumManager.js - MOTOR DE COMBATE V9.2.2 (UI COHERENTE Y BOTONES REPARADOS)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. INYECTAR ESTILOS GLOBALES DE FORMA SEGURA Y NO INVASIVA
+    // 1. INYECTAR ESTILOS GLOBALES
     if (!document.getElementById("coliseum-final-polish-styles")) {
         const style = document.createElement("style");
         style.id = "coliseum-final-polish-styles";
         style.innerHTML = `
-            /* CLASE DE OCULTAMIENTO FORZADO */
-            .coliseum-hidden {
-                display: none !important;
-            }
-
-            /* FONDO TURQUESA GLOBAL (SIN INTERFERIR CON EL DISPLAY DEL ROUTER) */
+            /* FONDO TURQUESA GLOBAL */
             .coliseum-cyan-theme {
                 background-color: #31c4d8 !important;
                 background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px) !important;
@@ -23,21 +18,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 box-sizing: border-box !important;
             }
 
-            /* ANIMACIÓN DE LUZ DE NEÓN PARA EL CONTORNO (POTENCIADA) */
+            /* ANIMACIÓN DE LUZ DE NEÓN PARA LA ARENA */
             @keyframes arenaGlow {
                 0% { box-shadow: 0 0 20px rgba(77, 208, 225, 0.6), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.6); }
                 50% { box-shadow: 0 0 40px rgba(77, 208, 225, 1), 0 0 10px rgba(255, 255, 255, 0.7), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 1); }
                 100% { box-shadow: 0 0 20px rgba(77, 208, 225, 0.6), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.6); }
             }
 
-            /* ANIMACIÓN EXCLUSIVA PARA BOTONES TIPO "NEXO" */
-            @keyframes buttonPulseNexo {
-                0% { box-shadow: 0 0 5px rgba(77, 208, 225, 0.3); border-color: rgba(77, 208, 225, 0.5); }
-                50% { box-shadow: 0 0 15px rgba(77, 208, 225, 0.8), inset 0 0 5px rgba(255,255,255,0.2); border-color: rgba(255, 255, 255, 0.8); }
-                100% { box-shadow: 0 0 5px rgba(77, 208, 225, 0.3); border-color: rgba(77, 208, 225, 0.5); }
-            }
-
-            /* CAJA OSCURA PRINCIPAL UNIFICADA */
+            /* CAJA OSCURA PRINCIPAL */
             #battle-area {
                 background-color: rgba(13, 22, 30, 0.95) !important; 
                 border: 2px solid #4dd0e1 !important; 
@@ -50,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 align-items: center !important;
                 width: 92% !important; 
                 max-width: 500px !important;
-                margin: 0 auto !important; /* Centrado automático */
+                margin: 0 auto !important; 
                 box-sizing: border-box !important;
                 animation: arenaGlow 3s infinite ease-in-out !important; 
             }
@@ -158,10 +146,10 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             #battle-log::-webkit-scrollbar { display: none !important; }
 
-            /* CONTENEDOR DE BOTONES (Se elimina el display flex !important para permitir a JS ocultarlo) */
-            #battle-controls {
+            /* CLASE DINÁMICA PARA LOS CONTROLES DE BATALLA */
+            .battle-controls-active {
                 width: 100% !important;
-                display: flex;
+                display: flex !important;
                 gap: 10px !important;
                 justify-content: center !important;
                 margin-top: 15px !important;
@@ -187,29 +175,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 margin-top: 15px !important;
             }
 
-            /* BOTÓN DE RETIRADA REPARADO (HOVER CONTRASTANTE) */
+            /* BOTÓN DE RETIRADA (ESTILO COHERENTE CON CRIANZA) */
             #btn-leave-battle {
-                background: #0a1118 !important; /* Azul muy oscuro para contraste */
-                border: 2px solid #1e3a5f !important;
-                color: #4dd0e1 !important;
-                padding: 12px 30px !important;
+                background-color: #111b24 !important; /* Color oscuro sólido */
+                border: 1px solid #1e3a5f !important; /* Borde sutil */
+                color: #4dd0e1 !important; /* Texto cian */
+                padding: 15px 30px !important;
                 border-radius: 8px !important;
-                text-transform: uppercase;
-                font-weight: bold;
-                letter-spacing: 1px;
-                cursor: pointer;
-                margin: 15px auto 30px auto !important; /* Más pegado arriba, más espacio abajo */
-                display: block;
-                transition: 0.3s;
-                width: max-content;
-                animation: buttonPulseNexo 3s infinite ease-in-out !important;
-                box-sizing: border-box !important;
+                text-transform: uppercase !important;
+                font-weight: bold !important;
+                letter-spacing: 1px !important;
+                cursor: pointer !important;
+                margin: 20px auto !important; /* Centrado fuera de la arena */
+                display: block !important;
+                transition: 0.2s !important;
+                width: max-content !important;
+                box-shadow: none !important; /* Sin sombras raras */
+                animation: none !important; /* Sin animaciones */
             }
             #btn-leave-battle:hover { 
-                background: #1e3a5f !important; /* Azul oscuro aclarado (no cian) */
-                color: #ffffff !important; /* Texto blanco puro */
-                box-shadow: 0 0 15px rgba(77, 208, 225, 0.8) !important;
-                border-color: #4dd0e1 !important;
+                background-color: #1e3a5f !important; 
+                color: #fff !important; 
             }
             
             #btn-action-atk:active, #btn-action-item:active, #btn-start-battle:active, #btn-leave-battle:active { transform: scale(0.95); }
@@ -233,16 +219,19 @@ document.addEventListener("DOMContentLoaded", () => {
     let numeroTurno = 1;
 
     // =========================================
-    // UTILIDADES DE INTERFAZ Y JUGO VISUAL
+    // OBTENER ELEMENTOS DE LA UI DE FORMA SEGURA
     // =========================================
     function getUI() {
+        const btnAtk = document.getElementById("btn-action-atk");
+        // Si existe el botón Atacar, su contenedor padre son los controles de batalla
+        const controlsContainer = document.getElementById("battle-controls") || (btnAtk ? btnAtk.parentElement : null);
         return {
             log: document.getElementById("battle-log"),
             btnStart: document.getElementById("btn-start-battle"),
             btnLeave: document.getElementById("btn-leave-battle"),
-            controls: document.getElementById("battle-controls"),
+            controls: controlsContainer,
             area: document.getElementById("battle-area"),
-            btnAtk: document.getElementById("btn-action-atk"),
+            btnAtk: btnAtk,
             btnItem: document.getElementById("btn-action-item"),
             btnSkill: document.getElementById("btn-action-skill")
         };
@@ -359,7 +348,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================================
-    // INICIALIZACIÓN PRINCIPAL Y ESTRUCTURACIÓN DEL DOM
+    // INICIALIZACIÓN DEL COLISEO (ESTADO 1: ESPERANDO)
     // =========================================
     window.iniciarColiseo = function() {
         const ui = getUI();
@@ -370,13 +359,11 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // --- 1. APLICAR DISEÑO Y UNIFICAR ELEMENTOS ---
+        // --- APLICAR DISEÑO Y UNIFICAR ELEMENTOS ---
         if (ui.area) {
             let currentScreen = ui.area.closest('.screen, .coliseum-screen, .view') || ui.area.parentElement;
             if (currentScreen) {
                 currentScreen.classList.add("coliseum-cyan-theme");
-                
-                // Mover Título
                 let title = currentScreen.querySelector("h2, h1");
                 if(title && title.id !== "battle-player-name" && title.id !== "battle-enemy-name" && title.parentElement !== ui.area) {
                     title.classList.add("coliseum-title-inside");
@@ -384,7 +371,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-            // Convertir contenedor de luchadores
             const flexContainer = ui.area.querySelector("div");
             if (flexContainer) {
                 flexContainer.classList.add("fighters-wrapper");
@@ -395,16 +381,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-            // Mover los controles dentro de la caja oscura
             if (ui.controls && ui.controls.parentElement !== ui.area) {
                 ui.area.appendChild(ui.controls);
             }
             if (ui.btnStart && ui.btnStart.parentElement !== ui.area) {
                 ui.area.appendChild(ui.btnStart);
             }
-            // Asegurar que Retirarse se quede AFUERA
             if (ui.btnLeave && currentScreen && ui.btnLeave.parentElement !== currentScreen) {
-                currentScreen.appendChild(ui.btnLeave);
+                currentScreen.appendChild(ui.btnLeave); // Dejar el botón de salir fuera de la arena
             }
         }
 
@@ -431,20 +415,25 @@ document.addEventListener("DOMContentLoaded", () => {
         
         if(ui.log) ui.log.innerHTML = `<span style="color:#aaa;">> Conectando con los servidores del Coliseo...</span><br><span style="color:#4dd0e1">> Arena lista. Esperando combatientes.</span>`;
         
-        // ESTADO INICIAL DE BOTONES
-        if(ui.btnStart) ui.btnStart.classList.remove("coliseum-hidden");
-        if(ui.controls) ui.controls.classList.add("coliseum-hidden"); // OCULTAR CONTROLES
-        if(ui.btnLeave) ui.btnLeave.classList.remove("coliseum-hidden");
+        // --- ESTADO INICIAL DE BOTONES ---
+        if(ui.btnStart) ui.btnStart.style.display = "block";
+        if(ui.btnLeave) ui.btnLeave.style.display = "block";
+        
+        // FORZAR OCULTAMIENTO DE CONTROLES DE BATALLA
+        if(ui.controls) {
+            ui.controls.style.display = "none";
+            ui.controls.classList.remove("battle-controls-active");
+        }
         
         if(ui.btnAtk) ui.btnAtk.disabled = false;
         if(ui.btnItem) ui.btnItem.disabled = false;
-        if(ui.btnSkill) ui.btnSkill.classList.add("coliseum-hidden"); 
+        if(ui.btnSkill) ui.btnSkill.style.display = "none"; 
 
         actualizarBotonManzana();
     };
 
     // =========================================
-    // INICIAR COMBATE
+    // INICIAR COMBATE (ESTADO 2: PELEANDO)
     // =========================================
     const btnStartElement = document.getElementById("btn-start-battle");
     if(btnStartElement) {
@@ -539,9 +528,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 actualizarUICombate(playerCombat, true);
                 actualizarUICombate(enemyCombat, false);
 
-                // Alternar vista de botones con la clase robusta
-                if(ui.btnStart) ui.btnStart.classList.add("coliseum-hidden");
-                if(ui.controls) ui.controls.classList.remove("coliseum-hidden");
+                // --- MOSTRAR CONTROLES Y OCULTAR BOTÓN DE INICIO ---
+                if(ui.btnStart) ui.btnStart.style.display = "none";
+                if(ui.controls) {
+                    ui.controls.style.display = "flex";
+                    ui.controls.classList.add("battle-controls-active");
+                }
                 
                 addLog(`<br><span style="color:#ffcc00; font-weight:bold;">--- BATTLE START ---</span>`);
                 
@@ -801,10 +793,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             setTimeout(() => {
                 if(ui.btnStart) {
-                    ui.btnStart.classList.remove("coliseum-hidden");
+                    ui.btnStart.style.display = "block";
                     ui.btnStart.innerText = "Buscar otro rival";
                 }
-                if(ui.controls) ui.controls.classList.add("coliseum-hidden");
+                // Ocultar controles de acción
+                if(ui.controls) ui.controls.style.display = "none";
             }, 1000);
         } else {
             if(ui.btnAtk) ui.btnAtk.disabled = false;
