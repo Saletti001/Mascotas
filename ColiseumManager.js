@@ -1,12 +1,132 @@
 // =========================================
-// ColiseumManager.js - MOTOR DE COMBATE V9.1 (REBALANCEADO)
+// ColiseumManager.js - MOTOR DE COMBATE V9.1.2 (UI CORREGIDA Y TIMING)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
-    if (!document.getElementById("combat-styles")) {
+    // INYECCIÓN DE ESTILOS DE ALTA FIDELIDAD
+    if (!document.getElementById("coliseum-overhaul-styles")) {
         const style = document.createElement("style");
-        style.id = "combat-styles";
+        style.id = "coliseum-overhaul-styles";
         style.innerHTML = `
+            /* OVERHAUL VISUAL DEL ÁREA DE BATALLA */
+            #battle-area {
+                /* Usamos un fondo semi-transparente para que se vea el fondo principal de tu app */
+                background: rgba(0, 0, 0, 0.25) !important; 
+                backdrop-filter: blur(4px) !important;
+                border: 2px solid #4dd0e1 !important;
+                box-shadow: inset 0 0 30px rgba(0,0,0,0.5), 0 0 20px rgba(77, 208, 225, 0.2) !important;
+                border-radius: 16px !important;
+                padding: 25px 15px !important;
+                position: relative;
+                overflow: hidden !important; 
+            }
+            
+            /* PANELES DE LOS LUCHADORES (Altura forzada para que sean idénticos) */
+            #player-sprite-battle, #enemy-sprite-battle { 
+                background: rgba(13, 22, 30, 0.8) !important; 
+                padding: 15px 10px !important; 
+                border-radius: 12px !important; 
+                width: 42% !important; 
+                position: relative; 
+                transition: 0.3s; 
+                box-shadow: 0 8px 20px rgba(0,0,0,0.5) !important;
+                border: 1px solid rgba(255,255,255,0.05) !important;
+                backdrop-filter: blur(4px);
+                
+                /* Solución al desajuste de cajas */
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: flex-end !important;
+                align-items: center !important;
+                min-height: 210px !important; 
+            }
+            #player-sprite-battle { border-bottom: 3px solid #4dd0e1 !important; }
+            #enemy-sprite-battle { border-bottom: 3px solid #ff6b6b !important; }
+            
+            /* CAJAS DE LOS GENOS */
+            #player-visual-box, #enemy-visual-box {
+                width: 90px !important; 
+                height: 90px !important; 
+                margin: 0 auto auto auto !important; 
+                display: flex; 
+                justify-content: center; 
+                align-items: center; 
+                position: relative;
+                overflow: visible !important; 
+            }
+            #player-visual-box svg, #enemy-visual-box svg {
+                width: 100% !important;
+                height: 100% !important;
+                overflow: visible !important;
+            }
+
+            /* TIPOGRAFÍA DE NOMBRES (Ajuste para nombres largos) */
+            #battle-player-name, #battle-enemy-name { 
+                font-size: 12px !important; 
+                text-transform: uppercase; 
+                letter-spacing: 1px; 
+                margin-top: 15px !important; 
+                text-align: center !important;
+                width: 100% !important;
+                line-height: 1.3 !important;
+            }
+            #battle-player-name { color: #4dd0e1 !important; }
+            #battle-enemy-name { color: #ff6b6b !important; }
+
+            /* BARRAS DE HP NEON */
+            #player-sprite-battle > div:nth-child(3), #enemy-sprite-battle > div:nth-child(3) {
+                background: #000 !important;
+                border: 1px solid #333 !important;
+                box-shadow: inset 0 0 5px rgba(0,0,0,0.8) !important;
+                height: 12px !important;
+                border-radius: 6px !important;
+                width: 90% !important;
+                margin: 8px auto 0 auto !important;
+            }
+            #player-hp-bar { background: linear-gradient(90deg, #00d2ff, #4dd0e1) !important; box-shadow: 0 0 10px rgba(77,208,225,0.6) !important; }
+            #enemy-hp-bar { background: linear-gradient(90deg, #ff6b6b, #d9534f) !important; box-shadow: 0 0 10px rgba(255,107,107,0.6) !important; }
+            #player-hp-text, #enemy-hp-text { font-size: 11px !important; color: #fff !important; font-weight: bold; margin-top: 4px !important; text-shadow: 0 1px 2px #000; text-align: center; width: 100%; }
+
+            /* LOG DE BATALLA HACKER */
+            #battle-log { 
+                background: #0d161c !important; 
+                border: 1px solid #1e3a5f !important; 
+                border-left: 4px solid #4dd0e1 !important; 
+                color: #00ffcc !important; 
+                border-radius: 8px !important; 
+                font-family: 'Courier New', monospace !important; 
+                font-size: 12px !important; 
+                padding: 15px !important; 
+                box-shadow: inset 0 0 15px rgba(0,0,0,0.8) !important; 
+                margin-top: 20px !important;
+                height: 130px !important;
+            }
+
+            /* BOTONES DE ACCIÓN MEJORADOS */
+            #btn-action-atk { 
+                background: linear-gradient(90deg, #ff5722, #d84315) !important; 
+                box-shadow: 0 4px 15px rgba(255, 87, 34, 0.4) !important; 
+                border: 1px solid #ff9800 !important; 
+                color: white !important; 
+                border-radius: 10px !important;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                transition: 0.2s;
+            }
+            #btn-action-item { 
+                background: linear-gradient(90deg, #4CAF50, #2E7D32) !important; 
+                box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4) !important; 
+                border: 1px solid #81c784 !important; 
+                color: white !important; 
+                border-radius: 10px !important;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                transition: 0.2s;
+            }
+            #btn-action-atk:active, #btn-action-item:active { transform: scale(0.95); }
+            #btn-action-atk:disabled, #btn-action-item:disabled { background: #333 !important; border-color: #555 !important; box-shadow: none !important; color: #888 !important; transform: none; }
+
+            /* ANIMACIONES DE COMBATE Y TEXTO FLOTANTE */
             @keyframes floatUpFade {
                 0% { opacity: 1; transform: translateY(0) scale(1.5); }
                 10% { transform: translateY(-10px) scale(1.8); }
@@ -22,25 +142,16 @@ document.addEventListener("DOMContentLoaded", () => {
             .text-crit { color: #ffcc00; font-size: 32px; font-style: italic; text-transform: uppercase; letter-spacing: 2px; }
             .hit-effect { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5); transform: scale(0.90); transition: 0.1s; }
             
-            /* ESTILOS OVERHAUL (Mantenidos del paso anterior) */
-            #battle-area { background: linear-gradient(135deg, #0a1118 0%, #1a2a36 100%) !important; border: 2px solid #4dd0e1 !important; box-shadow: inset 0 0 30px rgba(0,0,0,0.8), 0 0 20px rgba(77, 208, 225, 0.2) !important; border-radius: 16px !important; padding: 25px 15px !important; position: relative; overflow: hidden !important; }
-            #player-sprite-battle, #enemy-sprite-battle { background: rgba(13, 22, 30, 0.8) !important; padding: 15px !important; border-radius: 12px !important; width: 38% !important; position: relative; transition: 0.3s; box-shadow: 0 8px 20px rgba(0,0,0,0.5) !important; border: 1px solid rgba(255,255,255,0.05) !important; backdrop-filter: blur(4px); }
-            #player-sprite-battle { border-bottom: 3px solid #4dd0e1 !important; }
-            #enemy-sprite-battle { border-bottom: 3px solid #ff6b6b !important; }
-            #player-visual-box, #enemy-visual-box { width: 90px !important; height: 90px !important; margin: 0 auto !important; display: flex; justify-content: center; align-items: center; position: relative; overflow: visible !important; }
-            #player-visual-box svg, #enemy-visual-box svg { width: 100% !important; height: 100% !important; overflow: visible !important; }
-            #battle-player-name { color: #4dd0e1 !important; font-size: 13px !important; text-transform: uppercase; letter-spacing: 1px; margin-top: 15px !important; }
-            #battle-enemy-name { color: #ff6b6b !important; font-size: 13px !important; text-transform: uppercase; letter-spacing: 1px; margin-top: 15px !important; }
-            #player-sprite-battle > div:nth-child(3), #enemy-sprite-battle > div:nth-child(3) { background: #000 !important; border: 1px solid #333 !important; box-shadow: inset 0 0 5px rgba(0,0,0,0.8) !important; height: 12px !important; border-radius: 6px !important; width: 90% !important; margin: 8px auto 0 auto !important; }
-            #player-hp-bar { background: linear-gradient(90deg, #00d2ff, #4dd0e1) !important; box-shadow: 0 0 10px rgba(77,208,225,0.6) !important; }
-            #enemy-hp-bar { background: linear-gradient(90deg, #ff6b6b, #d9534f) !important; box-shadow: 0 0 10px rgba(255,107,107,0.6) !important; }
-            #player-hp-text, #enemy-hp-text { font-size: 11px !important; color: #fff !important; font-weight: bold; margin-top: 4px !important; text-shadow: 0 1px 2px #000; }
-            #battle-log { background: #0d161c !important; border: 1px solid #1e3a5f !important; border-left: 4px solid #4dd0e1 !important; color: #00ffcc !important; border-radius: 8px !important; font-family: 'Courier New', monospace !important; font-size: 12px !important; padding: 15px !important; box-shadow: inset 0 0 15px rgba(0,0,0,0.8) !important; margin-top: 20px !important; height: 130px !important; }
-            #btn-action-atk { background: linear-gradient(90deg, #ff5722, #d84315) !important; box-shadow: 0 4px 15px rgba(255, 87, 34, 0.4) !important; border: 1px solid #ff9800 !important; color: white !important; border-radius: 10px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
-            #btn-action-item { background: linear-gradient(90deg, #4CAF50, #2E7D32) !important; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4) !important; border: 1px solid #81c784 !important; color: white !important; border-radius: 10px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; }
-            #btn-action-atk:active, #btn-action-item:active { transform: scale(0.95); }
-            #btn-action-atk:disabled, #btn-action-item:disabled { background: #333 !important; border-color: #555 !important; box-shadow: none !important; color: #888 !important; transform: none; }
-            .vs-badge-battle { font-size: 28px !important; font-weight: 900 !important; font-style: italic !important; color: #ffcc00 !important; text-shadow: 0 0 20px rgba(255,0,0,0.8) !important; z-index: 2; }
+            /* EL LOGO VS */
+            .vs-badge-battle {
+                font-size: 28px !important;
+                font-weight: 900 !important;
+                font-style: italic !important;
+                color: #ffcc00 !important;
+                text-shadow: 0 0 20px rgba(255,0,0,0.8) !important;
+                z-index: 2;
+                margin: 0 10px !important;
+            }
         `;
         document.head.appendChild(style);
     }
@@ -59,9 +170,14 @@ document.addEventListener("DOMContentLoaded", () => {
     let enemyCombat = null;
     let numeroTurno = 1;
 
+    // APLICAR CLASE AL LOGO VS DEL HTML ORIGINAL
     const flexContainer = document.querySelector("#battle-area > div");
     if (flexContainer && flexContainer.children[1] && flexContainer.children[1].innerText === "VS") {
         flexContainer.children[1].className = "vs-badge-battle";
+        // Aseguramos que el contenedor padre distribuya el espacio correctamente
+        flexContainer.style.display = "flex";
+        flexContainer.style.alignItems = "center";
+        flexContainer.style.justifyContent = "space-between";
     }
 
     // =========================================
@@ -100,7 +216,8 @@ document.addEventListener("DOMContentLoaded", () => {
             floater.innerText = texto;
             const offsetX = (Math.random() - 0.5) * 80; 
             const offsetY = (Math.random() - 0.5) * 40;
-            floater.style.top = `calc(30% + ${offsetY}px)`;
+            // Ajustamos el inicio de la animación flotante
+            floater.style.top = `calc(20% + ${offsetY}px)`;
             floater.style.left = `calc(50% + ${offsetX}px)`;
             floater.style.transform = "translate(-50%, -50%)";
             sideEl.appendChild(floater);
@@ -290,19 +407,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 escudoCibernetico: eElemento === "Cibernético", estados: []
             };
 
-            document.getElementById("player-visual-box").innerHTML = inyectarSvgSeguro(pMascota);
-            document.getElementById("enemy-visual-box").innerHTML = inyectarSvgSeguro(eAdn);
+            // RENDER VISUAL
+            if (typeof generarSvgGeno === 'function') {
+                document.getElementById("player-visual-box").innerHTML = inyectarSvgSeguro(pMascota);
+                document.getElementById("enemy-visual-box").innerHTML = inyectarSvgSeguro(eAdn);
+            }
 
             const pNameEl = document.getElementById("battle-player-name");
-            if(pNameEl) pNameEl.innerHTML = `${playerCombat.nombre} <span style="color:#aaa; font-size:10px;">(Nv. ${pMascota.level || 1})</span>`;
+            if(pNameEl) pNameEl.innerHTML = `<strong>${playerCombat.nombre}</strong><br><span style="color:#aaa; font-size:10px;">(Nv. ${pMascota.level || 1})</span>`;
             
             const eNameEl = document.getElementById("battle-enemy-name");
-            if(eNameEl) eNameEl.innerHTML = `Rival ${eRareza} <span style="color:#aaa; font-size:10px;">(${eElemento})</span>`;
+            if(eNameEl) eNameEl.innerHTML = `<strong>Rival ${eRareza}</strong><br><span style="color:#aaa; font-size:10px;">(${eElemento})</span>`;
             else {
                 const enemyBox = document.getElementById("enemy-sprite-battle");
                 if (enemyBox) {
                     const textDivs = enemyBox.querySelectorAll("div");
-                    if (textDivs.length > 1) textDivs[1].innerHTML = `Rival ${eRareza} <span style="color:#aaa; font-size:10px;">(${eElemento})</span>`;
+                    if (textDivs.length > 1) textDivs[1].innerHTML = `<strong>Rival ${eRareza}</strong><br><span style="color:#aaa; font-size:10px;">(${eElemento})</span>`;
                 }
             }
 
@@ -345,7 +465,6 @@ document.addEventListener("DOMContentLoaded", () => {
             let isCrit = Math.random() <= probCrit;
             if (isCrit) dmg = Math.floor(dmg * 1.5);
 
-            // BALANCEADO: ESCUDO CIBERNÉTICO ABSORBE 40% DEL PRIMER IMPACTO
             if (defensor.escudoCibernetico) {
                 dmg = Math.floor(dmg * 0.60);
                 defensor.escudoCibernetico = false;
@@ -449,7 +568,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function procesarEfectosFinTurno(fighter) {
         if (fighter.hp <= 0) return;
         
-        // BALANCEADO: REGENERACIÓN BIOMUTANTE (6% + 2 Base)
         if (fighter.element === "Biomutante" && fighter.hp < fighter.maxHp) {
             let regen = Math.floor(fighter.maxHp * 0.06) + 2;
             fighter.hp += regen;
@@ -458,7 +576,6 @@ document.addEventListener("DOMContentLoaded", () => {
             efectoCuracion(fighter.isPlayer ? "player-sprite-battle" : "enemy-sprite-battle");
         }
         
-        // BALANCEADO: QUEMADURA RADIACTIVA (6% + 2 Base)
         if (fighter.estados.includes("Quemadura")) {
             let burnDmg = Math.floor(fighter.maxHp * 0.06) + 2;
             fighter.hp -= burnDmg;
@@ -494,7 +611,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     setTimeout(() => {
                         procesarEfectosFinTurno(playerCombat);
                         procesarEfectosFinTurno(enemyCombat);
-                        checkEndGame();
+                        // SOLUCIÓN TIMING: Esperamos antes de chequear el fin
+                        setTimeout(checkEndGame, 600);
                     }, 800);
                 }
             }, 800);
@@ -517,10 +635,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 setTimeout(() => {
                     procesarEfectosFinTurno(primero);
                     procesarEfectosFinTurno(segundo);
-                    checkEndGame();
+                    // SOLUCIÓN TIMING: Esperamos a que terminen los efectos
+                    setTimeout(checkEndGame, 600);
                 }, 800);
             }, 800); 
-        } else { checkEndGame(); }
+        } else { 
+            // SOLUCIÓN TIMING: Si muere en el primer golpe, igual esperamos a la animación
+            setTimeout(checkEndGame, 1000); 
+        }
         numeroTurno++;
     };
 
@@ -536,6 +658,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 addLog(`<span style="color:#aaa">Ganaste ${xpGanada} XP y ${evGanada} ✨.</span>`);
                 
                 if(window.Sonidos) window.Sonidos.play("coin"); 
+                
+                // Estos disparan las alertas, por eso era importante retrasar esta función
                 if (window.ganarXP) window.ganarXP(xpGanada);
                 if (window.miInventario && typeof window.miInventario.addEssence === 'function') window.miInventario.addEssence(evGanada);
                 
