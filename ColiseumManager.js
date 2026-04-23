@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - MOTOR DE COMBATE V9.1.7 (BLINDADO Y ESTÉTICA CRIANZA)
+// ColiseumManager.js - MOTOR DE COMBATE V9.1.8 (ANIMACIÓN NEÓN Y MÁRGENES)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -8,28 +8,41 @@ document.addEventListener("DOMContentLoaded", () => {
         const style = document.createElement("style");
         style.id = "coliseum-final-polish-styles";
         style.innerHTML = `
-            /* FONDO TURQUESA GLOBAL (ESTILO CRIANZA) */
+            /* FONDO TURQUESA GLOBAL CON MARGEN INTERIOR */
             .coliseum-cyan-theme {
                 background-color: #31c4d8 !important;
                 background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px) !important;
                 background-size: auto !important;
                 min-height: 100vh !important;
-            }
-
-            /* CAJA OSCURA PRINCIPAL (ESTILO CRIANZA) */
-            #battle-area {
-                background-color: rgba(13, 22, 30, 0.95) !important; 
-                border: 1px solid #1e3a5f !important;
-                border-radius: 12px !important;
-                padding: 20px 20px 25px 20px !important; 
-                position: relative;
-                overflow: hidden !important; 
-                box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: center !important;
-                margin: 0 auto !important;
+                padding: 20px !important; /* <--- Esto crea el margen para que se vea el fondo cian */
+                box-sizing: border-box !important;
+            }
+
+            /* ANIMACIÓN DE LUZ DE NEÓN PARA EL CONTORNO */
+            @keyframes arenaGlow {
+                0% { box-shadow: 0 0 10px rgba(77, 208, 225, 0.3), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.4); }
+                50% { box-shadow: 0 0 25px rgba(77, 208, 225, 0.9), 0 0 5px rgba(255, 255, 255, 0.5), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 1); }
+                100% { box-shadow: 0 0 10px rgba(77, 208, 225, 0.3), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.4); }
+            }
+
+            /* CAJA OSCURA PRINCIPAL (MITAD SUPERIOR CON EFECTO NEÓN) */
+            #battle-area {
+                background-color: rgba(13, 22, 30, 0.95) !important; 
+                border: 2px solid #4dd0e1 !important; /* Borde más grueso para el neón */
+                border-radius: 16px !important;
+                padding: 20px 20px 25px 20px !important; 
+                position: relative;
+                overflow: hidden !important; 
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                width: 100% !important;
                 max-width: 600px !important;
+                margin: 0 auto 20px auto !important; /* Margen inferior para separarlo de los botones */
+                animation: arenaGlow 2.5s infinite ease-in-out !important; /* <--- Animación aplicada */
             }
 
             /* TÍTULO DENTRO DE LA CAJA */
@@ -139,10 +152,19 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             #battle-log::-webkit-scrollbar { display: none !important; }
 
+            /* CONTENEDOR DE BOTONES (Para que no se desborden) */
+            #battle-controls {
+                width: 100% !important;
+                max-width: 600px !important;
+                display: flex !important;
+                gap: 10px !important;
+                justify-content: center !important;
+            }
+
             /* BOTONES DE ACCIÓN MEJORADOS */
-            #btn-action-atk { background: linear-gradient(90deg, #ff5722, #d84315) !important; box-shadow: 0 4px 15px rgba(255, 87, 34, 0.4) !important; border: 1px solid #ff9800 !important; color: white !important; border-radius: 8px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; padding: 12px !important; font-weight: bold !important; cursor: pointer; }
-            #btn-action-item { background: linear-gradient(90deg, #4CAF50, #2E7D32) !important; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4) !important; border: 1px solid #81c784 !important; color: white !important; border-radius: 8px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; padding: 12px !important; font-weight: bold !important; cursor: pointer; }
-            #btn-start-battle { background: linear-gradient(90deg, #E91E63, #C2185B) !important; box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4) !important; border: 1px solid #F48FB1 !important; color: white !important; border-radius: 8px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; padding: 12px 25px !important; font-weight: bold !important; cursor: pointer; }
+            #btn-action-atk { flex: 1 !important; background: linear-gradient(90deg, #ff5722, #d84315) !important; box-shadow: 0 4px 15px rgba(255, 87, 34, 0.4) !important; border: 1px solid #ff9800 !important; color: white !important; border-radius: 8px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; padding: 15px !important; font-weight: bold !important; cursor: pointer; }
+            #btn-action-item { flex: 1 !important; background: linear-gradient(90deg, #4CAF50, #2E7D32) !important; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4) !important; border: 1px solid #81c784 !important; color: white !important; border-radius: 8px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; padding: 15px !important; font-weight: bold !important; cursor: pointer; }
+            #btn-start-battle { background: linear-gradient(90deg, #E91E63, #C2185B) !important; box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4) !important; border: 1px solid #F48FB1 !important; color: white !important; border-radius: 8px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; padding: 15px 30px !important; font-weight: bold !important; cursor: pointer; width: 100%; max-width: 600px; }
             
             #btn-action-atk:active, #btn-action-item:active, #btn-start-battle:active { transform: scale(0.95); }
             #btn-action-atk:disabled, #btn-action-item:disabled { background: #333 !important; border-color: #555 !important; box-shadow: none !important; color: #888 !important; transform: none; cursor: not-allowed; }
@@ -321,7 +343,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const flexContainer = ui.area.querySelector("div");
             if (flexContainer) {
                 flexContainer.classList.add("fighters-wrapper");
-                // Buscamos el texto VS y le damos el estilo amarillo itálico
+                // Buscamos el texto VS y le damos el estilo
                 for (let i = 0; i < flexContainer.children.length; i++) {
                     if (flexContainer.children[i].innerText.includes("VS")) {
                         flexContainer.children[i].className = "vs-badge-battle";
