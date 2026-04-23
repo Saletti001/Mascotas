@@ -1,14 +1,14 @@
 // =========================================
-// ColiseumManager.js - MOTOR DE COMBATE V9.1.8 (ANIMACIÓN NEÓN Y MÁRGENES)
+// ColiseumManager.js - MOTOR DE COMBATE V9.1.9 (UI UNIFICADA Y CUADRADA)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. INYECTAR ESTILOS GLOBALES DE FORMA SEGURA
+    // 1. INYECTAR ESTILOS GLOBALES
     if (!document.getElementById("coliseum-final-polish-styles")) {
         const style = document.createElement("style");
         style.id = "coliseum-final-polish-styles";
         style.innerHTML = `
-            /* FONDO TURQUESA GLOBAL CON MARGEN INTERIOR */
+            /* FONDO TURQUESA GLOBAL (ESTILO CRIANZA) */
             .coliseum-cyan-theme {
                 background-color: #31c4d8 !important;
                 background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px) !important;
@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: center !important;
-                padding: 20px !important; /* <--- Esto crea el margen para que se vea el fondo cian */
+                padding: 20px 0 !important; 
                 box-sizing: border-box !important;
             }
 
@@ -28,28 +28,29 @@ document.addEventListener("DOMContentLoaded", () => {
                 100% { box-shadow: 0 0 10px rgba(77, 208, 225, 0.3), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.4); }
             }
 
-            /* CAJA OSCURA PRINCIPAL (MITAD SUPERIOR CON EFECTO NEÓN) */
+            /* CAJA OSCURA PRINCIPAL UNIFICADA */
             #battle-area {
                 background-color: rgba(13, 22, 30, 0.95) !important; 
-                border: 2px solid #4dd0e1 !important; /* Borde más grueso para el neón */
+                border: 2px solid #4dd0e1 !important; 
                 border-radius: 16px !important;
-                padding: 20px 20px 25px 20px !important; 
+                padding: 20px !important; 
                 position: relative;
                 overflow: hidden !important; 
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: center !important;
-                width: 100% !important;
-                max-width: 600px !important;
-                margin: 0 auto 20px auto !important; /* Margen inferior para separarlo de los botones */
-                animation: arenaGlow 2.5s infinite ease-in-out !important; /* <--- Animación aplicada */
+                width: 92% !important; /* Margen para ver el fondo cian */
+                max-width: 500px !important;
+                margin: 0 auto !important; 
+                box-sizing: border-box !important;
+                animation: arenaGlow 2.5s infinite ease-in-out !important; 
             }
 
             /* TÍTULO DENTRO DE LA CAJA */
             .coliseum-title-inside {
                 color: #4dd0e1 !important;
                 text-align: center !important;
-                font-size: 16px !important;
+                font-size: 18px !important;
                 margin-top: 0 !important;
                 margin-bottom: 20px !important;
                 text-transform: uppercase !important;
@@ -98,11 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 position: relative;
                 overflow: visible !important; 
             }
-            #player-visual-box svg, #enemy-visual-box svg {
-                width: 100% !important;
-                height: 100% !important;
-                overflow: visible !important;
-            }
+            #player-visual-box svg, #enemy-visual-box svg { width: 100% !important; height: 100% !important; overflow: visible !important; }
 
             /* TIPOGRAFÍA DE NOMBRES */
             #battle-player-name, #battle-enemy-name { 
@@ -131,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
             #enemy-hp-bar { background: linear-gradient(90deg, #ff6b6b, #d9534f) !important; box-shadow: 0 0 10px rgba(255,107,107,0.6) !important; }
             #player-hp-text, #enemy-hp-text { font-size: 11px !important; color: #fff !important; font-weight: bold; margin-top: 4px !important; text-shadow: 0 1px 2px #000; text-align: center; width: 100%; }
 
-            /* LOG DE BATALLA HACKER (SIN SCROLLBAR) */
+            /* LOG DE BATALLA HACKER */
             #battle-log { 
                 background: #0d161c !important; 
                 border: 1px solid #1e3a5f !important; 
@@ -152,19 +149,51 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             #battle-log::-webkit-scrollbar { display: none !important; }
 
-            /* CONTENEDOR DE BOTONES (Para que no se desborden) */
+            /* CONTENEDOR DE BOTONES (AHORA DENTRO DE LA CAJA) */
             #battle-controls {
                 width: 100% !important;
-                max-width: 600px !important;
                 display: flex !important;
                 gap: 10px !important;
                 justify-content: center !important;
+                margin-top: 15px !important;
             }
 
             /* BOTONES DE ACCIÓN MEJORADOS */
             #btn-action-atk { flex: 1 !important; background: linear-gradient(90deg, #ff5722, #d84315) !important; box-shadow: 0 4px 15px rgba(255, 87, 34, 0.4) !important; border: 1px solid #ff9800 !important; color: white !important; border-radius: 8px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; padding: 15px !important; font-weight: bold !important; cursor: pointer; }
             #btn-action-item { flex: 1 !important; background: linear-gradient(90deg, #4CAF50, #2E7D32) !important; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4) !important; border: 1px solid #81c784 !important; color: white !important; border-radius: 8px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; padding: 15px !important; font-weight: bold !important; cursor: pointer; }
-            #btn-start-battle { background: linear-gradient(90deg, #E91E63, #C2185B) !important; box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4) !important; border: 1px solid #F48FB1 !important; color: white !important; border-radius: 8px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; padding: 15px 30px !important; font-weight: bold !important; cursor: pointer; width: 100%; max-width: 600px; }
+            
+            #btn-start-battle { 
+                background: linear-gradient(90deg, #E91E63, #C2185B) !important; 
+                box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4) !important; 
+                border: 1px solid #F48FB1 !important; 
+                color: white !important; 
+                border-radius: 8px !important; 
+                text-transform: uppercase; 
+                letter-spacing: 1px; 
+                transition: 0.2s; 
+                padding: 15px 30px !important; 
+                font-weight: bold !important; 
+                cursor: pointer; 
+                width: 100%; 
+                margin-top: 15px !important;
+                display: none;
+            }
+
+            /* BOTÓN DE RETIRADA (AFUERA DE LA CAJA) */
+            #btn-leave-battle {
+                background: #111b24 !important;
+                border: 1px solid #4dd0e1 !important;
+                color: #4dd0e1 !important;
+                padding: 12px 30px !important;
+                border-radius: 8px !important;
+                text-transform: uppercase;
+                font-weight: bold;
+                letter-spacing: 1px;
+                cursor: pointer;
+                margin-top: 20px !important;
+                transition: 0.2s;
+            }
+            #btn-leave-battle:hover { background: rgba(77, 208, 225, 0.1) !important; }
             
             #btn-action-atk:active, #btn-action-item:active, #btn-start-battle:active { transform: scale(0.95); }
             #btn-action-atk:disabled, #btn-action-item:disabled { background: #333 !important; border-color: #555 !important; box-shadow: none !important; color: #888 !important; transform: none; cursor: not-allowed; }
@@ -313,7 +342,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================================
-    // INICIALIZACIÓN PRINCIPAL (A PRUEBA DE FALLOS)
+    // INICIALIZACIÓN PRINCIPAL Y ESTRUCTURACIÓN DEL DOM
     // =========================================
     window.iniciarColiseo = function() {
         const ui = getUI();
@@ -324,14 +353,13 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // --- 1. APLICAR DISEÑO Y MOVER TÍTULO AL VUELO ---
+        // --- 1. APLICAR DISEÑO Y UNIFICAR ELEMENTOS DENTRO DE LA CAJA ---
         if (ui.area) {
             let currentScreen = ui.area.closest('.screen, .coliseum-screen, .view') || ui.area.parentElement;
             if (currentScreen) {
-                // Forzamos el fondo turquesa
                 currentScreen.classList.add("coliseum-cyan-theme");
                 
-                // Buscamos el título "COLISEO NEXO" y lo metemos a la caja oscura
+                // Mover Título Adentro
                 let title = currentScreen.querySelector("h2, h1");
                 if(title && title.id !== "battle-player-name" && title.id !== "battle-enemy-name" && title.parentElement !== ui.area) {
                     title.classList.add("coliseum-title-inside");
@@ -339,19 +367,30 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
 
-            // Convertimos el contenedor de luchadores en Flexbox
+            // Convertir contenedor de luchadores a flex
             const flexContainer = ui.area.querySelector("div");
             if (flexContainer) {
                 flexContainer.classList.add("fighters-wrapper");
-                // Buscamos el texto VS y le damos el estilo
                 for (let i = 0; i < flexContainer.children.length; i++) {
                     if (flexContainer.children[i].innerText.includes("VS")) {
                         flexContainer.children[i].className = "vs-badge-battle";
                     }
                 }
             }
+
+            // --- LA MAGIA: MOVER LOS BOTONES DENTRO DE LA CAJA NEÓN ---
+            if (ui.controls && ui.controls.parentElement !== ui.area) {
+                ui.area.appendChild(ui.controls);
+            }
+            if (ui.btnStart && ui.btnStart.parentElement !== ui.area) {
+                ui.area.appendChild(ui.btnStart);
+            }
+            // Asegurar que el botón "Retirarse" quede FUERA de la caja (Abajo del todo)
+            if (ui.btnLeave && currentScreen) {
+                currentScreen.appendChild(ui.btnLeave);
+            }
         }
-        // ---------------------------------------------------
+        // -----------------------------------------------------------------
 
         document.getElementById("player-visual-box").innerHTML = "";
         document.getElementById("enemy-visual-box").innerHTML = "";
@@ -381,10 +420,12 @@ document.addEventListener("DOMContentLoaded", () => {
             ui.btnStart.innerText = "Entrar a la Arena";
         }
         if(ui.btnLeave) {
-            ui.btnLeave.style.display = "inline-block";
+            ui.btnLeave.style.display = "block";
             ui.btnLeave.disabled = false;
         }
-        if(ui.controls) ui.controls.classList.add("hidden");
+        
+        // Ocultar controles de batalla hasta que empiece
+        if(ui.controls) ui.controls.style.display = "none";
         
         if(ui.btnAtk) ui.btnAtk.disabled = false;
         if(ui.btnItem) ui.btnItem.disabled = false;
@@ -489,9 +530,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 actualizarUICombate(playerCombat, true);
                 actualizarUICombate(enemyCombat, false);
 
+                // Alternar vista de botones
                 if(ui.btnStart) ui.btnStart.style.display = "none";
-                if(ui.btnLeave) ui.btnLeave.style.display = "none";
-                if(ui.controls) ui.controls.classList.remove("hidden");
+                if(ui.controls) {
+                    ui.controls.classList.remove("hidden");
+                    ui.controls.style.display = "flex";
+                }
                 
                 addLog(`<br><span style="color:#ffcc00; font-weight:bold;">--- BATTLE START ---</span>`);
                 
@@ -751,10 +795,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             setTimeout(() => {
                 if(ui.btnStart) {
-                    ui.btnStart.style.display = "inline-block";
+                    ui.btnStart.style.display = "block";
                     ui.btnStart.innerText = "Buscar otro rival";
                 }
-                if(ui.btnLeave) ui.btnLeave.style.display = "inline-block";
+                if(ui.controls) ui.controls.style.display = "none";
             }, 1000);
         } else {
             if(ui.btnAtk) ui.btnAtk.disabled = false;
