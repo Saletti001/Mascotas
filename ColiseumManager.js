@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - MOTOR DE COMBATE V9.1.3 (UI PULIDA Y CLARIDAD DE ESTADOS)
+// ColiseumManager.js - MOTOR DE COMBATE V9.1.4 (FONDO CIAN Y FIXES)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -8,6 +8,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const style = document.createElement("style");
         style.id = "coliseum-overhaul-styles";
         style.innerHTML = `
+            /* FONDO CIAN GLOBAL PARA LA PANTALLA DEL COLISEO */
+            .coliseum-cyan-theme {
+                background-color: #31c4d8 !important;
+                background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px) !important;
+                background-size: auto !important;
+                min-height: 100vh !important;
+            }
+
             /* OVERHAUL VISUAL DEL ÁREA DE BATALLA */
             #battle-area {
                 background: rgba(0, 0, 0, 0.3) !important; 
@@ -174,20 +182,30 @@ document.addEventListener("DOMContentLoaded", () => {
     let enemyCombat = null;
     let numeroTurno = 1;
 
-    // INYECTAR EL FONDO CIAN AL CONTENEDOR PADRE DEL COLISEO
-    if (battleArea && battleArea.parentElement) {
-        battleArea.parentElement.style.backgroundColor = "#31c4d8";
-        battleArea.parentElement.style.backgroundImage = "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px)";
-        // Si el contenedor padre no ocupa toda la altura, forzamos un mínimo
-        battleArea.parentElement.style.minHeight = "100vh";
-    }
-
+    // APLICAR CLASE AL LOGO VS DEL HTML ORIGINAL
     const flexContainer = document.querySelector("#battle-area > div");
     if (flexContainer && flexContainer.children[1] && flexContainer.children[1].innerText === "VS") {
         flexContainer.children[1].className = "vs-badge-battle";
         flexContainer.style.display = "flex";
         flexContainer.style.alignItems = "center";
         flexContainer.style.justifyContent = "space-between";
+    }
+
+    // =========================================
+    // INYECTAR FONDO CIAN GLOBAL
+    // =========================================
+    if (battleArea) {
+        // Buscamos la capa padre (la pantalla) para aplicarle el color cian
+        let parent = battleArea.parentElement;
+        while(parent && parent.tagName !== 'BODY') {
+            if(parent.id.includes('room') || parent.classList.contains('screen') || parent.classList.contains('view')) {
+                parent.classList.add("coliseum-cyan-theme");
+                break;
+            }
+            parent = parent.parentElement;
+        }
+        // Fallback por seguridad
+        if(battleArea.parentElement) battleArea.parentElement.classList.add("coliseum-cyan-theme");
     }
 
     // =========================================
