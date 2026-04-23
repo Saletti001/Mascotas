@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - MOTOR DE COMBATE V9.2.3 (PANELES PEGADOS A LOS BORDES Y MÁS GRANDES)
+// ColiseumManager.js - MOTOR DE COMBATE V9.2.3 (BORDES SIMÉTRICOS Y OPTIMIZACIÓN DE ESPACIO)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 border-radius: 16px !important;
                 padding: 20px !important; 
                 position: relative;
-                overflow: hidden !important; /* Vital para que los paneles cortados se adapten a la curva */
+                overflow: hidden !important; 
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: center !important;
@@ -64,15 +64,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 display: flex !important;
                 align-items: center !important;
                 justify-content: space-between !important;
-                width: calc(100% + 40px) !important; /* Compensa el padding de 20px del battle-area */
-                margin: 0 -20px 15px -20px !important; /* Se estira hasta pegar a la pared */
+                width: calc(100% + 40px) !important; 
+                margin: 0 -20px 15px -20px !important; 
             }
 
-            /* COLOR MÁS CLARO Y AJUSTES DE CAJA */
+            /* COLOR Y ESTRUCTURA DE LOS PANELES */
             #player-sprite-battle, #enemy-sprite-battle { 
-                background: rgba(45, 65, 85, 0.6) !important; /* Azul-gris más claro */
+                background: rgba(45, 65, 85, 0.6) !important; 
                 padding: 15px 10px !important; 
-                width: 44% !important; /* Un poco más anchos */
+                width: 44% !important; 
                 position: relative; 
                 transition: 0.3s; 
                 border: 1px solid rgba(255,255,255,0.15) !important;
@@ -80,17 +80,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 flex-direction: column !important;
                 justify-content: flex-end !important;
                 align-items: center !important;
-                min-height: 230px !important; /* Más altos */
+                min-height: 230px !important; 
                 backdrop-filter: blur(2px);
             }
             
-            /* BORRAR RADIOS LATERALES PARA QUE PAREZCAN SALIR DEL MARCO */
+            /* BORDES SIMÉTRICOS (ARRIBA Y ABAJO) PEGADOS AL EXTREMO */
             #player-sprite-battle { 
+                border-top: 3px solid #4dd0e1 !important; /* NUEVO: Borde superior Cian */
                 border-bottom: 3px solid #4dd0e1 !important; 
                 border-radius: 0 12px 12px 0 !important; 
                 border-left: none !important;
             }
             #enemy-sprite-battle { 
+                border-top: 3px solid #ff6b6b !important; /* NUEVO: Borde superior Rojo */
                 border-bottom: 3px solid #ff6b6b !important; 
                 border-radius: 12px 0 0 12px !important; 
                 border-right: none !important;
@@ -98,8 +100,8 @@ document.addEventListener("DOMContentLoaded", () => {
             
             /* CAJAS DE LOS GENOS (MÁS GRANDES) */
             #player-visual-box, #enemy-visual-box {
-                width: 120px !important; /* Aumentado */
-                height: 120px !important; /* Aumentado */
+                width: 120px !important; 
+                height: 120px !important; 
                 margin: 0 auto auto auto !important; 
                 display: flex; 
                 justify-content: center; 
@@ -136,11 +138,12 @@ document.addEventListener("DOMContentLoaded", () => {
             #enemy-hp-bar { background: linear-gradient(90deg, #ff6b6b, #d9534f) !important; box-shadow: 0 0 10px rgba(255,107,107,0.6) !important; }
             #player-hp-text, #enemy-hp-text { font-size: 11px !important; color: #fff !important; font-weight: bold; margin-top: 4px !important; text-shadow: 0 1px 2px #000; text-align: center; width: 100%; }
 
-            /* LOG DE BATALLA HACKER */
+            /* LOG DE BATALLA HACKER CON BORDES DUALES (CIAN / ROJO) */
             #battle-log { 
                 background: #0d161c !important; 
                 border: 1px solid #1e3a5f !important; 
-                border-left: 4px solid #4dd0e1 !important; 
+                border-left: 4px solid #4dd0e1 !important; /* Borde Jugador */
+                border-right: 4px solid #ff6b6b !important; /* NUEVO: Borde Enemigo */
                 color: #00ffcc !important; 
                 border-radius: 8px !important; 
                 font-family: 'Courier New', monospace !important; 
@@ -157,10 +160,10 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             #battle-log::-webkit-scrollbar { display: none !important; }
 
-            /* CLASE DINÁMICA PARA LOS CONTROLES DE BATALLA */
-            .battle-controls-active {
+            /* CONTENEDOR DE BOTONES (ESTRUCTURA) */
+            #battle-controls {
                 width: 100% !important;
-                display: flex !important;
+                display: flex; /* Sin !important para que JS pueda forzar el hide */
                 gap: 10px !important;
                 justify-content: center !important;
                 margin-top: 15px !important;
@@ -184,6 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 cursor: pointer; 
                 width: 100%; 
                 margin-top: 15px !important;
+                display: none;
             }
 
             /* BOTÓN DE RETIRADA (ESTILO COHERENTE CON CRIANZA) */
@@ -355,7 +359,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // =========================================
-    // INICIALIZACIÓN DEL COLISEO (ESTADO 1: ESPERANDO)
+    // INICIALIZACIÓN PRINCIPAL (ESTADO 1: ESPERANDO)
     // =========================================
     window.iniciarColiseo = function() {
         const ui = getUI();
@@ -395,7 +399,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 ui.area.appendChild(ui.btnStart);
             }
             if (ui.btnLeave && currentScreen && ui.btnLeave.parentElement !== currentScreen) {
-                currentScreen.appendChild(ui.btnLeave); // Dejar el botón de salir fuera de la arena
+                currentScreen.appendChild(ui.btnLeave); // Botón salir fuera
             }
         }
 
@@ -422,19 +426,14 @@ document.addEventListener("DOMContentLoaded", () => {
         
         if(ui.log) ui.log.innerHTML = `<span style="color:#aaa;">> Conectando con los servidores del Coliseo...</span><br><span style="color:#4dd0e1">> Arena lista. Esperando combatientes.</span>`;
         
-        // --- ESTADO INICIAL DE BOTONES ---
-        if(ui.btnStart) ui.btnStart.style.display = "block";
-        if(ui.btnLeave) ui.btnLeave.style.display = "block";
+        // --- MOSTRAR START Y OCULTAR CONTROLES FORZOSAMENTE ---
+        if(ui.btnStart) ui.btnStart.style.setProperty("display", "block", "important");
+        if(ui.btnLeave) ui.btnLeave.style.setProperty("display", "block", "important");
         
-        // FORZAR OCULTAMIENTO DE CONTROLES DE BATALLA
-        if(ui.controls) {
-            ui.controls.style.display = "none";
-            ui.controls.classList.remove("battle-controls-active");
-        }
+        if(ui.controls) ui.controls.style.setProperty("display", "none", "important");
         
         if(ui.btnAtk) ui.btnAtk.disabled = false;
         if(ui.btnItem) ui.btnItem.disabled = false;
-        if(ui.btnSkill) ui.btnSkill.style.display = "none"; 
 
         actualizarBotonManzana();
     };
@@ -535,12 +534,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 actualizarUICombate(playerCombat, true);
                 actualizarUICombate(enemyCombat, false);
 
-                // --- MOSTRAR CONTROLES Y OCULTAR BOTÓN DE INICIO ---
-                if(ui.btnStart) ui.btnStart.style.display = "none";
-                if(ui.controls) {
-                    ui.controls.style.display = "flex";
-                    ui.controls.classList.add("battle-controls-active");
-                }
+                // --- MOSTRAR CONTROLES Y OCULTAR BOTÓN DE INICIO FORZOSAMENTE ---
+                if(ui.btnStart) ui.btnStart.style.setProperty("display", "none", "important");
+                if(ui.controls) ui.controls.style.setProperty("display", "flex", "important");
                 
                 addLog(`<br><span style="color:#ffcc00; font-weight:bold;">--- BATTLE START ---</span>`);
                 
@@ -799,12 +795,12 @@ document.addEventListener("DOMContentLoaded", () => {
             if(window.guardarProgreso) window.guardarProgreso();
 
             setTimeout(() => {
+                // --- OCULTAR BOTONES DE ATAQUE Y MOSTRAR BUSCAR RIVAL ---
+                if(ui.controls) ui.controls.style.setProperty("display", "none", "important");
                 if(ui.btnStart) {
-                    ui.btnStart.style.display = "block";
+                    ui.btnStart.style.setProperty("display", "block", "important");
                     ui.btnStart.innerText = "Buscar otro rival";
                 }
-                // Ocultar controles de acción
-                if(ui.controls) ui.controls.style.display = "none";
             }, 1000);
         } else {
             if(ui.btnAtk) ui.btnAtk.disabled = false;
