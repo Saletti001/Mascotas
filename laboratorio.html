@@ -588,7 +588,6 @@
                 document.getElementById("c-e-genb").innerText = eHiddenGenes.B ? eHiddenGenes.B.name : "Vacío";
                 document.getElementById("c-e-genc").innerText = eHiddenGenes.C ? eHiddenGenes.C.name : "Vacío";
 
-                // SOLUCIÓN DEL ERROR AQUI: Declarar las variables FUERA del IF
                 let comboP = null;
                 let comboE = null;
 
@@ -632,9 +631,9 @@
                     if (isCrit) dmg = Math.floor(dmg * 1.5);
 
                     if (defensor.escudoCibernetico) {
-                        dmg = Math.floor(dmg * 0.9);
+                        dmg = Math.floor(dmg * 0.60); // Ajustado al 40%
                         defensor.escudoCibernetico = false;
-                        addLog(`<span style="color:#00d2ff">* [Escudo Cibernético] ${defensor.nombre} absorbe 10% del impacto.</span>`);
+                        addLog(`<span style="color:#00d2ff">* [Escudo Cibernético] ${defensor.nombre} absorbe 40% del primer impacto.</span>`);
                     }
 
                     if (defensor.genesId.includes("armadura_adaptativa")) {
@@ -727,60 +726,6 @@
             function procesarEfectosFinTurno(fighter) {
                 if (fighter.hp <= 0) return;
                 if (fighter.element === "Biomutante" && fighter.hp < fighter.maxHp) {
-                    let regen = Math.floor(fighter.maxHp * 0.03);
-                    if (regen < 1) regen = 1;
+                    let regen = Math.floor(fighter.maxHp * 0.06) + 2; // Ajustado al 6% + 2
                     fighter.hp += regen;
                     if (fighter.hp > fighter.maxHp) fighter.hp = fighter.maxHp;
-                    mostrarTextoFlotante(fighter.isPlayer, `+${regen}`, "text-heal", 500);
-                }
-                if (fighter.estados.includes("Quemadura")) {
-                    let burnDmg = Math.floor(fighter.maxHp * 0.02);
-                    if (burnDmg < 1) burnDmg = 1;
-                    fighter.hp -= burnDmg;
-                    if (fighter.hp < 0) fighter.hp = 0;
-                    addLog(`<span style="color:#ff9800">🔥 [Quemadura] ${fighter.nombre} pierde ${burnDmg} HP.</span>`);
-                    mostrarTextoFlotante(fighter.isPlayer, `-${burnDmg}`, "text-dmg", 700);
-                    flashDamage(fighter.isPlayer);
-                }
-                actualizarUICombate(fighter, fighter.isPlayer);
-            }
-
-            btnAtacar.onclick = () => {
-                addLog(`<br><span style="color:#4dd0e1">[TURNO ${numeroTurno}]</span>`);
-                btnAtacar.disabled = true; 
-                
-                let primero = playerCombat; let segundo = enemyCombat;
-                if (enemyCombat.spd > playerCombat.spd) { primero = enemyCombat; segundo = playerCombat; } 
-                else if (enemyCombat.spd === playerCombat.spd && Math.random() > 0.5) { primero = enemyCombat; segundo = playerCombat; }
-
-                procesarAtaque(primero, segundo);
-                
-                if (segundo.hp > 0) {
-                    setTimeout(() => {
-                        procesarAtaque(segundo, primero);
-                        setTimeout(() => {
-                            procesarEfectosFinTurno(primero);
-                            procesarEfectosFinTurno(segundo);
-                            checkEndGame();
-                        }, 800);
-                    }, 800); 
-                } else { checkEndGame(); }
-                numeroTurno++;
-            };
-
-            function checkEndGame() {
-                if (playerCombat.hp <= 0 || enemyCombat.hp <= 0) {
-                    btnAtacar.disabled = true;
-                    addLog(`<br><span style="color:#ffcc00; font-size: 16px; font-weight: bold;">--- FIN DEL COMBATE ---</span>`);
-                    if (playerCombat.hp > 0) addLog(`<span style="color:#4CAF50">🏆 ¡TU GENO HA GANADO!</span>`);
-                    else if (enemyCombat.hp > 0) addLog(`<span style="color:#f44336">💀 TU GENO HA SIDO DERROTADO.</span>`);
-                    else addLog(`<span style="color:#aaa">🤝 DOBLE K.O. EMPATE.</span>`);
-                } else {
-                    btnAtacar.disabled = false;
-                }
-            }
-
-        }, 500); 
-    </script>
-</body>
-</html>
