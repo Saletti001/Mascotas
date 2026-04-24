@@ -156,18 +156,14 @@
         </div>
 
         <div id="breeding-screen" class="app-screen hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; box-sizing: border-box;">
-            
             <div style="width: 100%; height: 100%; overflow-y: auto; padding-bottom: 100px;">
                 <div class="alchemy-panel" style="background: #1a2a36; border: 1px solid #333; border-radius: 16px; padding: 20px; margin: 25px 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-                    
                     <div class="drawer-header" style="justify-content: center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px;">
                         <h3 style="font-size: 16px !important; color: #80deea !important; text-transform: uppercase !important; letter-spacing: 1px !important; margin: 0 !important; font-weight: bold !important; text-shadow: none !important;">CENTRO DE CRIANZA</h3>
                     </div>
-                    
                     <p style="text-align: center; color: #aaa !important; font-size: 10px !important; text-transform: uppercase !important; letter-spacing: 1px !important; padding: 0 !important; margin-bottom: 25px !important; text-shadow: none !important;">
                         Combina el ADN de dos especímenes (Nv. 10+) para iniciar la secuencia. Costo: 500 ✨
                     </p>
-                    
                     <div style="display: flex; justify-content: space-around; width: 100%; margin-bottom: 20px; position: relative; align-items: center;">
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
                             <div id="slot-parent-1" style="width: 75px; height: 75px; border: 2px dashed #4dd0e1; border-radius: 12px; display: flex; justify-content: center; align-items: center; background: #0d1a24; cursor: pointer; transition: 0.2s;">
@@ -175,9 +171,7 @@
                             </div>
                             <span style="font-size: 11px; font-weight: bold; color: #4dd0e1; letter-spacing: 1px;">MUESTRA ALFA</span>
                         </div>
-
                         <div style="font-size: 24px; color: #8A2BE2; filter: drop-shadow(0 0 8px #8A2BE2);">🧬</div>
-
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
                             <div id="slot-parent-2" style="width: 75px; height: 75px; border: 2px dashed #4dd0e1; border-radius: 12px; display: flex; justify-content: center; align-items: center; background: #0d1a24; cursor: pointer; transition: 0.2s;">
                                 <span style="color: #4dd0e1; font-size: 28px;">+</span>
@@ -185,13 +179,10 @@
                             <span style="font-size: 11px; font-weight: bold; color: #4dd0e1; letter-spacing: 1px;">MUESTRA OMEGA</span>
                         </div>
                     </div>
-
                     <button id="btn-start-breeding" class="btn-fuse" style="background: linear-gradient(90deg, #4dd0e1, #8A2BE2); color: #fff; font-weight: bold; border: none; padding: 14px; border-radius: 10px; width: 100%; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;" disabled>
                         INICIAR SECUENCIA
                     </button>
-                    
                     <hr style="margin: 20px 0; border: none; border-top: 1px solid #333; width: 100%;">
-                    
                     <h3 style="text-align: center; color: #80deea !important; margin-top: 0; font-size: 12px !important; text-transform: uppercase !important; letter-spacing: 2px !important; text-shadow: none !important;">CÁMARA DE BIO-NÚCLEOS</h3>
                     <div id="incubator-grid" style="display: flex; gap: 10px; overflow-x: auto; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 12px; min-height: 120px; width: 100%; box-sizing: border-box; align-items: center; border: 1px solid #333;">
                     </div>
@@ -209,38 +200,30 @@
             </div>
 
             <div id="geno-id-card-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.3); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(3px);">
-                
                 <div class="modal-content" style="background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border: 2px solid #00d2ff; box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3); width: 85%; max-width: 320px; border-radius: 12px; padding: 20px; box-sizing: border-box; position: relative;">
                     <button id="close-id-card" style="position: absolute; top: 10px; right: 15px; background: transparent; border: none; font-size: 18px; color: #fff; cursor: pointer; text-shadow: 0 0 5px #000;">❌</button>
-
                     <h3 style="margin: 0 0 15px 0 !important; color: #00d2ff !important; text-transform: uppercase !important; font-size: 16px !important; font-weight: 900 !important; letter-spacing: 2px !important; text-align: center !important; border-bottom: 1px solid rgba(0, 210, 255, 0.3) !important; padding-bottom: 10px !important; text-shadow: 0 0 10px rgba(0, 210, 255, 0.6) !important;">ANÁLISIS GENÉTICO</h3>
-
                     <div style="display: flex; flex-direction: column; align-items: center;">
                         <div id="id-card-svg" style="width: 110px; height: 110px; background: rgba(0, 0, 0, 0.5); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px dashed #00d2ff; margin-bottom: 15px; box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 210, 255, 0.2);"></div>
-
                         <h2 style="margin: 0 0 5px 0; color: #fff; font-size: 18px; text-transform: uppercase; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
                             <span id="id-card-name">--</span> <span id="id-card-level" style="color: #00d2ff; font-size: 14px; margin-left: 5px;">Nv. --</span>
                         </h2>
-
                         <div style="display: flex; gap: 10px; margin-bottom: 15px; font-size: 11px; font-weight: bold; text-transform: uppercase; align-items: center; background: rgba(0,0,0,0.3); padding: 5px 15px; border-radius: 15px; border: 1px solid #333;">
                             <span id="id-card-rarity" style="color: #aaa;">--</span> <span style="color:#555">|</span>
                             <span id="id-card-element" style="color: #00d2ff;">--</span> <span style="color:#555">|</span>
                             <span style="color: #f0ad4e;">Crías: <span id="id-card-breeds">--</span></span>
                         </div>
                     </div>
-
                     <div style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px; margin-bottom: 15px; text-align: center; border: 1px solid #333; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
                         <div style="font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px;">Veredicto de Pureza</div>
                         <div id="id-card-quality" style="font-size: 22px; font-weight: 900; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.8);">--</div>
                     </div>
-
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; margin-bottom: 15px;">
                         <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333;">❤️ Vit: <span id="id-card-hp" style="float: right; font-weight: bold; color: #fff;">--</span></div>
                         <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333;">⚔️ Fue: <span id="id-card-atk" style="float: right; font-weight: bold; color: #fff;">--</span></div>
                         <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333;">⚡ Agi: <span id="id-card-spd" style="float: right; font-weight: bold; color: #fff;">--</span></div>
                         <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333;">🍀 Sue: <span id="id-card-luk" style="float: right; font-weight: bold; color: #fff;">--</span></div>
                     </div>
-
                     <div id="id-card-secret-gene" style="background: rgba(138, 43, 226, 0.15); border-radius: 8px; padding: 12px; text-align: center; border: 1px dashed #8A2BE2;">
                         <div style="font-size: 10px; color: #e0b0ff; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; font-weight: bold;">Gen Oculto</div>
                         <div id="id-card-locked-text" style="color: #aaa; font-size: 12px; margin-bottom: 10px;">🔒 Secuencia Bloqueada</div>
@@ -248,14 +231,13 @@
                         <div id="id-card-rec" class="hidden" style="font-size: 11px; text-align: left; padding: 6px; background: rgba(0,0,0,0.4); border-radius: 4px; border-left: 3px solid #8A2BE2;"></div>
                         <button id="btn-id-scan" style="background: linear-gradient(90deg, #8A2BE2, #00d2ff); color: white; border: none; padding: 10px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%; box-shadow: 0 4px 10px rgba(138, 43, 226, 0.3);">Usar Escáner Molecular</button>
                     </div>
-
                 </div>
             </div>
-
             <div class="fab-btn btn-go-home" style="position: absolute !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; width: 70% !important; max-width: 300px !important; z-index: 100 !important;">
                 <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0;">VOLVER AL LABORATORIO</div>
             </div>
         </div>
+
         <div id="coliseum-screen" class="app-screen hidden">
             <h2 class="screen-title" style="color: #d9534f;">Coliseo Nexo</h2>
             <div id="battle-area" style="background: #222; border-radius: 12px; padding: 15px; margin-bottom: 15px; color: white;">
@@ -305,6 +287,8 @@
             <button class="back-btn btn-go-home">Volver al Laboratorio</button>
         </div>
 
+        <div id="implants-area" class="app-screen hidden"></div>
+
         <div id="fab-menu" class="fab-btn">
             <div class="fab-content">⚙️ NEXO</div>
         </div>
@@ -321,6 +305,9 @@
                     <div class="drawer-item" id="btn-arcade"><div class="drawer-icon">🕹️</div><span>Arcade</span></div>
                     <div class="drawer-item" id="btn-coliseum"><div class="drawer-icon">⚔️</div><span>Coliseo</span></div>
                     <div class="drawer-item" id="btn-market"><div class="drawer-icon">🛒</div><span>Mercado</span></div>
+                    <div class="drawer-item" id="btn-implants" onclick="document.getElementById('drawer-menu').classList.add('hidden'); window.navegarA('implants-area');">
+                        <div class="drawer-icon">💾</div><span>Implantes</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -353,7 +340,7 @@
 
     <script src="app.js"></script>
     <script src="ImplantsUI.js"></script>
-<script src="ImplantsManager.js"></script>
+    <script src="ImplantsManager.js"></script>
     
 </body>
 </html>
