@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - MOTOR DE COMBATE V9.2.7 (RIVAL PROCEDURAL Y UI DEFINITIVA)
+// ColiseumManager.js - MOTOR DE COMBATE V9.2.8 (FIX: NOMBRES Y RAREZA EN UI)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -200,6 +200,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function efectoCuracion(elementId) {
+        const el = document.getElementById(elementId);
+        if(el) {
+            el.classList.remove("heal-effect");
+            void el.offsetWidth;
+            el.classList.add("heal-effect");
+            setTimeout(() => el.classList.remove("heal-effect"), 600);
+        }
+    }
+
     function mostrarTextoFlotante(esJugador, texto, claseAdicional, delayMs = 0) {
         const sideEl = esJugador ? (document.getElementById("player-sprite-battle") || document.querySelector(".fighter-left")) : (document.getElementById("enemy-sprite-battle") || document.querySelector(".fighter-right"));
         if(!sideEl) return;
@@ -227,7 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // NUEVA FUNCIÓN: Animar al atacar (Activa las bocas)
+    // ANIMACIÓN AL ATACAR
     function animarAtaqueGeno(esJugador) {
         const ui = getUI();
         const el = esJugador ? ui.pVisual : ui.eVisual;
@@ -445,10 +455,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     escudoCibernetico: eElemento === "Cibernético", estados: []
                 };
 
+                // Inyección segura de SVG usando la UI robusta
                 if(ui.pVisual) ui.pVisual.innerHTML = inyectarSvgSeguro(pMascota);
                 if(ui.eVisual) ui.eVisual.innerHTML = inyectarSvgSeguro(eAdn);
 
-                // SOBRESCRIBIR LA UI FUERTEMENTE
+                // SOBRESCRIBIR NOMBRES, RAREZA Y ELEMENTO DE FORMA ROBUSTA
                 if(ui.pName) ui.pName.innerHTML = `<strong>${playerCombat.nombre}</strong><br><span style="color:#aaa; font-size:10px; font-weight:normal;">(Nv. ${pMascota.level || 1})</span>`;
                 if(ui.eName) ui.eName.innerHTML = `<strong>${enemyCombat.nombre}</strong><br><span style="color:#aaa; font-size:10px; font-weight:normal;">(${eRareza} - ${eElemento})</span>`;
 
@@ -670,6 +681,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (atacante.hp > atacante.maxHp) atacante.hp = atacante.maxHp;
                     addLog(`<span style="color:#e0b0ff">* [Vampirismo] ${atacante.nombre} se cura ${roboVida} HP.</span>`);
                     mostrarTextoFlotante(atacante.isPlayer, `+${roboVida}`, "text-heal", 200);
+                    efectoCuracion(atacante.isPlayer ? "player-sprite-battle" : "enemy-sprite-battle");
                 }
 
                 if (isCrit && defensor.genesId.includes("reflejo_genetico") && dmg > 0) {
@@ -701,6 +713,7 @@ document.addEventListener("DOMContentLoaded", () => {
             fighter.hp += regen;
             if (fighter.hp > fighter.maxHp) fighter.hp = fighter.maxHp;
             mostrarTextoFlotante(fighter.isPlayer, `+${regen}`, "text-heal", 500);
+            efectoCuracion(fighter.isPlayer ? "player-sprite-battle" : "enemy-sprite-battle");
         }
         
         if (fighter.estados.includes("Quemadura")) {
