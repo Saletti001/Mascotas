@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR (Une Lógica e Interfaz)
+// ColiseumManager.js - CONTROLADOR (Manejo de Eventos)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -8,70 +8,44 @@ document.addEventListener("DOMContentLoaded", () => {
     window.iniciarColiseo = function() {
         if (!window.miMascota || window.miMascota.id === "temp") {
             alert("No tienes un Geno activo para combatir.");
+            window.navegarA("room-area");
             return;
         }
 
-        // Estructurar UI inicial
-        const area = document.querySelector(".coliseum-card") || document.getElementById("battle-area");
-        if(area && area.parentElement) area.parentElement.classList.add("coliseum-cyan-theme");
-        
-        let title = document.querySelector("h2, h1");
-        if(title && area && title.parentElement !== area) {
-            title.className = "coliseum-title-inside";
-            area.insertBefore(title, area.firstChild);
-        }
+        ColiseumUI.configurarDOM();
+        ColiseumUI.limpiarLog();
+        ColiseumUI.agregarLog(`<span style="color:#aaa;">> Conectando con los servidores del Coliseo...</span><br><span style="color:#4dd0e1">> Arena lista. Esperando combatientes.</span>`);
 
-        // Asegurar que existan los contenedores
-        let controls = document.getElementById("battle-controls") || document.querySelector(".controls-container");
-        if(controls && area) {
-            area.appendChild(controls);
-            controls.innerHTML = `
-                <button id="btn-atk" class="battle-btn atk-btn">⚔️ ATACAR</button>
-                <button id="btn-special" class="battle-btn special-btn">✨ ESPECIAL</button>
-                <button id="btn-buff" class="battle-btn buff-btn">🛡️ TÁCTICA</button>
-            `;
-            controls.style.setProperty("display", "none", "important");
+        // Asignar Funciones a Botones DENTRO de la inicialización para evitar fallos
+        let btnStart = document.getElementById("btn-start-battle");
+        if (btnStart) btnStart.onclick = iniciarPelea;
 
-            // Eventos de botones
-            document.getElementById("btn-atk").onclick = () => procesarRonda("ataque");
-            document.getElementById("btn-special").onclick = () => procesarRonda("especial");
-            document.getElementById("btn-buff").onclick = () => procesarRonda("tactica");
-        }
+        let btnAtk = document.getElementById("btn-action-atk");
+        if (btnAtk) btnAtk.onclick = () => procesarRonda("ataque");
 
-        let btnStart = document.getElementById("btn-start-battle") || document.querySelector(".btn-primary");
-        if(btnStart) {
-            btnStart.className = "btn-start";
-            btnStart.innerText = "Entrar a la Arena";
-            btnStart.style.setProperty("display", "block", "important");
-            if(area) area.appendChild(btnStart);
-            
-            // EL EVENTO DE INICIAR PELEA
-            btnStart.onclick = iniciarPelea;
-        }
+        let btnSpecial = document.getElementById("btn-action-special");
+        if (btnSpecial) btnSpecial.onclick = () => procesarRonda("especial");
 
-        let btnLeave = document.getElementById("btn-leave-battle") || document.querySelector(".btn-secondary");
-        if(btnLeave && area && area.parentElement) {
-            btnLeave.className = "btn-leave";
-            btnLeave.innerText = "Retirarse";
-            area.parentElement.appendChild(btnLeave);
-        }
-
-        const logBox = document.getElementById("battle-log") || document.querySelector(".battle-log-container");
-        if(logBox) logBox.innerHTML = `<span style="color:#aaa;">> Conectando con los servidores...</span><br><span style="color:#4dd0e1">> Arena lista.</span>`;
+        let btnBuff = document.getElementById("btn-action-buff");
+        if (btnBuff) btnBuff.onclick = () => procesarRonda("tactica");
     };
 
     function iniciarPelea() {
-        document.querySelector(".btn-start").style.setProperty("display", "none", "important");
-        document.querySelector(".controls-container, #battle-controls").style.setProperty("display", "flex", "important");
+        let btnStart = document.getElementById("btn-start-battle");
+        let controls = document.querySelector(".controls-container") || document.getElementById("battle-controls");
         
+        if(btnStart) btnStart.style.setProperty("display", "none", "important");
+        if(controls) controls.style.setProperty("display", "flex", "important");
+
+        ColiseumUI.limpiarLog();
+        ColiseumUI.agregarLog(`<span style="color:#4dd0e1">> INICIALIZANDO SECUENCIA DE COMBATE...</span>`);
+        ColiseumUI.agregarLog(`<br><span style="color:#ffcc00; font-weight:bold;">--- BATTLE START ---</span>`);
+
         ColiseumLogic.prepararJugador(window.miMascota);
         ColiseumLogic.generarRivalProcedural(window.miMascota.level);
         
-        ColiseumUI.actualizarGenos(ColiseumLogic.player, ColiseumLogic.enemy);
+        ColiseumUI.actualizarGraficos(ColiseumLogic.player, ColiseumLogic.enemy);
         ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
-        
-        const logBox = document.getElementById("battle-log") || document.querySelector(".battle-log-container");
-        if(logBox) logBox.innerHTML = `<span style="color:#4dd0e1">> INICIALIZANDO COMBATE...</span><br><span style="color:#ffcc00; font-weight:bold;">--- BATTLE START ---</span>`;
         
         actualizarBotones();
     }
@@ -83,45 +57,66 @@ document.addEventListener("DOMContentLoaded", () => {
         const p = ColiseumLogic.player;
         const e = ColiseumLogic.enemy;
 
-        // Jugador Ataca
-        ejecutarAccion(p, e, accionJugador);
+        let playerGoesFirst = p.spd >= e.spd;
+        if (p.spd === e.spd) playerGoesFirst = Math.random() > 0.5;
 
-        // Enemigo Ataca (si sobrevive)
-        if (e.hp > 0) {
+        let ejecutor1 = playerGoesFirst ? p : e;
+        let ejecutor2 = playerGoesFirst ? e : p;
+        let accion1 = playerGoesFirst ? accionJugador : "ataque";
+        let accion2 = playerGoesFirst ? "ataque" : accionJugador;
+
+        ejecutarAccion(ejecutor1, ejecutor2, accion1);
+        
+        if (ejecutor2.hp > 0) {
             setTimeout(() => {
-                ejecutarAccion(e, p, "ataque");
-                finalizarTurno();
+                ejecutarAccion(ejecutor2, ejecutor1, accion2);
+                finalizarRonda();
             }, 800);
         } else {
-            finalizarTurno();
+            finalizarRonda();
         }
     }
 
-    function ejecutarAccion(atacante, defensor, accion) {
-        ColiseumUI.flashAtaque(atacante.isPlayer);
-        
-        if (accion === "tactica") {
-            ColiseumUI.agregarLog(`<span style="color:#26a69a">> ¡${atacante.nombre} usa TÁCTICA! (+15% HP)</span>`);
-            atacante.hp = Math.min(atacante.maxHp, atacante.hp + Math.floor(atacante.maxHp * 0.15));
-        } 
-        else {
-            let mult = (accion === "especial") ? 1.5 : 1;
-            if(accion === "especial") {
+    function ejecutarAccion(atacante, defensor, accionElegida) {
+        if (atacante.hp <= 0 || defensor.hp <= 0) return;
+
+        ColiseumUI.animarAtaque(atacante.isPlayer);
+
+        if (accionElegida === "tactica") {
+            ColiseumUI.agregarLog(`<span style="color:#26a69a">> ¡${atacante.nombre} aplica una TÁCTICA!</span>`);
+            let cura = Math.floor(atacante.maxHp * 0.15); 
+            if (cura < 1) cura = 1;
+            atacante.hp = Math.min(atacante.maxHp, atacante.hp + cura);
+            ColiseumUI.mostrarTextoFlotante(atacante.isPlayer, `+${cura}`, "text-heal");
+            ColiseumUI.agregarLog(`<span style="color:#4CAF50">* Recupera ${cura} HP y prepara su estrategia.</span>`);
+        } else {
+            let mult = (accionElegida === "especial") ? 1.5 : 1;
+            if (accionElegida === "especial") {
                 ColiseumLogic.cooldownEspecial = 3;
-                ColiseumUI.agregarLog(`<span style="color:#e040fb">> ¡${atacante.nombre} usa ATAQUE ESPECIAL!</span>`);
+                ColiseumUI.agregarLog(`<span style="color:#e040fb">> ¡${atacante.nombre} usa un ATAQUE ESPECIAL!</span>`);
             }
 
             const resultado = ColiseumLogic.calcularDano(atacante, defensor, mult);
-            ColiseumUI.flashDano(!atacante.isPlayer);
+            ColiseumUI.flashDano(defensor.isPlayer);
             
-            let extra = resultado.isCrit ? " 💥 ¡CRÍTICO!" : "";
-            ColiseumUI.agregarLog(`> ${atacante.nombre} causa <span style="color:#ff6b6b">${resultado.dmg} daño</span>.${extra}`);
+            let tipoGolpe = "";
+            if (resultado.multElem === 1.5) tipoGolpe = ` <span style="color:#4CAF50; font-weight:bold;">(¡Súper Efectivo!)</span>`;
+            else if (resultado.multElem === 0.5) tipoGolpe = ` <span style="color:#888; font-weight:bold;">(Poco efectivo...)</span>`;
+
+            if (resultado.isCrit) {
+                ColiseumUI.agregarLog(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${atacante.nombre} causa <span style="color:#ff6b6b; font-weight:bold;">${resultado.dmg} de daño</span>.${tipoGolpe}`);
+                ColiseumUI.mostrarTextoFlotante(defensor.isPlayer, "CRITICAL!", "text-crit");
+                ColiseumUI.mostrarTextoFlotante(defensor.isPlayer, `-${resultado.dmg}`, "text-dmg", 150);
+            } else {
+                ColiseumUI.agregarLog(`> ${atacante.nombre} causa <span style="color:#ff6b6b">${resultado.dmg} de daño</span>.${tipoGolpe}`);
+                if (resultado.dmg > 0) ColiseumUI.mostrarTextoFlotante(defensor.isPlayer, `-${resultado.dmg}`, "text-dmg");
+            }
         }
         
         ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
     }
 
-    function finalizarTurno() {
+    function finalizarRonda() {
         setTimeout(() => {
             if (ColiseumLogic.cooldownEspecial > 0) ColiseumLogic.cooldownEspecial--;
             ColiseumLogic.turno++;
@@ -136,40 +131,45 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function terminarCombate() {
         bloquearBotones(true);
-        ColiseumUI.agregarLog(`<br><span style="color:#ffcc00; font-weight: bold;">--- FIN DEL COMBATE ---</span>`);
+        ColiseumUI.agregarLog(`<br><span style="color:#ffcc00; font-size: 16px; font-weight: bold;">--- FIN DEL COMBATE ---</span>`);
         
         if (ColiseumLogic.player.hp > 0) {
-            ColiseumUI.agregarLog(`<span style="color:#4CAF50">🏆 ¡VICTORIA!</span>`);
-            if (window.ganarXP) window.ganarXP(50 + (ColiseumLogic.player.adn.level * 10));
+            ColiseumUI.agregarLog(`<span style="color:#4CAF50">🏆 ¡VICTORIA!</span>`, "#ffd54f");
+            const xpGanada = 50 + (ColiseumLogic.player.adn.level * 10);
+            ColiseumUI.agregarLog(`<span style="color:#aaa">Ganaste ${xpGanada} XP.</span>`);
+            if (window.ganarXP) window.ganarXP(xpGanada);
         } else {
-            ColiseumUI.agregarLog(`<span style="color:#f44336">💀 DERROTA.</span>`);
+            ColiseumUI.agregarLog(`<span style="color:#f44336">💀 DERROTA. Tu Geno debe descansar.</span>`);
         }
 
         setTimeout(() => {
-            document.querySelector(".controls-container, #battle-controls").style.setProperty("display", "none", "important");
-            let btnStart = document.querySelector(".btn-start");
+            let controls = document.querySelector(".controls-container") || document.getElementById("battle-controls");
+            let btnStart = document.getElementById("btn-start-battle");
+            
+            if(controls) controls.style.setProperty("display", "none", "important");
             if(btnStart) {
-                btnStart.innerText = "Buscar otro rival";
                 btnStart.style.setProperty("display", "block", "important");
+                btnStart.innerText = "Buscar otro rival";
             }
-        }, 1500);
+        }, 1000);
     }
 
     function actualizarBotones() {
         bloquearBotones(false);
-        const btnSpecial = document.getElementById("btn-special");
-        if(btnSpecial) {
+        const btnSpecial = document.getElementById("btn-action-special");
+        if (btnSpecial) {
             if (ColiseumLogic.cooldownEspecial > 0) {
                 btnSpecial.disabled = true;
                 btnSpecial.innerText = `⏳ ESPERA (${ColiseumLogic.cooldownEspecial})`;
             } else {
+                btnSpecial.disabled = false;
                 btnSpecial.innerText = `✨ ESPECIAL`;
             }
         }
     }
 
     function bloquearBotones(bloquear) {
-        ["btn-atk", "btn-special", "btn-buff"].forEach(id => {
+        ["btn-action-atk", "btn-action-special", "btn-action-buff"].forEach(id => {
             let btn = document.getElementById(id);
             if(btn) btn.disabled = bloquear;
         });

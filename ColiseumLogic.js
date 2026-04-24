@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO (Matemáticas, Stats y Generación)
+// ColiseumLogic.js - MODELO (Matemáticas y Generación)
 // =========================================
 
 window.ColiseumLogic = {
@@ -20,8 +20,8 @@ window.ColiseumLogic = {
         const sufijos = ["core", "morph", "tron", "lith", "pex", "byte", "spark", "fang", "claw", "pulse", "shade", "vibe", "gen"];
         const nombreAleatorio = prefijos[Math.floor(Math.random() * prefijos.length)] + sufijos[Math.floor(Math.random() * sufijos.length)];
 
-        const formas = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "estrella"];
-        const colores = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77"];
+        const formas = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
+        const colores = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77", "#ff9800", "#ffb347", "#a8e6cf"];
         
         const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry"];
         const opcionesBocas = typeof dicBocas !== 'undefined' ? Object.keys(dicBocas) : ["estandar", "feliz", "colmillos"];
@@ -68,17 +68,14 @@ window.ColiseumLogic = {
     calcularDano: function(atacante, defensor, multiplicadorAtaque = 1) {
         let dmg = Math.floor(atacante.atk * multiplicadorAtaque * (0.85 + Math.random() * 0.3));
         
-        // Ventaja Elemental
         const ventajas = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
         let multElem = ventajas[atacante.element] === defensor.element ? 1.5 : (ventajas[defensor.element] === atacante.element ? 0.5 : 1.0);
         dmg = Math.floor(dmg * multElem);
 
-        // Crítico
         let probCrit = 0.05 + (atacante.luk * 0.002);
         let isCrit = Math.random() <= probCrit;
         if (isCrit) dmg = Math.floor(dmg * 1.5);
 
-        // Escudo
         if (defensor.escudoCibernetico) { dmg = Math.floor(dmg * 0.60); defensor.escudoCibernetico = false; }
 
         defensor.hp -= dmg;
