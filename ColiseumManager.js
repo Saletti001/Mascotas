@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - MOTOR DE COMBATE V9.2.8 (FIX: NOMBRES Y RAREZA EN UI)
+// ColiseumManager.js - MOTOR DE COMBATE V9.2.9 (FIX DEFINITIVO DE NOMBRES Y STATS)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -99,9 +99,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             #player-visual-box svg, #enemy-visual-box svg { width: 100% !important; height: 100% !important; overflow: visible !important; transition: 0.2s; }
 
-            /* ========================================= */
-            /* ANIMACIONES DE ATAQUE Y BOCA              */
-            /* ========================================= */
+            /* ANIMACIONES DE ATAQUE Y BOCA */
             @keyframes animarBoca { 0% { transform: scale(1); } 50% { transform: scale(1.6); } 100% { transform: scale(1); } }
             @keyframes animarEmbestida { 0% { transform: scale(1) translateY(0); } 50% { transform: scale(1.1) translateY(-10px); } 100% { transform: scale(1) translateY(0); } }
             
@@ -117,8 +115,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             /* BARRAS DE HP NEON */
             .hp-bar-container { background: #000 !important; border: 1px solid #333 !important; box-shadow: inset 0 0 5px rgba(0,0,0,0.8) !important; height: 12px !important; border-radius: 6px !important; width: 90% !important; margin: 8px auto 0 auto !important; }
-            .hp-bar-fill-green { background: linear-gradient(90deg, #00d2ff, #4dd0e1) !important; box-shadow: 0 0 10px rgba(77,208,225,0.6) !important; height: 100%; border-radius: 6px;}
-            .hp-bar-fill-red { background: linear-gradient(90deg, #ff6b6b, #d9534f) !important; box-shadow: 0 0 10px rgba(255,107,107,0.6) !important; height: 100%; border-radius: 6px;}
+            .hp-bar-fill-green { background: linear-gradient(90deg, #00d2ff, #4dd0e1) !important; box-shadow: 0 0 10px rgba(77,208,225,0.6) !important; height: 100%; border-radius: 6px; transition: width 0.3s;}
+            .hp-bar-fill-red { background: linear-gradient(90deg, #ff6b6b, #d9534f) !important; box-shadow: 0 0 10px rgba(255,107,107,0.6) !important; height: 100%; border-radius: 6px; transition: width 0.3s;}
             .hp-text { font-size: 11px !important; color: #fff !important; font-weight: bold; margin-top: 4px !important; text-shadow: 0 1px 2px #000; text-align: center; width: 100%; }
 
             /* LOG DE BATALLA HACKER */
@@ -133,7 +131,7 @@ document.addEventListener("DOMContentLoaded", () => {
             /* CONTENEDOR DE BOTONES DINÁMICO */
             #battle-controls, .controls-container { width: 100% !important; display: flex; gap: 8px !important; justify-content: center !important; margin-top: 15px !important; }
 
-            /* NUEVOS BOTONES DE COMBATE (3 BOTONES MÁS PEQUEÑOS) */
+            /* NUEVOS BOTONES DE COMBATE */
             .battle-btn { flex: 1 !important; padding: 10px 5px !important; border-radius: 8px !important; text-transform: uppercase !important; letter-spacing: 0.5px !important; transition: 0.2s !important; font-weight: 900 !important; font-size: 11px !important; color: white !important; cursor: pointer !important; border: 1px solid transparent !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important; }
             .atk-btn { background: linear-gradient(90deg, #ff5722, #d84315) !important; border-color: #ff9800 !important; box-shadow: 0 4px 10px rgba(255, 87, 34, 0.3) !important; }
             .special-btn { background: linear-gradient(90deg, #9c27b0, #6a1b9a) !important; border-color: #e040fb !important; box-shadow: 0 4px 10px rgba(156, 39, 176, 0.3) !important; }
@@ -167,23 +165,31 @@ document.addEventListener("DOMContentLoaded", () => {
     let cooldownEspecial = 0; 
 
     // =========================================
-    // OBTENER ELEMENTOS DE LA UI DE FORMA ROBUSTA
+    // OBTENER ELEMENTOS DE LA UI DE FORMA ROBUSTA (PRIORIZANDO CLASES NUEVAS)
     // =========================================
     function getUI() {
+        const area = document.querySelector(".coliseum-card") || document.getElementById("battle-area");
+        const pSide = document.querySelector(".fighter-left") || document.getElementById("player-sprite-battle");
+        const eSide = document.querySelector(".fighter-right") || document.getElementById("enemy-sprite-battle");
+
         return {
-            log: document.getElementById("battle-log") || document.querySelector(".battle-log-container"),
-            btnStart: document.getElementById("btn-start-battle") || document.querySelector(".btn-primary"),
-            btnLeave: document.getElementById("btn-leave-battle") || document.querySelector(".btn-secondary"),
-            controls: document.getElementById("battle-controls") || document.querySelector(".controls-container"),
-            area: document.getElementById("battle-area") || document.querySelector(".coliseum-card"),
-            pName: document.getElementById("battle-player-name") || document.querySelector(".fighter-left .fighter-name"),
-            eName: document.getElementById("battle-enemy-name") || document.querySelector(".fighter-right .fighter-name"),
-            pVisual: document.getElementById("player-visual-box") || document.querySelector(".fighter-left .fighter-sprite"),
-            eVisual: document.getElementById("enemy-visual-box") || document.querySelector(".fighter-right .fighter-sprite"),
-            pBar: document.getElementById("player-hp-bar") || document.querySelector(".fighter-left .hp-bar-fill-green"),
-            eBar: document.getElementById("enemy-hp-bar") || document.querySelector(".fighter-right .hp-bar-fill-red"),
-            pTxt: document.getElementById("player-hp-text") || document.querySelector(".fighter-left .hp-text"),
-            eTxt: document.getElementById("enemy-hp-text") || document.querySelector(".fighter-right .hp-text")
+            log: document.querySelector(".battle-log-container") || document.getElementById("battle-log"),
+            btnStart: document.querySelector(".btn-primary") || document.getElementById("btn-start-battle"),
+            btnLeave: document.querySelector(".btn-secondary") || document.getElementById("btn-leave-battle"),
+            controls: document.querySelector(".controls-container") || document.getElementById("battle-controls"),
+            area: area,
+            pSide: pSide,
+            eSide: eSide,
+            
+            // Priorizamos las clases del HTML nuevo para evitar agarrar IDs viejos invisibles
+            pName: (pSide ? pSide.querySelector(".fighter-name") : null) || document.getElementById("battle-player-name"),
+            eName: (eSide ? eSide.querySelector(".fighter-name") : null) || document.getElementById("battle-enemy-name"),
+            pVisual: (pSide ? pSide.querySelector(".fighter-sprite") : null) || document.getElementById("player-visual-box"),
+            eVisual: (eSide ? eSide.querySelector(".fighter-sprite") : null) || document.getElementById("enemy-visual-box"),
+            pBar: (pSide ? pSide.querySelector("[class*='hp-bar-fill']") : null) || document.getElementById("player-hp-bar"),
+            eBar: (eSide ? eSide.querySelector("[class*='hp-bar-fill']") : null) || document.getElementById("enemy-hp-bar"),
+            pTxt: (pSide ? pSide.querySelector(".hp-text") : null) || document.getElementById("player-hp-text"),
+            eTxt: (eSide ? eSide.querySelector(".hp-text") : null) || document.getElementById("enemy-hp-text")
         };
     }
 
@@ -201,7 +207,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function efectoCuracion(elementId) {
-        const el = document.getElementById(elementId);
+        const ui = getUI();
+        const el = elementId === "player-sprite-battle" ? ui.pSide : ui.eSide;
         if(el) {
             el.classList.remove("heal-effect");
             void el.offsetWidth;
@@ -211,7 +218,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function mostrarTextoFlotante(esJugador, texto, claseAdicional, delayMs = 0) {
-        const sideEl = esJugador ? (document.getElementById("player-sprite-battle") || document.querySelector(".fighter-left")) : (document.getElementById("enemy-sprite-battle") || document.querySelector(".fighter-right"));
+        const ui = getUI();
+        const sideEl = esJugador ? ui.pSide : ui.eSide;
         if(!sideEl) return;
         
         setTimeout(() => {
@@ -237,7 +245,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // ANIMACIÓN AL ATACAR
     function animarAtaqueGeno(esJugador) {
         const ui = getUI();
         const el = esJugador ? ui.pVisual : ui.eVisual;
@@ -264,7 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const txtHp = esJugador ? ui.pTxt : ui.eTxt;
         if (txtHp) txtHp.innerText = `${Math.floor(current)} / ${Math.floor(max)}`;
 
-        const sprite = esJugador ? (document.getElementById("player-sprite-battle") || document.querySelector(".fighter-left")) : (document.getElementById("enemy-sprite-battle") || document.querySelector(".fighter-right"));
+        const sprite = esJugador ? ui.pSide : ui.eSide;
         if (sprite) {
             if (current <= 0) sprite.style.filter = "grayscale(1) brightness(0.3)";
             else sprite.style.filter = "none";
@@ -332,7 +339,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (ui.btnLeave && currentScreen && ui.btnLeave.parentElement !== currentScreen) currentScreen.appendChild(ui.btnLeave);
         }
 
-        // --- INYECCIÓN DINÁMICA DE LOS 3 BOTONES DE COMBATE ---
+        // --- INYECCIÓN DINÁMICA DE LOS 3 BOTONES ---
         if (ui.controls) {
             ui.controls.innerHTML = `
                 <button id="btn-action-atk" class="battle-btn atk-btn">⚔️ ATACAR</button>
@@ -347,8 +354,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if(ui.pVisual) ui.pVisual.innerHTML = "";
         if(ui.eVisual) ui.eVisual.innerHTML = "";
         
-        if(ui.pName) ui.pName.innerText = "Tu Geno";
-        if(ui.eName) ui.eName.innerText = "---";
+        // REINICIAR TEXTOS SEGURO
+        if(ui.pName) ui.pName.innerHTML = "Tu Geno";
+        if(ui.eName) ui.eName.innerHTML = "---";
 
         if(ui.pBar) ui.pBar.style.width = "100%";
         if(ui.eBar) ui.eBar.style.width = "100%";
@@ -357,7 +365,6 @@ document.addEventListener("DOMContentLoaded", () => {
         
         if(ui.log) ui.log.innerHTML = `<span style="color:#aaa;">> Conectando con los servidores del Coliseo...</span><br><span style="color:#4dd0e1">> Arena lista. Esperando combatientes.</span>`;
         
-        // --- MOSTRAR START Y OCULTAR CONTROLES FORZOSAMENTE ---
         if(ui.btnStart) ui.btnStart.style.setProperty("display", "block", "important");
         if(ui.btnLeave) ui.btnLeave.style.setProperty("display", "block", "important");
         if(ui.controls) ui.controls.style.setProperty("display", "none", "important");
@@ -368,18 +375,16 @@ document.addEventListener("DOMContentLoaded", () => {
     // =========================================
     // INICIAR COMBATE (ESTADO 2: PELEANDO)
     // =========================================
-    const btnStartElement = document.getElementById("btn-start-battle") || document.querySelector(".btn-primary");
-    if(btnStartElement) {
-        btnStartElement.addEventListener("click", () => {
+    // Vinculamos el evento al documento para atraparlo sin importar si es el botón viejo o nuevo
+    document.addEventListener("click", (e) => {
+        if (e.target.id === "btn-start-battle" || e.target.classList.contains("btn-primary")) {
             const ui = getUI();
             try {
                 if(ui.log) ui.log.innerHTML = "";
                 addLog(`<span style="color:#4dd0e1">> INICIALIZANDO SECUENCIA DE COMBATE...</span>`);
                 
-                const pSprite = document.getElementById("player-sprite-battle") || document.querySelector(".fighter-left");
-                const eSprite = document.getElementById("enemy-sprite-battle") || document.querySelector(".fighter-right");
-                if(pSprite) pSprite.style.filter = "none";
-                if(eSprite) eSprite.style.filter = "none";
+                if(ui.pSide) ui.pSide.style.filter = "none";
+                if(ui.eSide) ui.eSide.style.filter = "none";
                 
                 numeroTurno = 1;
                 cooldownEspecial = 0;
@@ -455,18 +460,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     escudoCibernetico: eElemento === "Cibernético", estados: []
                 };
 
-                // Inyección segura de SVG usando la UI robusta
                 if(ui.pVisual) ui.pVisual.innerHTML = inyectarSvgSeguro(pMascota);
                 if(ui.eVisual) ui.eVisual.innerHTML = inyectarSvgSeguro(eAdn);
 
-                // SOBRESCRIBIR NOMBRES, RAREZA Y ELEMENTO DE FORMA ROBUSTA
+                // SOBRESCRIBIR LA UI DE FORMA SEGURA Y FORZADA
                 if(ui.pName) ui.pName.innerHTML = `<strong>${playerCombat.nombre}</strong><br><span style="color:#aaa; font-size:10px; font-weight:normal;">(Nv. ${pMascota.level || 1})</span>`;
-                if(ui.eName) ui.eName.innerHTML = `<strong>${enemyCombat.nombre}</strong><br><span style="color:#aaa; font-size:10px; font-weight:normal;">(${eRareza} - ${eElemento})</span>`;
+                if(ui.eName) ui.eName.innerHTML = `<strong>${enemyCombat.nombre}</strong><br><span style="color:#aaa; font-size:10px; font-weight:normal;">Rival ${eRareza}<br>(${eElemento})</span>`;
 
                 actualizarUICombate(playerCombat, true);
                 actualizarUICombate(enemyCombat, false);
 
-                // --- MOSTRAR CONTROLES Y OCULTAR BOTÓN DE INICIO FORZOSAMENTE ---
+                // --- MOSTRAR CONTROLES ---
                 if(ui.btnStart) ui.btnStart.style.setProperty("display", "none", "important");
                 if(ui.controls) ui.controls.style.setProperty("display", "flex", "important");
                 
@@ -476,8 +480,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error("Error crítico al iniciar combate:", error);
                 addLog(`<span style="color:#ff3333">> ERROR DEL SISTEMA. Revisa la consola.</span>`);
             }
-        });
-    }
+        }
+    });
 
     // =========================================
     // LÓGICA DE TURNOS Y HABILIDADES
@@ -548,7 +552,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function ejecutarAccion(atacante, defensor, accionElegida) {
         if (atacante.hp <= 0 || defensor.hp <= 0) return;
 
-        // Dispara la animación de boca
         animarAtaqueGeno(atacante.isPlayer);
 
         if (atacante.isPlayer) {
@@ -681,7 +684,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (atacante.hp > atacante.maxHp) atacante.hp = atacante.maxHp;
                     addLog(`<span style="color:#e0b0ff">* [Vampirismo] ${atacante.nombre} se cura ${roboVida} HP.</span>`);
                     mostrarTextoFlotante(atacante.isPlayer, `+${roboVida}`, "text-heal", 200);
-                    efectoCuracion(atacante.isPlayer ? "player-sprite-battle" : "enemy-sprite-battle");
                 }
 
                 if (isCrit && defensor.genesId.includes("reflejo_genetico") && dmg > 0) {
@@ -713,7 +715,6 @@ document.addEventListener("DOMContentLoaded", () => {
             fighter.hp += regen;
             if (fighter.hp > fighter.maxHp) fighter.hp = fighter.maxHp;
             mostrarTextoFlotante(fighter.isPlayer, `+${regen}`, "text-heal", 500);
-            efectoCuracion(fighter.isPlayer ? "player-sprite-battle" : "enemy-sprite-battle");
         }
         
         if (fighter.estados.includes("Quemadura")) {
