@@ -1,7 +1,6 @@
 // =========================================
-// ColiseumLogic.js - MODELO (Matemáticas y Generación)
+// ColiseumLogic.js - MODELO MATEMÁTICO
 // =========================================
-
 window.ColiseumLogic = {
     player: null,
     enemy: null,
@@ -11,7 +10,7 @@ window.ColiseumLogic = {
     generarRivalProcedural: function(nivelJugador) {
         const rarezas = ["Común", "Raro", "Épico"];
         const eRareza = rarezas[Math.floor(Math.random() * rarezas.length)];
-        const eStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(eRareza) : {hp: 60, atk: 12, spd: 10, luk: 5};
+        const eStats = typeof window.generarStatsPorRareza === 'function' ? window.generarStatsPorRareza(eRareza) : {hp: 60, atk: 12, spd: 10, luk: 5};
         
         const elementos = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
         const eElemento = elementos[Math.floor(Math.random() * elementos.length)];
@@ -35,7 +34,7 @@ window.ColiseumLogic = {
             color: colores[Math.floor(Math.random() * colores.length)],
             eye_type: opcionesOjos[Math.floor(Math.random() * opcionesOjos.length)], 
             mouth_type: opcionesBocas[Math.floor(Math.random() * opcionesBocas.length)], 
-            wing_type: "ninguno", hat_type: "ninguno", hidden_genes: eHiddenGenes 
+            wing_type: "ninguno", hat_type: "ninguno", hidden_genes: eHiddenGenes, level: nivelJugador 
         };
 
         this.enemy = {
@@ -49,7 +48,12 @@ window.ColiseumLogic = {
 
     prepararJugador: function(mascota) {
         const pElemento = (mascota.genes && mascota.genes.afinidad) ? mascota.genes.afinidad.dom : (mascota.element || "Normal");
-        const pStats = mascota.stats || {hp: 80, atk: 15, spd: 15, luk: 10};
+        const pStats = {
+            hp: mascota.stats?.hp || 80,
+            atk: mascota.stats?.atk || 15,
+            spd: mascota.stats?.spd || 15,
+            luk: mascota.stats?.luk || 10
+        };
         
         let pGenB = mascota.hidden_genes?.B?.id || "ninguno";
         let pGenC = mascota.hidden_genes?.C?.id || "ninguno";
