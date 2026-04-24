@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumUI.js - VISTA Y ANIMACIONES V9.12 (SOLO FIXES PEDIDOS: RETIRARSE Y BOTÓN RIVAL)
+// ColiseumUI.js - VISTA Y ANIMACIONES V9.12 (SOLO FIXES PEDIDOS: RETIRARSE Y FONDO GENOS)
 // =========================================
 
 window.ColiseumUI = {
@@ -23,7 +23,8 @@ window.ColiseumUI = {
             /* ========================================= */
             .fighters-wrapper { display: flex !important; align-items: center !important; justify-content: space-between !important; width: calc(100% + 60px) !important; margin: 0 -30px 15px -30px !important; position: relative; overflow: visible !important; z-index: 10; }
 
-            #player-sprite-battle, #enemy-sprite-battle, .fighter-left, .fighter-right { background: rgba(20, 35, 48, 0.98) !important; padding: 20px 10px 15px 10px !important; width: 42% !important; position: relative; display: flex !important; flex-direction: column !important; justify-content: flex-end !important; align-items: center !important; min-height: 250px !important; backdrop-filter: blur(5px); overflow: visible !important; transition: 0.3s ease-out !important; border-radius: 12px !important; }
+            /* FIX: Fondo aclarado de rgba(20, 35, 48, 0.98) a rgba(35, 50, 63, 0.98) */
+            #player-sprite-battle, #enemy-sprite-battle, .fighter-left, .fighter-right { background: rgba(35, 50, 63, 0.98) !important; padding: 20px 10px 15px 10px !important; width: 42% !important; position: relative; display: flex !important; flex-direction: column !important; justify-content: flex-end !important; align-items: center !important; min-height: 250px !important; backdrop-filter: blur(5px); overflow: visible !important; transition: 0.3s ease-out !important; border-radius: 12px !important; }
             
             @keyframes pulseGlowP { 0% { box-shadow: -8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(77,208,225,0.4); } 50% { box-shadow: -8px 8px 30px rgba(0,0,0,0.8), 0 0 25px rgba(77,208,225,0.8); } 100% { box-shadow: -8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(77,208,225,0.4); } }
             #player-sprite-battle, .fighter-left { border: 2px solid #4dd0e1 !important; animation: pulseGlowP 3s infinite ease-in-out !important; }
@@ -112,7 +113,6 @@ window.ColiseumUI = {
             .battle-btn:disabled { background: #333 !important; border-color: #555 !important; box-shadow: none !important; color: #888 !important; transform: none !important; cursor: not-allowed !important; text-shadow: none !important; }
 
             /* BOTÓN ENTRAR A LA ARENA (DEGRADADO CIAN-ROJO) */
-            /* FIX: Tamaño de letra igualado a botón retirarse (bold, 13px), y botón más pequeño/delgado para una sola línea y centrado automáticamete. */
             #btn-start-battle, .btn-primary { 
                 background: linear-gradient(90deg, #00b4d8, #e53935) !important; /* Mezcla de Colores */
                 box-shadow: 0 6px 15px rgba(0,0,0,0.5), -5px 0 15px rgba(0,180,219,0.3), 5px 0 15px rgba(229,57,53,0.3) !important; 
@@ -120,25 +120,24 @@ window.ColiseumUI = {
                 color: white !important; 
                 border-radius: 12px !important; 
                 text-transform: uppercase; 
-                letter-spacing: 1px; /* Igualado a botón retirarse */
+                letter-spacing: 2px; 
                 transition: 0.2s; 
-                padding: 10px 20px !important; /* Reducido para ser más pequeño y delgado */
-                font-size: 13px !important; /* Igualado a botón retirarse */
-                font-weight: bold !important; /* Igualado a botón retirarse (cambiado de 900) */
+                padding: 15px 30px !important; 
+                font-weight: 900 !important; 
                 cursor: pointer; 
-                width: auto !important; /* Permitir que se ajuste al texto */
-                min-width: 170px !important; /* Mantener tamaño mínimo seguro para la línea */
-                margin: 15px auto 0 auto !important; /* Normalizado and centrado */
+                width: 100% !important; /* Normalizado */
+                margin-top: 15px !important; 
                 display: none; 
             }
             #btn-start-battle:hover, .btn-primary:hover { transform: translateY(-3px) !important; filter: brightness(1.2); }
             
+            /* FIX: display: block; sin important para que el JS externo pueda ocultarlo. */
             #btn-leave-battle, .btn-secondary { 
                 background-color: #111b24 !important; border: 1px solid #1e3a5f !important; color: #4dd0e1 !important; 
                 padding: 15px 30px !important; border-radius: 8px !important; text-transform: uppercase !important; 
                 font-size: 13px !important; /* Definido explícitamente para igualar design */
                 font-weight: bold !important; letter-spacing: 1px !important; cursor: pointer !important; 
-                /* FIX: Se ha quitado !important para permitir que la lógica de juego lo oculte (todo o nada). */
+                /* FIX: display sin important */
                 display: block; 
                 transition: 0.2s !important; 
                 width: 70% !important; max-width: 300px !important; box-shadow: none !important; animation: none !important; 
