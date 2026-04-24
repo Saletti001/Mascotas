@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumUI.js - VISTA Y ANIMACIONES V9.4
+// ColiseumUI.js - VISTA Y ANIMACIONES V9.5 (AJUSTES FINALES UI)
 // =========================================
 
 window.ColiseumUI = {
@@ -8,12 +8,14 @@ window.ColiseumUI = {
         const style = document.createElement("style");
         style.id = "coliseum-final-polish-styles";
         style.innerHTML = `
-            .coliseum-cyan-theme { background-color: #31c4d8 !important; background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px) !important; background-size: auto !important; min-height: 100vh !important; padding-top: 20px !important; box-sizing: border-box !important; }
+            .coliseum-cyan-theme { background-color: #31c4d8 !important; background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px) !important; background-size: auto !important; min-height: 100vh !important; padding-top: 20px !important; padding-bottom: 80px !important; box-sizing: border-box !important; }
 
             @keyframes arenaGlow { 0% { box-shadow: 0 0 20px rgba(77, 208, 225, 0.6), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.6); } 50% { box-shadow: 0 0 40px rgba(77, 208, 225, 1), 0 0 10px rgba(255, 255, 255, 0.7), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 1); } 100% { box-shadow: 0 0 20px rgba(77, 208, 225, 0.6), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.6); } }
             #battle-area { background-color: rgba(13, 22, 30, 0.95) !important; border: 2px solid #4dd0e1 !important; border-radius: 16px !important; padding: 25px 20px 20px 20px !important; position: relative; overflow: visible !important; display: flex !important; flex-direction: column !important; align-items: center !important; width: 88% !important; max-width: 480px !important; margin: 0 auto !important; box-sizing: border-box !important; animation: arenaGlow 3s infinite ease-in-out !important; }
 
             .coliseum-title-inside { color: #4dd0e1 !important; text-align: center !important; font-size: 18px !important; margin-top: 0 !important; margin-bottom: 25px !important; text-transform: uppercase !important; font-weight: bold !important; letter-spacing: 2px !important; width: 100% !important; border-bottom: 1px dashed rgba(77, 208, 225, 0.3); padding-bottom: 10px; display: block !important; }
+            
+            /* PANELES FLOTANTES */
             .fighters-wrapper { display: flex !important; align-items: center !important; justify-content: space-between !important; width: calc(100% + 60px) !important; margin: 0 -30px 15px -30px !important; position: relative; overflow: visible !important; z-index: 10; }
 
             #player-sprite-battle, #enemy-sprite-battle, .fighter-left, .fighter-right { background: rgba(20, 35, 48, 0.98) !important; padding: 20px 10px 15px 10px !important; width: 44% !important; position: relative; display: flex !important; flex-direction: column !important; justify-content: flex-end !important; align-items: center !important; min-height: 250px !important; backdrop-filter: blur(5px); overflow: visible !important; transition: 0.3s ease-out !important; border-radius: 12px !important; }
@@ -39,9 +41,11 @@ window.ColiseumUI = {
             .hp-bar-fill-red, #enemy-hp-bar { background: linear-gradient(90deg, #ff6b6b, #d9534f) !important; box-shadow: 0 0 10px rgba(255,107,107,0.6) !important; height: 100%; border-radius: 6px; transition: width 0.3s;}
             .hp-text, #player-hp-text, #enemy-hp-text { font-size: 11px !important; color: #fff !important; font-weight: bold; margin-top: 4px !important; text-shadow: 0 1px 2px #000; text-align: center; width: 100%; }
 
-            @keyframes vsPulse { 0% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 50% { transform: scale(1.25); text-shadow: 0 0 25px rgba(255,204,0,1); } 100% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } }
-            .vs-badge-battle { font-size: 28px !important; font-weight: 900 !important; font-style: italic !important; color: #ffcc00 !important; text-shadow: 0 0 20px rgba(255,0,0,0.8) !important; z-index: 2; margin: 0 10px !important; animation: vsPulse 1.5s infinite ease-in-out !important; }
+            /* VS LATIENTE Y SOBREPUESTO */
+            @keyframes vsPulse { 0% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 50% { transform: scale(1.4); text-shadow: 0 0 25px rgba(255,204,0,1); } 100% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } }
+            .vs-badge-battle { position: relative !important; font-size: 32px !important; font-weight: 900 !important; font-style: italic !important; color: #ffcc00 !important; text-shadow: 0 0 20px rgba(255,0,0,0.8) !important; z-index: 50 !important; margin: 0 -20px !important; animation: vsPulse 1.5s infinite ease-in-out !important; }
 
+            /* LOG Y BOTONES */
             #battle-log, .battle-log-container { background: #0d161c !important; border: 1px solid #1e3a5f !important; border-left: 4px solid #4dd0e1 !important; border-right: 4px solid #ff6b6b !important; color: #00ffcc !important; border-radius: 8px !important; font-family: 'Courier New', monospace !important; font-size: 12px !important; padding: 15px !important; box-shadow: inset 0 0 15px rgba(0,0,0,0.8) !important; margin-top: 10px !important; height: 130px !important; overflow-y: scroll !important; -ms-overflow-style: none; scrollbar-width: none; width: 100%; box-sizing: border-box; }
             #battle-log::-webkit-scrollbar, .battle-log-container::-webkit-scrollbar { display: none !important; }
 
@@ -54,26 +58,34 @@ window.ColiseumUI = {
             .battle-btn:disabled { background: #333 !important; border-color: #555 !important; box-shadow: none !important; color: #888 !important; transform: none !important; cursor: not-allowed !important; text-shadow: none !important; }
 
             #btn-start-battle, .btn-primary { background: linear-gradient(90deg, #E91E63, #C2185B) !important; box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4) !important; border: 1px solid #F48FB1 !important; color: white !important; border-radius: 8px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; padding: 15px 30px !important; font-weight: bold !important; cursor: pointer; width: 100%; margin-top: 15px !important; display: none; }
-            #btn-leave-battle, .btn-secondary { background-color: #111b24 !important; border: 1px solid #1e3a5f !important; color: #4dd0e1 !important; padding: 15px 30px !important; border-radius: 8px !important; text-transform: uppercase !important; font-weight: bold !important; letter-spacing: 1px !important; cursor: pointer !important; margin: 20px auto !important; display: block !important; transition: 0.2s !important; width: max-content !important; box-shadow: none !important; animation: none !important; }
+            
+            /* BOTÓN RETIRARSE: ANCLADO ABAJO Y CENTRADO IGUAL QUE CRIANZA */
+            #btn-leave-battle, .btn-secondary { 
+                background-color: #111b24 !important; border: 1px solid #1e3a5f !important; color: #4dd0e1 !important; 
+                padding: 15px 30px !important; border-radius: 8px !important; text-transform: uppercase !important; 
+                font-weight: bold !important; letter-spacing: 1px !important; cursor: pointer !important; 
+                display: block !important; transition: 0.2s !important; 
+                width: 70% !important; max-width: 300px !important; box-shadow: none !important; animation: none !important; 
+                position: absolute !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 100 !important;
+            }
             #btn-leave-battle:hover, .btn-secondary:hover { background-color: #1e3a5f !important; color: #fff !important; }
             
-            /* ========================================= */
-            /* ANIMACIONES DE COMBATE (¡RESTAURADAS!)   */
-            /* ========================================= */
+            /* ANIMACIONES COMPLEJAS Y EFECTOS FLOTANTES */
             @keyframes animarBoca { 0% { transform: scale(1); } 50% { transform: scale(1.6); } 100% { transform: scale(1); } }
             @keyframes animarEmbestida { 0% { transform: scale(1) translateY(0); } 50% { transform: scale(1.1) translateY(-10px); } 100% { transform: scale(1) translateY(0); } }
             .anim-gritar [id*="boca"], .anim-gritar [class*="boca"], .anim-gritar [id*="mouth"], .anim-gritar [class*="mouth"] { transform-origin: center !important; transform-box: fill-box !important; animation: animarBoca 0.4s ease-in-out !important; }
             .anim-gritar svg { animation: animarEmbestida 0.4s ease-in-out !important; }
 
-            /* AQUI ESTÁN LOS BRILLOS QUE PEDISTE DE VUELTA */
             .hit-effect { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5) !important; transform: scale(0.90) translateX(5px) !important; transition: 0.1s; }
             .heal-effect { filter: brightness(1.5) drop-shadow(0 0 15px #4CAF50) !important; transform: scale(1.05) !important; transition: 0.2s; }
 
             @keyframes floatUpFade { 0% { opacity: 1; transform: translateY(0) scale(1.5); } 10% { transform: translateY(-15px) scale(1.8); } 100% { opacity: 0; transform: translateY(-60px) scale(1); } }
             .floating-text { position: absolute; font-weight: 900; z-index: 100; pointer-events: none; animation: floatUpFade 1.3s ease-out forwards; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 5px rgba(0,0,0,0.8); }
+            
             .text-dmg { color: #ff3333; font-size: 28px; }
             .text-heal { color: #4CAF50; font-size: 24px; }
-            .text-crit { color: #ffcc00; font-size: 32px; font-style: italic; text-transform: uppercase; letter-spacing: 2px; }
+            /* ESTILO SUPERIOR PARA CRÍTICOS */
+            .text-crit { color: #ffcc00; font-size: 34px !important; font-style: italic; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 0 #d32f2f, -2px -2px 0 #d32f2f, 2px -2px 0 #d32f2f, -2px 2px 0 #d32f2f, 0 0 15px rgba(255,0,0,1) !important; z-index: 1000 !important; }
             
             .shake-effect { animation: shake 0.4s; }
             @keyframes shake { 0% { transform: translate(1px, 1px); } 20% { transform: translate(-3px, 0px); } 40% { transform: translate(1px, -1px); } 60% { transform: translate(-3px, 1px); } 80% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -2px); } }
@@ -185,7 +197,6 @@ window.ColiseumUI = {
         if(el) { el.classList.add("anim-gritar"); setTimeout(() => el.classList.remove("anim-gritar"), 500); }
     },
 
-    // ¡ACÁ ESTÁN LAS ANIMACIONES QUE FALTABAN!
     animarDano: function(esJugador) {
         const el = esJugador ? (document.getElementById("player-visual-box") || document.querySelector(".fighter-left .fighter-sprite")) : (document.getElementById("enemy-visual-box") || document.querySelector(".fighter-right .fighter-sprite"));
         if(el) { el.classList.add("hit-effect"); setTimeout(() => el.classList.remove("hit-effect"), 150); }
@@ -207,7 +218,15 @@ window.ColiseumUI = {
         
         const offsetX = (Math.random() - 0.5) * 40; 
         const offsetY = (Math.random() - 0.5) * 20; 
-        floater.style.top = `calc(15% + ${offsetY}px)`;
+
+        // UBICACIÓN DE LOS TEXTOS: Si es Crítico aparece POR ENCIMA de la caja
+        let baseTop = "15%"; // Nace en la frente del Geno
+        if (claseAdicional.includes("text-crit")) {
+            baseTop = "-15%"; // Sube a lo más alto por encima de la caja
+            floater.style.zIndex = "1000"; // Se superpone a cualquier cosa
+        }
+
+        floater.style.top = `calc(${baseTop} + ${offsetY}px)`;
         floater.style.left = `calc(50% + ${offsetX}px)`;
         floater.style.transform = "translate(-50%, -50%)";
         
