@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR DE EVENTOS Y TURNOS
+// ColiseumManager.js - CONTROLADOR DE EVENTOS Y TURNOS V9.2
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ColiseumUI.limpiarLog();
         ColiseumUI.agregarLog(`<span style="color:#aaa;">> Conectando con los servidores del Coliseo...</span><br><span style="color:#4dd0e1">> Arena lista. Esperando combatientes.</span>`);
 
-        // Asignar funciones garantizando los IDs que acaba de crear configurarDOM
+        // Asignar funciones garantizando los IDs
         let btnStart = document.getElementById("btn-start-battle");
         if (btnStart) btnStart.onclick = iniciarPelea;
 
@@ -45,6 +45,27 @@ document.addEventListener("DOMContentLoaded", () => {
         ColiseumLogic.generarRivalProcedural(window.miMascota.level || 1);
         
         ColiseumUI.actualizarGraficos(ColiseumLogic.player, ColiseumLogic.enemy);
+        
+        // --- SOBRESCRIBIR EL HTML PARA MOSTRAR RAREZA Y ELEMENTO ---
+        // Selector para tu panel (id o clase)
+        let playerPanel = document.getElementById("player-sprite-battle") || document.querySelector(".fighter-left");
+        let enemyPanel = document.getElementById("enemy-sprite-battle") || document.querySelector(".fighter-right");
+
+        // Actualizar info Jugador (Nv y Elemento si quieres equilibrar)
+        if (playerPanel) {
+            let p = ColiseumLogic.player;
+            let nameEl = playerPanel.querySelector(".fighter-name");
+            if (nameEl) nameEl.innerHTML = `<strong>${p.nombre}</strong><br><span style="color:#aaa; font-size:10px; font-weight:normal;">(Nv. ${p.adn.level || 1})</span>`;
+        }
+
+        // Actualizar info Rival (Nombre aleatorio y Elemento|Rareza)
+        if (enemyPanel) {
+            let e = ColiseumLogic.enemy;
+            let nameEl = enemyPanel.querySelector(".fighter-name");
+            // ESTO ELIMINA "SUJETO PRUEBA" Y PONE LA INFO CORRECTA
+            if (nameEl) nameEl.innerHTML = `<strong>${e.nombre}</strong><br><span style="color:#aaa; font-size:10px; font-weight:normal;">${e.rareza} - ${e.element}</span>`;
+        }
+
         ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
         
         actualizarBotones();
@@ -131,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function terminarCombate() {
         bloquearBotones(true);
-        ColiseumUI.agregarLog(`<br><span style="color:#ffcc00; font-weight: bold;">--- FIN DEL COMBATE ---</span>`);
+        ColiseumUI.agregarLog(`<br><span style="color:#ffcc00; font-size: 16px; font-weight: bold;">--- FIN DEL COMBATE ---</span>`);
         
         if (ColiseumLogic.player.hp > 0) {
             ColiseumUI.agregarLog(`<span style="color:#4CAF50">🏆 ¡VICTORIA!</span>`, "#ffd54f");

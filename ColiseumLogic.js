@@ -1,23 +1,30 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO
+// ColiseumLogic.js - MODELO (Matemáticas y Generación) V9.2
 // =========================================
+
 window.ColiseumLogic = {
     player: null,
     enemy: null,
     turno: 1,
     cooldownEspecial: 0,
 
+    // Generador de nombres aleatorios integrado por seguridad
+    generarNombreAleatorio: function() {
+        const prefijos = ["Nex", "Crio", "Bio", "Zar", "Vor", "Kael", "Lum", "Pyro", "Grav", "Aero", "Tox", "Muta", "Viro"];
+        const sufijos = ["core", "morph", "tron", "lith", "pex", "byte", "spark", "fang", "claw", "pulse", "shade", "vibe", "gen"];
+        return prefijos[Math.floor(Math.random() * prefijos.length)] + sufijos[Math.floor(Math.random() * sufijos.length)];
+    },
+
     generarRivalProcedural: function(nivelJugador) {
         const rarezas = ["Común", "Raro", "Épico"];
         const eRareza = rarezas[Math.floor(Math.random() * rarezas.length)];
-        const eStats = typeof window.generarStatsPorRareza === 'function' ? window.generarStatsPorRareza(eRareza) : {hp: 60, atk: 12, spd: 10, luk: 5};
+        const eStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(eRareza) : {hp: 60, atk: 12, spd: 10, luk: 5};
         
         const elementos = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
         const eElemento = elementos[Math.floor(Math.random() * elementos.length)];
         
-        const prefijos = ["Nex", "Crio", "Bio", "Zar", "Vor", "Kael", "Lum", "Pyro", "Grav", "Aero", "Tox", "Muta", "Viro"];
-        const sufijos = ["core", "morph", "tron", "lith", "pex", "byte", "spark", "fang", "claw", "pulse", "shade", "vibe", "gen"];
-        const nombreAleatorio = prefijos[Math.floor(Math.random() * prefijos.length)] + sufijos[Math.floor(Math.random() * sufijos.length)];
+        // Usamos el generador integrado
+        const nombreAleatorio = this.generarNombreAleatorio();
 
         const formas = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
         const colores = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77", "#ff9800", "#ffb347", "#a8e6cf"];
@@ -34,7 +41,7 @@ window.ColiseumLogic = {
             color: colores[Math.floor(Math.random() * colores.length)],
             eye_type: opcionesOjos[Math.floor(Math.random() * opcionesOjos.length)], 
             mouth_type: opcionesBocas[Math.floor(Math.random() * opcionesBocas.length)], 
-            wing_type: "ninguno", hat_type: "ninguno", hidden_genes: eHiddenGenes, level: nivelJugador 
+            wing_type: "ninguno", hat_type: "ninguno", hidden_genes: eHiddenGenes, level: nivelJugador
         };
 
         this.enemy = {
@@ -48,12 +55,7 @@ window.ColiseumLogic = {
 
     prepararJugador: function(mascota) {
         const pElemento = (mascota.genes && mascota.genes.afinidad) ? mascota.genes.afinidad.dom : (mascota.element || "Normal");
-        const pStats = {
-            hp: mascota.stats?.hp || 80,
-            atk: mascota.stats?.atk || 15,
-            spd: mascota.stats?.spd || 15,
-            luk: mascota.stats?.luk || 10
-        };
+        const pStats = { hp: mascota.stats?.hp || 80, atk: mascota.stats?.atk || 15, spd: mascota.stats?.spd || 15, luk: mascota.stats?.luk || 10 };
         
         let pGenB = mascota.hidden_genes?.B?.id || "ninguno";
         let pGenC = mascota.hidden_genes?.C?.id || "ninguno";
@@ -73,7 +75,7 @@ window.ColiseumLogic = {
         let dmg = Math.floor(atacante.atk * multiplicadorAtaque * (0.85 + Math.random() * 0.3));
         
         const ventajas = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
-        let multElem = ventajas[atacante.element] === defensor.element ? 1.5 : (ventajas[defensor.element] === atacante.element ? 0.5 : 1.0);
+        let multElem = ventajas[atkElement] === defElement ? 1.5 : (ventajas[defElement] === atkElement ? 0.5 : 1.0);
         dmg = Math.floor(dmg * multElem);
 
         let probCrit = 0.05 + (atacante.luk * 0.002);

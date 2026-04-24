@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumUI.js - VISTA Y ANIMACIONES (VERSIÓN CAJAS FLOTANTES CENTRADAS)
+// ColiseumUI.js - VISTA Y ANIMACIONES V9.2
 // =========================================
 
 window.ColiseumUI = {
@@ -8,88 +8,29 @@ window.ColiseumUI = {
         const style = document.createElement("style");
         style.id = "coliseum-final-polish-styles";
         style.innerHTML = `
-            /* ========================================= */
-            /* 1. ESTRUCTURA GLOBAL Y CAJA PRINCIPAL     */
-            /* ========================================= */
+            /* FONDO TURQUESA GLOBAL */
             .coliseum-cyan-theme { background-color: #31c4d8 !important; background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px) !important; background-size: auto !important; min-height: 100vh !important; padding-top: 20px !important; box-sizing: border-box !important; }
 
+            /* CAJA OSCURA PRINCIPAL Y NEÓN */
             @keyframes arenaGlow { 0% { box-shadow: 0 0 20px rgba(77, 208, 225, 0.6), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.6); } 50% { box-shadow: 0 0 40px rgba(77, 208, 225, 1), 0 0 10px rgba(255, 255, 255, 0.7), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 1); } 100% { box-shadow: 0 0 20px rgba(77, 208, 225, 0.6), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.6); } }
-            
             #battle-area { background-color: rgba(13, 22, 30, 0.95) !important; border: 2px solid #4dd0e1 !important; border-radius: 16px !important; padding: 25px 20px 20px 20px !important; position: relative; overflow: visible !important; display: flex !important; flex-direction: column !important; align-items: center !important; width: 88% !important; max-width: 480px !important; margin: 0 auto !important; box-sizing: border-box !important; animation: arenaGlow 3s infinite ease-in-out !important; }
 
+            /* TÍTULO Y PANELES PEGADOS */
             .coliseum-title-inside { color: #4dd0e1 !important; text-align: center !important; font-size: 18px !important; margin-top: 0 !important; margin-bottom: 25px !important; text-transform: uppercase !important; font-weight: bold !important; letter-spacing: 2px !important; width: 100% !important; border-bottom: 1px dashed rgba(77, 208, 225, 0.3); padding-bottom: 10px; display: block !important; }
+            .fighters-wrapper { display: flex !important; align-items: center !important; justify-content: space-between !important; width: calc(100% + 60px) !important; margin: 0 -30px 15px -30px !important; position: relative; overflow: visible !important; }
+
+            #player-sprite-battle, #enemy-sprite-battle, .fighter-left, .fighter-right { background: rgba(30, 45, 60, 0.95) !important; padding: 15px 10px !important; width: 44% !important; position: relative; transition: 0.3s; display: flex !important; flex-direction: column !important; justify-content: flex-end !important; align-items: center !important; min-height: 250px !important; backdrop-filter: blur(4px); overflow: visible !important; }
+            #player-sprite-battle, .fighter-left { border: 1px solid rgba(77, 208, 225, 0.5) !important; border-top: 3px solid #4dd0e1 !important; border-bottom: 3px solid #4dd0e1 !important; border-radius: 0 12px 12px 0 !important; border-left: none !important; box-shadow: -10px 10px 15px rgba(0,0,0,0.5), 0 0 15px rgba(77,208,225,0.3); }
+            #enemy-sprite-battle, .fighter-right { border: 1px solid rgba(255, 107, 107, 0.5) !important; border-top: 3px solid #ff6b6b !important; border-bottom: 3px solid #ff6b6b !important; border-radius: 12px 0 0 12px !important; border-right: none !important; box-shadow: 10px 10px 15px rgba(0,0,0,0.5), 0 0 15px rgba(255,107,107,0.3); }
+            #player-sprite-battle:hover, .fighter-left:hover { transform: translateY(-5px) translateX(-3px) scale(1.02) !important; }
+            #enemy-sprite-battle:hover, .fighter-right:hover { transform: translateY(-5px) translateX(3px) scale(1.02) !important; }
             
-            /* ========================================= */
-            /* 2. PANELES FLOTANTES (SOBRESALIENDO)      */
-            /* ========================================= */
-            .fighters-wrapper { 
-                display: flex !important; 
-                align-items: center !important; 
-                justify-content: space-between !important; 
-                width: calc(100% + 60px) !important; /* Hace que mida 60px más que la caja negra */
-                margin: 0 -30px 20px -30px !important; /* Lo empuja hacia afuera de los bordes */
-                position: relative; 
-                overflow: visible !important; 
-                z-index: 10; 
-            }
-
-            #player-sprite-battle, #enemy-sprite-battle, .fighter-left, .fighter-right { 
-                background: rgba(20, 35, 48, 0.98) !important; 
-                padding: 20px 10px 15px 10px !important; 
-                width: 44% !important; 
-                position: relative; 
-                display: flex !important;
-                flex-direction: column !important;
-                justify-content: flex-end !important;
-                align-items: center !important;
-                min-height: 250px !important; 
-                backdrop-filter: blur(5px);
-                overflow: visible !important; 
-                transition: 0.3s ease-out !important; 
-                border-radius: 12px !important; /* Borde redondeado completo */
-            }
-
-            /* Resplandor y Sombra 3D Jugador (Cian) - Flota a la izquierda */
-            @keyframes pulseGlowP { 0% { box-shadow: -8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(77,208,225,0.4); } 50% { box-shadow: -8px 8px 30px rgba(0,0,0,0.8), 0 0 25px rgba(77,208,225,0.8); } 100% { box-shadow: -8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(77,208,225,0.4); } }
-            #player-sprite-battle, .fighter-left { 
-                border: 2px solid #4dd0e1 !important; /* Borde perimetral completo */
-                animation: pulseGlowP 3s infinite ease-in-out !important;
-            }
-            #player-sprite-battle:hover, .fighter-left:hover { transform: translateY(-5px) scale(1.02) !important; }
-
-            /* Resplandor y Sombra 3D Enemigo (Rojo) - Flota a la derecha */
-            @keyframes pulseGlowE { 0% { box-shadow: 8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(255,107,107,0.4); } 50% { box-shadow: 8px 8px 30px rgba(0,0,0,0.8), 0 0 25px rgba(255,107,107,0.8); } 100% { box-shadow: 8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(255,107,107,0.4); } }
-            #enemy-sprite-battle, .fighter-right { 
-                border: 2px solid #ff6b6b !important; /* Borde perimetral completo */
-                animation: pulseGlowE 3s infinite ease-in-out !important;
-            }
-            #enemy-sprite-battle:hover, .fighter-right:hover { transform: translateY(-5px) scale(1.02) !important; }
-
-            /* ========================================= */
-            /* 3. CENTRADO DEL GENO EN LA CAJA          */
-            /* ========================================= */
-            #player-visual-box, #enemy-visual-box, .fighter-sprite { 
-                width: 120px !important; 
-                height: 120px !important; 
-                margin: auto !important; /* Mágicamente centra el Geno en el espacio sobrante arriba del nombre */
-                display: flex; 
-                justify-content: center; 
-                align-items: center; 
-                position: relative; 
-                overflow: visible !important; 
-                transform: none !important; /* Eliminado el desplazamiento hacia arriba */
-                filter: drop-shadow(0 8px 6px rgba(0,0,0,0.6)); /* Sombra para el Geno */
-                transition: 0.2s ease-in-out;
-            }
+            #player-visual-box, #enemy-visual-box, .fighter-sprite { width: 120px !important; height: 120px !important; margin: 0 auto auto auto !important; display: flex; justify-content: center; align-items: center; position: relative; overflow: visible !important; filter: drop-shadow(0 10px 5px rgba(0,0,0,0.6)); }
             #player-visual-box svg, #enemy-visual-box svg, .fighter-sprite svg { width: 100% !important; height: 100% !important; overflow: visible !important; transition: 0.2s; }
-            
-            /* Efecto hover en el Geno mismo */
             #player-visual-box:hover, #enemy-visual-box:hover, .fighter-sprite:hover { transform: scale(1.1) !important; }
 
-            /* ========================================= */
-            /* 4. TEXTOS Y BARRAS DE HP                 */
-            /* ========================================= */
-            #battle-player-name, #battle-enemy-name, .fighter-name { font-size: 13px !important; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px !important; text-align: center !important; width: 100% !important; line-height: 1.3 !important; }
+            /* NOMBRES Y HP */
+            #battle-player-name, #battle-enemy-name, .fighter-name { font-size: 13px !important; text-transform: uppercase; letter-spacing: 1px; margin-top: 15px !important; text-align: center !important; width: 100% !important; line-height: 1.3 !important; }
             #battle-player-name, .fighter-left .fighter-name { color: #4dd0e1 !important; }
             #battle-enemy-name, .fighter-right .fighter-name { color: #ff6b6b !important; }
 
@@ -98,9 +39,11 @@ window.ColiseumUI = {
             .hp-bar-fill-red, #enemy-hp-bar { background: linear-gradient(90deg, #ff6b6b, #d9534f) !important; box-shadow: 0 0 10px rgba(255,107,107,0.6) !important; height: 100%; border-radius: 6px; transition: width 0.3s;}
             .hp-text, #player-hp-text, #enemy-hp-text { font-size: 11px !important; color: #fff !important; font-weight: bold; margin-top: 4px !important; text-shadow: 0 1px 2px #000; text-align: center; width: 100%; }
 
-            /* ========================================= */
-            /* 5. LOG Y BOTONES                         */
-            /* ========================================= */
+            /* ANIMACIÓN DEL VS (PULSO) */
+            @keyframes vsPulse { 0% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 50% { transform: scale(1.15); text-shadow: 0 0 25px rgba(255,204,0,1); } 100% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } }
+            .vs-badge-battle { font-size: 28px !important; font-weight: 900 !important; font-style: italic !important; color: #ffcc00 !important; text-shadow: 0 0 20px rgba(255,0,0,0.8) !important; z-index: 2; margin: 0 10px !important; animation: vsPulse 1.5s infinite ease-in-out !important; }
+
+            /* LOG Y BOTONES */
             #battle-log, .battle-log-container { background: #0d161c !important; border: 1px solid #1e3a5f !important; border-left: 4px solid #4dd0e1 !important; border-right: 4px solid #ff6b6b !important; color: #00ffcc !important; border-radius: 8px !important; font-family: 'Courier New', monospace !important; font-size: 12px !important; padding: 15px !important; box-shadow: inset 0 0 15px rgba(0,0,0,0.8) !important; margin-top: 10px !important; height: 130px !important; overflow-y: scroll !important; -ms-overflow-style: none; scrollbar-width: none; width: 100%; box-sizing: border-box; }
             #battle-log::-webkit-scrollbar, .battle-log-container::-webkit-scrollbar { display: none !important; }
 
@@ -116,21 +59,20 @@ window.ColiseumUI = {
             #btn-leave-battle, .btn-secondary { background-color: #111b24 !important; border: 1px solid #1e3a5f !important; color: #4dd0e1 !important; padding: 15px 30px !important; border-radius: 8px !important; text-transform: uppercase !important; font-weight: bold !important; letter-spacing: 1px !important; cursor: pointer !important; margin: 20px auto !important; display: block !important; transition: 0.2s !important; width: max-content !important; box-shadow: none !important; animation: none !important; }
             #btn-leave-battle:hover, .btn-secondary:hover { background-color: #1e3a5f !important; color: #fff !important; }
             
-            /* ========================================= */
-            /* 6. ANIMACIONES DE COMBATE                */
-            /* ========================================= */
+            /* ANIMACIONES COMPLEJAS */
             @keyframes animarBoca { 0% { transform: scale(1); } 50% { transform: scale(1.6); } 100% { transform: scale(1); } }
             @keyframes animarEmbestida { 0% { transform: scale(1) translateY(0); } 50% { transform: scale(1.1) translateY(-10px); } 100% { transform: scale(1) translateY(0); } }
             .anim-gritar [id*="boca"], .anim-gritar [class*="boca"], .anim-gritar [id*="mouth"], .anim-gritar [class*="mouth"] { transform-origin: center !important; transform-box: fill-box !important; animation: animarBoca 0.4s ease-in-out !important; }
             .anim-gritar svg { animation: animarEmbestida 0.4s ease-in-out !important; }
 
+            /* UBICACIÓN DE TEXTO FLOTANTE (CORREGIDA SOBRE EL GENO) */
             @keyframes floatUpFade { 0% { opacity: 1; transform: translateY(0) scale(1.5); } 10% { transform: translateY(-10px) scale(1.8); } 100% { opacity: 0; transform: translateY(-80px) scale(1); } }
             .floating-text { position: absolute; font-weight: 900; z-index: 100; pointer-events: none; animation: floatUpFade 1.3s ease-out forwards; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 5px rgba(0,0,0,0.8); }
             .text-dmg { color: #ff3333; font-size: 28px; }
             .text-heal { color: #4CAF50; font-size: 24px; }
             .text-crit { color: #ffcc00; font-size: 32px; font-style: italic; text-transform: uppercase; letter-spacing: 2px; }
             .hit-effect { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5); transform: scale(0.90) translateX(5px) !important; transition: 0.1s; }
-            .vs-badge-battle { font-size: 28px !important; font-weight: 900 !important; font-style: italic !important; color: #ffcc00 !important; text-shadow: 0 0 20px rgba(255,0,0,0.8) !important; z-index: 2; margin: 0 10px !important; }
+            
             .shake-effect { animation: shake 0.4s; }
             @keyframes shake { 0% { transform: translate(1px, 1px); } 20% { transform: translate(-3px, 0px); } 40% { transform: translate(1px, -1px); } 60% { transform: translate(-3px, 1px); } 80% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -2px); } }
         `;
@@ -159,7 +101,6 @@ window.ColiseumUI = {
         if (controls) {
             area.appendChild(controls);
             controls.id = "battle-controls"; 
-            controls.className = "controls-container";
             controls.innerHTML = `
                 <button id="btn-atk" class="battle-btn atk-btn">⚔️ ATACAR</button>
                 <button id="btn-special" class="battle-btn special-btn">✨ ESPECIAL</button>
@@ -170,7 +111,6 @@ window.ColiseumUI = {
 
         let btnStart = document.getElementById("btn-start-battle") || document.querySelector(".btn-primary");
         if (btnStart) {
-            btnStart.id = "btn-start-battle"; 
             btnStart.className = "btn-start";
             area.appendChild(btnStart);
             btnStart.style.setProperty("display", "block", "important");
@@ -178,7 +118,6 @@ window.ColiseumUI = {
 
         let btnLeave = document.getElementById("btn-leave-battle") || document.querySelector(".btn-secondary");
         if (btnLeave && currentScreen) {
-            btnLeave.id = "btn-leave-battle";
             btnLeave.className = "btn-leave";
             currentScreen.appendChild(btnLeave); 
         }
@@ -189,16 +128,10 @@ window.ColiseumUI = {
 
     actualizarGraficos: function(p, e) {
         let pNameEl = document.getElementById("battle-player-name") || document.querySelector(".fighter-left .fighter-name");
-        if (pNameEl) {
-            pNameEl.innerHTML = `<strong>${p.nombre}</strong><br><span style="color:#4dd0e1; font-size:10px; font-weight:normal;">(Nv. ${p.adn.level || 1})</span>`;
-            pNameEl.className = "fighter-name";
-        }
+        if (pNameEl) pNameEl.innerHTML = `<strong>${p.nombre}</strong><br><span style="color:#4dd0e1; font-size:10px; font-weight:normal;">(Nv. ${p.adn.level || 1})</span>`;
         
         let eNameEl = document.getElementById("battle-enemy-name") || document.querySelector(".fighter-right .fighter-name");
-        if (eNameEl) {
-            eNameEl.innerHTML = `<strong>${e.nombre}</strong><br><span style="color:#ff6b6b; font-size:10px; font-weight:normal;">(${e.rareza} - ${e.element})</span>`;
-            eNameEl.className = "fighter-name";
-        }
+        if (eNameEl) eNameEl.innerHTML = `<strong>${e.nombre}</strong><br><span style="color:#ff6b6b; font-size:10px; font-weight:normal;">(${e.rareza} - ${e.element})</span>`;
 
         let pVisual = document.getElementById("player-visual-box") || document.querySelector(".fighter-left .fighter-sprite");
         let eVisual = document.getElementById("enemy-visual-box") || document.querySelector(".fighter-right .fighter-sprite");
@@ -260,9 +193,14 @@ window.ColiseumUI = {
         const floater = document.createElement("div");
         floater.className = `floating-text ${claseAdicional}`;
         floater.innerText = texto;
-        floater.style.top = `calc(20% + ${(Math.random() - 0.5) * 40}px)`;
-        floater.style.left = `calc(50% + ${(Math.random() - 0.5) * 80}px)`;
-        floater.style.transform = "translate(-50%, -50%)";
+        
+        // UBICACIÓN CORREGIDA: Nace sobre el Geno (top 20%) y centrado en la caja (left 50%)
+        const offsetX = (Math.random() - 0.5) * 80; // Pequeña variación lateral
+        const offsetY = (Math.random() - 0.5) * 40; // Pequeña variación de altura inicial
+        floater.style.top = `calc(20% + ${offsetY}px)`;
+        floater.style.left = `calc(50% + ${offsetX}px)`;
+        floater.style.transform = "translate(-50%, -50%)"; // Asegura que el centro del texto esté en esas coordenadas
+        
         sideEl.appendChild(floater);
         setTimeout(() => floater.remove(), 1300);
     },
