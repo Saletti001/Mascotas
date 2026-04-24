@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsUI.js - INTERFAZ DEL LABORATORIO
+// ImplantsUI.js - INTERFAZ DEL LABORATORIO V2 (FIX RENDER)
 // =========================================
 
 window.ImplantsUI = {
@@ -8,12 +8,17 @@ window.ImplantsUI = {
         const style = document.createElement("style");
         style.id = "implants-styles";
         style.innerHTML = `
+            /* FIX: Aseguramos que ocupe todo el espacio de la app-screen y permita scroll */
             .implants-screen {
-                background-color: #0d161c;
-                background-image: radial-gradient(circle at center, #1a2a36 0%, #0d161c 100%);
-                min-height: 100vh;
-                padding: 20px;
-                color: #e0f7fa;
+                background-color: #0d161c !important;
+                background-image: radial-gradient(circle at center, #1a2a36 0%, #0d161c 100%) !important;
+                padding: 20px !important;
+                padding-bottom: 80px !important; 
+                color: #e0f7fa !important;
+                height: 100% !important;
+                width: 100% !important;
+                overflow-y: auto !important;
+                box-sizing: border-box !important;
             }
 
             .lab-container {
@@ -60,6 +65,9 @@ window.ImplantsUI = {
                 height: 250px;
                 filter: drop-shadow(0 0 10px rgba(77, 208, 225, 0.4));
                 z-index: 2;
+                display: flex;
+                justify-content: center;
+                align-items: center;
             }
 
             /* --- PANEL DE CONTROL (DERECHA) --- */
@@ -88,6 +96,8 @@ window.ImplantsUI = {
                 font-weight: bold;
                 border-radius: 8px;
                 transition: 0.3s;
+                text-transform: uppercase;
+                font-size: 13px;
             }
 
             .lab-tab.active {
@@ -135,7 +145,7 @@ window.ImplantsUI = {
 
             /* --- LISTA DE INVENTARIO (MODAL/POPUP) --- */
             #lab-inventory-selector {
-                position: fixed;
+                position: absolute;
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
@@ -155,9 +165,17 @@ window.ImplantsUI = {
 
     renderBase: function() {
         const screen = document.getElementById("implants-area");
-        screen.className = "implants-screen";
+        if (!screen) return;
+
+        // FIX VITAL: Usamos classList.add en lugar de className para no borrar "app-screen" ni "hidden"
+        screen.classList.add("implants-screen");
+
+        // Si ya está renderizado, no lo volvemos a inyectar para no borrar el progreso
+        if (screen.innerHTML.includes("LABORATORIO DE IMPLANTES")) return;
+
         screen.innerHTML = `
-            <h2 style="text-align:center; color:#4dd0e1; letter-spacing:3px;">LABORATORIO DE IMPLANTES</h2>
+            <h2 style="text-align:center; color:#4dd0e1; letter-spacing:3px; margin-top:0;">LABORATORIO DE IMPLANTES</h2>
+            <p style="text-align: center; color: #888; font-size: 12px; margin-bottom: 20px;">Instala Módulos de Combate y Mejoras Físicas.</p>
             
             <div class="lab-container">
                 <div class="geno-scanner">
@@ -168,26 +186,26 @@ window.ImplantsUI = {
 
                 <div class="control-panel">
                     <div class="lab-tabs">
-                        <div class="lab-tab active" onclick="ImplantsManager.setTab('combat')">MÓDULOS COMBATE</div>
-                        <div class="lab-tab" onclick="ImplantsManager.setTab('cosmetic')">MEJORAS FÍSICAS</div>
+                        <div class="lab-tab active" onclick="ImplantsManager.setTab('combat')">Ataques</div>
+                        <div class="lab-tab" onclick="ImplantsManager.setTab('cosmetic')">Físico</div>
                     </div>
 
                     <div id="combat-slots" class="slot-grid">
                         <div class="implant-slot" onclick="ImplantsManager.openSelector('atk_1')">
-                            <label>Slot 1</label>
+                            <label>Básico</label>
                             <span class="item-name" id="slot-atk-1">VACÍO</span>
                         </div>
                         <div class="implant-slot" onclick="ImplantsManager.openSelector('atk_2')">
-                            <label>Slot 2</label>
+                            <label>Técnica</label>
                             <span class="item-name" id="slot-atk-2">VACÍO</span>
                         </div>
                         <div class="implant-slot" onclick="ImplantsManager.openSelector('atk_3')">
-                            <label>Slot 3</label>
+                            <label>Soporte</label>
                             <span class="item-name" id="slot-atk-3">VACÍO</span>
                         </div>
-                        <div class="implant-slot" onclick="ImplantsManager.openSelector('atk_4')">
-                            <label>Slot 4</label>
-                            <span class="item-name" id="slot-atk-4">BLOQUEADO</span>
+                        <div class="implant-slot" style="border-color: #555; cursor: not-allowed;">
+                            <label style="color:#555;">Definitivo</label>
+                            <span class="item-name" style="color:#888;">🔒 Nv. 25+</span>
                         </div>
                     </div>
 
@@ -213,12 +231,12 @@ window.ImplantsUI = {
             </div>
 
             <div id="lab-inventory-selector">
-                <h3 id="selector-title" style="color:#4dd0e1; margin-top:0;">Seleccionar</h3>
+                <h3 id="selector-title" style="color:#4dd0e1; margin-top:0;">Seleccionar Implante</h3>
                 <div id="lab-inventory-list" style="max-height:300px; overflow-y:auto; margin-bottom:15px;"></div>
-                <button onclick="ImplantsManager.closeSelector()" style="width:100%; padding:10px; background:#334; color:white; border:none; border-radius:5px; cursor:pointer;">CERRAR</button>
+                <button onclick="ImplantsManager.closeSelector()" class="btn-secondary" style="width:100%;">CERRAR</button>
             </div>
 
-            <button onclick="window.navegarA('nexo-area')" class="btn-secondary" style="margin: 20px auto; display:block;">VOLVER AL NEXO</button>
+            <button onclick="window.navegarA('room-area')" class="btn-secondary" style="display:block; margin: 30px auto; width: 80%; max-width: 300px;">VOLVER AL NEXO</button>
         `;
     }
 };
