@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR DE EVENTOS Y TURNOS V9.3
+// ColiseumManager.js - CONTROLADOR DE EVENTOS Y TURNOS V9.4
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
         ColiseumLogic.prepararJugador(window.miMascota);
         ColiseumLogic.generarRivalProcedural(window.miMascota.level || 1);
         
-        // Al actualizar gráficos se elimina "Sujeto Prueba"
+        // Destruye permanentemente "Sujeto Prueba"
         ColiseumUI.actualizarGraficos(ColiseumLogic.player, ColiseumLogic.enemy);
         ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
         
@@ -65,51 +65,57 @@ document.addEventListener("DOMContentLoaded", () => {
         let accion1 = playerGoesFirst ? accionJugador : "ataque";
         let accion2 = playerGoesFirst ? "ataque" : accionJugador;
 
-        ejecutarAccion(ejecutor1, ejecutor2, accion1);
+        ejecutarAccionYAnimar(ejecutor1, ejecutor2, accion1);
         
         if (ejecutor2.hp > 0) {
             setTimeout(() => {
-                ejecutarAccion(ejecutor2, ejecutor1, accion2);
+                ejecutarAccionYAnimar(ejecutor2, ejecutor1, accion2);
                 finalizarRonda();
-            }, 800);
+            }, 900);
         } else {
             finalizarRonda();
         }
     }
 
-    function ejecutarAccion(atacante, defensor, accionElegida) {
+    function ejecutarAccionYAnimar(atacante, defensor, accionElegida) {
         if (atacante.hp <= 0 || defensor.hp <= 0) return;
-
-        ColiseumUI.animarAtaque(atacante.isPlayer);
 
         if (accionElegida === "tactica") {
             ColiseumUI.agregarLog(`<span style="color:#26a69a">> ¡${atacante.nombre} aplica una TÁCTICA!</span>`);
             let cura = Math.floor(atacante.maxHp * 0.15); 
             if (cura < 1) cura = 1;
             atacante.hp = Math.min(atacante.maxHp, atacante.hp + cura);
+            
+            ColiseumUI.animarAtaque(atacante.isPlayer);
+            ColiseumUI.animarCuracion(atacante.isPlayer); // Brillo verde restaurado
             ColiseumUI.mostrarTextoFlotante(atacante.isPlayer, `+${cura}`, "text-heal");
             ColiseumUI.agregarLog(`<span style="color:#4CAF50">* Recupera ${cura} HP y prepara su estrategia.</span>`);
         } else {
-            let mult = (accionElegida === "especial") ? 1.5 : 1;
-            if (accionElegida === "especial") {
-                ColiseumLogic.cooldownEspecial = 3;
-                ColiseumUI.agregarLog(`<span style="color:#e040fb">> ¡${atacante.nombre} usa un ATAQUE ESPECIAL!</span>`);
+            // Usa la lógica completa con Vampirismo, Escudos, Críticos, etc.
+            const resultado = ColiseumLogic.ejecutarAtaqueCompleto(atacante, defensor, accionElegida);
+            
+            if (resultado.anims.atacanteGrita) ColiseumUI.animarAtaque(atacante.isPlayer);
+            
+            resultado.logs.forEach(log => ColiseumUI.agregarLog(log));
+
+            // Si hizo daño, aplicamos la animación ROJA al defensor
+            if (resultado.anims.danoDefensor > 0) {
+                ColiseumUI.animarDano(!atacante.isPlayer);
+                if (resultado.anims.critico) ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "CRITICAL!", "text-crit");
+                ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, `-${resultado.anims.danoDefensor}`, "text-dmg");
+                if(window.Sonidos) window.Sonidos.play("hit"); 
             }
 
-            const resultado = ColiseumLogic.calcularDano(atacante, defensor, mult);
-            ColiseumUI.animarDano(!atacante.isPlayer); 
-            
-            let tipoGolpe = "";
-            if (resultado.multElem === 1.5) tipoGolpe = ` <span style="color:#4CAF50; font-weight:bold;">(¡Súper Efectivo!)</span>`;
-            else if (resultado.multElem === 0.5) tipoGolpe = ` <span style="color:#888; font-weight:bold;">(Poco efectivo...)</span>`;
+            // Si el atacante se curó por VAMPIRISMO, aplicamos la animación VERDE al atacante
+            if (resultado.anims.curacionAtacante > 0) {
+                ColiseumUI.animarCuracion(atacante.isPlayer);
+                ColiseumUI.mostrarTextoFlotante(atacante.isPlayer, `+${resultado.anims.curacionAtacante}`, "text-heal");
+            }
 
-            if (resultado.isCrit) {
-                ColiseumUI.agregarLog(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${atacante.nombre} causa <span style="color:#ff6b6b; font-weight:bold;">${resultado.dmg} de daño</span>.${tipoGolpe}`);
-                ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "CRITICAL!", "text-crit");
-                ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, `-${resultado.dmg}`, "text-dmg", 150);
-            } else {
-                ColiseumUI.agregarLog(`> ${atacante.nombre} causa <span style="color:#ff6b6b">${resultado.dmg} de daño</span>.${tipoGolpe}`);
-                if (resultado.dmg > 0) ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, `-${resultado.dmg}`, "text-dmg");
+            // Si el defensor devolvió daño por REFLEJO, aplicamos animación ROJA al atacante
+            if (resultado.anims.danoReflejo > 0) {
+                ColiseumUI.animarDano(atacante.isPlayer);
+                ColiseumUI.mostrarTextoFlotante(atacante.isPlayer, `-${resultado.anims.danoReflejo}`, "text-dmg");
             }
         }
         
@@ -118,14 +124,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function finalizarRonda() {
         setTimeout(() => {
+            // Aplicar efectos de fin de turno (Biomutante y Quemadura)
+            let resP = ColiseumLogic.procesarEfectosFinTurno(ColiseumLogic.player);
+            resP.logs.forEach(l => ColiseumUI.agregarLog(l));
+            if(resP.anims.heal > 0) { ColiseumUI.animarCuracion(true); ColiseumUI.mostrarTextoFlotante(true, `+${resP.anims.heal}`, "text-heal"); }
+            if(resP.anims.dmg > 0) { ColiseumUI.animarDano(true); ColiseumUI.mostrarTextoFlotante(true, `-${resP.anims.dmg}`, "text-dmg"); }
+
+            let resE = ColiseumLogic.procesarEfectosFinTurno(ColiseumLogic.enemy);
+            resE.logs.forEach(l => ColiseumUI.agregarLog(l));
+            if(resE.anims.heal > 0) { ColiseumUI.animarCuracion(false); ColiseumUI.mostrarTextoFlotante(false, `+${resE.anims.heal}`, "text-heal"); }
+            if(resE.anims.dmg > 0) { ColiseumUI.animarDano(false); ColiseumUI.mostrarTextoFlotante(false, `-${resE.anims.dmg}`, "text-dmg"); }
+
+            ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
+
             if (ColiseumLogic.cooldownEspecial > 0) ColiseumLogic.cooldownEspecial--;
             ColiseumLogic.turno++;
             
-            if (ColiseumLogic.player.hp <= 0 || ColiseumLogic.enemy.hp <= 0) {
-                terminarCombate();
-            } else {
-                actualizarBotones();
-            }
+            setTimeout(() => {
+                if (ColiseumLogic.player.hp <= 0 || ColiseumLogic.enemy.hp <= 0) {
+                    terminarCombate();
+                } else {
+                    actualizarBotones();
+                }
+            }, 600);
         }, 800);
     }
 
