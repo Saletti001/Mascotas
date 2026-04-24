@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumUI.js - VISTA Y ANIMACIONES (GRID 2x2 Y NUEVOS NOMBRES)
+// ColiseumUI.js - VISTA Y ANIMACIONES V9.13 (GRID 2x2 Y BOTONES NEÓN)
 // =========================================
 
 window.ColiseumUI = {
@@ -51,7 +51,7 @@ window.ColiseumUI = {
             /* ========================================= */
             @keyframes vsPulse { 
                 0% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
-                50% { transform: scale(1.2); text-shadow: 0 0 20px rgba(255,204,0,1); } 
+                50% { transform: scale(1.5); text-shadow: 0 0 30px rgba(255,204,0,1); } 
                 100% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
             }
             .vs-badge-battle { 
@@ -64,7 +64,7 @@ window.ColiseumUI = {
                 text-shadow: 0 0 20px rgba(255,0,0,0.8) !important; 
                 z-index: 50 !important; 
                 margin: 0 !important; 
-                animation: vsPulse 2s infinite ease-in-out !important; 
+                animation: vsPulse 1.5s infinite ease-in-out !important; 
             }
 
             /* ========================================= */
@@ -95,44 +95,39 @@ window.ColiseumUI = {
             #battle-log::-webkit-scrollbar, .battle-log-container::-webkit-scrollbar { display: none !important; }
 
             /* ========================================= */
-            /* 5. BOTONES: GRID 2x2 Y COLORES NUEVOS     */
+            /* 5. BOTONES DE ATAQUE (GRID 2x2 NEÓN)      */
             /* ========================================= */
             #battle-controls, .controls-container { 
                 width: 100% !important; 
-                display: grid !important; /* Cambiado a Grid */
-                grid-template-columns: 1fr 1fr !important; /* 2 Columnas */
-                gap: 10px !important; /* Separación entre botones */
+                display: grid !important; 
+                grid-template-columns: 1fr 1fr !important; /* Dos columnas exactas */
+                gap: 12px !important; /* Separación entre botones */
                 margin-top: 15px !important; 
             }
             .battle-btn { 
                 padding: 12px 5px !important; 
                 border-radius: 8px !important; 
                 text-transform: uppercase !important; 
-                letter-spacing: 0.5px !important; 
+                letter-spacing: 1px !important; 
                 transition: 0.2s !important; 
-                font-weight: 900 !important; 
-                font-size: 12px !important; /* Letra un poco más grande */
-                color: white !important; 
+                font-weight: bold !important; 
+                font-size: 12px !important; 
                 cursor: pointer !important; 
-                border: 1px solid rgba(255,255,255,0.2) !important; 
-                text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important; 
-                display: flex !important; 
-                align-items: center !important; 
-                justify-content: center !important;
-                width: 100% !important;
-                box-sizing: border-box !important;
+                background: #111b24 !important; /* Fondo oscuro acorde a la interfaz */
+                box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;
+                text-shadow: none !important;
             }
             
-            /* Colores específicos para los 4 slots */
-            .slot-1 { background: linear-gradient(90deg, #ff5722, #d84315) !important; border-color: #ff9800 !important; box-shadow: 0 4px 10px rgba(255, 87, 34, 0.3) !important; }
-            .slot-2 { background: linear-gradient(90deg, #e91e63, #c2185b) !important; border-color: #f48fb1 !important; box-shadow: 0 4px 10px rgba(233, 30, 99, 0.3) !important; }
-            .slot-3 { background: linear-gradient(90deg, #009688, #00695c) !important; border-color: #26a69a !important; box-shadow: 0 4px 10px rgba(0, 150, 136, 0.3) !important; }
-            .slot-4 { background: linear-gradient(90deg, #9c27b0, #6a1b9a) !important; border-color: #e040fb !important; box-shadow: 0 4px 10px rgba(156, 39, 176, 0.3) !important; filter: grayscale(0.7); opacity: 0.8; cursor: not-allowed !important; }
+            /* Colores de bordes y letras Neón */
+            .slot-1 { border: 1px solid #4dd0e1 !important; color: #4dd0e1 !important; }
+            .slot-2 { border: 1px solid #ff6b6b !important; color: #ff6b6b !important; }
+            .slot-3 { border: 1px solid #4CAF50 !important; color: #4CAF50 !important; }
+            .slot-4 { border: 1px solid #555 !important; color: #888 !important; background: #0a0f14 !important; }
             
             .battle-btn:active { transform: scale(0.95) !important; }
-            .battle-btn:disabled { background: #333 !important; border-color: #555 !important; box-shadow: none !important; color: #888 !important; transform: none !important; cursor: not-allowed !important; text-shadow: none !important; }
+            .battle-btn:disabled { opacity: 0.6 !important; cursor: not-allowed !important; transform: none !important; box-shadow: none !important; }
 
-            /* BOTÓN DE INICIO Y RETIRADA */
+            /* BOTONES DE INICIO Y RETIRADA */
             #btn-start-battle, .btn-primary { 
                 background: linear-gradient(90deg, #00b4d8, #e53935) !important; 
                 box-shadow: 0 6px 15px rgba(0,0,0,0.5), -5px 0 15px rgba(0,180,219,0.3), 5px 0 15px rgba(229,57,53,0.3) !important; 
@@ -161,7 +156,7 @@ window.ColiseumUI = {
                 display: block; 
                 transition: 0.2s !important; 
                 width: 70% !important; max-width: 300px !important; box-shadow: none !important; animation: none !important; 
-                position: absolute !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 100 !important;
+                position: relative !important; margin: 20px auto 10px auto !important; z-index: 100 !important;
             }
             #btn-leave-battle:hover, .btn-secondary:hover { background-color: #1e3a5f !important; color: #fff !important; }
             
@@ -239,12 +234,13 @@ window.ColiseumUI = {
             area.appendChild(controls);
             controls.id = "battle-controls"; 
             controls.className = "controls-container";
-            // INYECCIÓN DE LOS 4 BOTONES CON LOS NUEVOS NOMBRES Y IDs ANTIGUOS
+            
+            // INYECTAMOS LOS 4 BOTONES CON SUS NOMBRES LIMPIOS
             controls.innerHTML = `
-                <button id="btn-atk" class="battle-btn slot-1">⚔️ BÁSICO</button>
-                <button id="btn-special" class="battle-btn slot-2">🔥 TÉCNICA</button>
-                <button id="btn-buff" class="battle-btn slot-3">🛡️ SOPORTE</button>
-                <button id="btn-ultimate" class="battle-btn slot-4" disabled>🌟 DEFINITIVO 🔒</button>
+                <button id="btn-atk" class="battle-btn slot-1">BÁSICO</button>
+                <button id="btn-special" class="battle-btn slot-2">TÉCNICA</button>
+                <button id="btn-buff" class="battle-btn slot-3">SOPORTE</button>
+                <button id="btn-ultimate" class="battle-btn slot-4" disabled>DEFINITIVO</button>
             `;
             controls.style.setProperty("display", "none", "important");
         }
