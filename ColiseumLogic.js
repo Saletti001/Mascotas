@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO (Matemáticas y Generación) V9.2
+// ColiseumLogic.js - MODELO MATEMÁTICO V9.3
 // =========================================
 
 window.ColiseumLogic = {
@@ -8,7 +8,6 @@ window.ColiseumLogic = {
     turno: 1,
     cooldownEspecial: 0,
 
-    // Generador de nombres aleatorios integrado por seguridad
     generarNombreAleatorio: function() {
         const prefijos = ["Nex", "Crio", "Bio", "Zar", "Vor", "Kael", "Lum", "Pyro", "Grav", "Aero", "Tox", "Muta", "Viro"];
         const sufijos = ["core", "morph", "tron", "lith", "pex", "byte", "spark", "fang", "claw", "pulse", "shade", "vibe", "gen"];
@@ -23,7 +22,6 @@ window.ColiseumLogic = {
         const elementos = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
         const eElemento = elementos[Math.floor(Math.random() * elementos.length)];
         
-        // Usamos el generador integrado
         const nombreAleatorio = this.generarNombreAleatorio();
 
         const formas = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
@@ -75,7 +73,7 @@ window.ColiseumLogic = {
         let dmg = Math.floor(atacante.atk * multiplicadorAtaque * (0.85 + Math.random() * 0.3));
         
         const ventajas = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
-        let multElem = ventajas[atkElement] === defElement ? 1.5 : (ventajas[defElement] === atkElement ? 0.5 : 1.0);
+        let multElem = ventajas[atacante.element] === defensor.element ? 1.5 : (ventajas[defensor.element] === atacante.element ? 0.5 : 1.0);
         dmg = Math.floor(dmg * multElem);
 
         let probCrit = 0.05 + (atacante.luk * 0.002);
