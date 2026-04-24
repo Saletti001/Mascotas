@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumUI.js - VISTA Y ANIMACIONES V9.7 (VS GIGANTE Y CRÍTICO CENTRADO)
+// ColiseumUI.js - VISTA Y ANIMACIONES V9.8 (FIX ANIMACIÓN VS)
 // =========================================
 
 window.ColiseumUI = {
@@ -47,24 +47,24 @@ window.ColiseumUI = {
             .hp-text, #player-hp-text, #enemy-hp-text { font-size: 11px !important; color: #fff !important; font-weight: bold; margin-top: 4px !important; text-shadow: 0 1px 2px #000; text-align: center; width: 100%; }
 
             /* ========================================= */
-            /* 3. ANIMACIÓN DEL VS (CRECE 100%)          */
+            /* 3. ANIMACIÓN DEL VS                       */
             /* ========================================= */
             @keyframes vsPulse { 
                 0% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
-                50% { transform: scale(2); text-shadow: 0 0 35px rgba(255,204,0,1); } /* CRECE AL DOBLE */
+                50% { transform: scale(2); text-shadow: 0 0 35px rgba(255,204,0,1); } 
                 100% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
             }
             .vs-badge-battle { 
-                display: inline-block !important; /* NECESARIO PARA SCALE */
+                display: inline-block !important; /* NECESARIO PARA QUE EL SCALE FUNCIONE */
                 position: relative !important; 
-                font-size: 28px !important; 
+                font-size: 24px !important; 
                 font-weight: 900 !important; 
                 font-style: italic !important; 
                 color: #ffcc00 !important; 
                 text-shadow: 0 0 20px rgba(255,0,0,0.8) !important; 
                 z-index: 50 !important; 
                 margin: 0 -20px !important; 
-                animation: vsPulse 1.2s infinite ease-in-out !important; /* Más dinámico */
+                animation: vsPulse 1s infinite ease-in-out !important; 
             }
 
             /* ========================================= */
@@ -104,7 +104,6 @@ window.ColiseumUI = {
             .hit-effect { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5) !important; transform: scale(0.90) translateX(5px) !important; transition: 0.1s; }
             .heal-effect { filter: brightness(1.5) drop-shadow(0 0 15px #4CAF50) !important; transform: scale(1.05) !important; transition: 0.2s; }
 
-            /* ANIMACIÓN CORREGIDA: INCLUYE EL TRANSLATE AL CENTRO PARA EVITAR QUE SE DESCUADRE */
             @keyframes floatUpFade { 
                 0% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); } 
                 10% { transform: translate(-50%, calc(-50% - 15px)) scale(1.8); } 
@@ -118,13 +117,11 @@ window.ColiseumUI = {
                 pointer-events: none; 
                 animation: floatUpFade 1.3s ease-out forwards; 
                 text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 5px rgba(0,0,0,0.8); 
-                white-space: nowrap !important; /* EVITA QUE LA PALABRA SE CORTE */
+                white-space: nowrap !important;
             }
             
             .text-dmg { color: #ff3333; font-size: 28px; }
             .text-heal { color: #4CAF50; font-size: 24px; }
-            
-            /* CRÍTICO GIGANTE */
             .text-crit { 
                 color: #ffcc00; 
                 font-size: 38px !important; 
@@ -156,7 +153,15 @@ window.ColiseumUI = {
         });
 
         const flexContainer = area.querySelector(".fighters-vs-container") || area.querySelector("div");
-        if (flexContainer) flexContainer.classList.add("fighters-wrapper");
+        if (flexContainer) {
+            flexContainer.classList.add("fighters-wrapper");
+            // AQUI ESTABA EL ERROR: Obligamos a que el VS tenga la clase para que se anime
+            for (let i = 0; i < flexContainer.children.length; i++) {
+                if (flexContainer.children[i].innerText === "VS") {
+                    flexContainer.children[i].className = "vs-badge-battle";
+                }
+            }
+        }
 
         let controls = document.getElementById("battle-controls") || document.querySelector(".controls-container");
         if (controls) {
@@ -267,17 +272,16 @@ window.ColiseumUI = {
         let offsetX = (Math.random() - 0.5) * 40; 
         let offsetY = (Math.random() - 0.5) * 20; 
 
-        // UBICACIÓN DE LOS TEXTOS
         let baseTop = "15%"; 
         let baseLeft = "50%"; 
-        let targetContainer = sideEl; // Por defecto el texto nace adentro de la caja del Geno
+        let targetContainer = sideEl; 
 
-        // SI ES CRÍTICO LO SACAMOS DE LA CAJA PARA QUE NO SE CORTE
+        // CRÍTICO CENTRADO EN LA ARENA
         if (claseAdicional.includes("text-crit")) {
             targetContainer = document.querySelector(".fighters-wrapper") || document.getElementById("battle-area"); 
-            baseTop = "-25px"; // Nace por encima de la cabeza de los Genos
-            baseLeft = "50%"; // En el centro absoluto de la pantalla
-            offsetX = 0; // Sin desvío para que no se mueva del centro
+            baseTop = "-25px"; // Por encima de las cajas
+            baseLeft = "50%";  // Al centro absoluto de los dos Genos
+            offsetX = 0; 
             floater.style.zIndex = "1000"; 
         }
 
