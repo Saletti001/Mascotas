@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsUI.js - INTERFAZ DEL LABORATORIO V2 (FIX RENDER)
+// ImplantsUI.js - INTERFAZ DEL LABORATORIO V3 (SIN BARRA LATERAL)
 // =========================================
 
 window.ImplantsUI = {
@@ -8,17 +8,28 @@ window.ImplantsUI = {
         const style = document.createElement("style");
         style.id = "implants-styles";
         style.innerHTML = `
-            /* FIX: Aseguramos que ocupe todo el espacio de la app-screen y permita scroll */
+            /* FIX: Ocultar barra lateral de scroll pero permitir deslizar */
             .implants-screen {
                 background-color: #0d161c !important;
                 background-image: radial-gradient(circle at center, #1a2a36 0%, #0d161c 100%) !important;
                 padding: 20px !important;
                 padding-bottom: 80px !important; 
                 color: #e0f7fa !important;
+                position: absolute !important;
+                top: 0 !important;
+                left: 0 !important;
                 height: 100% !important;
                 width: 100% !important;
                 overflow-y: auto !important;
                 box-sizing: border-box !important;
+                /* Ocultar barra en Firefox y Edge */
+                -ms-overflow-style: none !important;  
+                scrollbar-width: none !important;  
+            }
+            
+            /* Ocultar barra en Chrome, Safari y Opera */
+            .implants-screen::-webkit-scrollbar {
+                display: none !important;
             }
 
             .lab-container {
@@ -145,7 +156,7 @@ window.ImplantsUI = {
 
             /* --- LISTA DE INVENTARIO (MODAL/POPUP) --- */
             #lab-inventory-selector {
-                position: absolute;
+                position: fixed;
                 top: 50%;
                 left: 50%;
                 transform: translate(-50%, -50%);
@@ -167,10 +178,8 @@ window.ImplantsUI = {
         const screen = document.getElementById("implants-area");
         if (!screen) return;
 
-        // FIX VITAL: Usamos classList.add en lugar de className para no borrar "app-screen" ni "hidden"
         screen.classList.add("implants-screen");
 
-        // Si ya está renderizado, no lo volvemos a inyectar para no borrar el progreso
         if (screen.innerHTML.includes("LABORATORIO DE IMPLANTES")) return;
 
         screen.innerHTML = `
@@ -186,8 +195,8 @@ window.ImplantsUI = {
 
                 <div class="control-panel">
                     <div class="lab-tabs">
-                        <div class="lab-tab active" onclick="ImplantsManager.setTab('combat')">Ataques</div>
-                        <div class="lab-tab" onclick="ImplantsManager.setTab('cosmetic')">Físico</div>
+                        <div class="lab-tab active" onclick="ImplantsManager.setTab('combat')">ATAQUES</div>
+                        <div class="lab-tab" onclick="ImplantsManager.setTab('cosmetic')">FÍSICO</div>
                     </div>
 
                     <div id="combat-slots" class="slot-grid">
@@ -233,10 +242,10 @@ window.ImplantsUI = {
             <div id="lab-inventory-selector">
                 <h3 id="selector-title" style="color:#4dd0e1; margin-top:0;">Seleccionar Implante</h3>
                 <div id="lab-inventory-list" style="max-height:300px; overflow-y:auto; margin-bottom:15px;"></div>
-                <button onclick="ImplantsManager.closeSelector()" class="btn-secondary" style="width:100%;">CERRAR</button>
+                <button onclick="ImplantsManager.closeSelector()" class="btn-secondary" style="width:100%; position:relative; bottom:auto; left:auto; transform:none; display:block; margin:0;">CERRAR</button>
             </div>
 
-            <button onclick="window.navegarA('room-area')" class="btn-secondary" style="display:block; margin: 30px auto; width: 80%; max-width: 300px;">VOLVER AL NEXO</button>
+            <button onclick="window.navegarA('room-area')" class="btn-secondary" style="position:relative; display:block; margin: 30px auto; width: 80%; max-width: 300px; left:auto; bottom:auto; transform:none;">VOLVER AL NEXO</button>
         `;
     }
 };
