@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumUI.js - VISTA Y ANIMACIONES (VERSIÓN PULIDA "FLOAT & PROTRUDE")
+// ColiseumUI.js - VISTA Y ANIMACIONES (VERSIÓN CAJAS FLOTANTES CENTRADAS)
 // =========================================
 
 window.ColiseumUI = {
@@ -15,80 +15,81 @@ window.ColiseumUI = {
 
             @keyframes arenaGlow { 0% { box-shadow: 0 0 20px rgba(77, 208, 225, 0.6), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.6); } 50% { box-shadow: 0 0 40px rgba(77, 208, 225, 1), 0 0 10px rgba(255, 255, 255, 0.7), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 1); } 100% { box-shadow: 0 0 20px rgba(77, 208, 225, 0.6), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.6); } }
             
-            #battle-area { background-color: rgba(13, 22, 30, 0.95) !important; border: 2px solid #4dd0e1 !important; border-radius: 16px !important; padding: 25px 20px 20px 20px !important; /* Más padding superior */ position: relative; overflow: visible !important; /* IMPORTANTE: Permitir que los Genos salgan */ display: flex !important; flex-direction: column !important; align-items: center !important; width: 92% !important; max-width: 500px !important; margin: 0 auto !important; box-sizing: border-box !important; animation: arenaGlow 3s infinite ease-in-out !important; }
+            #battle-area { background-color: rgba(13, 22, 30, 0.95) !important; border: 2px solid #4dd0e1 !important; border-radius: 16px !important; padding: 25px 20px 20px 20px !important; position: relative; overflow: visible !important; display: flex !important; flex-direction: column !important; align-items: center !important; width: 88% !important; max-width: 480px !important; margin: 0 auto !important; box-sizing: border-box !important; animation: arenaGlow 3s infinite ease-in-out !important; }
 
             .coliseum-title-inside { color: #4dd0e1 !important; text-align: center !important; font-size: 18px !important; margin-top: 0 !important; margin-bottom: 25px !important; text-transform: uppercase !important; font-weight: bold !important; letter-spacing: 2px !important; width: 100% !important; border-bottom: 1px dashed rgba(77, 208, 225, 0.3); padding-bottom: 10px; display: block !important; }
             
-            .fighters-wrapper { display: flex !important; align-items: center !important; justify-content: space-between !important; width: calc(100% + 40px) !important; margin: 0 -20px 15px -20px !important; position: relative; overflow: visible !important; }
+            /* ========================================= */
+            /* 2. PANELES FLOTANTES (SOBRESALIENDO)      */
+            /* ========================================= */
+            .fighters-wrapper { 
+                display: flex !important; 
+                align-items: center !important; 
+                justify-content: space-between !important; 
+                width: calc(100% + 60px) !important; /* Hace que mida 60px más que la caja negra */
+                margin: 0 -30px 20px -30px !important; /* Lo empuja hacia afuera de los bordes */
+                position: relative; 
+                overflow: visible !important; 
+                z-index: 10; 
+            }
 
-            /* ========================================= */
-            /* 2. PANELES FLOTANTES (JUGADOR Y ENEMIGO)  */
-            /* ========================================= */
             #player-sprite-battle, #enemy-sprite-battle, .fighter-left, .fighter-right { 
-                background: rgba(30, 45, 60, 0.9) !important; /* Un poco más opaco para el efecto flotante */
-                padding: 15px 10px !important; 
-                width: 45% !important; 
+                background: rgba(20, 35, 48, 0.98) !important; 
+                padding: 20px 10px 15px 10px !important; 
+                width: 44% !important; 
                 position: relative; 
                 display: flex !important;
                 flex-direction: column !important;
                 justify-content: flex-end !important;
                 align-items: center !important;
-                min-height: 240px !important; 
-                backdrop-filter: blur(4px);
-                overflow: visible !important; /* CLAVE para que el Geno sobresalga */
-                transition: 0.3s ease-out !important; /* Transición suave para hover y acciones */
-                transform: translateY(-5px) !important; /* Levantado inicial sutil */
+                min-height: 250px !important; 
+                backdrop-filter: blur(5px);
+                overflow: visible !important; 
+                transition: 0.3s ease-out !important; 
+                border-radius: 12px !important; /* Borde redondeado completo */
             }
 
-            /* Resplandor y Pulso Jugador (Cian) */
-            @keyframes pulseGlowP { 0% { box-shadow: 0 5px 15px rgba(0,0,0,0.8), 0 0 15px rgba(77,208,225,0.4); } 50% { box-shadow: 0 5px 25px rgba(0,0,0,0.8), 0 0 25px rgba(77,208,225,0.7); } 100% { box-shadow: 0 5px 15px rgba(0,0,0,0.8), 0 0 15px rgba(77,208,225,0.4); } }
+            /* Resplandor y Sombra 3D Jugador (Cian) - Flota a la izquierda */
+            @keyframes pulseGlowP { 0% { box-shadow: -8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(77,208,225,0.4); } 50% { box-shadow: -8px 8px 30px rgba(0,0,0,0.8), 0 0 25px rgba(77,208,225,0.8); } 100% { box-shadow: -8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(77,208,225,0.4); } }
             #player-sprite-battle, .fighter-left { 
-                border: 1px solid rgba(77, 208, 225, 0.5) !important;
-                border-top: 3px solid #4dd0e1 !important; 
-                border-bottom: 3px solid #4dd0e1 !important; 
-                border-radius: 0 12px 12px 0 !important; 
-                border-left: none !important; 
+                border: 2px solid #4dd0e1 !important; /* Borde perimetral completo */
                 animation: pulseGlowP 3s infinite ease-in-out !important;
             }
-            #player-sprite-battle:hover, .fighter-left:hover { transform: translateY(-12px) translateX(-3px) scale(1.02) !important; /* Flota más alto y hacia afuera al hacer hover */ }
+            #player-sprite-battle:hover, .fighter-left:hover { transform: translateY(-5px) scale(1.02) !important; }
 
-            /* Resplandor y Pulso Enemigo (Rojo) */
-            @keyframes pulseGlowE { 0% { box-shadow: 0 5px 15px rgba(0,0,0,0.8), 0 0 15px rgba(255,107,107,0.4); } 50% { box-shadow: 0 5px 25px rgba(0,0,0,0.8), 0 0 25px rgba(255,107,107,0.7); } 100% { box-shadow: 0 5px 15px rgba(0,0,0,0.8), 0 0 15px rgba(255,107,107,0.4); } }
+            /* Resplandor y Sombra 3D Enemigo (Rojo) - Flota a la derecha */
+            @keyframes pulseGlowE { 0% { box-shadow: 8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(255,107,107,0.4); } 50% { box-shadow: 8px 8px 30px rgba(0,0,0,0.8), 0 0 25px rgba(255,107,107,0.8); } 100% { box-shadow: 8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(255,107,107,0.4); } }
             #enemy-sprite-battle, .fighter-right { 
-                border: 1px solid rgba(255, 107, 107, 0.5) !important;
-                border-top: 3px solid #ff6b6b !important; 
-                border-bottom: 3px solid #ff6b6b !important; 
-                border-radius: 12px 0 0 12px !important; 
-                border-right: none !important; 
+                border: 2px solid #ff6b6b !important; /* Borde perimetral completo */
                 animation: pulseGlowE 3s infinite ease-in-out !important;
             }
-            #enemy-sprite-battle:hover, .fighter-right:hover { transform: translateY(-12px) translateX(3px) scale(1.02) !important; /* Flota más alto y hacia afuera al hacer hover */ }
+            #enemy-sprite-battle:hover, .fighter-right:hover { transform: translateY(-5px) scale(1.02) !important; }
 
             /* ========================================= */
-            /* 3. CAJA GENO PROTRUSOR (LA CLAVE)        */
+            /* 3. CENTRADO DEL GENO EN LA CAJA          */
             /* ========================================= */
             #player-visual-box, #enemy-visual-box, .fighter-sprite { 
-                width: 130px !important; /* Un poco más grande */
-                height: 130px !important; 
-                margin: 0 auto auto auto !important; 
+                width: 120px !important; 
+                height: 120px !important; 
+                margin: auto !important; /* Mágicamente centra el Geno en el espacio sobrante arriba del nombre */
                 display: flex; 
                 justify-content: center; 
                 align-items: center; 
                 position: relative; 
                 overflow: visible !important; 
-                transform: translateY(-25px) !important; /* HACE QUE SOBRESALGA HACIA ARRIBA */
-                filter: drop-shadow(0 10px 5px rgba(0,0,0,0.5)); /* Sombra propia del Geno */
+                transform: none !important; /* Eliminado el desplazamiento hacia arriba */
+                filter: drop-shadow(0 8px 6px rgba(0,0,0,0.6)); /* Sombra para el Geno */
                 transition: 0.2s ease-in-out;
             }
             #player-visual-box svg, #enemy-visual-box svg, .fighter-sprite svg { width: 100% !important; height: 100% !important; overflow: visible !important; transition: 0.2s; }
             
             /* Efecto hover en el Geno mismo */
-            #player-visual-box:hover, #enemy-visual-box:hover, .fighter-sprite:hover { transform: translateY(-30px) scale(1.1) !important; }
+            #player-visual-box:hover, #enemy-visual-box:hover, .fighter-sprite:hover { transform: scale(1.1) !important; }
 
             /* ========================================= */
-            /* 4. TEXTOS, HP, LOG Y BOTONES             */
+            /* 4. TEXTOS Y BARRAS DE HP                 */
             /* ========================================= */
-            #battle-player-name, #battle-enemy-name, .fighter-name { font-size: 13px !important; text-transform: uppercase; letter-spacing: 1px; margin-top: -10px !important; /* Ajuste por el Geno sobresaliendo */ text-align: center !important; width: 100% !important; line-height: 1.3 !important; }
+            #battle-player-name, #battle-enemy-name, .fighter-name { font-size: 13px !important; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px !important; text-align: center !important; width: 100% !important; line-height: 1.3 !important; }
             #battle-player-name, .fighter-left .fighter-name { color: #4dd0e1 !important; }
             #battle-enemy-name, .fighter-right .fighter-name { color: #ff6b6b !important; }
 
@@ -97,6 +98,9 @@ window.ColiseumUI = {
             .hp-bar-fill-red, #enemy-hp-bar { background: linear-gradient(90deg, #ff6b6b, #d9534f) !important; box-shadow: 0 0 10px rgba(255,107,107,0.6) !important; height: 100%; border-radius: 6px; transition: width 0.3s;}
             .hp-text, #player-hp-text, #enemy-hp-text { font-size: 11px !important; color: #fff !important; font-weight: bold; margin-top: 4px !important; text-shadow: 0 1px 2px #000; text-align: center; width: 100%; }
 
+            /* ========================================= */
+            /* 5. LOG Y BOTONES                         */
+            /* ========================================= */
             #battle-log, .battle-log-container { background: #0d161c !important; border: 1px solid #1e3a5f !important; border-left: 4px solid #4dd0e1 !important; border-right: 4px solid #ff6b6b !important; color: #00ffcc !important; border-radius: 8px !important; font-family: 'Courier New', monospace !important; font-size: 12px !important; padding: 15px !important; box-shadow: inset 0 0 15px rgba(0,0,0,0.8) !important; margin-top: 10px !important; height: 130px !important; overflow-y: scroll !important; -ms-overflow-style: none; scrollbar-width: none; width: 100%; box-sizing: border-box; }
             #battle-log::-webkit-scrollbar, .battle-log-container::-webkit-scrollbar { display: none !important; }
 
@@ -105,24 +109,30 @@ window.ColiseumUI = {
             .atk-btn { background: linear-gradient(90deg, #ff5722, #d84315) !important; border-color: #ff9800 !important; box-shadow: 0 4px 10px rgba(255, 87, 34, 0.3) !important; }
             .special-btn { background: linear-gradient(90deg, #9c27b0, #6a1b9a) !important; border-color: #e040fb !important; box-shadow: 0 4px 10px rgba(156, 39, 176, 0.3) !important; }
             .buff-btn { background: linear-gradient(90deg, #009688, #00695c) !important; border-color: #26a69a !important; box-shadow: 0 4px 10px rgba(0, 150, 136, 0.3) !important; }
+            .battle-btn:active { transform: scale(0.95) !important; }
             .battle-btn:disabled { background: #333 !important; border-color: #555 !important; box-shadow: none !important; color: #888 !important; transform: none !important; cursor: not-allowed !important; text-shadow: none !important; }
 
             #btn-start-battle, .btn-primary { background: linear-gradient(90deg, #E91E63, #C2185B) !important; box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4) !important; border: 1px solid #F48FB1 !important; color: white !important; border-radius: 8px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; padding: 15px 30px !important; font-weight: bold !important; cursor: pointer; width: 100%; margin-top: 15px !important; display: none; }
             #btn-leave-battle, .btn-secondary { background-color: #111b24 !important; border: 1px solid #1e3a5f !important; color: #4dd0e1 !important; padding: 15px 30px !important; border-radius: 8px !important; text-transform: uppercase !important; font-weight: bold !important; letter-spacing: 1px !important; cursor: pointer !important; margin: 20px auto !important; display: block !important; transition: 0.2s !important; width: max-content !important; box-shadow: none !important; animation: none !important; }
+            #btn-leave-battle:hover, .btn-secondary:hover { background-color: #1e3a5f !important; color: #fff !important; }
             
             /* ========================================= */
-            /* 5. ANIMACIONES DE COMBATE (HIT, SHAKE, TEXT) */
+            /* 6. ANIMACIONES DE COMBATE                */
             /* ========================================= */
-            .anim-critico svg, .anim-ataque svg { /* El Geno mismo se mueve al atacar */ animation: animarEmbestida 0.4s ease-in-out !important; }
+            @keyframes animarBoca { 0% { transform: scale(1); } 50% { transform: scale(1.6); } 100% { transform: scale(1); } }
+            @keyframes animarEmbestida { 0% { transform: scale(1) translateY(0); } 50% { transform: scale(1.1) translateY(-10px); } 100% { transform: scale(1) translateY(0); } }
+            .anim-gritar [id*="boca"], .anim-gritar [class*="boca"], .anim-gritar [id*="mouth"], .anim-gritar [class*="mouth"] { transform-origin: center !important; transform-box: fill-box !important; animation: animarBoca 0.4s ease-in-out !important; }
+            .anim-gritar svg { animation: animarEmbestida 0.4s ease-in-out !important; }
 
             @keyframes floatUpFade { 0% { opacity: 1; transform: translateY(0) scale(1.5); } 10% { transform: translateY(-10px) scale(1.8); } 100% { opacity: 0; transform: translateY(-80px) scale(1); } }
             .floating-text { position: absolute; font-weight: 900; z-index: 100; pointer-events: none; animation: floatUpFade 1.3s ease-out forwards; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 5px rgba(0,0,0,0.8); }
             .text-dmg { color: #ff3333; font-size: 28px; }
             .text-heal { color: #4CAF50; font-size: 24px; }
             .text-crit { color: #ffcc00; font-size: 32px; font-style: italic; text-transform: uppercase; letter-spacing: 2px; }
-            .hit-effect { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5); transform: translateY(-20px) scale(0.95) translateX(5px) !important; transition: 0.1s; }
+            .hit-effect { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5); transform: scale(0.90) translateX(5px) !important; transition: 0.1s; }
+            .vs-badge-battle { font-size: 28px !important; font-weight: 900 !important; font-style: italic !important; color: #ffcc00 !important; text-shadow: 0 0 20px rgba(255,0,0,0.8) !important; z-index: 2; margin: 0 10px !important; }
             .shake-effect { animation: shake 0.4s; }
-            @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }
+            @keyframes shake { 0% { transform: translate(1px, 1px); } 20% { transform: translate(-3px, 0px); } 40% { transform: translate(1px, -1px); } 60% { transform: translate(-3px, 1px); } 80% { transform: translate(-1px, -1px); } 100% { transform: translate(1px, -2px); } }
         `;
         document.head.appendChild(style);
     },
@@ -148,6 +158,8 @@ window.ColiseumUI = {
         let controls = document.getElementById("battle-controls") || document.querySelector(".controls-container");
         if (controls) {
             area.appendChild(controls);
+            controls.id = "battle-controls"; 
+            controls.className = "controls-container";
             controls.innerHTML = `
                 <button id="btn-atk" class="battle-btn atk-btn">⚔️ ATACAR</button>
                 <button id="btn-special" class="battle-btn special-btn">✨ ESPECIAL</button>
@@ -158,6 +170,7 @@ window.ColiseumUI = {
 
         let btnStart = document.getElementById("btn-start-battle") || document.querySelector(".btn-primary");
         if (btnStart) {
+            btnStart.id = "btn-start-battle"; 
             btnStart.className = "btn-start";
             area.appendChild(btnStart);
             btnStart.style.setProperty("display", "block", "important");
@@ -165,6 +178,7 @@ window.ColiseumUI = {
 
         let btnLeave = document.getElementById("btn-leave-battle") || document.querySelector(".btn-secondary");
         if (btnLeave && currentScreen) {
+            btnLeave.id = "btn-leave-battle";
             btnLeave.className = "btn-leave";
             currentScreen.appendChild(btnLeave); 
         }
@@ -175,10 +189,16 @@ window.ColiseumUI = {
 
     actualizarGraficos: function(p, e) {
         let pNameEl = document.getElementById("battle-player-name") || document.querySelector(".fighter-left .fighter-name");
-        if (pNameEl) pNameEl.innerHTML = `<strong>${p.nombre}</strong><br><span style="color:#4dd0e1; font-size:10px; font-weight:normal;">(Nv. ${p.adn.level || 1})</span>`;
+        if (pNameEl) {
+            pNameEl.innerHTML = `<strong>${p.nombre}</strong><br><span style="color:#4dd0e1; font-size:10px; font-weight:normal;">(Nv. ${p.adn.level || 1})</span>`;
+            pNameEl.className = "fighter-name";
+        }
         
         let eNameEl = document.getElementById("battle-enemy-name") || document.querySelector(".fighter-right .fighter-name");
-        if (eNameEl) eNameEl.innerHTML = `<strong>${e.nombre}</strong><br><span style="color:#ff6b6b; font-size:10px; font-weight:normal;">(${e.rareza} - ${e.element})</span>`;
+        if (eNameEl) {
+            eNameEl.innerHTML = `<strong>${e.nombre}</strong><br><span style="color:#ff6b6b; font-size:10px; font-weight:normal;">(${e.rareza} - ${e.element})</span>`;
+            eNameEl.className = "fighter-name";
+        }
 
         let pVisual = document.getElementById("player-visual-box") || document.querySelector(".fighter-left .fighter-sprite");
         let eVisual = document.getElementById("enemy-visual-box") || document.querySelector(".fighter-right .fighter-sprite");
@@ -195,8 +215,8 @@ window.ColiseumUI = {
         
         let pBar = document.getElementById("player-hp-bar") || document.querySelector(".fighter-left [class*='hp-bar-fill']");
         let eBar = document.getElementById("enemy-hp-bar") || document.querySelector(".fighter-right [class*='hp-bar-fill']");
-        if(pBar) pBar.style.width = `${pctP}%`;
-        if(eBar) eBar.style.width = `${pctE}%`;
+        if(pBar) { pBar.className = "hp-bar-fill-green"; pBar.style.width = `${pctP}%`; }
+        if(eBar) { eBar.className = "hp-bar-fill-red"; eBar.style.width = `${pctE}%`; }
 
         let pTxt = document.getElementById("player-hp-text") || document.querySelector(".fighter-left .hp-text");
         let eTxt = document.getElementById("enemy-hp-text") || document.querySelector(".fighter-right .hp-text");
@@ -210,7 +230,7 @@ window.ColiseumUI = {
     },
 
     agregarLog: function(texto) {
-        const logBox = document.getElementById("battle-log");
+        const logBox = document.getElementById("battle-log") || document.querySelector(".battle-log-container");
         if (logBox) {
             logBox.innerHTML += `<div style="margin-top: 6px;">${texto}</div>`;
             logBox.scrollTop = logBox.scrollHeight;
@@ -218,7 +238,7 @@ window.ColiseumUI = {
     },
 
     limpiarLog: function() {
-        const logBox = document.getElementById("battle-log");
+        const logBox = document.getElementById("battle-log") || document.querySelector(".battle-log-container");
         if (logBox) logBox.innerHTML = "";
     },
 
