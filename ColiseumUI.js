@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumUI.js - VISTA Y ANIMACIONES V9.12 (SOLO FIXES PEDIDOS: VS, CRIT, BOTONES)
+// ColiseumUI.js - VISTA Y ANIMACIONES V9.12 (SOLO FIXES PEDIDOS: RETIRARSE Y BOTÓN RIVAL)
 // =========================================
 
 window.ColiseumUI = {
@@ -11,8 +11,7 @@ window.ColiseumUI = {
             /* ========================================= */
             /* 1. ESTRUCTURA GLOBAL Y CAJA PRINCIPAL     */
             /* ========================================= */
-            /* FIX: padding-bottom reducido para eliminar la barra espaciadora innecesaria */
-            .coliseum-cyan-theme { background-color: #31c4d8 !important; background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px) !important; background-size: auto !important; min-height: 100vh !important; padding-top: 20px !important; padding-bottom: 20px !important; box-sizing: border-box !important; }
+            .coliseum-cyan-theme { background-color: #31c4d8 !important; background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px) !important; background-size: auto !important; min-height: 100vh !important; padding-top: 20px !important; padding-bottom: 80px !important; box-sizing: border-box !important; }
 
             @keyframes arenaGlow { 0% { box-shadow: 0 0 20px rgba(77, 208, 225, 0.6), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.6); } 50% { box-shadow: 0 0 40px rgba(77, 208, 225, 1), 0 0 10px rgba(255, 255, 255, 0.7), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 1); } 100% { box-shadow: 0 0 20px rgba(77, 208, 225, 0.6), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.6); } }
             #battle-area { background-color: rgba(13, 22, 30, 0.95) !important; border: 2px solid #4dd0e1 !important; border-radius: 16px !important; padding: 25px 20px 20px 20px !important; position: relative; overflow: visible !important; display: flex !important; flex-direction: column !important; align-items: center !important; width: 88% !important; max-width: 480px !important; margin: 0 auto !important; box-sizing: border-box !important; animation: arenaGlow 3s infinite ease-in-out !important; }
@@ -50,10 +49,9 @@ window.ColiseumUI = {
             /* ========================================= */
             /* 3. ANIMACIÓN DEL VS                       */
             /* ========================================= */
-            /* FIX: El VS ahora crece hasta un 50% (scale 1.5) para que el latido sea más notorio */
             @keyframes vsPulse { 
                 0% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
-                50% { transform: scale(1.5); text-shadow: 0 0 30px rgba(255,204,0,1); } 
+                50% { transform: scale(1.2); text-shadow: 0 0 20px rgba(255,204,0,1); } 
                 100% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
             }
             .vs-badge-battle { 
@@ -66,7 +64,7 @@ window.ColiseumUI = {
                 text-shadow: 0 0 20px rgba(255,0,0,0.8) !important; 
                 z-index: 50 !important; 
                 margin: 0 !important; 
-                animation: vsPulse 1.5s infinite ease-in-out !important; 
+                animation: vsPulse 2s infinite ease-in-out !important; 
             }
 
             /* ========================================= */
@@ -87,12 +85,14 @@ window.ColiseumUI = {
                 -ms-overflow-style: none; 
                 scrollbar-width: none; 
                 box-sizing: border-box; 
+                /* Anchura estirada hasta los bordes de los Genos */
                 width: calc(100% + 60px) !important; 
                 margin: 15px -30px 10px -30px !important; 
+                /* Sombra 3D y brillo de luz */
                 box-shadow: 0 12px 25px rgba(0,0,0,0.8), -5px 0 15px rgba(77,208,225,0.15), 5px 0 15px rgba(255,107,107,0.15) !important; 
                 position: relative; 
                 z-index: 15; 
-                transform: translateY(-5px); 
+                transform: translateY(-5px); /* Efecto de levitación */
             }
             #battle-log::-webkit-scrollbar, .battle-log-container::-webkit-scrollbar { display: none !important; }
 
@@ -100,7 +100,7 @@ window.ColiseumUI = {
             /* 5. BOTONES NORMALIZADOS                   */
             /* ========================================= */
             #battle-controls, .controls-container { 
-                width: 100% !important; 
+                width: 100% !important; /* Vuelve a la normalidad */
                 display: flex; gap: 8px !important; justify-content: center !important; 
                 margin-top: 15px !important; 
             }
@@ -111,33 +111,38 @@ window.ColiseumUI = {
             .battle-btn:active { transform: scale(0.95) !important; }
             .battle-btn:disabled { background: #333 !important; border-color: #555 !important; box-shadow: none !important; color: #888 !important; transform: none !important; cursor: not-allowed !important; text-shadow: none !important; }
 
-            /* FIX: Botón de inicio más pequeño (75% ancho) y centrado */
+            /* BOTÓN ENTRAR A LA ARENA (DEGRADADO CIAN-ROJO) */
+            /* FIX: Tamaño de letra igualado a botón retirarse (bold, 13px), y botón más pequeño/delgado para una sola línea y centrado automáticamete. */
             #btn-start-battle, .btn-primary { 
-                background: linear-gradient(90deg, #00b4d8, #e53935) !important; 
+                background: linear-gradient(90deg, #00b4d8, #e53935) !important; /* Mezcla de Colores */
                 box-shadow: 0 6px 15px rgba(0,0,0,0.5), -5px 0 15px rgba(0,180,219,0.3), 5px 0 15px rgba(229,57,53,0.3) !important; 
                 border: 2px solid rgba(255,255,255,0.2) !important; 
                 color: white !important; 
                 border-radius: 12px !important; 
                 text-transform: uppercase; 
-                letter-spacing: 2px; 
+                letter-spacing: 1px; /* Igualado a botón retirarse */
                 transition: 0.2s; 
-                padding: 12px 20px !important; 
-                font-weight: 900 !important; 
+                padding: 10px 20px !important; /* Reducido para ser más pequeño y delgado */
+                font-size: 13px !important; /* Igualado a botón retirarse */
+                font-weight: bold !important; /* Igualado a botón retirarse (cambiado de 900) */
                 cursor: pointer; 
-                width: 75% !important; 
-                margin: 15px auto 0 auto !important; 
+                width: auto !important; /* Permitir que se ajuste al texto */
+                min-width: 170px !important; /* Mantener tamaño mínimo seguro para la línea */
+                margin: 15px auto 0 auto !important; /* Normalizado and centrado */
                 display: none; 
             }
             #btn-start-battle:hover, .btn-primary:hover { transform: translateY(-3px) !important; filter: brightness(1.2); }
             
-            /* FIX: Botón Retirarse con posición RELATIVA para no montarse nunca en ninguna pantalla */
             #btn-leave-battle, .btn-secondary { 
                 background-color: #111b24 !important; border: 1px solid #1e3a5f !important; color: #4dd0e1 !important; 
                 padding: 15px 30px !important; border-radius: 8px !important; text-transform: uppercase !important; 
+                font-size: 13px !important; /* Definido explícitamente para igualar design */
                 font-weight: bold !important; letter-spacing: 1px !important; cursor: pointer !important; 
-                display: block !important; transition: 0.2s !important; 
+                /* FIX: Se ha quitado !important para permitir que la lógica de juego lo oculte (todo o nada). */
+                display: block; 
+                transition: 0.2s !important; 
                 width: 70% !important; max-width: 300px !important; box-shadow: none !important; animation: none !important; 
-                position: relative !important; margin: 20px auto 10px auto !important; z-index: 100 !important;
+                position: absolute !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; z-index: 100 !important;
             }
             #btn-leave-battle:hover, .btn-secondary:hover { background-color: #1e3a5f !important; color: #fff !important; }
             
@@ -158,7 +163,6 @@ window.ColiseumUI = {
                 100% { opacity: 0; transform: translate(-50%, calc(-50% - 60px)) scale(1); } 
             }
             
-            /* FIX: white-space: nowrap evita que el CRITICAL se corte a la mitad */
             .floating-text { 
                 position: absolute; 
                 font-weight: 900; 
@@ -166,7 +170,7 @@ window.ColiseumUI = {
                 pointer-events: none; 
                 animation: floatUpFade 1.3s ease-out forwards; 
                 text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 5px rgba(0,0,0,0.8); 
-                white-space: nowrap !important; 
+                white-space: nowrap !important;
             }
             
             .text-dmg { color: #ff3333; font-size: 28px; }
@@ -324,7 +328,6 @@ window.ColiseumUI = {
         let baseLeft = "50%"; 
         let targetContainer = sideEl; 
 
-        // FIX: Crítico centrado exactamente en medio de la arena de combate
         if (claseAdicional.includes("text-crit")) {
             targetContainer = document.querySelector(".fighters-wrapper") || document.getElementById("battle-area"); 
             baseTop = "-25px"; 
@@ -335,7 +338,6 @@ window.ColiseumUI = {
 
         floater.style.top = `calc(${baseTop} + ${offsetY}px)`;
         floater.style.left = `calc(${baseLeft} + ${offsetX}px)`;
-        floater.style.transform = "translate(-50%, -50%)";
         
         targetContainer.appendChild(floater);
         setTimeout(() => floater.remove(), 1300);
