@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsManager.js - LÓGICA DEL LABORATORIO V4 (FIX NAVEGACIÓN Y SOLAPAMIENTO)
+// ImplantsManager.js - LÓGICA DEL LABORATORIO V5 (FIX OVERLAP)
 // =========================================
 
 window.ImplantsManager = {
@@ -42,7 +42,6 @@ window.ImplantsManager = {
             
             const stats = window.miMascota.stats || {hp:0, atk:0, spd:0, luk:0};
             
-            // FIX: Añadimos word-break por si el nombre del Geno es ridículamente largo (como en tu captura)
             statsBox.innerHTML = `
                 <div style="text-align:center; font-weight:bold; color:#fff; margin-bottom:10px; font-size:14px; text-transform:uppercase; word-break: break-word; padding: 0 10px;">
                     ${window.miMascota.name || "Geno"} <span style="color:#4dd0e1; font-size:11px;">(Nv. ${window.miMascota.level || 1})</span>
@@ -78,17 +77,23 @@ window.ImplantsManager = {
     closeSelector: function() {
         let sel = document.getElementById('lab-inventory-selector');
         if(sel) sel.style.display = 'none';
+    },
+
+    // FIX: Método a prueba de balas para salir de la sala
+    closeLab: function() {
+        const impScreen = document.getElementById('implants-area');
+        if(impScreen) {
+            impScreen.classList.add('hidden');
+            impScreen.style.setProperty('display', 'none', 'important');
+        }
+        window.navegarA('room-area');
     }
 };
 
-// =========================================
-// HOOK DE NAVEGACIÓN BLINDADO (EVITA SOLAPAMIENTO)
-// =========================================
+// HOOK DE NAVEGACIÓN
 if (!window.implantsNavHooked) {
     window.navegarA_Original_Implants = window.navegarA;
     window.navegarA = function(id) {
-        
-        // FIX: Forzamos la visibilidad de la pantalla de Implantes nosotros mismos
         const impScreen = document.getElementById('implants-area');
         if (impScreen) {
             if (id === 'implants-area') {
@@ -96,13 +101,10 @@ if (!window.implantsNavHooked) {
                 impScreen.style.setProperty('display', 'block', 'important');
                 ImplantsManager.init();
             } else {
-                // Si vamos a CUALQUIER otra pantalla (Crianza, Coliseo, etc.), la apagamos a la fuerza
                 impScreen.classList.add('hidden');
                 impScreen.style.setProperty('display', 'none', 'important');
             }
         }
-
-        // Ejecutamos la navegación original del juego para las demás pantallas
         if (typeof window.navegarA_Original_Implants === 'function') {
             window.navegarA_Original_Implants(id);
         }

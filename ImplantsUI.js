@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsUI.js - INTERFAZ DEL LABORATORIO V3 (SIN BARRA LATERAL)
+// ImplantsUI.js - INTERFAZ DEL LABORATORIO V4 (Z-INDEX Y SCROLL HACK)
 // =========================================
 
 window.ImplantsUI = {
@@ -8,9 +8,16 @@ window.ImplantsUI = {
         const style = document.createElement("style");
         style.id = "implants-styles";
         style.innerHTML = `
-            /* FIX: Ocultar barra lateral de scroll pero permitir deslizar */
+            /* FIX: Aniquilación total de la barra espaciadora */
+            #implants-area::-webkit-scrollbar, 
+            .implants-screen::-webkit-scrollbar {
+                display: none !important;
+                width: 0 !important;
+                background: transparent !important;
+            }
+
             .implants-screen {
-                background-color: #0d161c !important;
+                background: #0d161c !important; /* Forzar color sólido, nada de transparente */
                 background-image: radial-gradient(circle at center, #1a2a36 0%, #0d161c 100%) !important;
                 padding: 20px !important;
                 padding-bottom: 80px !important; 
@@ -18,18 +25,13 @@ window.ImplantsUI = {
                 position: absolute !important;
                 top: 0 !important;
                 left: 0 !important;
-                height: 100% !important;
+                height: 100vh !important;
                 width: 100% !important;
-                overflow-y: auto !important;
+                overflow-y: scroll !important; /* Necesario para que funcione el touch */
                 box-sizing: border-box !important;
-                /* Ocultar barra en Firefox y Edge */
+                z-index: 5000 !important; /* Aplasta cualquier otra pantalla debajo */
                 -ms-overflow-style: none !important;  
                 scrollbar-width: none !important;  
-            }
-            
-            /* Ocultar barra en Chrome, Safari y Opera */
-            .implants-screen::-webkit-scrollbar {
-                display: none !important;
             }
 
             .lab-container {
@@ -40,7 +42,6 @@ window.ImplantsUI = {
                 margin: 0 auto;
             }
 
-            /* --- VISOR DEL GENO (IZQUIERDA) --- */
             .geno-scanner {
                 flex: 1;
                 min-width: 300px;
@@ -81,7 +82,6 @@ window.ImplantsUI = {
                 align-items: center;
             }
 
-            /* --- PANEL DE CONTROL (DERECHA) --- */
             .control-panel {
                 flex: 1.2;
                 min-width: 320px;
@@ -154,7 +154,6 @@ window.ImplantsUI = {
                 font-weight: bold;
             }
 
-            /* --- LISTA DE INVENTARIO (MODAL/POPUP) --- */
             #lab-inventory-selector {
                 position: fixed;
                 top: 50%;
@@ -166,7 +165,7 @@ window.ImplantsUI = {
                 border: 2px solid #00acc1;
                 border-radius: 15px;
                 padding: 20px;
-                z-index: 1000;
+                z-index: 10000; /* Asegurar que el modal quede por encima de todo */
                 display: none;
                 box-shadow: 0 0 100px rgba(0,0,0,0.9);
             }
@@ -245,7 +244,7 @@ window.ImplantsUI = {
                 <button onclick="ImplantsManager.closeSelector()" class="btn-secondary" style="width:100%; position:relative; bottom:auto; left:auto; transform:none; display:block; margin:0;">CERRAR</button>
             </div>
 
-            <button onclick="window.navegarA('room-area')" class="btn-secondary" style="position:relative; display:block; margin: 30px auto; width: 80%; max-width: 300px; left:auto; bottom:auto; transform:none;">VOLVER AL NEXO</button>
+            <button onclick="ImplantsManager.closeLab()" class="btn-secondary" style="position:relative; display:block; margin: 30px auto; width: 80%; max-width: 300px; left:auto; bottom:auto; transform:none;">VOLVER AL NEXO</button>
         `;
     }
 };
