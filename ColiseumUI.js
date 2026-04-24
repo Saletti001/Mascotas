@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumUI.js - VISTA Y ANIMACIONES V9.9 (FIX CAJAS SEPARADAS Y VS ELEGANTE)
+// ColiseumUI.js - VISTA Y ANIMACIONES V9.10 (FIX SEPARACIÓN DE CAJAS Y VS)
 // =========================================
 
 window.ColiseumUI = {
@@ -21,10 +21,10 @@ window.ColiseumUI = {
             /* ========================================= */
             /* 2. PANELES FLOTANTES Y GENOS              */
             /* ========================================= */
-            /* FIX: Las cajas ahora sí tienen espacio entre ellas porque el VS ya no estorba en el medio */
-            .fighters-wrapper { display: flex !important; align-items: center !important; justify-content: space-between !important; width: calc(100% + 40px) !important; margin: 0 -20px 15px -20px !important; position: relative; overflow: visible !important; z-index: 10; }
+            .fighters-wrapper { display: flex !important; align-items: center !important; justify-content: space-between !important; width: calc(100% + 60px) !important; margin: 0 -30px 15px -30px !important; position: relative; overflow: visible !important; z-index: 10; }
 
-            #player-sprite-battle, #enemy-sprite-battle, .fighter-left, .fighter-right { background: rgba(20, 35, 48, 0.98) !important; padding: 20px 10px 15px 10px !important; width: 44% !important; position: relative; display: flex !important; flex-direction: column !important; justify-content: flex-end !important; align-items: center !important; min-height: 250px !important; backdrop-filter: blur(5px); overflow: visible !important; transition: 0.3s ease-out !important; border-radius: 12px !important; }
+            /* FIX: Width al 42% para asegurar que el VS tenga espacio en medio y separe las cajas */
+            #player-sprite-battle, #enemy-sprite-battle, .fighter-left, .fighter-right { background: rgba(20, 35, 48, 0.98) !important; padding: 20px 10px 15px 10px !important; width: 42% !important; position: relative; display: flex !important; flex-direction: column !important; justify-content: flex-end !important; align-items: center !important; min-height: 250px !important; backdrop-filter: blur(5px); overflow: visible !important; transition: 0.3s ease-out !important; border-radius: 12px !important; }
             
             @keyframes pulseGlowP { 0% { box-shadow: -8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(77,208,225,0.4); } 50% { box-shadow: -8px 8px 30px rgba(0,0,0,0.8), 0 0 25px rgba(77,208,225,0.8); } 100% { box-shadow: -8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(77,208,225,0.4); } }
             #player-sprite-battle, .fighter-left { border: 2px solid #4dd0e1 !important; animation: pulseGlowP 3s infinite ease-in-out !important; }
@@ -48,25 +48,24 @@ window.ColiseumUI = {
             .hp-text, #player-hp-text, #enemy-hp-text { font-size: 11px !important; color: #fff !important; font-weight: bold; margin-top: 4px !important; text-shadow: 0 1px 2px #000; text-align: center; width: 100%; }
 
             /* ========================================= */
-            /* 3. ANIMACIÓN DEL VS (CORREGIDA: FLOTA EN EL MEDIO) */
+            /* 3. ANIMACIÓN DEL VS (LENTA, SUAVE, EN FLUJO) */
             /* ========================================= */
             @keyframes vsPulse { 
-                0% { transform: translate(-50%, -50%) scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
-                50% { transform: translate(-50%, -50%) scale(1.3); text-shadow: 0 0 25px rgba(255,204,0,1); } /* Solo crece un 30% */
-                100% { transform: translate(-50%, -50%) scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
+                0% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
+                50% { transform: scale(1.2); text-shadow: 0 0 20px rgba(255,204,0,1); } /* Crece 20% nomás */
+                100% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
             }
             .vs-badge-battle { 
-                position: absolute !important; /* Lo saca del flujo para que no empuje las cajas */
-                top: 45% !important; /* Lo ubica a la altura de los Genos */
-                left: 50% !important; /* Exactamente en el centro de la pantalla */
-                font-size: 26px !important; 
+                position: relative !important; /* DEVUELTO A FLUJO PARA SEPARAR CAJAS */
+                display: inline-block !important; /* OBLIGATORIO PARA QUE SCALE FUNCIONE */
+                font-size: 24px !important; 
                 font-weight: 900 !important; 
                 font-style: italic !important; 
                 color: #ffcc00 !important; 
                 text-shadow: 0 0 20px rgba(255,0,0,0.8) !important; 
                 z-index: 50 !important; 
                 margin: 0 !important; 
-                animation: vsPulse 2s infinite ease-in-out !important; /* Más lenta y suave */
+                animation: vsPulse 2s infinite ease-in-out !important; /* Lenta (2 segundos) */
             }
 
             /* ========================================= */
@@ -106,7 +105,6 @@ window.ColiseumUI = {
             .hit-effect { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5) !important; transform: scale(0.90) translateX(5px) !important; transition: 0.1s; }
             .heal-effect { filter: brightness(1.5) drop-shadow(0 0 15px #4CAF50) !important; transform: scale(1.05) !important; transition: 0.2s; }
 
-            /* ANIMACIÓN FLOTANTE CENTRADA */
             @keyframes floatUpFade { 
                 0% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); } 
                 10% { transform: translate(-50%, calc(-50% - 15px)) scale(1.8); } 
@@ -158,7 +156,6 @@ window.ColiseumUI = {
         const flexContainer = area.querySelector(".fighters-vs-container") || area.querySelector("div");
         if (flexContainer) {
             flexContainer.classList.add("fighters-wrapper");
-            // Aseguramos que atrape el VS por texto
             for (let i = 0; i < flexContainer.children.length; i++) {
                 if (flexContainer.children[i].innerText.includes("VS")) {
                     flexContainer.children[i].className = "vs-badge-battle";
