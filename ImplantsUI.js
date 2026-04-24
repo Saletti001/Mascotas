@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsUI.js - INTERFAZ DEL LABORATORIO V5 (OPTIMIZACIÓN MÓVIL)
+// ImplantsUI.js - INTERFAZ DEL LABORATORIO V7 (FIX ESCÁNER Y RESOLUCIÓN MÓVIL)
 // =========================================
 
 window.ImplantsUI = {
@@ -18,8 +18,8 @@ window.ImplantsUI = {
             .implants-screen {
                 background: #0d161c !important; 
                 background-image: radial-gradient(circle at center, #1a2a36 0%, #0d161c 100%) !important;
-                padding: 20px !important;
-                padding-bottom: 80px !important; 
+                padding: 15px !important;
+                padding-bottom: 40px !important; 
                 color: #e0f7fa !important;
                 position: absolute !important;
                 top: 0 !important;
@@ -36,7 +36,7 @@ window.ImplantsUI = {
             .lab-container {
                 display: flex;
                 flex-wrap: wrap;
-                gap: 20px;
+                gap: 15px;
                 max-width: 1000px;
                 margin: 0 auto;
             }
@@ -46,34 +46,45 @@ window.ImplantsUI = {
                 min-width: 300px;
                 background: rgba(0, 0, 0, 0.4);
                 border: 2px solid #00acc1;
-                border-radius: 20px;
-                padding: 30px;
+                border-radius: 16px;
+                padding: 15px;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                position: relative;
                 box-shadow: 0 0 30px rgba(0, 172, 193, 0.2);
+            }
+
+            /* FIX: Contenedor exclusivo para el escáner y el Geno */
+            .preview-wrapper {
+                position: relative;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                padding: 10px 0;
             }
 
             .scanner-line {
                 position: absolute;
-                width: 90%;
+                width: 60%;
                 height: 2px;
                 background: rgba(77, 208, 225, 0.5);
-                top: 20%;
+                left: 20%;
                 box-shadow: 0 0 15px #4dd0e1;
-                animation: scanMove 4s infinite linear;
+                animation: scanMove 3s infinite linear;
+                z-index: 10;
+                pointer-events: none; /* Para no bloquear clics */
             }
 
             @keyframes scanMove {
-                0% { top: 10%; opacity: 0; }
+                0% { top: 5%; opacity: 0; }
                 50% { opacity: 1; }
-                100% { top: 80%; opacity: 0; }
+                90% { top: 90%; opacity: 0; }
+                100% { top: 90%; opacity: 0; }
             }
 
             #implants-geno-preview {
-                width: 250px;
-                height: 250px;
+                width: 180px;
+                height: 180px;
                 filter: drop-shadow(0 0 10px rgba(77, 208, 225, 0.4));
                 z-index: 2;
                 display: flex;
@@ -81,12 +92,40 @@ window.ImplantsUI = {
                 align-items: center;
             }
 
+            /* Estilos limpios para las Stats (controlados por CSS para poder aplastarlos en móvil) */
+            .geno-lab-name {
+                text-align: center;
+                font-weight: bold;
+                color: #fff;
+                font-size: 14px;
+                text-transform: uppercase;
+                margin-bottom: 10px;
+                word-break: break-word;
+            }
+            .geno-lab-name span { color: #4dd0e1; font-size: 11px; }
+            
+            .geno-lab-stats {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                font-size: 12px;
+                color: #80deea;
+                text-align: center;
+                gap: 8px;
+                width: 100%;
+            }
+            .geno-lab-stats div {
+                background: rgba(0,0,0,0.5);
+                padding: 8px;
+                border-radius: 6px;
+                border: 1px solid #333;
+            }
+
             .control-panel {
                 flex: 1.2;
                 min-width: 320px;
                 display: flex;
                 flex-direction: column;
-                gap: 15px;
+                gap: 10px;
             }
 
             .lab-tabs {
@@ -97,7 +136,7 @@ window.ImplantsUI = {
 
             .lab-tab {
                 flex: 1;
-                padding: 12px;
+                padding: 10px;
                 background: #1a2a36;
                 border: 1px solid #334;
                 color: #80deea;
@@ -170,42 +209,71 @@ window.ImplantsUI = {
             }
 
             /* ========================================= */
-            /* NUEVO: OPTIMIZACIÓN PARA PANTALLAS MÓVILES */
+            /* FIX MÓVIL: AUMENTADO EL LÍMITE A 850px PARA ATRAPAR TODOS LOS TELÉFONOS */
             /* ========================================= */
-            @media (max-width: 600px) {
+            @media (max-width: 850px) {
                 .implants-screen {
                     padding: 10px !important;
-                    padding-bottom: 70px !important;
+                    padding-bottom: 10px !important; 
                 }
                 .implants-screen h2 {
-                    font-size: 18px !important;
+                    font-size: 16px !important;
                     letter-spacing: 1px !important;
                     margin-bottom: 5px !important;
                 }
-                .implants-screen > p {
-                    font-size: 11px !important;
-                    margin-bottom: 10px !important;
+                .lab-subtitle {
+                    display: none !important; /* Ahora sí desaparecerá en tu móvil */
                 }
                 .lab-container {
-                    gap: 10px;
+                    gap: 10px !important;
                 }
                 .geno-scanner {
-                    padding: 15px !important;
-                    min-width: 100%; /* Fuerza a ocupar el ancho en móvil */
+                    padding: 10px !important;
+                    min-width: 100%; 
+                    border-radius: 12px !important;
                 }
                 #implants-geno-preview {
-                    width: 160px !important; /* Más pequeño para que quepa todo */
-                    height: 160px !important;
+                    width: 120px !important; /* Geno más pequeño */
+                    height: 120px !important;
+                }
+                .geno-lab-name {
+                    margin-bottom: 4px !important;
+                    font-size: 12px !important;
+                }
+                .geno-lab-stats {
+                    gap: 4px !important; 
+                    font-size: 10px !important;
+                }
+                .geno-lab-stats div {
+                    padding: 4px !important; 
                 }
                 .control-panel {
                     min-width: 100%;
+                    gap: 8px !important; 
+                }
+                .lab-tab {
+                    padding: 8px !important; 
+                    font-size: 11px !important;
                 }
                 .slot-grid {
-                    padding: 10px;
-                    gap: 8px;
+                    padding: 8px !important;
+                    gap: 8px !important;
                 }
                 .implant-slot {
-                    padding: 10px;
+                    padding: 8px !important; 
+                    border-radius: 8px !important;
+                }
+                .implant-slot label {
+                    font-size: 9px !important;
+                    margin-bottom: 2px !important;
+                }
+                .implant-slot .item-name {
+                    font-size: 11px !important; 
+                }
+                .btn-lab-back {
+                    padding: 10px !important; 
+                    margin: 5px auto !important;
+                    font-size: 12px !important;
                 }
             }
         `;
@@ -222,13 +290,15 @@ window.ImplantsUI = {
 
         screen.innerHTML = `
             <h2 style="text-align:center; color:#4dd0e1; letter-spacing:3px; margin-top:0;">LABORATORIO DE IMPLANTES</h2>
-            <p style="text-align: center; color: #888; font-size: 12px; margin-bottom: 20px;">Instala Módulos de Combate y Mejoras Físicas.</p>
+            <p class="lab-subtitle" style="text-align: center; color: #888; font-size: 12px; margin-bottom: 15px;">Instala Módulos de Combate y Mejoras Físicas.</p>
             
             <div class="lab-container">
                 <div class="geno-scanner">
-                    <div class="scanner-line"></div>
-                    <div id="implants-geno-preview"></div>
-                    <div id="implants-geno-stats" style="margin-top:20px; width:100%;"></div>
+                    <div class="preview-wrapper">
+                        <div class="scanner-line"></div>
+                        <div id="implants-geno-preview"></div>
+                    </div>
+                    <div id="implants-geno-stats" style="margin-top:5px; width:100%;"></div>
                 </div>
 
                 <div class="control-panel">
@@ -280,10 +350,10 @@ window.ImplantsUI = {
             <div id="lab-inventory-selector">
                 <h3 id="selector-title" style="color:#4dd0e1; margin-top:0;">Seleccionar Implante</h3>
                 <div id="lab-inventory-list" style="max-height:300px; overflow-y:auto; margin-bottom:15px;"></div>
-                <button onclick="ImplantsManager.closeSelector()" class="btn-secondary" style="width:100%; position:relative; bottom:auto; left:auto; transform:none; display:block; margin:0;">CERRAR</button>
+                <button onclick="ImplantsManager.closeSelector()" class="btn-secondary btn-lab-back" style="width:100%; position:relative; bottom:auto; left:auto; transform:none; display:block; margin:0;">CERRAR</button>
             </div>
 
-            <button onclick="ImplantsManager.closeLab()" class="btn-secondary" style="position:relative; display:block; margin: 20px auto; width: 80%; max-width: 300px; left:auto; bottom:auto; transform:none;">VOLVER AL NEXO</button>
+            <button onclick="ImplantsManager.closeLab()" class="btn-secondary btn-lab-back" style="position:relative; display:block; margin: 15px auto 10px auto; width: 80%; max-width: 300px; left:auto; bottom:auto; transform:none;">VOLVER AL NEXO</button>
         `;
     }
 };

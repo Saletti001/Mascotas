@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsManager.js - LÓGICA DEL LABORATORIO V5 (FIX OVERLAP)
+// ImplantsManager.js - LÓGICA DEL LABORATORIO V7 (FIX ESTILOS DUROS)
 // =========================================
 
 window.ImplantsManager = {
@@ -42,15 +42,16 @@ window.ImplantsManager = {
             
             const stats = window.miMascota.stats || {hp:0, atk:0, spd:0, luk:0};
             
+            // FIX: Usamos las clases CSS limpias para que el modo móvil pueda ajustarlas
             statsBox.innerHTML = `
-                <div style="text-align:center; font-weight:bold; color:#fff; margin-bottom:10px; font-size:14px; text-transform:uppercase; word-break: break-word; padding: 0 10px;">
-                    ${window.miMascota.name || "Geno"} <span style="color:#4dd0e1; font-size:11px;">(Nv. ${window.miMascota.level || 1})</span>
+                <div class="geno-lab-name">
+                    ${window.miMascota.name || "Geno"} <span>(Nv. ${window.miMascota.level || 1})</span>
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; font-size:12px; color:#80deea; text-align:center; gap:8px;">
-                    <div style="background:rgba(0,0,0,0.5); padding:8px; border-radius:6px; border:1px solid #333;">❤️ ${stats.hp}</div>
-                    <div style="background:rgba(0,0,0,0.5); padding:8px; border-radius:6px; border:1px solid #333;">⚔️ ${stats.atk}</div>
-                    <div style="background:rgba(0,0,0,0.5); padding:8px; border-radius:6px; border:1px solid #333;">⚡ ${stats.spd}</div>
-                    <div style="background:rgba(0,0,0,0.5); padding:8px; border-radius:6px; border:1px solid #333;">🍀 ${stats.luk}</div>
+                <div class="geno-lab-stats">
+                    <div>❤️ ${stats.hp}</div>
+                    <div>⚔️ ${stats.atk}</div>
+                    <div>⚡ ${stats.spd}</div>
+                    <div>🍀 ${stats.luk}</div>
                 </div>
             `;
         }
@@ -79,7 +80,6 @@ window.ImplantsManager = {
         if(sel) sel.style.display = 'none';
     },
 
-    // FIX: Método a prueba de balas para salir de la sala
     closeLab: function() {
         const impScreen = document.getElementById('implants-area');
         if(impScreen) {
