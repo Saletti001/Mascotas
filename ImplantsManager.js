@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsManager.js - LÓGICA DEL LABORATORIO V3 (FIX ARRANQUE)
+// ImplantsManager.js - LÓGICA DEL LABORATORIO V4 (FIX NAVEGACIÓN Y SOLAPAMIENTO)
 // =========================================
 
 window.ImplantsManager = {
@@ -27,12 +27,11 @@ window.ImplantsManager = {
         const preview = document.getElementById("implants-geno-preview");
         const statsBox = document.getElementById("implants-geno-stats");
         
-        if (!preview || !statsBox) return; // Seguro anti-crasheos
+        if (!preview || !statsBox) return;
 
         if (window.miMascota && typeof generarSvgGeno === 'function') {
             let svgStr = generarSvgGeno(window.miMascota);
             
-            // Renderizamos el SVG y lo forzamos a ocupar el 100%
             preview.innerHTML = svgStr;
             let svgNode = preview.querySelector("svg");
             if (svgNode) {
@@ -41,10 +40,11 @@ window.ImplantsManager = {
                 svgNode.setAttribute("viewBox", "-20 -10 200 180");
             }
             
-            // Render de Stats Básicas
             const stats = window.miMascota.stats || {hp:0, atk:0, spd:0, luk:0};
+            
+            // FIX: Añadimos word-break por si el nombre del Geno es ridículamente largo (como en tu captura)
             statsBox.innerHTML = `
-                <div style="text-align:center; font-weight:bold; color:#fff; margin-bottom:10px; font-size:14px; text-transform:uppercase;">
+                <div style="text-align:center; font-weight:bold; color:#fff; margin-bottom:10px; font-size:14px; text-transform:uppercase; word-break: break-word; padding: 0 10px;">
                     ${window.miMascota.name || "Geno"} <span style="color:#4dd0e1; font-size:11px;">(Nv. ${window.miMascota.level || 1})</span>
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; font-size:12px; color:#80deea; text-align:center; gap:8px;">
@@ -67,7 +67,6 @@ window.ImplantsManager = {
         selector.style.display = 'block';
         listContainer.innerHTML = `<p style="font-size:12px; color:#aaa; text-align:center;">Buscando en tu mochila...</p>`;
 
-        // Aquí conectaremos con InventoryManager.js más adelante
         setTimeout(() => {
             listContainer.innerHTML = `
                 <div style="text-align:center; color:#888; font-size:13px; padding:20px; background:rgba(0,0,0,0.3); border-radius:8px;">
@@ -81,3 +80,32 @@ window.ImplantsManager = {
         if(sel) sel.style.display = 'none';
     }
 };
+
+// =========================================
+// HOOK DE NAVEGACIÓN BLINDADO (EVITA SOLAPAMIENTO)
+// =========================================
+if (!window.implantsNavHooked) {
+    window.navegarA_Original_Implants = window.navegarA;
+    window.navegarA = function(id) {
+        
+        // FIX: Forzamos la visibilidad de la pantalla de Implantes nosotros mismos
+        const impScreen = document.getElementById('implants-area');
+        if (impScreen) {
+            if (id === 'implants-area') {
+                impScreen.classList.remove('hidden');
+                impScreen.style.setProperty('display', 'block', 'important');
+                ImplantsManager.init();
+            } else {
+                // Si vamos a CUALQUIER otra pantalla (Crianza, Coliseo, etc.), la apagamos a la fuerza
+                impScreen.classList.add('hidden');
+                impScreen.style.setProperty('display', 'none', 'important');
+            }
+        }
+
+        // Ejecutamos la navegación original del juego para las demás pantallas
+        if (typeof window.navegarA_Original_Implants === 'function') {
+            window.navegarA_Original_Implants(id);
+        }
+    };
+    window.implantsNavHooked = true;
+}
