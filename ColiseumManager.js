@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR DE EVENTOS Y TURNOS V9.4
+// ColiseumManager.js - CONTROLADOR V9.12 (FIX GRID Y TEXTOS LIMPIOS)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -31,12 +31,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function iniciarPelea() {
         let btnStart = document.getElementById("btn-start-battle");
-        let btnLeave = document.getElementById("btn-leave-battle"); // NUEVO: Atrapamos el botón de retirarse
+        let btnLeave = document.getElementById("btn-leave-battle"); 
         let controls = document.getElementById("battle-controls");
         
         if(btnStart) btnStart.style.setProperty("display", "none", "important");
-        if(btnLeave) btnLeave.style.setProperty("display", "none", "important"); // NUEVO: Lo ocultamos al iniciar (Todo o nada)
-        if(controls) controls.style.setProperty("display", "flex", "important");
+        if(btnLeave) btnLeave.style.setProperty("display", "none", "important"); 
+        
+        // AQUI ESTABA EL ERROR: Cambiado de "flex" a "grid" para que respete el 2x2
+        if(controls) controls.style.setProperty("display", "grid", "important");
 
         ColiseumUI.limpiarLog();
         ColiseumUI.agregarLog(`<span style="color:#4dd0e1">> INICIALIZANDO SECUENCIA DE COMBATE...</span>`);
@@ -45,7 +47,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ColiseumLogic.prepararJugador(window.miMascota);
         ColiseumLogic.generarRivalProcedural(window.miMascota.level || 1);
         
-        // Destruye permanentemente "Sujeto Prueba"
         ColiseumUI.actualizarGraficos(ColiseumLogic.player, ColiseumLogic.enemy);
         ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
         
@@ -89,18 +90,16 @@ document.addEventListener("DOMContentLoaded", () => {
             atacante.hp = Math.min(atacante.maxHp, atacante.hp + cura);
             
             ColiseumUI.animarAtaque(atacante.isPlayer);
-            ColiseumUI.animarCuracion(atacante.isPlayer); // Brillo verde restaurado
+            ColiseumUI.animarCuracion(atacante.isPlayer); 
             ColiseumUI.mostrarTextoFlotante(atacante.isPlayer, `+${cura}`, "text-heal");
             ColiseumUI.agregarLog(`<span style="color:#4CAF50">* Recupera ${cura} HP y prepara su estrategia.</span>`);
         } else {
-            // Usa la lógica completa con Vampirismo, Escudos, Críticos, etc.
             const resultado = ColiseumLogic.ejecutarAtaqueCompleto(atacante, defensor, accionElegida);
             
             if (resultado.anims.atacanteGrita) ColiseumUI.animarAtaque(atacante.isPlayer);
             
             resultado.logs.forEach(log => ColiseumUI.agregarLog(log));
 
-            // Si hizo daño, aplicamos la animación ROJA al defensor
             if (resultado.anims.danoDefensor > 0) {
                 ColiseumUI.animarDano(!atacante.isPlayer);
                 if (resultado.anims.critico) ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "CRITICAL!", "text-crit");
@@ -108,13 +107,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 if(window.Sonidos) window.Sonidos.play("hit"); 
             }
 
-            // Si el atacante se curó por VAMPIRISMO, aplicamos la animación VERDE al atacante
             if (resultado.anims.curacionAtacante > 0) {
                 ColiseumUI.animarCuracion(atacante.isPlayer);
                 ColiseumUI.mostrarTextoFlotante(atacante.isPlayer, `+${resultado.anims.curacionAtacante}`, "text-heal");
             }
 
-            // Si el defensor devolvió daño por REFLEJO, aplicamos animación ROJA al atacante
             if (resultado.anims.danoReflejo > 0) {
                 ColiseumUI.animarDano(atacante.isPlayer);
                 ColiseumUI.mostrarTextoFlotante(atacante.isPlayer, `-${resultado.anims.danoReflejo}`, "text-dmg");
@@ -126,7 +123,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function finalizarRonda() {
         setTimeout(() => {
-            // Aplicar efectos de fin de turno (Biomutante y Quemadura)
             let resP = ColiseumLogic.procesarEfectosFinTurno(ColiseumLogic.player);
             resP.logs.forEach(l => ColiseumUI.agregarLog(l));
             if(resP.anims.heal > 0) { ColiseumUI.animarCuracion(true); ColiseumUI.mostrarTextoFlotante(true, `+${resP.anims.heal}`, "text-heal"); }
@@ -168,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
             let controls = document.getElementById("battle-controls");
             let btnStart = document.getElementById("btn-start-battle");
-            let btnLeave = document.getElementById("btn-leave-battle"); // NUEVO: Atrapamos el botón
+            let btnLeave = document.getElementById("btn-leave-battle"); 
             
             if(controls) controls.style.setProperty("display", "none", "important");
             if(btnStart) {
@@ -176,7 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 btnStart.innerText = "Buscar otro rival";
             }
             if(btnLeave) {
-                btnLeave.style.setProperty("display", "block", "important"); // NUEVO: Lo volvemos a mostrar al terminar
+                btnLeave.style.setProperty("display", "block", "important"); 
             }
         }, 1000);
     }
@@ -185,18 +181,19 @@ document.addEventListener("DOMContentLoaded", () => {
         bloquearBotones(false);
         const btnSpecial = document.getElementById("btn-special");
         if (btnSpecial) {
+            // AQUI ESTABA EL OTRO ERROR: Se reescribian los iconos cada turno
             if (ColiseumLogic.cooldownEspecial > 0) {
                 btnSpecial.disabled = true;
-                btnSpecial.innerText = `⏳ ESPERA (${ColiseumLogic.cooldownEspecial})`;
+                btnSpecial.innerText = `ESPERA (${ColiseumLogic.cooldownEspecial})`;
             } else {
                 btnSpecial.disabled = false;
-                btnSpecial.innerText = `✨ ESPECIAL`;
+                btnSpecial.innerText = `TÉCNICA`;
             }
         }
     }
 
     function bloquearBotones(bloquear) {
-        ["btn-atk", "btn-special", "btn-buff"].forEach(id => {
+        ["btn-atk", "btn-special", "btn-buff", "btn-ultimate"].forEach(id => {
             let btn = document.getElementById(id);
             if(btn) btn.disabled = bloquear;
         });
