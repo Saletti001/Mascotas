@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumUI.js - VISTA Y ANIMACIONES V9.13 (FIX BOTÓN RETIRARSE RESPONSIVO)
+// ColiseumUI.js - VISTA Y ANIMACIONES V9.14 (FIX RESPONSIVO Y TAMAÑOS DE BOTONES)
 // =========================================
 
 window.ColiseumUI = {
@@ -11,7 +11,8 @@ window.ColiseumUI = {
             /* ========================================= */
             /* 1. ESTRUCTURA GLOBAL Y CAJA PRINCIPAL     */
             /* ========================================= */
-            .coliseum-cyan-theme { background-color: #31c4d8 !important; background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px) !important; background-size: auto !important; min-height: 100vh !important; padding-top: 20px !important; padding-bottom: 40px !important; box-sizing: border-box !important; overflow-y: auto !important; }
+            /* FIX: Eliminado el overflow-y: auto que generaba la barra espaciadora lateral */
+            .coliseum-cyan-theme { background-color: #31c4d8 !important; background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px) !important; background-size: auto !important; min-height: 100vh !important; padding-top: 20px !important; padding-bottom: 30px !important; box-sizing: border-box !important; overflow-x: hidden !important; }
 
             @keyframes arenaGlow { 0% { box-shadow: 0 0 20px rgba(77, 208, 225, 0.6), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.6); } 50% { box-shadow: 0 0 40px rgba(77, 208, 225, 1), 0 0 10px rgba(255, 255, 255, 0.7), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 1); } 100% { box-shadow: 0 0 20px rgba(77, 208, 225, 0.6), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.6); } }
             #battle-area { background-color: rgba(13, 22, 30, 0.95) !important; border: 2px solid #4dd0e1 !important; border-radius: 16px !important; padding: 25px 20px 20px 20px !important; position: relative; overflow: visible !important; display: flex !important; flex-direction: column !important; align-items: center !important; width: 88% !important; max-width: 480px !important; margin: 0 auto !important; box-sizing: border-box !important; animation: arenaGlow 3s infinite ease-in-out !important; }
@@ -50,14 +51,15 @@ window.ColiseumUI = {
             /* 3. ANIMACIÓN DEL VS                       */
             /* ========================================= */
             @keyframes vsPulse { 
-                0% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
-                50% { transform: scale(1.2); text-shadow: 0 0 20px rgba(255,204,0,1); } 
-                100% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
+                0% { transform: translate(-50%, -50%) scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
+                50% { transform: translate(-50%, -50%) scale(1.3); text-shadow: 0 0 25px rgba(255,204,0,1); } 
+                100% { transform: translate(-50%, -50%) scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
             }
             .vs-badge-battle { 
-                position: relative !important; 
-                display: inline-block !important; 
-                font-size: 24px !important; 
+                position: absolute !important; 
+                top: 45% !important; 
+                left: 50% !important; 
+                font-size: 26px !important; 
                 font-weight: 900 !important; 
                 font-style: italic !important; 
                 color: #ffcc00 !important; 
@@ -68,7 +70,7 @@ window.ColiseumUI = {
             }
 
             /* ========================================= */
-            /* 4. CONSOLA FLOTANTE (ESTIRADA A LOS BORDES) */
+            /* 4. CONSOLA FLOTANTE                       */
             /* ========================================= */
             #battle-log, .battle-log-container { 
                 background: rgba(13, 22, 30, 0.98) !important; 
@@ -90,7 +92,6 @@ window.ColiseumUI = {
                 box-shadow: 0 12px 25px rgba(0,0,0,0.8), -5px 0 15px rgba(77,208,225,0.15), 5px 0 15px rgba(255,107,107,0.15) !important; 
                 position: relative; 
                 z-index: 15; 
-                transform: translateY(-5px); 
             }
             #battle-log::-webkit-scrollbar, .battle-log-container::-webkit-scrollbar { display: none !important; }
 
@@ -109,25 +110,34 @@ window.ColiseumUI = {
             .battle-btn:active { transform: scale(0.95) !important; }
             .battle-btn:disabled { background: #333 !important; border-color: #555 !important; box-shadow: none !important; color: #888 !important; transform: none !important; cursor: not-allowed !important; text-shadow: none !important; }
 
+            /* FIX: BOTÓN ENTRAR/BUSCAR RIVAL (MÁS PEQUEÑO Y DEGRADADO CIAN-ROJO) */
             #btn-start-battle, .btn-primary { 
-                background: linear-gradient(90deg, #0083B0, #00B4DB) !important; 
-                box-shadow: 0 4px 15px rgba(0, 180, 219, 0.4) !important; 
-                border: 1px solid #80deea !important; 
+                background: linear-gradient(90deg, #4dd0e1, #ff6b6b) !important; /* Combina los colores de los Genos */
+                box-shadow: 0 4px 10px rgba(0,0,0,0.4) !important; 
+                border: 2px solid rgba(255,255,255,0.3) !important; 
                 color: white !important; 
-                border-radius: 8px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; padding: 15px 30px !important; font-weight: bold !important; cursor: pointer; display: none; 
-                width: 100% !important; 
-                margin-top: 15px !important; 
+                border-radius: 8px !important; 
+                text-transform: uppercase; 
+                letter-spacing: 1px; 
+                transition: 0.2s; 
+                padding: 12px 20px !important; /* Reducido para no estorbar */
+                font-weight: 900 !important; 
+                font-size: 12px !important; /* Letra ajustada */
+                cursor: pointer; 
+                display: none; 
+                width: 80% !important; /* Más angosto */
+                margin: 15px auto 0 auto !important; /* Centrado */
             }
-            #btn-start-battle:hover, .btn-primary:hover { filter: brightness(1.2); }
+            #btn-start-battle:hover, .btn-primary:hover { transform: translateY(-2px) !important; filter: brightness(1.1); }
             
-            /* FIX: BOTÓN RETIRARSE RESPONSIVO Y SEGURO */
+            /* FIX: BOTÓN RETIRARSE (POSICIÓN RELATIVA PARA NO MONTARSE) */
             #btn-leave-battle, .btn-secondary { 
                 background-color: #111b24 !important; border: 1px solid #1e3a5f !important; color: #4dd0e1 !important; 
-                padding: 15px 30px !important; border-radius: 8px !important; text-transform: uppercase !important; 
+                padding: 12px 30px !important; border-radius: 8px !important; text-transform: uppercase !important; 
                 font-weight: bold !important; letter-spacing: 1px !important; cursor: pointer !important; 
                 display: block !important; transition: 0.2s !important; 
-                width: 70% !important; max-width: 300px !important; box-shadow: none !important; animation: none !important; 
-                position: relative !important; margin: 30px auto 40px auto !important; z-index: 100 !important;
+                width: max-content !important; min-width: 150px !important; box-shadow: none !important; animation: none !important; 
+                position: relative !important; margin: 25px auto 10px auto !important; z-index: 100 !important; /* El margen empuja la pantalla hacia abajo fluidamente */
                 left: auto !important; transform: none !important; bottom: auto !important;
             }
             #btn-leave-battle:hover, .btn-secondary:hover { background-color: #1e3a5f !important; color: #fff !important; }
