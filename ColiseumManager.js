@@ -31,9 +31,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function iniciarPelea() {
         let btnStart = document.getElementById("btn-start-battle");
+        let btnLeave = document.getElementById("btn-leave-battle"); // NUEVO: Atrapamos el botón de retirarse
         let controls = document.getElementById("battle-controls");
         
         if(btnStart) btnStart.style.setProperty("display", "none", "important");
+        if(btnLeave) btnLeave.style.setProperty("display", "none", "important"); // NUEVO: Lo ocultamos al iniciar (Todo o nada)
         if(controls) controls.style.setProperty("display", "flex", "important");
 
         ColiseumUI.limpiarLog();
@@ -166,11 +168,15 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(() => {
             let controls = document.getElementById("battle-controls");
             let btnStart = document.getElementById("btn-start-battle");
+            let btnLeave = document.getElementById("btn-leave-battle"); // NUEVO: Atrapamos el botón
             
             if(controls) controls.style.setProperty("display", "none", "important");
             if(btnStart) {
                 btnStart.style.setProperty("display", "block", "important");
                 btnStart.innerText = "Buscar otro rival";
+            }
+            if(btnLeave) {
+                btnLeave.style.setProperty("display", "block", "important"); // NUEVO: Lo volvemos a mostrar al terminar
             }
         }, 1000);
     }
