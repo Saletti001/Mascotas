@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumUI.js - VISTA Y ANIMACIONES V9.11 (FIX CONSOLA ANCHA Y COLOR BOTÓN)
+// ColiseumUI.js - VISTA Y ANIMACIONES V9.12 (CONSOLA FLOTANTE Y BOTÓN DEGRADADO)
 // =========================================
 
 window.ColiseumUI = {
@@ -68,21 +68,41 @@ window.ColiseumUI = {
             }
 
             /* ========================================= */
-            /* 4. LOG Y BOTONES (AHORA ALINEADOS A LOS BORDES DE LAS CAJAS) */
+            /* 4. CONSOLA FLOTANTE (ESTIRADA A LOS BORDES) */
             /* ========================================= */
             #battle-log, .battle-log-container { 
-                background: #0d161c !important; border: 1px solid #1e3a5f !important; border-left: 4px solid #4dd0e1 !important; border-right: 4px solid #ff6b6b !important; color: #00ffcc !important; border-radius: 8px !important; font-family: 'Courier New', monospace !important; font-size: 12px !important; padding: 15px !important; box-shadow: inset 0 0 15px rgba(0,0,0,0.8) !important; height: 130px !important; overflow-y: scroll !important; -ms-overflow-style: none; scrollbar-width: none; box-sizing: border-box;
-                /* FIX: Estirar log a los bordes de los Genos */
+                background: rgba(13, 22, 30, 0.98) !important; 
+                border: 1px solid rgba(255,255,255,0.1) !important; 
+                border-left: 3px solid #4dd0e1 !important; 
+                border-right: 3px solid #ff6b6b !important; 
+                color: #00ffcc !important; 
+                border-radius: 12px !important; 
+                font-family: 'Courier New', monospace !important; 
+                font-size: 12px !important; 
+                padding: 15px !important; 
+                height: 130px !important; 
+                overflow-y: scroll !important; 
+                -ms-overflow-style: none; 
+                scrollbar-width: none; 
+                box-sizing: border-box; 
+                /* Anchura estirada hasta los bordes de los Genos */
                 width: calc(100% + 60px) !important; 
-                margin: 10px -30px 0 -30px !important; 
+                margin: 15px -30px 10px -30px !important; 
+                /* Sombra 3D y brillo de luz */
+                box-shadow: 0 12px 25px rgba(0,0,0,0.8), -5px 0 15px rgba(77,208,225,0.15), 5px 0 15px rgba(255,107,107,0.15) !important; 
+                position: relative; 
+                z-index: 15; 
+                transform: translateY(-5px); /* Efecto de levitación */
             }
             #battle-log::-webkit-scrollbar, .battle-log-container::-webkit-scrollbar { display: none !important; }
 
+            /* ========================================= */
+            /* 5. BOTONES (NORMALIZADOS)                 */
+            /* ========================================= */
             #battle-controls, .controls-container { 
+                width: 100% !important; /* Vuelve a la normalidad */
                 display: flex; gap: 8px !important; justify-content: center !important; 
-                /* FIX: Estirar controles a los bordes de los Genos */
-                width: calc(100% + 60px) !important; 
-                margin: 15px -30px 0 -30px !important; 
+                margin-top: 15px !important; 
             }
             .battle-btn { flex: 1 !important; padding: 10px 5px !important; border-radius: 8px !important; text-transform: uppercase !important; letter-spacing: 0.5px !important; transition: 0.2s !important; font-weight: 900 !important; font-size: 11px !important; color: white !important; cursor: pointer !important; border: 1px solid transparent !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important; }
             .atk-btn { background: linear-gradient(90deg, #ff5722, #d84315) !important; border-color: #ff9800 !important; box-shadow: 0 4px 10px rgba(255, 87, 34, 0.3) !important; }
@@ -91,17 +111,24 @@ window.ColiseumUI = {
             .battle-btn:active { transform: scale(0.95) !important; }
             .battle-btn:disabled { background: #333 !important; border-color: #555 !important; box-shadow: none !important; color: #888 !important; transform: none !important; cursor: not-allowed !important; text-shadow: none !important; }
 
-            /* FIX: Color Nuevo (Cian Tecnológico) y alineado a los bordes */
+            /* BOTÓN ENTRAR A LA ARENA (DEGRADADO CIAN-ROJO) */
             #btn-start-battle, .btn-primary { 
-                background: linear-gradient(90deg, #0083B0, #00B4DB) !important; 
-                box-shadow: 0 4px 15px rgba(0, 180, 219, 0.4) !important; 
-                border: 1px solid #80deea !important; 
+                background: linear-gradient(90deg, #00b4d8, #e53935) !important; /* Mezcla de Colores */
+                box-shadow: 0 6px 15px rgba(0,0,0,0.5), -5px 0 15px rgba(0,180,219,0.3), 5px 0 15px rgba(229,57,53,0.3) !important; 
+                border: 2px solid rgba(255,255,255,0.2) !important; 
                 color: white !important; 
-                border-radius: 8px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; padding: 15px 30px !important; font-weight: bold !important; cursor: pointer; display: none; 
-                width: calc(100% + 60px) !important; 
-                margin: 15px -30px 0 -30px !important; 
+                border-radius: 12px !important; 
+                text-transform: uppercase; 
+                letter-spacing: 2px; 
+                transition: 0.2s; 
+                padding: 15px 30px !important; 
+                font-weight: 900 !important; 
+                cursor: pointer; 
+                width: 100% !important; /* Normalizado */
+                margin-top: 15px !important; 
+                display: none; 
             }
-            #btn-start-battle:hover, .btn-primary:hover { filter: brightness(1.2); }
+            #btn-start-battle:hover, .btn-primary:hover { transform: translateY(-3px) !important; filter: brightness(1.2); }
             
             #btn-leave-battle, .btn-secondary { 
                 background-color: #111b24 !important; border: 1px solid #1e3a5f !important; color: #4dd0e1 !important; 
@@ -114,7 +141,7 @@ window.ColiseumUI = {
             #btn-leave-battle:hover, .btn-secondary:hover { background-color: #1e3a5f !important; color: #fff !important; }
             
             /* ========================================= */
-            /* 5. ANIMACIONES DE ATAQUE Y TEXTOS FLOTANTES */
+            /* 6. ANIMACIONES DE ATAQUE Y TEXTOS FLOTANTES */
             /* ========================================= */
             @keyframes animarBoca { 0% { transform: scale(1); } 50% { transform: scale(1.6); } 100% { transform: scale(1); } }
             @keyframes animarEmbestida { 0% { transform: scale(1) translateY(0); } 50% { transform: scale(1.1) translateY(-10px); } 100% { transform: scale(1) translateY(0); } }
