@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumUI.js - VISTA Y ANIMACIONES V9.6 (FIX TEXTOS Y VS)
+// ColiseumUI.js - VISTA Y ANIMACIONES V9.7 (VS GIGANTE Y CRÍTICO CENTRADO)
 // =========================================
 
 window.ColiseumUI = {
@@ -47,24 +47,24 @@ window.ColiseumUI = {
             .hp-text, #player-hp-text, #enemy-hp-text { font-size: 11px !important; color: #fff !important; font-weight: bold; margin-top: 4px !important; text-shadow: 0 1px 2px #000; text-align: center; width: 100%; }
 
             /* ========================================= */
-            /* 3. ANIMACIÓN DEL VS (AHORA SÍ FUNCIONA)   */
+            /* 3. ANIMACIÓN DEL VS (CRECE 100%)          */
             /* ========================================= */
             @keyframes vsPulse { 
                 0% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
-                50% { transform: scale(1.5); text-shadow: 0 0 30px rgba(255,204,0,1); } 
+                50% { transform: scale(2); text-shadow: 0 0 35px rgba(255,204,0,1); } /* CRECE AL DOBLE */
                 100% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
             }
             .vs-badge-battle { 
-                display: inline-block !important; /* OBLIGATORIO PARA QUE FUNCIONE EL TRANSFORM */
+                display: inline-block !important; /* NECESARIO PARA SCALE */
                 position: relative !important; 
-                font-size: 32px !important; 
+                font-size: 28px !important; 
                 font-weight: 900 !important; 
                 font-style: italic !important; 
                 color: #ffcc00 !important; 
                 text-shadow: 0 0 20px rgba(255,0,0,0.8) !important; 
                 z-index: 50 !important; 
                 margin: 0 -20px !important; 
-                animation: vsPulse 1s infinite ease-in-out !important; 
+                animation: vsPulse 1.2s infinite ease-in-out !important; /* Más dinámico */
             }
 
             /* ========================================= */
@@ -104,7 +104,12 @@ window.ColiseumUI = {
             .hit-effect { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5) !important; transform: scale(0.90) translateX(5px) !important; transition: 0.1s; }
             .heal-effect { filter: brightness(1.5) drop-shadow(0 0 15px #4CAF50) !important; transform: scale(1.05) !important; transition: 0.2s; }
 
-            @keyframes floatUpFade { 0% { opacity: 1; transform: translateY(0) scale(1.5); } 10% { transform: translateY(-15px) scale(1.8); } 100% { opacity: 0; transform: translateY(-60px) scale(1); } }
+            /* ANIMACIÓN CORREGIDA: INCLUYE EL TRANSLATE AL CENTRO PARA EVITAR QUE SE DESCUADRE */
+            @keyframes floatUpFade { 
+                0% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); } 
+                10% { transform: translate(-50%, calc(-50% - 15px)) scale(1.8); } 
+                100% { opacity: 0; transform: translate(-50%, calc(-50% - 60px)) scale(1); } 
+            }
             
             .floating-text { 
                 position: absolute; 
@@ -113,21 +118,20 @@ window.ColiseumUI = {
                 pointer-events: none; 
                 animation: floatUpFade 1.3s ease-out forwards; 
                 text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 5px rgba(0,0,0,0.8); 
-                white-space: nowrap !important; /* EVITA QUE LA PALABRA SE CORTE EN DOS LÍNEAS */
+                white-space: nowrap !important; /* EVITA QUE LA PALABRA SE CORTE */
             }
             
             .text-dmg { color: #ff3333; font-size: 28px; }
             .text-heal { color: #4CAF50; font-size: 24px; }
             
-            /* EL TEXTO CRÍTICO AHORA ES GIGANTE Y SIEMPRE POR ENCIMA */
+            /* CRÍTICO GIGANTE */
             .text-crit { 
                 color: #ffcc00; 
-                font-size: 34px !important; 
+                font-size: 38px !important; 
                 font-style: italic; 
                 text-transform: uppercase; 
                 letter-spacing: 2px; 
                 text-shadow: 2px 2px 0 #d32f2f, -2px -2px 0 #d32f2f, 2px -2px 0 #d32f2f, -2px 2px 0 #d32f2f, 0 0 15px rgba(255,0,0,1) !important; 
-                z-index: 1000 !important; 
             }
             
             .shake-effect { animation: shake 0.4s; }
@@ -255,6 +259,7 @@ window.ColiseumUI = {
     mostrarTextoFlotante: function(esJugador, texto, claseAdicional) {
         const sideEl = esJugador ? (document.getElementById("player-sprite-battle") || document.querySelector(".fighter-left")) : (document.getElementById("enemy-sprite-battle") || document.querySelector(".fighter-right"));
         if(!sideEl) return;
+
         const floater = document.createElement("div");
         floater.className = `floating-text ${claseAdicional}`;
         floater.innerText = texto;
@@ -262,27 +267,24 @@ window.ColiseumUI = {
         let offsetX = (Math.random() - 0.5) * 40; 
         let offsetY = (Math.random() - 0.5) * 20; 
 
-        // UBICACIÓN DE LOS TEXTOS:
-        let baseTop = "15%"; // Normalmente en la frente del Geno
-        let baseLeft = "50%"; // Centrado en la caja del Geno
+        // UBICACIÓN DE LOS TEXTOS
+        let baseTop = "15%"; 
+        let baseLeft = "50%"; 
+        let targetContainer = sideEl; // Por defecto el texto nace adentro de la caja del Geno
 
-        // Si es Crítico, forzamos su posición
+        // SI ES CRÍTICO LO SACAMOS DE LA CAJA PARA QUE NO SE CORTE
         if (claseAdicional.includes("text-crit")) {
-            baseTop = "-25%"; // Sale muy por encima de la caja
-            offsetX = 0; // Sin temblor horizontal para evitar que se salga
-            
-            // Si es el enemigo, lo empujamos hacia el centro de la pantalla (izquierda de su caja)
-            // Si es el jugador, lo empujamos hacia el centro de la pantalla (derecha de su caja)
-            baseLeft = esJugador ? "80%" : "20%"; 
-            
+            targetContainer = document.querySelector(".fighters-wrapper") || document.getElementById("battle-area"); 
+            baseTop = "-25px"; // Nace por encima de la cabeza de los Genos
+            baseLeft = "50%"; // En el centro absoluto de la pantalla
+            offsetX = 0; // Sin desvío para que no se mueva del centro
             floater.style.zIndex = "1000"; 
         }
 
         floater.style.top = `calc(${baseTop} + ${offsetY}px)`;
         floater.style.left = `calc(${baseLeft} + ${offsetX}px)`;
-        floater.style.transform = "translate(-50%, -50%)";
         
-        sideEl.appendChild(floater);
+        targetContainer.appendChild(floater);
         setTimeout(() => floater.remove(), 1300);
     },
 
