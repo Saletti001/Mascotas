@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsManager.js - LÓGICA DEL LABORATORIO V2
+// ImplantsManager.js - LÓGICA DEL LABORATORIO V3 (FIX ARRANQUE)
 // =========================================
 
 window.ImplantsManager = {
@@ -15,7 +15,9 @@ window.ImplantsManager = {
     setTab: function(tab) {
         this.currentTab = tab;
         document.querySelectorAll('.lab-tab').forEach(t => t.classList.remove('active'));
-        event.target.classList.add('active');
+        if(typeof event !== 'undefined' && event.target) {
+            event.target.classList.add('active');
+        }
 
         document.getElementById('combat-slots').style.display = tab === 'combat' ? 'grid' : 'none';
         document.getElementById('cosmetic-slots').style.display = tab === 'cosmetic' ? 'grid' : 'none';
@@ -25,12 +27,12 @@ window.ImplantsManager = {
         const preview = document.getElementById("implants-geno-preview");
         const statsBox = document.getElementById("implants-geno-stats");
         
-        if (!preview || !statsBox) return; // Seguro anti-crasheo
+        if (!preview || !statsBox) return; // Seguro anti-crasheos
 
         if (window.miMascota && typeof generarSvgGeno === 'function') {
             let svgStr = generarSvgGeno(window.miMascota);
             
-            // Renderizamos el SVG y lo forzamos a ocupar el 100% de su contenedor
+            // Renderizamos el SVG y lo forzamos a ocupar el 100%
             preview.innerHTML = svgStr;
             let svgNode = preview.querySelector("svg");
             if (svgNode) {
@@ -65,7 +67,7 @@ window.ImplantsManager = {
         selector.style.display = 'block';
         listContainer.innerHTML = `<p style="font-size:12px; color:#aaa; text-align:center;">Buscando en tu mochila...</p>`;
 
-        // Aquí conectaremos con InventoryManager.js en el futuro
+        // Aquí conectaremos con InventoryManager.js más adelante
         setTimeout(() => {
             listContainer.innerHTML = `
                 <div style="text-align:center; color:#888; font-size:13px; padding:20px; background:rgba(0,0,0,0.3); border-radius:8px;">
@@ -79,22 +81,3 @@ window.ImplantsManager = {
         if(sel) sel.style.display = 'none';
     }
 };
-
-// =========================================
-// HOOK DE NAVEGACIÓN SEGURO
-// =========================================
-if (!window.implantsNavHooked) {
-    window.navegarA_Original_Implants = window.navegarA;
-    window.navegarA = function(id) {
-        // Primero ejecutamos la navegación normal del juego (que oculta las pantallas)
-        if (typeof window.navegarA_Original_Implants === 'function') {
-            window.navegarA_Original_Implants(id);
-        }
-        
-        // Si el destino es Implantes, inicializamos el renderizado
-        if (id === 'implants-area') {
-            ImplantsManager.init();
-        }
-    };
-    window.implantsNavHooked = true;
-}
