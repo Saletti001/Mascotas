@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsUI.js - INTERFAZ DEL LABORATORIO V4 (Z-INDEX Y SCROLL HACK)
+// ImplantsUI.js - INTERFAZ DEL LABORATORIO V5 (OPTIMIZACIÓN MÓVIL)
 // =========================================
 
 window.ImplantsUI = {
@@ -8,7 +8,6 @@ window.ImplantsUI = {
         const style = document.createElement("style");
         style.id = "implants-styles";
         style.innerHTML = `
-            /* FIX: Aniquilación total de la barra espaciadora */
             #implants-area::-webkit-scrollbar, 
             .implants-screen::-webkit-scrollbar {
                 display: none !important;
@@ -17,7 +16,7 @@ window.ImplantsUI = {
             }
 
             .implants-screen {
-                background: #0d161c !important; /* Forzar color sólido, nada de transparente */
+                background: #0d161c !important; 
                 background-image: radial-gradient(circle at center, #1a2a36 0%, #0d161c 100%) !important;
                 padding: 20px !important;
                 padding-bottom: 80px !important; 
@@ -27,9 +26,9 @@ window.ImplantsUI = {
                 left: 0 !important;
                 height: 100vh !important;
                 width: 100% !important;
-                overflow-y: scroll !important; /* Necesario para que funcione el touch */
+                overflow-y: scroll !important; 
                 box-sizing: border-box !important;
-                z-index: 5000 !important; /* Aplasta cualquier otra pantalla debajo */
+                z-index: 5000 !important; 
                 -ms-overflow-style: none !important;  
                 scrollbar-width: none !important;  
             }
@@ -93,7 +92,7 @@ window.ImplantsUI = {
             .lab-tabs {
                 display: flex;
                 gap: 10px;
-                margin-bottom: 10px;
+                margin-bottom: 5px;
             }
 
             .lab-tab {
@@ -165,9 +164,49 @@ window.ImplantsUI = {
                 border: 2px solid #00acc1;
                 border-radius: 15px;
                 padding: 20px;
-                z-index: 10000; /* Asegurar que el modal quede por encima de todo */
+                z-index: 10000; 
                 display: none;
                 box-shadow: 0 0 100px rgba(0,0,0,0.9);
+            }
+
+            /* ========================================= */
+            /* NUEVO: OPTIMIZACIÓN PARA PANTALLAS MÓVILES */
+            /* ========================================= */
+            @media (max-width: 600px) {
+                .implants-screen {
+                    padding: 10px !important;
+                    padding-bottom: 70px !important;
+                }
+                .implants-screen h2 {
+                    font-size: 18px !important;
+                    letter-spacing: 1px !important;
+                    margin-bottom: 5px !important;
+                }
+                .implants-screen > p {
+                    font-size: 11px !important;
+                    margin-bottom: 10px !important;
+                }
+                .lab-container {
+                    gap: 10px;
+                }
+                .geno-scanner {
+                    padding: 15px !important;
+                    min-width: 100%; /* Fuerza a ocupar el ancho en móvil */
+                }
+                #implants-geno-preview {
+                    width: 160px !important; /* Más pequeño para que quepa todo */
+                    height: 160px !important;
+                }
+                .control-panel {
+                    min-width: 100%;
+                }
+                .slot-grid {
+                    padding: 10px;
+                    gap: 8px;
+                }
+                .implant-slot {
+                    padding: 10px;
+                }
             }
         `;
         document.head.appendChild(style);
@@ -244,7 +283,7 @@ window.ImplantsUI = {
                 <button onclick="ImplantsManager.closeSelector()" class="btn-secondary" style="width:100%; position:relative; bottom:auto; left:auto; transform:none; display:block; margin:0;">CERRAR</button>
             </div>
 
-            <button onclick="ImplantsManager.closeLab()" class="btn-secondary" style="position:relative; display:block; margin: 30px auto; width: 80%; max-width: 300px; left:auto; bottom:auto; transform:none;">VOLVER AL NEXO</button>
+            <button onclick="ImplantsManager.closeLab()" class="btn-secondary" style="position:relative; display:block; margin: 20px auto; width: 80%; max-width: 300px; left:auto; bottom:auto; transform:none;">VOLVER AL NEXO</button>
         `;
     }
 };
