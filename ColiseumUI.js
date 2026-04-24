@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumUI.js - VISTA Y ANIMACIONES V9.10 (FIX SEPARACIÓN DE CAJAS Y VS)
+// ColiseumUI.js - VISTA Y ANIMACIONES V9.11 (FIX CONSOLA ANCHA Y COLOR BOTÓN)
 // =========================================
 
 window.ColiseumUI = {
@@ -23,7 +23,6 @@ window.ColiseumUI = {
             /* ========================================= */
             .fighters-wrapper { display: flex !important; align-items: center !important; justify-content: space-between !important; width: calc(100% + 60px) !important; margin: 0 -30px 15px -30px !important; position: relative; overflow: visible !important; z-index: 10; }
 
-            /* FIX: Width al 42% para asegurar que el VS tenga espacio en medio y separe las cajas */
             #player-sprite-battle, #enemy-sprite-battle, .fighter-left, .fighter-right { background: rgba(20, 35, 48, 0.98) !important; padding: 20px 10px 15px 10px !important; width: 42% !important; position: relative; display: flex !important; flex-direction: column !important; justify-content: flex-end !important; align-items: center !important; min-height: 250px !important; backdrop-filter: blur(5px); overflow: visible !important; transition: 0.3s ease-out !important; border-radius: 12px !important; }
             
             @keyframes pulseGlowP { 0% { box-shadow: -8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(77,208,225,0.4); } 50% { box-shadow: -8px 8px 30px rgba(0,0,0,0.8), 0 0 25px rgba(77,208,225,0.8); } 100% { box-shadow: -8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(77,208,225,0.4); } }
@@ -48,16 +47,16 @@ window.ColiseumUI = {
             .hp-text, #player-hp-text, #enemy-hp-text { font-size: 11px !important; color: #fff !important; font-weight: bold; margin-top: 4px !important; text-shadow: 0 1px 2px #000; text-align: center; width: 100%; }
 
             /* ========================================= */
-            /* 3. ANIMACIÓN DEL VS (LENTA, SUAVE, EN FLUJO) */
+            /* 3. ANIMACIÓN DEL VS                       */
             /* ========================================= */
             @keyframes vsPulse { 
                 0% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
-                50% { transform: scale(1.2); text-shadow: 0 0 20px rgba(255,204,0,1); } /* Crece 20% nomás */
+                50% { transform: scale(1.2); text-shadow: 0 0 20px rgba(255,204,0,1); } 
                 100% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
             }
             .vs-badge-battle { 
-                position: relative !important; /* DEVUELTO A FLUJO PARA SEPARAR CAJAS */
-                display: inline-block !important; /* OBLIGATORIO PARA QUE SCALE FUNCIONE */
+                position: relative !important; 
+                display: inline-block !important; 
                 font-size: 24px !important; 
                 font-weight: 900 !important; 
                 font-style: italic !important; 
@@ -65,16 +64,26 @@ window.ColiseumUI = {
                 text-shadow: 0 0 20px rgba(255,0,0,0.8) !important; 
                 z-index: 50 !important; 
                 margin: 0 !important; 
-                animation: vsPulse 2s infinite ease-in-out !important; /* Lenta (2 segundos) */
+                animation: vsPulse 2s infinite ease-in-out !important; 
             }
 
             /* ========================================= */
-            /* 4. LOG Y BOTONES                         */
+            /* 4. LOG Y BOTONES (AHORA ALINEADOS A LOS BORDES DE LAS CAJAS) */
             /* ========================================= */
-            #battle-log, .battle-log-container { background: #0d161c !important; border: 1px solid #1e3a5f !important; border-left: 4px solid #4dd0e1 !important; border-right: 4px solid #ff6b6b !important; color: #00ffcc !important; border-radius: 8px !important; font-family: 'Courier New', monospace !important; font-size: 12px !important; padding: 15px !important; box-shadow: inset 0 0 15px rgba(0,0,0,0.8) !important; margin-top: 10px !important; height: 130px !important; overflow-y: scroll !important; -ms-overflow-style: none; scrollbar-width: none; width: 100%; box-sizing: border-box; }
+            #battle-log, .battle-log-container { 
+                background: #0d161c !important; border: 1px solid #1e3a5f !important; border-left: 4px solid #4dd0e1 !important; border-right: 4px solid #ff6b6b !important; color: #00ffcc !important; border-radius: 8px !important; font-family: 'Courier New', monospace !important; font-size: 12px !important; padding: 15px !important; box-shadow: inset 0 0 15px rgba(0,0,0,0.8) !important; height: 130px !important; overflow-y: scroll !important; -ms-overflow-style: none; scrollbar-width: none; box-sizing: border-box;
+                /* FIX: Estirar log a los bordes de los Genos */
+                width: calc(100% + 60px) !important; 
+                margin: 10px -30px 0 -30px !important; 
+            }
             #battle-log::-webkit-scrollbar, .battle-log-container::-webkit-scrollbar { display: none !important; }
 
-            #battle-controls, .controls-container { width: 100% !important; display: flex; gap: 8px !important; justify-content: center !important; margin-top: 15px !important; }
+            #battle-controls, .controls-container { 
+                display: flex; gap: 8px !important; justify-content: center !important; 
+                /* FIX: Estirar controles a los bordes de los Genos */
+                width: calc(100% + 60px) !important; 
+                margin: 15px -30px 0 -30px !important; 
+            }
             .battle-btn { flex: 1 !important; padding: 10px 5px !important; border-radius: 8px !important; text-transform: uppercase !important; letter-spacing: 0.5px !important; transition: 0.2s !important; font-weight: 900 !important; font-size: 11px !important; color: white !important; cursor: pointer !important; border: 1px solid transparent !important; text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important; }
             .atk-btn { background: linear-gradient(90deg, #ff5722, #d84315) !important; border-color: #ff9800 !important; box-shadow: 0 4px 10px rgba(255, 87, 34, 0.3) !important; }
             .special-btn { background: linear-gradient(90deg, #9c27b0, #6a1b9a) !important; border-color: #e040fb !important; box-shadow: 0 4px 10px rgba(156, 39, 176, 0.3) !important; }
@@ -82,7 +91,17 @@ window.ColiseumUI = {
             .battle-btn:active { transform: scale(0.95) !important; }
             .battle-btn:disabled { background: #333 !important; border-color: #555 !important; box-shadow: none !important; color: #888 !important; transform: none !important; cursor: not-allowed !important; text-shadow: none !important; }
 
-            #btn-start-battle, .btn-primary { background: linear-gradient(90deg, #E91E63, #C2185B) !important; box-shadow: 0 4px 15px rgba(233, 30, 99, 0.4) !important; border: 1px solid #F48FB1 !important; color: white !important; border-radius: 8px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; padding: 15px 30px !important; font-weight: bold !important; cursor: pointer; width: 100%; margin-top: 15px !important; display: none; }
+            /* FIX: Color Nuevo (Cian Tecnológico) y alineado a los bordes */
+            #btn-start-battle, .btn-primary { 
+                background: linear-gradient(90deg, #0083B0, #00B4DB) !important; 
+                box-shadow: 0 4px 15px rgba(0, 180, 219, 0.4) !important; 
+                border: 1px solid #80deea !important; 
+                color: white !important; 
+                border-radius: 8px !important; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s; padding: 15px 30px !important; font-weight: bold !important; cursor: pointer; display: none; 
+                width: calc(100% + 60px) !important; 
+                margin: 15px -30px 0 -30px !important; 
+            }
+            #btn-start-battle:hover, .btn-primary:hover { filter: brightness(1.2); }
             
             #btn-leave-battle, .btn-secondary { 
                 background-color: #111b24 !important; border: 1px solid #1e3a5f !important; color: #4dd0e1 !important; 
