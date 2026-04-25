@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsUI.js - INTERFAZ DEL LABORATORIO V13 (FIX VISIBILIDAD Y BOTÓN)
+// ImplantsUI.js - INTERFAZ DEL LABORATORIO V16 (SLOT BÁSICO BLOQUEADO)
 // =========================================
 
 window.ImplantsUI = {
@@ -11,10 +11,7 @@ window.ImplantsUI = {
             .implants-screen * { box-sizing: border-box !important; }
             .implants-screen::-webkit-scrollbar { display: none !important; }
 
-            /* FIX: Aseguramos que se oculte correctamente cuando tiene la clase hidden */
-            #implants-area.hidden {
-                display: none !important;
-            }
+            #implants-area.hidden { display: none !important; }
 
             .lab-container {
                 display: flex;
@@ -155,6 +152,14 @@ window.ImplantsUI = {
 
             .implant-slot:hover { background: rgba(77, 208, 225, 0.1); border-style: solid; }
 
+            /* Estilo para el botón Básico (Sólido y no clickeable) */
+            .implant-slot.fixed-slot {
+                border: 1px solid #00acc1;
+                background: rgba(0, 172, 193, 0.15);
+                cursor: default;
+            }
+            .implant-slot.fixed-slot:hover { border-style: solid; }
+
             .implant-slot label {
                 display: block;
                 font-size: 9px;
@@ -193,7 +198,6 @@ window.ImplantsUI = {
         const screen = document.getElementById("implants-area");
         if (!screen) return;
 
-        // Limpiamos estilos manuales conflictivos y solo usamos el gradiente
         screen.classList.add("implants-screen");
         screen.style.backgroundColor = '#0d161c';
         screen.style.backgroundImage = 'radial-gradient(circle at center, #1a2a36 0%, #0d161c 100%)';
@@ -222,16 +226,16 @@ window.ImplantsUI = {
                         </div>
 
                         <div id="combat-slots" class="slot-grid">
-                            <div class="implant-slot" onclick="ImplantsManager.openSelector('atk_1')">
-                                <label>Básico</label>
-                                <span class="item-name" id="slot-atk-1">VACÍO</span>
+                            <div class="implant-slot fixed-slot">
+                                <label>Básico (Genético)</label>
+                                <span class="item-name" id="slot-atk-1">CARGANDO...</span>
                             </div>
                             <div class="implant-slot" onclick="ImplantsManager.openSelector('atk_2')">
-                                <label>Técnica</label>
+                                <label>Técnica (Daño)</label>
                                 <span class="item-name" id="slot-atk-2">VACÍO</span>
                             </div>
                             <div class="implant-slot" onclick="ImplantsManager.openSelector('atk_3')">
-                                <label>Soporte</label>
+                                <label>Soporte (Buff/Estado)</label>
                                 <span class="item-name" id="slot-atk-3">VACÍO</span>
                             </div>
                             <div class="implant-slot" style="border-color: #555; cursor: not-allowed; opacity: 0.6;">
@@ -267,8 +271,8 @@ window.ImplantsUI = {
             </div>
 
             <div id="lab-inventory-selector">
-                <h3 id="selector-title" style="color:#4dd0e1; margin-top:0; font-size:16px; text-align:center;">SELECCIONAR</h3>
-                <div id="lab-inventory-list" style="max-height:250px; overflow-y:auto; margin-bottom:15px; border:1px solid #334; border-radius:8px; padding:10px;"></div>
+                <h3 id="selector-title" style="color:#4dd0e1; margin-top:0; font-size:16px; text-align:center;">ALMACÉN NEXO</h3>
+                <div id="lab-inventory-list" style="max-height:300px; overflow-y:auto; margin-bottom:15px; border:1px solid #334; border-radius:8px; padding:10px;"></div>
                 <button onclick="ImplantsManager.closeSelector()" class="btn-secondary" style="width:100%; padding:10px;">CERRAR</button>
             </div>
         `;

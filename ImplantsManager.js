@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsManager.js - LÓGICA DE INSTALACIÓN V15 (CORRECCIÓN DE TEXTOS: ALMACÉN NEXO)
+// ImplantsManager.js - LÓGICA DE INSTALACIÓN V16 (REGLAS V1.0 ESTRICTAS Y ETIQUETAS)
 // =========================================
 
 window.ImplantsManager = {
@@ -54,12 +54,28 @@ window.ImplantsManager = {
             window.miMascota.ataques = { atk_1: null, atk_2: null, atk_3: null, atk_4: null };
         }
         
-        for (let i = 1; i <= 3; i++) {
+        // 1. Asignar nombre del Ataque Básico según el elemento del Geno (Slot 1 Fijo)
+        const ataquesBasicos = {
+            "Biomutante": "PULSO VITAL",
+            "Viral": "DESCARGA VIRAL",
+            "Cibernético": "LÁSER DE PRECISIÓN",
+            "Radiactivo": "PROYECTIL RADIACTIVO",
+            "Tóxico": "COLMILLO VENENOSO",
+            "Sintético": "RÁFAGA SINTÉTICA"
+        };
+        const el1 = document.getElementById(`slot-atk-1`);
+        if (el1) {
+            el1.innerText = window.miMascota.element ? (ataquesBasicos[window.miMascota.element] || "GOLPE BÁSICO") : "GOLPE BÁSICO";
+        }
+
+        // 2. Leer slots 2 y 3 de MTs instaladas
+        for (let i = 2; i <= 3; i++) {
             const atk = window.miMascota.ataques[`atk_${i}`];
             let el = document.getElementById(`slot-atk-${i}`);
             if(el) el.innerText = atk ? atk.nombre.toUpperCase() : "VACÍO";
         }
         
+        // 3. Slot 4 (Definitivo) desbloqueable en Nv. 25
         const def = window.miMascota.ataques.atk_4;
         const slot4 = document.getElementById(`slot-atk-4`);
         if (slot4 && window.miMascota.level >= 25) {
@@ -88,7 +104,6 @@ window.ImplantsManager = {
             .filter(item => item.type === "MT" || item.type === "mt" || typeof item.id_ataque !== 'undefined');
 
         if (modulos.length === 0) {
-            // FIX: Ya no mencionamos "mochila", ahora se usa el término oficial del juego
             listContainer.innerHTML = `
                 <div style="text-align:center; color:#888; padding:20px;">
                     No tienes Módulos de Combate (MT) en tu Almacén Nexo.
@@ -100,6 +115,8 @@ window.ImplantsManager = {
         modulos.forEach(item => {
             const compatible = this.checkCompatibility(item, slot);
             const costo = this.calculateCost(item);
+            const tipoAtaque = item.subType || item.tier || 'Módulo';
+            const colorTipo = tipoAtaque === 'Soporte' ? '#77DD77' : (tipoAtaque === 'Definitivo' ? '#ff9800' : '#b19cd9');
             
             const itemDiv = document.createElement("div");
             itemDiv.style = `
@@ -109,13 +126,18 @@ window.ImplantsManager = {
                 cursor: ${compatible ? 'pointer' : 'not-allowed'};
             `;
 
+            // FIX: Renderizado con etiquetas visuales de Elemento y Tipo
             itemDiv.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
                     <strong style="color:#fff; font-size:12px;">${item.name || 'MT Desconocida'}</strong>
-                    <span style="color:#ffd700; font-size:11px;">${costo} ✨ EV</span>
+                    <span style="color:#ffd700; font-size:11px; font-weight:bold;">${costo} ✨ EV</span>
                 </div>
-                <div style="font-size:10px; color:#aaa; margin-top:4px;">${item.description || item.desc || ''}</div>
-                ${!compatible ? '<div style="color:#ff6b6b; font-size:9px; margin-top:2px;">Incompatible con este Slot o Elemento</div>' : ''}
+                <div style="display:flex; gap: 5px; margin-bottom: 6px;">
+                    <span style="background:rgba(0,172,193,0.2); color:#80deea; padding:2px 6px; border-radius:4px; font-size:9px; text-transform:uppercase; border: 1px solid rgba(0,172,193,0.5);">${item.element || 'Normal'}</span>
+                    <span style="background:rgba(255,255,255,0.1); color:${colorTipo}; padding:2px 6px; border-radius:4px; font-size:9px; text-transform:uppercase; border: 1px solid ${colorTipo};">${tipoAtaque}</span>
+                </div>
+                <div style="font-size:10px; color:#aaa;">${item.description || item.desc || ''}</div>
+                ${!compatible ? '<div style="color:#ff6b6b; font-size:9px; margin-top:4px;">Incompatible con este Slot o Elemento</div>' : ''}
             `;
 
             if (compatible) {
@@ -128,15 +150,25 @@ window.ImplantsManager = {
     checkCompatibility: function(item, slot) {
         const geno = window.miMascota;
         if (!geno) return false;
+
+        // Slot 1 es Fijo (El modal no debería abrirse, pero por seguridad lo bloqueamos)
+        if (slot === 'atk_1') return false;
         
+        // Slot 4: Solo Definitivos del mismo elemento
         if (slot === 'atk_4') {
             return item.subType === "Definitivo" && item.element === geno.element;
         }
-        
-        const contrarios = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
-        if (contrarios[item.element] === geno.element) {
-             return item.tier === "Básico" || item.subType === "Básico"; 
+
+        // Slot 2: Técnica/Daño (Bloquea los de Soporte y Definitivos)
+        if (slot === 'atk_2') {
+            if (item.subType === "Soporte" || item.tier === "Soporte" || item.subType === "Definitivo") return false;
         }
+
+        // Slot 3: Soporte/Estados (Bloquea los de Técnica y Definitivos)
+        if (slot === 'atk_3') {
+            if (item.subType !== "Soporte" && item.tier !== "Soporte") return false;
+        }
+        
         return true;
     },
 
