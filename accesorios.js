@@ -52,3 +52,24 @@ const dicAlas = {
         </g>
     `
 };
+
+// =========================================
+// accesorios.js - (Añadir al final del archivo existente)
+// =========================================
+
+const dicPieles = {
+    estandar: ``,
+    // Añade un patrón de cuadrícula por encima del cuerpo (ideal para Sintéticos o Cibernéticos)
+    malla_cibernetica: `<pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(0, 255, 255, 0.4)" stroke-width="0.5"/></pattern><rect x="-100" y="-100" width="200" height="200" fill="url(#grid)" mask="url(#body-mask)" />`,
+    // Un efecto de manchas oscuras
+    toxica: `<pattern id="dots" width="15" height="15" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="2" fill="rgba(0,0,0,0.3)"/><circle cx="10" cy="10" r="1.5" fill="rgba(0,0,0,0.2)"/></pattern><rect x="-100" y="-100" width="200" height="200" fill="url(#dots)" mask="url(#body-mask)" />`
+};
+
+const dicAuras = {
+    ninguno: ``,
+    // Un brillo pulsante detrás del Geno
+    fuego_solar: `<circle cx="0" cy="0" r="60" fill="none" stroke="#f97316" stroke-width="4" filter="drop-shadow(0 0 15px #ef4444)" class="anim-flotar" opacity="0.6"/>`,
+    energia_oscura: `<ellipse cx="0" cy="10" rx="70" ry="50" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-dasharray="10 5" filter="drop-shadow(0 0 10px #7c3aed)" opacity="0.8">
+        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="10s" repeatCount="indefinite"/>
+    </ellipse>`
+};
