@@ -1,3 +1,7 @@
+// =========================================
+// SVGEngine.js - (REEMPLAZAR generarSvgGeno COMPLETO POR ESTE V18)
+// =========================================
+
 function generarSvgGeno(genesVisuales) {
     const safeData = genesVisuales || {};
     
@@ -88,15 +92,27 @@ function generarSvgGeno(genesVisuales) {
     const hat = obtenerPieza(typeof dicSombreros !== 'undefined' ? dicSombreros : {}, safeData.hat_type, "ninguno");
     const wing = obtenerPieza(typeof dicAlas !== 'undefined' ? dicAlas : {}, safeData.wing_type, "ninguno");
     
-    // ✨ FIX: LEER PIEL Y AURA DESDE LOS DICCIONARIOS NUEVOS
+    // Leer Cosméticos Dinámicos
     const auraRaw = obtenerPieza(typeof dicAuras !== 'undefined' ? dicAuras : {}, safeData.aura_type, "ninguno");
     let skinRaw = obtenerPieza(typeof dicPieles !== 'undefined' ? dicPieles : {}, safeData.skin_type, "estandar");
 
-    // Limpieza de IDs en la piel para que no colisionen múltiples Genos en pantalla
+    // Limpieza estricta de IDs en los cosméticos para evitar duplicados en la misma pantalla
     if (skinRaw) {
-        skinRaw = skinRaw.replace(/id="grid"/g, `id="grid-${rndId}"`).replace(/url\(#grid\)/g, `url(#grid-${rndId})`);
-        skinRaw = skinRaw.replace(/id="dots"/g, `id="dots-${rndId}"`).replace(/url\(#dots\)/g, `url(#dots-${rndId})`);
-        skinRaw = skinRaw.replace(/body-mask/g, maskId); // Vincula la máscara al cuerpo exacto de este Geno
+        skinRaw = skinRaw.replace(/glow-dron-grid/g, `glow-dron-${rndId}`);
+        skinRaw = skinRaw.replace(/url\(#glow-dron-grid\)/g, `url(#glow-dron-${rndId})`);
+    }
+    if (auraRaw) {
+        const darkGlowId = `dark-glow-${rndId}`;
+        const sunGlowId = `sun-glow-${rndId}`;
+        const auraOutput = auraRaw
+            .replace(/id="dark-glow"/g, `id="${darkGlowId}"`)
+            .replace(/url\(#dark-glow\)/g, `url(#${darkGlowId})`)
+            .replace(/id="sun-glow"/g, `id="${sunGlowId}"`)
+            .replace(/url\(#sun-glow\)/g, `url(#${sunGlowId})`)
+            .replace(/80 85/g, `80 85`); // Asegura el anclaje correcto
+        capaAura = auraOutput;
+    } else {
+        capaAura = "";
     }
 
     let pathD = "", shineD = "", extras = "", detallesFrente = ""; 
@@ -251,6 +267,7 @@ function generarSvgGeno(genesVisuales) {
             @keyframes propulsor { 0% { transform: scaleY(1); opacity: 0.9; } 100% { transform: scaleY(1.5); opacity: 1; } }
             @keyframes rotarAura { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
             @keyframes deslizarHolograma { 0% { transform: translateY(-20px); opacity: 0.3; } 50% { opacity: 0.8; } 100% { transform: translateY(20px); opacity: 0.3; } }
+            @keyframes flotarDron { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
             
             .g-cuerpo { transform-origin: 80px 136px; animation: respirar 3.5s ease-in-out infinite; }
             .g-ojos { transform-origin: 80px 85px; animation: parpadear 5s infinite; }
@@ -258,23 +275,23 @@ function generarSvgGeno(genesVisuales) {
             .anim-fuego { animation: propulsor 0.1s infinite alternate ease-in-out; }
             .anim-aura { transform-origin: 80px 85px; animation: rotarAura 15s linear infinite; }
             .anim-holograma { animation: deslizarHolograma 4s ease-in-out infinite alternate; }
+            .anim-flotar-dron { animation: flotarDron 4s ease-in-out infinite; }
             
             ${cssExtra}
         </style>
         
         ${capaFondo}
-        ${auraRaw ? `<g transform="translate(80, 85)">${auraRaw}</g>` : ""}
+        ${capaAura}
         
         <g class="g-cuerpo ${claseCuerpoExtra}" style="${estiloCuerpoEnLinea}">
             <g transform="translate(${safeAnclaje.espaldaX}, ${safeAnclaje.espaldaY})">${wing}</g>
             ${extras}
             <path d="${pathD}" fill="${color}" stroke="#1a2a36" stroke-width="5"/>
-            ${skinRaw}
             <path d="${pathD}" fill="url(#${gradId})"/>
             ${detallesFrente}
             <path d="${shineD}" fill="#fff" opacity="0.4"/>
             ${capaCosmeticaFrente}
-            <g class="g-ojos">${ojo}</g>
+            ${skinRaw} <g class="g-ojos">${ojo}</g>
             <g class="g-boca">${boca}</g>
             <g transform="translate(${safeAnclaje.cabezaX}, ${safeAnclaje.cabezaY})">${hat}</g>
         </g>

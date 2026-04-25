@@ -54,22 +54,67 @@ const dicAlas = {
 };
 
 // =========================================
-// accesorios.js - (Añadir al final del archivo existente)
+// accesorios.js - (REEMPLAZAR dicPieles y dicAuras VIEJOS POR ESTOS)
 // =========================================
 
+// Ya no usamos pieles de textura, ahora son Drones de acompañamiento
 const dicPieles = {
     estandar: ``,
-    // Añade un patrón de cuadrícula por encima del cuerpo (ideal para Sintéticos o Cibernéticos)
-    malla_cibernetica: `<pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(0, 255, 255, 0.4)" stroke-width="0.5"/></pattern><rect x="-100" y="-100" width="200" height="200" fill="url(#grid)" mask="url(#body-mask)" />`,
-    // Un efecto de manchas oscuras
-    toxica: `<pattern id="dots" width="15" height="15" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="2" fill="rgba(0,0,0,0.3)"/><circle cx="10" cy="10" r="1.5" fill="rgba(0,0,0,0.2)"/></pattern><rect x="-100" y="-100" width="200" height="200" fill="url(#dots)" mask="url(#body-mask)" />`
+    // ✨ NUEVO: Dron Centinela de Malla Cibernética (Vuela a la izquierda)
+    malla_cibernetica: `
+        <g transform="translate(-145, 10)">
+            <defs>
+                <filter id="glow-dron-grid">
+                    <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+                    <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+            </defs>
+            <g class="anim-flotar-dron" style="transform-origin: 20px 20px;">
+                <rect x="0" y="0" width="40" height="40" rx="8" fill="#1a2a36" stroke="#00ffff" stroke-width="2.5" filter="url(#glow-dron-grid)"/>
+                <path d="M 10 0 L 10 40 M 20 0 L 20 40 M 30 0 L 30 40 M 0 10 L 40 10 M 0 20 L 40 20 M 0 30 L 40 30" stroke="#00ffff" stroke-width="1" opacity="0.3"/>
+                <circle cx="20" cy="20" r="8" fill="#000" stroke="#00ffff" stroke-width="2"/>
+                <circle cx="20" cy="20" r="4" fill="#00ffff" class="anim-fuego" style="transform-origin: 20px 20px; animation-duration: 2s;"/>
+                <line x1="20" y1="0" x2="20" y2="-10" stroke="#00ffff" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="20" cy="-10" r="2" fill="#ef4444"/>
+            </g>
+        </g>
+    `
 };
 
 const dicAuras = {
     ninguno: ``,
-    // Un brillo pulsante detrás del Geno
-    fuego_solar: `<circle cx="0" cy="0" r="60" fill="none" stroke="#f97316" stroke-width="4" filter="drop-shadow(0 0 15px #ef4444)" class="anim-flotar" opacity="0.6"/>`,
-    energia_oscura: `<ellipse cx="0" cy="10" rx="70" ry="50" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-dasharray="10 5" filter="drop-shadow(0 0 10px #7c3aed)" opacity="0.8">
-        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="10s" repeatCount="indefinite"/>
-    </ellipse>`
+    // ✨ NUEVO: Efecto de Pulso de Energía Oscura (Circular y Estético)
+    energia_oscura: `
+        <defs>
+            <filter id="dark-glow">
+                <feGaussianBlur stdDeviation="6" result="coloredBlur"/>
+                <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+        </defs>
+        <g class="anim-flotar" style="opacity: 0.7;">
+            <circle cx="80" cy="85" r="75" fill="none" stroke="#8b5cf6" stroke-width="3" stroke-dasharray="10 6" filter="url(#dark-glow)">
+                <animate attributeName="stroke-dashoffset" from="0" to="100" dur="5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="80" cy="85" r="65" fill="none" stroke="#6d28d9" stroke-width="2" opacity="0.5" filter="url(#dark-glow)">
+                <animate attributeName="r" from="60" to="70" dur="2s" begin="0s" repeatCount="indefinite"/>
+                <animate attributeName="opacity" from="0.6" to="0" dur="2s" begin="0s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="80" cy="85" r="50" fill="rgba(109, 40, 217, 0.2)" filter="drop-shadow(0 0 10px #8b5cf6)"/>
+        </g>
+    `,
+    // Un aura de fuego solar circular y profesional
+    fuego_solar: `
+        <defs>
+            <filter id="sun-glow">
+                <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+                <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+        </defs>
+        <g class="anim-flotar" style="opacity: 0.8;">
+            <circle cx="80" cy="85" r="70" fill="none" stroke="#f97316" stroke-width="6" stroke-dasharray="1 8" stroke-linecap="round" filter="url(#sun-glow)">
+                <animateTransform attributeName="transform" type="rotate" from="0 80 85" to="360 80 85" dur="20s" repeatCount="indefinite"/>
+            </circle>
+             <circle cx="80" cy="85" r="72" fill="none" stroke="#ef4444" stroke-width="2" opacity="0.4" filter="url(#sun-glow)"/>
+        </g>
+    `
 };
