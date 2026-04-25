@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsManager.js - V17 (SOPORTE PARA COSMÉTICOS Y ATAQUES)
+// ImplantsManager.js - V21 (SINCRONIZACIÓN GLOBAL DE INVENTARIO)
 // =========================================
 
 window.ImplantsManager = {
@@ -101,7 +101,6 @@ window.ImplantsManager = {
         
         let invArray = window.miInventario ? (window.miInventario.slots || window.miInventario.items || []) : [];
         
-        // Identificar si estamos buscando Ataques o Cosméticos
         const isCosmetic = ['head', 'back', 'skin', 'aura'].includes(slot);
 
         const modulos = invArray
@@ -125,7 +124,7 @@ window.ImplantsManager = {
         listContainer.innerHTML = "";
         modulos.forEach(item => {
             const compatible = isCosmetic ? true : this.checkCompatibility(item, slot);
-            const costo = item.evCost || 0; // Los cosméticos podrían ser gratis o muy baratos
+            const costo = item.evCost || 0; 
             const tipoEtiqueta = item.subType || 'MOD';
             const colorTipo = isCosmetic ? '#fbcfe8' : (tipoEtiqueta === 'Soporte' ? '#77DD77' : (tipoEtiqueta === 'Definitivo' ? '#ff9800' : '#b19cd9'));
             
@@ -171,7 +170,6 @@ window.ImplantsManager = {
     installModule: function(item, originalIndex, isCosmetic) {
         if (!window.miInventario) return;
         
-        // Los cosméticos usarán su evCost directo (podría ser 0). Los ataques usan la calculadora con penalizaciones.
         const costo = isCosmetic ? (item.evCost || 0) : this.calculateCost(item);
         let currentEV = window.miInventario.vitalEssence || 0;
         
@@ -190,13 +188,11 @@ window.ImplantsManager = {
             }
 
             if (isCosmetic) {
-                // Aplicar modificación física
                 if (this.targetSlot === 'head') window.miMascota.hat_type = item.id_cosmetico;
                 if (this.targetSlot === 'back') window.miMascota.wing_type = item.id_cosmetico;
                 if (this.targetSlot === 'skin') window.miMascota.skin_type = item.id_cosmetico;
                 if (this.targetSlot === 'aura') window.miMascota.aura_type = item.id_cosmetico;
             } else {
-                // Aplicar módulo de combate
                 if (!window.miMascota.ataques) window.miMascota.ataques = {};
                 window.miMascota.ataques[this.targetSlot] = {
                     id: item.id_ataque || item.id,
@@ -206,13 +202,21 @@ window.ImplantsManager = {
                 };
             }
 
+            // ✨ FIX V21: Sincronización obligatoria con la base de datos "Mis Genos"
+            if (window.misGenos) {
+                const index = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
+                if (index !== -1) {
+                    window.misGenos[index] = window.miMascota;
+                }
+            }
+
             window.miInventario.removeItem(originalIndex, 1);
             if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
 
             alert("¡Instalación completada con éxito!");
             this.closeSelector();
             this.updateSlotLabels();
-            this.refreshPreview(); // Obligatorio recargar para ver la corona o piel nueva
+            this.refreshPreview(); 
         }
     },
 
@@ -235,7 +239,6 @@ window.ImplantsManager = {
         const impScreen = document.getElementById('implants-area');
         if(impScreen) impScreen.classList.add('hidden');
         
-        // FIX: Forzar a todo el juego a actualizar el modelo 3D/SVG del Geno al salir
         if (window.miMascota && typeof generarSvgGeno === 'function') {
             window.miMascota.svg = generarSvgGeno(window.miMascota);
             const pedestal = document.getElementById("geno-container");
