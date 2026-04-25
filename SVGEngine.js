@@ -1,5 +1,5 @@
 // =========================================
-// SVGEngine.js - (REEMPLAZAR generarSvgGeno COMPLETO POR ESTE V18)
+// SVGEngine.js - V19 (CORRECCIÓN DE ALAS, AURAS Y ANIMACIONES DEL DRON)
 // =========================================
 
 function generarSvgGeno(genesVisuales) {
@@ -100,19 +100,6 @@ function generarSvgGeno(genesVisuales) {
     if (dronRaw) {
         dronRaw = dronRaw.replace(/glow-dron-grid/g, `glow-dron-${rndId}`);
         dronRaw = dronRaw.replace(/url\(#glow-dron-grid\)/g, `url(#glow-dron-${rndId})`);
-    }
-    if (auraRaw) {
-        const darkGlowId = `dark-glow-${rndId}`;
-        const sunGlowId = `sun-glow-${rndId}`;
-        const auraOutput = auraRaw
-            .replace(/id="dark-glow"/g, `id="${darkGlowId}"`)
-            .replace(/url\(#dark-glow\)/g, `url(#${darkGlowId})`)
-            .replace(/id="sun-glow"/g, `id="${sunGlowId}"`)
-            .replace(/url\(#sun-glow\)/g, `url(#${sunGlowId})`)
-            .replace(/80 85/g, `80 85`); // Asegura el anclaje correcto
-        capaAura = auraOutput;
-    } else {
-        capaAura = "";
     }
 
     let pathD = "", shineD = "", extras = "", detallesFrente = ""; 
@@ -281,9 +268,7 @@ function generarSvgGeno(genesVisuales) {
         </style>
         
         ${capaFondo}
-        ${capaAura}
-        
-        <g class="g-cuerpo ${claseCuerpoExtra}" style="${estiloCuerpoEnLinea}">
+        ${auraRaw} <g class="g-cuerpo ${claseCuerpoExtra}" style="${estiloCuerpoEnLinea}">
             <g transform="translate(${safeAnclaje.espaldaX}, ${safeAnclaje.espaldaY})">${wing}</g>
             ${extras}
             <path d="${pathD}" fill="${color}" stroke="#1a2a36" stroke-width="5"/>
