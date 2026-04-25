@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsManager.js - LÓGICA DE INSTALACIÓN V13 (INTEGRACIÓN NATIVA INVENTORYMANAGER)
+// ImplantsManager.js - LÓGICA DE INSTALACIÓN V14 (ESCÁNER DE INVENTARIO INFALIBLE)
 // =========================================
 
 window.ImplantsManager = {
@@ -78,14 +78,19 @@ window.ImplantsManager = {
         
         selector.style.display = 'block';
         
-        // CONEXIÓN NATIVA: Leer desde window.miInventario.slots
-        let modulos = [];
-        if (window.miInventario && window.miInventario.slots) {
-            // Guardamos también el índice original del inventario para poder borrarlo luego
-            modulos = window.miInventario.slots
-                .map((item, originalIndex) => ({ ...item, originalIndex }))
-                .filter(item => item.type === "MT");
+        // =========================================
+        // FIX: ESCÁNER A PRUEBA DE BALAS
+        // =========================================
+        let invArray = [];
+        if (window.miInventario) {
+            // Busca en ambas listas posibles por si el guardado las movió
+            invArray = window.miInventario.slots || window.miInventario.items || [];
         }
+
+        // Filtra buscando "MT", "mt", o si simplemente el objeto tiene la propiedad 'id_ataque'
+        const modulos = invArray
+            .map((item, originalIndex) => ({ ...item, originalIndex }))
+            .filter(item => item.type === "MT" || item.type === "mt" || typeof item.id_ataque !== 'undefined');
 
         if (modulos.length === 0) {
             listContainer.innerHTML = `
@@ -118,7 +123,6 @@ window.ImplantsManager = {
             `;
 
             if (compatible) {
-                // Pasamos el índice original para poder eliminarlo de la mochila real
                 itemDiv.onclick = () => this.installModule(item, item.originalIndex);
             }
             listContainer.appendChild(itemDiv);
@@ -134,9 +138,10 @@ window.ImplantsManager = {
             return item.subType === "Definitivo" && item.element === geno.element;
         }
         
+        // Regla de penalización para elementos contrarios
         const contrarios = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
         if (contrarios[item.element] === geno.element) {
-             return item.tier === "Básico";
+             return item.tier === "Básico" || item.subType === "Básico"; // Failsafe adicional
         }
         return true;
     },
@@ -166,9 +171,12 @@ window.ImplantsManager = {
 
         if (confirm(`¿Instalar ${item.name} por ${costo} ✨ EV? El módulo se consumirá.`)) {
             
-            // 1. Cobrar EV (usando la variable nativa de tu InventoryManager)
+            // 1. Cobrar EV y actualizar visualmente de forma estricta
             window.miInventario.vitalEssence -= costo;
-            window.miInventario.updateUI(); // Refresca el HUD de inmediato
+            window.miInventario.updateUI(); 
+            
+            const domEl = document.getElementById("vital-essence-amount");
+            if (domEl) domEl.innerText = `✨ ${window.miInventario.vitalEssence}`;
 
             // 2. Equipar el ataque al Geno
             if (!window.miMascota.ataques) window.miMascota.ataques = {};
@@ -179,7 +187,7 @@ window.ImplantsManager = {
                 power: item.power || 0
             };
 
-            // 3. Eliminar el disco de la mochila (usando la función nativa)
+            // 3. Eliminar el disco de la mochila
             window.miInventario.removeItem(originalIndex, 1);
 
             // 4. Guardar Partida 
