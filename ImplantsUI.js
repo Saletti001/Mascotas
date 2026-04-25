@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsUI.js - INTERFAZ DEL LABORATORIO V11 (TITULO, STATS EN LÍNEA Y BOTÓN CRIANZA)
+// ImplantsUI.js - INTERFAZ DEL LABORATORIO V12 (FIX BOTON VOLVER)
 // =========================================
 
 window.ImplantsUI = {
@@ -18,7 +18,7 @@ window.ImplantsUI = {
                 width: 100%;
                 max-width: 480px; 
                 margin: 0 auto;
-                padding: 0 15px; /* Márgenes seguros para el móvil */
+                padding: 0 15px;
             }
 
             .geno-scanner {
@@ -60,7 +60,6 @@ window.ImplantsUI = {
                 100% { top: 95%; opacity: 0; }
             }
 
-            /* GENO MÁS GRANDE */
             #implants-geno-preview {
                 width: 180px; 
                 height: 180px;
@@ -71,7 +70,6 @@ window.ImplantsUI = {
                 align-items: center;
             }
 
-            /* STATS EN UNA SOLA LÍNEA */
             .geno-lab-name {
                 text-align: center;
                 font-weight: bold;
@@ -84,7 +82,7 @@ window.ImplantsUI = {
             .geno-lab-name span { color: #4dd0e1; font-size: 11px; }
             
             .geno-lab-stats {
-                display: flex; /* Flex en vez de Grid para alinear en fila */
+                display: flex; 
                 justify-content: space-between;
                 font-size: 11px;
                 color: #80deea;
@@ -93,12 +91,12 @@ window.ImplantsUI = {
                 width: 100%;
             }
             .geno-lab-stats div {
-                flex: 1; /* Todos ocupan el mismo ancho */
+                flex: 1; 
                 background: rgba(0,0,0,0.5);
                 padding: 6px 2px;
                 border-radius: 6px;
                 border: 1px solid #333;
-                white-space: nowrap; /* Evita que el número salte de línea */
+                white-space: nowrap; 
             }
 
             .control-panel {
@@ -190,7 +188,6 @@ window.ImplantsUI = {
         const screen = document.getElementById("implants-area");
         if (!screen) return;
 
-        // Configuramos la pantalla para que actúe IDÉNTICO a la de crianza
         screen.classList.add("implants-screen");
         screen.style.position = 'absolute';
         screen.style.top = '0';
@@ -240,7 +237,7 @@ window.ImplantsUI = {
                             </div>
                             <div class="implant-slot" style="border-color: #555; cursor: not-allowed; opacity: 0.6;">
                                 <label style="color:#555;">Definitivo</label>
-                                <span class="item-name" style="color:#888;">🔒 Nv. 25+</span>
+                                <span class="item-name" id="slot-atk-4" style="color:#888;">🔒 Nv. 25+</span>
                             </div>
                         </div>
 
@@ -266,8 +263,8 @@ window.ImplantsUI = {
                 </div>
             </div>
 
-            <div onclick="ImplantsManager.closeLab()" class="fab-btn btn-go-home" style="position: absolute !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; width: 70% !important; max-width: 300px !important; z-index: 100 !important;">
-                <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0; text-align: center; text-transform: uppercase; font-weight: bold;">VOLVER AL NEXO</div>
+            <div onclick="ImplantsManager.closeLab()" class="fab-btn" style="position: absolute !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; width: 70% !important; max-width: 300px !important; z-index: 100 !important; background: rgba(0, 0, 0, 0.6); border: 2px solid #00acc1; border-radius: 30px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);">
+                <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0; text-align: center; text-transform: uppercase; font-weight: bold; color: #00acc1;">VOLVER AL NEXO</div>
             </div>
 
             <div id="lab-inventory-selector">

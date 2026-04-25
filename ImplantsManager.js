@@ -1,10 +1,10 @@
 // =========================================
-// ImplantsManager.js - LÓGICA DE INSTALACIÓN V9 (SISTEMA DE MTs)
+// ImplantsManager.js - LÓGICA DE INSTALACIÓN V10 (FIX INVENTARIO Y SALIDA)
 // =========================================
 
 window.ImplantsManager = {
     currentTab: 'combat',
-    targetSlot: null, // 'atk_1', 'atk_2', 'atk_3', 'atk_4'
+    targetSlot: null,
 
     init: function() {
         ImplantsUI.inyectarCSS();
@@ -45,19 +45,20 @@ window.ImplantsManager = {
     },
 
     updateSlotLabels: function() {
-        if (!window.miMascota || !window.miMascota.ataques) {
-            // Inicializar ataques si no existen
+        if (!window.miMascota) return;
+        if (!window.miMascota.ataques) {
             window.miMascota.ataques = { atk_1: null, atk_2: null, atk_3: null, atk_4: null };
         }
         
         for (let i = 1; i <= 3; i++) {
             const atk = window.miMascota.ataques[`atk_${i}`];
-            document.getElementById(`slot-atk-${i}`).innerText = atk ? atk.nombre.toUpperCase() : "VACÍO";
+            let el = document.getElementById(`slot-atk-${i}`);
+            if(el) el.innerText = atk ? atk.nombre.toUpperCase() : "VACÍO";
         }
-        // Slot 4 (Definitivo)
+        
         const def = window.miMascota.ataques.atk_4;
         const slot4 = document.getElementById(`slot-atk-4`);
-        if (window.miMascota.level >= 25) {
+        if (slot4 && window.miMascota.level >= 25) {
             slot4.innerText = def ? def.nombre.toUpperCase() : "VACÍO";
             slot4.parentElement.style.opacity = "1";
             slot4.parentElement.style.cursor = "pointer";
@@ -69,10 +70,13 @@ window.ImplantsManager = {
         this.targetSlot = slot;
         const selector = document.getElementById('lab-inventory-selector');
         const listContainer = document.getElementById('lab-inventory-list');
+        if(!selector || !listContainer) return;
+        
         selector.style.display = 'block';
         
-        // 1. Filtrar inventario por Módulos de Combate (MT)
-        const modulos = window.inventory.filter(item => item.type === "MT");
+        // FIX: Blindaje del inventario (Busca las variables más comunes o crea un array vacío)
+        let inv = window.inventory || window.inventario || [];
+        const modulos = inv.filter(item => item.type === "MT");
 
         if (modulos.length === 0) {
             listContainer.innerHTML = `
@@ -113,14 +117,11 @@ window.ImplantsManager = {
 
     checkCompatibility: function(item, slot) {
         const geno = window.miMascota;
-        // Regla: Slot 4 solo Definitivos del mismo elemento
         if (slot === 'atk_4') {
             return item.subType === "Definitivo" && item.element === geno.element;
         }
-        // Reglas de elementos contrarios (revisar documento)
         const contrarios = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
         if (contrarios[item.element] === geno.element) {
-             // Solo ataques básicos/bajos del contrario son permitidos en slots 2 y 3
              return item.tier === "Básico";
         }
         return true;
@@ -131,24 +132,29 @@ window.ImplantsManager = {
         const geno = window.miMascota;
         const contrarios = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
 
-        if (item.element === geno.element) return Math.floor(base * 0.7); // -30%
-        if (contrarios[item.element] === geno.element) return Math.floor(base * 1.2); // +20%
+        if (item.element === geno.element) return Math.floor(base * 0.7); 
+        if (contrarios[item.element] === geno.element) return Math.floor(base * 1.2); 
         return base;
     },
 
     installModule: function(item, inventoryIndex) {
         const costo = this.calculateCost(item);
-        if (window.vitalEssence < costo) {
-            alert("No tienes suficiente Esencia Vital (✨ EV).");
+        // Compatibilidad con la variable de esencia de tu juego
+        let currentEV = window.vitalEssence || window.esenciaVital || 0;
+        
+        if (currentEV < costo) {
+            alert(`No tienes suficiente Esencia Vital (✨ EV). Necesitas ${costo}.`);
             return;
         }
 
         if (confirm(`¿Instalar ${item.name} por ${costo} ✨ EV? El módulo se consumirá.`)) {
-            // 1. Cobrar EV
-            window.vitalEssence -= costo;
+            // Cobrar EV
+            if(window.vitalEssence !== undefined) window.vitalEssence -= costo;
+            else if(window.esenciaVital !== undefined) window.esenciaVital -= costo;
+            
             if (window.updateHUD) window.updateHUD();
 
-            // 2. Equipar Ataque
+            // Equipar
             window.miMascota.ataques[this.targetSlot] = {
                 id: item.id_ataque,
                 nombre: item.name,
@@ -156,8 +162,9 @@ window.ImplantsManager = {
                 power: item.power
             };
 
-            // 3. Eliminar de inventario
-            window.inventory.splice(inventoryIndex, 1);
+            // Eliminar de inventario
+            let inv = window.inventory || window.inventario || [];
+            inv.splice(inventoryIndex, 1);
             if (window.saveGame) window.saveGame();
 
             alert("¡Módulo instalado con éxito!");
@@ -167,10 +174,42 @@ window.ImplantsManager = {
     },
 
     closeSelector: function() {
-        document.getElementById('lab-inventory-selector').style.display = 'none';
+        let sel = document.getElementById('lab-inventory-selector');
+        if(sel) sel.style.display = 'none';
     },
 
+    // FIX: Ruta de escape directa que apaga la pantalla a la fuerza
     closeLab: function() {
-        window.navegarA('room-area');
+        const impScreen = document.getElementById('implants-area');
+        if(impScreen) {
+            impScreen.classList.add('hidden');
+            impScreen.style.setProperty('display', 'none', 'important');
+        }
+        if (typeof window.navegarA === 'function') {
+            window.navegarA('room-area');
+        }
     }
 };
+
+// HOOK DE NAVEGACIÓN
+if (!window.implantsNavHooked) {
+    window.navegarA_Original_Implants = window.navegarA;
+    window.navegarA = function(id) {
+        if (typeof window.navegarA_Original_Implants === 'function') {
+            window.navegarA_Original_Implants(id);
+        }
+        
+        const impScreen = document.getElementById('implants-area');
+        if (impScreen) {
+            if (id === 'implants-area') {
+                impScreen.classList.remove('hidden');
+                impScreen.style.setProperty('display', 'block', 'important');
+                ImplantsManager.init();
+            } else {
+                impScreen.classList.add('hidden');
+                impScreen.style.setProperty('display', 'none', 'important');
+            }
+        }
+    };
+    window.implantsNavHooked = true;
+}
