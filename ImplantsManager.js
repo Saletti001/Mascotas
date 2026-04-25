@@ -234,6 +234,16 @@ window.ImplantsManager = {
     closeLab: function() {
         const impScreen = document.getElementById('implants-area');
         if(impScreen) impScreen.classList.add('hidden');
+        
+        // FIX: Forzar a todo el juego a actualizar el modelo 3D/SVG del Geno al salir
+        if (window.miMascota && typeof generarSvgGeno === 'function') {
+            window.miMascota.svg = generarSvgGeno(window.miMascota);
+            const pedestal = document.getElementById("geno-container");
+            if (pedestal) {
+                pedestal.innerHTML = `<div class="geno-idle" style="color: ${window.miMascota.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${window.miMascota.svg}</div>`;
+            }
+        }
+
         if (typeof window.navegarA === 'function') window.navegarA('room-area');
     }
 };
