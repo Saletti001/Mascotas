@@ -1,23 +1,22 @@
 // =========================================
-// ImplantsManager.js - LÓGICA DEL LABORATORIO V8 (FIX NAVEGACIÓN Y STATS)
+// ImplantsManager.js - LÓGICA DE INSTALACIÓN V9 (SISTEMA DE MTs)
 // =========================================
 
 window.ImplantsManager = {
     currentTab: 'combat',
-    targetSlot: null,
+    targetSlot: null, // 'atk_1', 'atk_2', 'atk_3', 'atk_4'
 
     init: function() {
         ImplantsUI.inyectarCSS();
         ImplantsUI.renderBase();
         this.refreshPreview();
+        this.updateSlotLabels();
     },
 
     setTab: function(tab) {
         this.currentTab = tab;
         document.querySelectorAll('.lab-tab').forEach(t => t.classList.remove('active'));
-        if(typeof event !== 'undefined' && event.target) {
-            event.target.classList.add('active');
-        }
+        if(typeof event !== 'undefined' && event.target) event.target.classList.add('active');
 
         document.getElementById('combat-slots').style.display = tab === 'combat' ? 'grid' : 'none';
         document.getElementById('cosmetic-slots').style.display = tab === 'cosmetic' ? 'grid' : 'none';
@@ -26,34 +25,43 @@ window.ImplantsManager = {
     refreshPreview: function() {
         const preview = document.getElementById("implants-geno-preview");
         const statsBox = document.getElementById("implants-geno-stats");
-        
-        if (!preview || !statsBox) return;
+        if (!preview || !statsBox || !window.miMascota) return;
 
-        if (window.miMascota && typeof generarSvgGeno === 'function') {
-            let svgStr = generarSvgGeno(window.miMascota);
-            
-            preview.innerHTML = svgStr;
-            let svgNode = preview.querySelector("svg");
-            if (svgNode) {
-                svgNode.setAttribute("width", "100%");
-                svgNode.setAttribute("height", "100%");
-                svgNode.setAttribute("viewBox", "-20 -10 200 180");
-            }
-            
-            const stats = window.miMascota.stats || {hp:0, atk:0, spd:0, luk:0};
-            
-            // Renderizamos los stats adaptados a una sola línea (Flexbox)
-            statsBox.innerHTML = `
-                <div class="geno-lab-name">
-                    ${window.miMascota.name || "Geno"} <span>(Nv. ${window.miMascota.level || 1})</span>
-                </div>
-                <div class="geno-lab-stats">
-                    <div>❤️ ${stats.hp}</div>
-                    <div>⚔️ ${stats.atk}</div>
-                    <div>⚡ ${stats.spd}</div>
-                    <div>🍀 ${stats.luk}</div>
-                </div>
-            `;
+        preview.innerHTML = generarSvgGeno(window.miMascota);
+        let svgNode = preview.querySelector("svg");
+        if (svgNode) {
+            svgNode.setAttribute("width", "100%");
+            svgNode.setAttribute("height", "100%");
+            svgNode.setAttribute("viewBox", "-20 -10 200 180");
+        }
+        
+        const s = window.miMascota.stats || {hp:0, atk:0, spd:0, luk:0};
+        statsBox.innerHTML = `
+            <div class="geno-lab-name">${window.miMascota.name || "Geno"} <span>(Nv. ${window.miMascota.level || 1})</span></div>
+            <div class="geno-lab-stats">
+                <div>❤️ ${s.hp}</div><div>⚔️ ${s.atk}</div><div>⚡ ${s.spd}</div><div>🍀 ${s.luk}</div>
+            </div>
+        `;
+    },
+
+    updateSlotLabels: function() {
+        if (!window.miMascota || !window.miMascota.ataques) {
+            // Inicializar ataques si no existen
+            window.miMascota.ataques = { atk_1: null, atk_2: null, atk_3: null, atk_4: null };
+        }
+        
+        for (let i = 1; i <= 3; i++) {
+            const atk = window.miMascota.ataques[`atk_${i}`];
+            document.getElementById(`slot-atk-${i}`).innerText = atk ? atk.nombre.toUpperCase() : "VACÍO";
+        }
+        // Slot 4 (Definitivo)
+        const def = window.miMascota.ataques.atk_4;
+        const slot4 = document.getElementById(`slot-atk-4`);
+        if (window.miMascota.level >= 25) {
+            slot4.innerText = def ? def.nombre.toUpperCase() : "VACÍO";
+            slot4.parentElement.style.opacity = "1";
+            slot4.parentElement.style.cursor = "pointer";
+            slot4.parentElement.onclick = () => this.openSelector('atk_4');
         }
     },
 
@@ -61,58 +69,108 @@ window.ImplantsManager = {
         this.targetSlot = slot;
         const selector = document.getElementById('lab-inventory-selector');
         const listContainer = document.getElementById('lab-inventory-list');
-        
-        if(!selector || !listContainer) return;
-        
         selector.style.display = 'block';
-        listContainer.innerHTML = `<p style="font-size:12px; color:#aaa; text-align:center;">Buscando en tu mochila...</p>`;
+        
+        // 1. Filtrar inventario por Módulos de Combate (MT)
+        const modulos = window.inventory.filter(item => item.type === "MT");
 
-        setTimeout(() => {
+        if (modulos.length === 0) {
             listContainer.innerHTML = `
-                <div style="text-align:center; color:#888; font-size:13px; padding:20px; background:rgba(0,0,0,0.3); border-radius:8px;">
-                    No tienes módulos compatibles en tu inventario.
+                <div style="text-align:center; color:#888; padding:20px;">
+                    No tienes Módulos de Combate (MT) en tu mochila.
                 </div>`;
-        }, 400);
+            return;
+        }
+
+        listContainer.innerHTML = "";
+        modulos.forEach((item, index) => {
+            const compatible = this.checkCompatibility(item, slot);
+            const costo = this.calculateCost(item);
+            
+            const itemDiv = document.createElement("div");
+            itemDiv.style = `
+                background: rgba(255,255,255,0.05); padding: 10px; margin-bottom: 8px; border-radius: 6px;
+                border: 1px solid ${compatible ? '#00acc1' : '#555'};
+                opacity: ${compatible ? '1' : '0.5'};
+                cursor: ${compatible ? 'pointer' : 'not-allowed'};
+            `;
+
+            itemDiv.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <strong style="color:#fff; font-size:12px;">${item.name}</strong>
+                    <span style="color:#ffd700; font-size:11px;">${costo} ✨ EV</span>
+                </div>
+                <div style="font-size:10px; color:#aaa; margin-top:4px;">${item.description}</div>
+                ${!compatible ? '<div style="color:#ff6b6b; font-size:9px; margin-top:2px;">Incompatible con este Slot o Elemento</div>' : ''}
+            `;
+
+            if (compatible) {
+                itemDiv.onclick = () => this.installModule(item, index);
+            }
+            listContainer.appendChild(itemDiv);
+        });
+    },
+
+    checkCompatibility: function(item, slot) {
+        const geno = window.miMascota;
+        // Regla: Slot 4 solo Definitivos del mismo elemento
+        if (slot === 'atk_4') {
+            return item.subType === "Definitivo" && item.element === geno.element;
+        }
+        // Reglas de elementos contrarios (revisar documento)
+        const contrarios = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
+        if (contrarios[item.element] === geno.element) {
+             // Solo ataques básicos/bajos del contrario son permitidos en slots 2 y 3
+             return item.tier === "Básico";
+        }
+        return true;
+    },
+
+    calculateCost: function(item) {
+        let base = item.evCost || 100;
+        const geno = window.miMascota;
+        const contrarios = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
+
+        if (item.element === geno.element) return Math.floor(base * 0.7); // -30%
+        if (contrarios[item.element] === geno.element) return Math.floor(base * 1.2); // +20%
+        return base;
+    },
+
+    installModule: function(item, inventoryIndex) {
+        const costo = this.calculateCost(item);
+        if (window.vitalEssence < costo) {
+            alert("No tienes suficiente Esencia Vital (✨ EV).");
+            return;
+        }
+
+        if (confirm(`¿Instalar ${item.name} por ${costo} ✨ EV? El módulo se consumirá.`)) {
+            // 1. Cobrar EV
+            window.vitalEssence -= costo;
+            if (window.updateHUD) window.updateHUD();
+
+            // 2. Equipar Ataque
+            window.miMascota.ataques[this.targetSlot] = {
+                id: item.id_ataque,
+                nombre: item.name,
+                element: item.element,
+                power: item.power
+            };
+
+            // 3. Eliminar de inventario
+            window.inventory.splice(inventoryIndex, 1);
+            if (window.saveGame) window.saveGame();
+
+            alert("¡Módulo instalado con éxito!");
+            this.closeSelector();
+            this.updateSlotLabels();
+        }
     },
 
     closeSelector: function() {
-        let sel = document.getElementById('lab-inventory-selector');
-        if(sel) sel.style.display = 'none';
+        document.getElementById('lab-inventory-selector').style.display = 'none';
     },
 
     closeLab: function() {
-        // En vez de esconder manual, le decimos al juego que navegue a la sala principal
-        // El Hook de abajo se encarga de esconder todo correctamente.
         window.navegarA('room-area');
     }
 };
-
-// =========================================
-// HOOK DE NAVEGACIÓN A PRUEBA DE BALAS
-// =========================================
-if (!window.implantsNavHooked) {
-    window.navegarA_Original_Implants = window.navegarA;
-    window.navegarA = function(id) {
-        
-        // 1. Ejecutamos el motor de navegación original PRIMERO
-        // Así el juego oculta las pantallas anteriores a su manera.
-        if (typeof window.navegarA_Original_Implants === 'function') {
-            window.navegarA_Original_Implants(id);
-        }
-        
-        // 2. FORZAMOS nuestra pantalla de implantes DESPUÉS
-        // Si el destino es implantes, aseguramos que esté visible.
-        const impScreen = document.getElementById('implants-area');
-        if (impScreen) {
-            if (id === 'implants-area') {
-                impScreen.classList.remove('hidden');
-                impScreen.style.setProperty('display', 'block', 'important');
-                ImplantsManager.init(); // Refrescamos el Geno
-            } else {
-                impScreen.classList.add('hidden');
-                impScreen.style.setProperty('display', 'none', 'important');
-            }
-        }
-    };
-    window.implantsNavHooked = true;
-}
