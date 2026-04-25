@@ -1,5 +1,5 @@
 // =========================================
-// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V9.6 CÁMARA CUADRADA Y CENTRADA)
+// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V10 - STAT DE DEFENSA)
 // Requiere cargar 'genes.js' previamente en el HTML.
 // =========================================
 
@@ -7,14 +7,14 @@ window.misGenos = window.misGenos || [];
 window.maxGenoSlots = window.maxGenoSlots || 6; 
 
 // =========================================
-// TABLA DE IVs (V9.1)
+// ✨ TABLA DE IVs V10 (AHORA INCLUYE DEFENSA 'def')
 // =========================================
 window.TABLA_IVS = {
-    "Común": { hp: [35, 55], atk: [10, 22], spd: [8, 25], luk: [5, 15] },
-    "Raro": { hp: [50, 75], atk: [18, 35], spd: [15, 40], luk: [10, 25] },
-    "Épico": { hp: [70, 100], atk: [28, 50], spd: [25, 55], luk: [20, 35] },
-    "Legendario": { hp: [95, 130], atk: [40, 70], spd: [35, 80], luk: [30, 50] },
-    "Mítico": { hp: [120, 160], atk: [60, 100], spd: [50, 110], luk: [45, 70] }
+    "Común": { hp: [35, 55], atk: [10, 22], def: [5, 15], spd: [8, 25], luk: [5, 15] },
+    "Raro": { hp: [50, 75], atk: [18, 35], def: [10, 22], spd: [15, 40], luk: [10, 25] },
+    "Épico": { hp: [70, 100], atk: [28, 50], def: [18, 35], spd: [25, 55], luk: [20, 35] },
+    "Legendario": { hp: [95, 130], atk: [40, 70], def: [25, 50], spd: [35, 80], luk: [30, 50] },
+    "Mítico": { hp: [120, 160], atk: [60, 100], def: [40, 70], spd: [50, 110], luk: [45, 70] }
 };
 
 window.generarStatsPorRareza = function(rareza) {
@@ -23,13 +23,14 @@ window.generarStatsPorRareza = function(rareza) {
     return {
         hp: randStat(limites.hp[0], limites.hp[1]),
         atk: randStat(limites.atk[0], limites.atk[1]),
+        def: randStat(limites.def[0], limites.def[1]), // NUEVO STAT DEF
         spd: randStat(limites.spd[0], limites.spd[1]),
         luk: randStat(limites.luk[0], limites.luk[1])
     };
 };
 
 // =========================================
-// ✨ GENERADOR MAESTRO V9.1 (SISTEMA DE DOS DADOS)
+// GENERADOR MAESTRO V9.1 (SISTEMA DE DOS DADOS)
 // =========================================
 window.generarGenesV9 = function(rareza) {
     const slots = { A: null, B: null, C: null };
@@ -97,6 +98,27 @@ window.getMultiplicadorEsencia = function(geno) { return window.tieneGenActivoV9
 // EVENTOS DE INTERFAZ DOM Y UI
 // =========================================
 document.addEventListener("DOMContentLoaded", () => {
+    
+    // ✨ PARCHE V10: AUTO-INYECCIÓN DE DEFENSA PARA GENOS ANTIGUOS
+    setTimeout(() => {
+        if (window.misGenos && window.misGenos.length > 0) {
+            let patched = false;
+            window.misGenos.forEach(g => {
+                if (g.stats && g.stats.def === undefined) {
+                    const limites = window.TABLA_IVS[g.rarity] || window.TABLA_IVS["Común"];
+                    g.stats.def = Math.floor(Math.random() * (limites.def[1] - limites.def[0] + 1)) + limites.def[0];
+                    patched = true;
+                }
+            });
+            if (window.miMascota && window.miMascota.stats && window.miMascota.stats.def === undefined) {
+                const limites = window.TABLA_IVS[window.miMascota.rarity] || window.TABLA_IVS["Común"];
+                window.miMascota.stats.def = Math.floor(Math.random() * (limites.def[1] - limites.def[0] + 1)) + limites.def[0];
+                patched = true;
+            }
+            if (patched && typeof window.guardarProgreso === 'function') window.guardarProgreso();
+        }
+    }, 500);
+
     setTimeout(() => {
         const noHayPartida = !localStorage.getItem("proyecto_genos_save_v1");
         if (noHayPartida) {
@@ -278,8 +300,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const pColor = geno.color || geno.base_color || "#ccc";
             let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-            
-            // ✨ FIX V9.6: Cámara cuadrada "-20 -20 200 200". Esto centra el cuerpo y lo hace más grande en el 100x100.
             svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 -20 200 200" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             
             card.innerHTML = `
