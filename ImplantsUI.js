@@ -264,7 +264,7 @@ window.ImplantsUI = {
                                 <span class="item-name" id="slot-back">VACÍO</span>
                             </div>
                             <div class="implant-slot" onclick="ImplantsManager.openSelector('skin')">
-                                <label>Piel</label>
+                                <label>Dron</label>
                                 <span class="item-name" id="slot-skin">ESTÁNDAR</span>
                             </div>
                             <div class="implant-slot" onclick="ImplantsManager.openSelector('aura')">

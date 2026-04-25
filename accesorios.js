@@ -19,7 +19,8 @@ const anclajes = {
 
 const dicSombreros = {
     ninguno: ``,
-    corona_rey: `<path d="M -18 0 L -24 -28 L -6 -16 L 0 -34 L 6 -16 L 24 -28 L 18 0 Z" fill="#facc15" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/><circle cx="-24" cy="-28" r="3.5" fill="#ef4444"/><circle cx="0" cy="-34" r="3.5" fill="#06b6d4"/><circle cx="24" cy="-28" r="3.5" fill="#ef4444"/><rect x="-18" y="-6" width="36" height="6" fill="#ca8a04"/>`,
+    // FIX: Gema central cambiada a verde brillante (#22c55e)
+    corona_rey: `<path d="M -18 0 L -24 -28 L -6 -16 L 0 -34 L 6 -16 L 24 -28 L 18 0 Z" fill="#facc15" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/><circle cx="-24" cy="-28" r="3.5" fill="#ef4444"/><circle cx="0" cy="-34" r="3.5" fill="#22c55e"/><circle cx="24" cy="-28" r="3.5" fill="#ef4444"/><rect x="-18" y="-6" width="36" height="6" fill="#ca8a04"/>`,
     cuerno_mutante: `<path d="M -10 0 Q -20 -30 10 -45 Q 8 -20 10 0 Z" fill="#f8fafc" stroke="#1a2a36" stroke-width="3" stroke-linejoin="round"/><path d="M -3 0 Q -8 -30 14 -38 Q 10 -15 10 0 Z" fill="#cbd5e1"/>`,
     halo_neon: `<ellipse cx="0" cy="-25" rx="22" ry="7" fill="none" stroke="#ef4444" stroke-width="4" filter="drop-shadow(0 0 5px #ff0000)" class="anim-flotar"/>`
 };
@@ -54,28 +55,25 @@ const dicAlas = {
 };
 
 // =========================================
-// accesorios.js - (REEMPLAZAR dicPieles y dicAuras VIEJOS POR ESTOS)
+// accesorios.js - (ACTUALIZACIÓN DE NOMBRE A DRONES)
 // =========================================
 
-// Ya no usamos pieles de textura, ahora son Drones de acompañamiento
-const dicPieles = {
+const dicDrones = {
     estandar: ``,
-    // ✨ NUEVO: Dron Centinela de Malla Cibernética (Vuela a la izquierda)
     malla_cibernetica: `
-        <g transform="translate(-145, 10)">
+        <g transform="translate(-10, 45)">
             <defs>
                 <filter id="glow-dron-grid">
-                    <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
                     <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
                 </filter>
             </defs>
-            <g class="anim-flotar-dron" style="transform-origin: 20px 20px;">
-                <rect x="0" y="0" width="40" height="40" rx="8" fill="#1a2a36" stroke="#00ffff" stroke-width="2.5" filter="url(#glow-dron-grid)"/>
-                <path d="M 10 0 L 10 40 M 20 0 L 20 40 M 30 0 L 30 40 M 0 10 L 40 10 M 0 20 L 40 20 M 0 30 L 40 30" stroke="#00ffff" stroke-width="1" opacity="0.3"/>
-                <circle cx="20" cy="20" r="8" fill="#000" stroke="#00ffff" stroke-width="2"/>
-                <circle cx="20" cy="20" r="4" fill="#00ffff" class="anim-fuego" style="transform-origin: 20px 20px; animation-duration: 2s;"/>
-                <line x1="20" y1="0" x2="20" y2="-10" stroke="#00ffff" stroke-width="2" stroke-linecap="round"/>
-                <circle cx="20" cy="-10" r="2" fill="#ef4444"/>
+            <g class="anim-flotar-dron" style="transform-origin: 15px 15px;">
+                <rect x="0" y="0" width="30" height="30" rx="8" fill="#1a2a36" stroke="#00ffff" stroke-width="2" filter="url(#glow-dron-grid)"/>
+                <circle cx="15" cy="15" r="6" fill="#000" stroke="#00ffff" stroke-width="1.5"/>
+                <circle cx="15" cy="15" r="3" fill="#00ffff" class="anim-fuego" style="transform-origin: 15px 15px; animation-duration: 2s;"/>
+                <line x1="15" y1="0" x2="15" y2="-8" stroke="#00ffff" stroke-width="1.5" stroke-linecap="round"/>
+                <circle cx="15" cy="-8" r="2.5" fill="#ef4444"/>
             </g>
         </g>
     `

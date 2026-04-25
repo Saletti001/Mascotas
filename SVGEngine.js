@@ -94,12 +94,12 @@ function generarSvgGeno(genesVisuales) {
     
     // Leer Cosméticos Dinámicos
     const auraRaw = obtenerPieza(typeof dicAuras !== 'undefined' ? dicAuras : {}, safeData.aura_type, "ninguno");
-    let skinRaw = obtenerPieza(typeof dicPieles !== 'undefined' ? dicPieles : {}, safeData.skin_type, "estandar");
+    let dronRaw = obtenerPieza(typeof dicDrones !== 'undefined' ? dicDrones : {}, safeData.skin_type, "estandar");
 
     // Limpieza estricta de IDs en los cosméticos para evitar duplicados en la misma pantalla
-    if (skinRaw) {
-        skinRaw = skinRaw.replace(/glow-dron-grid/g, `glow-dron-${rndId}`);
-        skinRaw = skinRaw.replace(/url\(#glow-dron-grid\)/g, `url(#glow-dron-${rndId})`);
+    if (dronRaw) {
+        dronRaw = dronRaw.replace(/glow-dron-grid/g, `glow-dron-${rndId}`);
+        dronRaw = dronRaw.replace(/url\(#glow-dron-grid\)/g, `url(#glow-dron-${rndId})`);
     }
     if (auraRaw) {
         const darkGlowId = `dark-glow-${rndId}`;
@@ -291,7 +291,7 @@ function generarSvgGeno(genesVisuales) {
             ${detallesFrente}
             <path d="${shineD}" fill="#fff" opacity="0.4"/>
             ${capaCosmeticaFrente}
-            ${skinRaw} <g class="g-ojos">${ojo}</g>
+            ${dronRaw} <g class="g-ojos">${ojo}</g>
             <g class="g-boca">${boca}</g>
             <g transform="translate(${safeAnclaje.cabezaX}, ${safeAnclaje.cabezaY})">${hat}</g>
         </g>
