@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsManager.js - LÓGICA DE INSTALACIÓN V14 (ESCÁNER DE INVENTARIO INFALIBLE)
+// ImplantsManager.js - LÓGICA DE INSTALACIÓN V15 (CORRECCIÓN DE TEXTOS: ALMACÉN NEXO)
 // =========================================
 
 window.ImplantsManager = {
@@ -78,24 +78,20 @@ window.ImplantsManager = {
         
         selector.style.display = 'block';
         
-        // =========================================
-        // FIX: ESCÁNER A PRUEBA DE BALAS
-        // =========================================
         let invArray = [];
         if (window.miInventario) {
-            // Busca en ambas listas posibles por si el guardado las movió
             invArray = window.miInventario.slots || window.miInventario.items || [];
         }
 
-        // Filtra buscando "MT", "mt", o si simplemente el objeto tiene la propiedad 'id_ataque'
         const modulos = invArray
             .map((item, originalIndex) => ({ ...item, originalIndex }))
             .filter(item => item.type === "MT" || item.type === "mt" || typeof item.id_ataque !== 'undefined');
 
         if (modulos.length === 0) {
+            // FIX: Ya no mencionamos "mochila", ahora se usa el término oficial del juego
             listContainer.innerHTML = `
                 <div style="text-align:center; color:#888; padding:20px;">
-                    No tienes Módulos de Combate (MT) en tu mochila.
+                    No tienes Módulos de Combate (MT) en tu Almacén Nexo.
                 </div>`;
             return;
         }
@@ -133,15 +129,13 @@ window.ImplantsManager = {
         const geno = window.miMascota;
         if (!geno) return false;
         
-        // Slot 4 solo Definitivos del mismo elemento
         if (slot === 'atk_4') {
             return item.subType === "Definitivo" && item.element === geno.element;
         }
         
-        // Regla de penalización para elementos contrarios
         const contrarios = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
         if (contrarios[item.element] === geno.element) {
-             return item.tier === "Básico" || item.subType === "Básico"; // Failsafe adicional
+             return item.tier === "Básico" || item.subType === "Básico"; 
         }
         return true;
     },
@@ -171,14 +165,12 @@ window.ImplantsManager = {
 
         if (confirm(`¿Instalar ${item.name} por ${costo} ✨ EV? El módulo se consumirá.`)) {
             
-            // 1. Cobrar EV y actualizar visualmente de forma estricta
             window.miInventario.vitalEssence -= costo;
             window.miInventario.updateUI(); 
             
             const domEl = document.getElementById("vital-essence-amount");
             if (domEl) domEl.innerText = `✨ ${window.miInventario.vitalEssence}`;
 
-            // 2. Equipar el ataque al Geno
             if (!window.miMascota.ataques) window.miMascota.ataques = {};
             window.miMascota.ataques[this.targetSlot] = {
                 id: item.id_ataque || item.id,
@@ -187,10 +179,8 @@ window.ImplantsManager = {
                 power: item.power || 0
             };
 
-            // 3. Eliminar el disco de la mochila
             window.miInventario.removeItem(originalIndex, 1);
 
-            // 4. Guardar Partida 
             if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
 
             alert("¡Módulo instalado con éxito!");
