@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsManager.js - LÓGICA DE INSTALACIÓN V10 (FIX INVENTARIO Y SALIDA)
+// ImplantsManager.js - LÓGICA DE INSTALACIÓN V11 (FIX NAVEGACIÓN)
 // =========================================
 
 window.ImplantsManager = {
@@ -74,7 +74,6 @@ window.ImplantsManager = {
         
         selector.style.display = 'block';
         
-        // FIX: Blindaje del inventario (Busca las variables más comunes o crea un array vacío)
         let inv = window.inventory || window.inventario || [];
         const modulos = inv.filter(item => item.type === "MT");
 
@@ -139,7 +138,8 @@ window.ImplantsManager = {
 
     installModule: function(item, inventoryIndex) {
         const costo = this.calculateCost(item);
-        // Compatibilidad con la variable de esencia de tu juego
+        
+        // FIX: Variable temporal de Esencia, se actualizará cuando me compartas el archivo correcto.
         let currentEV = window.vitalEssence || window.esenciaVital || 0;
         
         if (currentEV < costo) {
@@ -148,13 +148,11 @@ window.ImplantsManager = {
         }
 
         if (confirm(`¿Instalar ${item.name} por ${costo} ✨ EV? El módulo se consumirá.`)) {
-            // Cobrar EV
             if(window.vitalEssence !== undefined) window.vitalEssence -= costo;
             else if(window.esenciaVital !== undefined) window.esenciaVital -= costo;
             
             if (window.updateHUD) window.updateHUD();
 
-            // Equipar
             window.miMascota.ataques[this.targetSlot] = {
                 id: item.id_ataque,
                 nombre: item.name,
@@ -162,7 +160,6 @@ window.ImplantsManager = {
                 power: item.power
             };
 
-            // Eliminar de inventario
             let inv = window.inventory || window.inventario || [];
             inv.splice(inventoryIndex, 1);
             if (window.saveGame) window.saveGame();
@@ -178,38 +175,7 @@ window.ImplantsManager = {
         if(sel) sel.style.display = 'none';
     },
 
-    // FIX: Ruta de escape directa que apaga la pantalla a la fuerza
     closeLab: function() {
-        const impScreen = document.getElementById('implants-area');
-        if(impScreen) {
-            impScreen.classList.add('hidden');
-            impScreen.style.setProperty('display', 'none', 'important');
-        }
-        if (typeof window.navegarA === 'function') {
-            window.navegarA('room-area');
-        }
+        window.navegarA('room-area');
     }
 };
-
-// HOOK DE NAVEGACIÓN
-if (!window.implantsNavHooked) {
-    window.navegarA_Original_Implants = window.navegarA;
-    window.navegarA = function(id) {
-        if (typeof window.navegarA_Original_Implants === 'function') {
-            window.navegarA_Original_Implants(id);
-        }
-        
-        const impScreen = document.getElementById('implants-area');
-        if (impScreen) {
-            if (id === 'implants-area') {
-                impScreen.classList.remove('hidden');
-                impScreen.style.setProperty('display', 'block', 'important');
-                ImplantsManager.init();
-            } else {
-                impScreen.classList.add('hidden');
-                impScreen.style.setProperty('display', 'none', 'important');
-            }
-        }
-    };
-    window.implantsNavHooked = true;
-}

@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsUI.js - INTERFAZ DEL LABORATORIO V12 (FIX BOTON VOLVER)
+// ImplantsUI.js - INTERFAZ DEL LABORATORIO V12 (FIX BOTÓN Y VISIBILIDAD)
 // =========================================
 
 window.ImplantsUI = {
@@ -188,16 +188,10 @@ window.ImplantsUI = {
         const screen = document.getElementById("implants-area");
         if (!screen) return;
 
+        // Ya no forzamos clases absolutas que pelean con app.js
         screen.classList.add("implants-screen");
-        screen.style.position = 'absolute';
-        screen.style.top = '0';
-        screen.style.left = '0';
-        screen.style.width = '100%';
-        screen.style.height = '100%';
-        screen.style.overflow = 'hidden';
         screen.style.backgroundColor = '#0d161c';
         screen.style.backgroundImage = 'radial-gradient(circle at center, #1a2a36 0%, #0d161c 100%)';
-        screen.style.zIndex = '5000';
 
         if (screen.innerHTML.includes("LABORATORIO DE IMPLANTES")) return;
 
@@ -263,8 +257,8 @@ window.ImplantsUI = {
                 </div>
             </div>
 
-            <div onclick="ImplantsManager.closeLab()" class="fab-btn" style="position: absolute !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; width: 70% !important; max-width: 300px !important; z-index: 100 !important; background: rgba(0, 0, 0, 0.6); border: 2px solid #00acc1; border-radius: 30px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);">
-                <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0; text-align: center; text-transform: uppercase; font-weight: bold; color: #00acc1;">VOLVER AL NEXO</div>
+            <div class="fab-btn btn-go-home" onclick="ImplantsManager.closeLab()" style="position: absolute !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; width: 70% !important; max-width: 300px !important; z-index: 100 !important;">
+                <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0;">VOLVER AL NEXO</div>
             </div>
 
             <div id="lab-inventory-selector">
