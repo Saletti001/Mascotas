@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsUI.js - INTERFAZ DEL LABORATORIO V12 (FIX BOTÓN Y VISIBILIDAD)
+// ImplantsUI.js - INTERFAZ DEL LABORATORIO V13 (FIX VISIBILIDAD Y BOTÓN)
 // =========================================
 
 window.ImplantsUI = {
@@ -10,6 +10,11 @@ window.ImplantsUI = {
         style.innerHTML = `
             .implants-screen * { box-sizing: border-box !important; }
             .implants-screen::-webkit-scrollbar { display: none !important; }
+
+            /* FIX: Aseguramos que se oculte correctamente cuando tiene la clase hidden */
+            #implants-area.hidden {
+                display: none !important;
+            }
 
             .lab-container {
                 display: flex;
@@ -188,7 +193,7 @@ window.ImplantsUI = {
         const screen = document.getElementById("implants-area");
         if (!screen) return;
 
-        // Ya no forzamos clases absolutas que pelean con app.js
+        // Limpiamos estilos manuales conflictivos y solo usamos el gradiente
         screen.classList.add("implants-screen");
         screen.style.backgroundColor = '#0d161c';
         screen.style.backgroundImage = 'radial-gradient(circle at center, #1a2a36 0%, #0d161c 100%)';
@@ -257,7 +262,7 @@ window.ImplantsUI = {
                 </div>
             </div>
 
-            <div class="fab-btn btn-go-home" onclick="ImplantsManager.closeLab()" style="position: absolute !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; width: 70% !important; max-width: 300px !important; z-index: 100 !important;">
+            <div class="fab-btn" onclick="ImplantsManager.closeLab()" style="position: absolute !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; width: 70% !important; max-width: 300px !important; z-index: 100 !important;">
                 <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0;">VOLVER AL NEXO</div>
             </div>
 

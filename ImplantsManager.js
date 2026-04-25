@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsManager.js - LÓGICA DE INSTALACIÓN V11 (FIX NAVEGACIÓN)
+// ImplantsManager.js - LÓGICA DE INSTALACIÓN V12 (FIX EV Y RUTAS)
 // =========================================
 
 window.ImplantsManager = {
@@ -136,21 +136,43 @@ window.ImplantsManager = {
         return base;
     },
 
+    // Buscador Inteligente de Esencia Vital
+    getCurrentEV: function() {
+        if (typeof window.esenciaVital !== "undefined") return window.esenciaVital;
+        if (typeof window.vitalEssence !== "undefined") return window.vitalEssence;
+        
+        // Búsqueda en el HUD visual como medida infalible
+        const domEl = document.getElementById("vital-essence-amount");
+        if (domEl) {
+            return parseInt(domEl.innerText.replace(/[^0-9]/g, '')) || 0;
+        }
+        return 0;
+    },
+
+    deductEV: function(costo) {
+        if (typeof window.esenciaVital !== "undefined") window.esenciaVital -= costo;
+        else if (typeof window.vitalEssence !== "undefined") window.vitalEssence -= costo;
+        
+        // Actualizar HUD visual forzado
+        const domEl = document.getElementById("vital-essence-amount");
+        if (domEl) {
+            let current = parseInt(domEl.innerText.replace(/[^0-9]/g, '')) || 0;
+            domEl.innerText = `✨ ${current - costo}`;
+        }
+    },
+
     installModule: function(item, inventoryIndex) {
         const costo = this.calculateCost(item);
-        
-        // FIX: Variable temporal de Esencia, se actualizará cuando me compartas el archivo correcto.
-        let currentEV = window.vitalEssence || window.esenciaVital || 0;
+        let currentEV = this.getCurrentEV();
         
         if (currentEV < costo) {
-            alert(`No tienes suficiente Esencia Vital (✨ EV). Necesitas ${costo}.`);
+            alert(`No tienes suficiente Esencia Vital (✨ EV). Tienes ${currentEV} y necesitas ${costo}.`);
             return;
         }
 
         if (confirm(`¿Instalar ${item.name} por ${costo} ✨ EV? El módulo se consumirá.`)) {
-            if(window.vitalEssence !== undefined) window.vitalEssence -= costo;
-            else if(window.esenciaVital !== undefined) window.esenciaVital -= costo;
             
+            this.deductEV(costo);
             if (window.updateHUD) window.updateHUD();
 
             window.miMascota.ataques[this.targetSlot] = {
@@ -163,6 +185,7 @@ window.ImplantsManager = {
             let inv = window.inventory || window.inventario || [];
             inv.splice(inventoryIndex, 1);
             if (window.saveGame) window.saveGame();
+            else if (window.guardarProgreso) window.guardarProgreso();
 
             alert("¡Módulo instalado con éxito!");
             this.closeSelector();
@@ -179,3 +202,28 @@ window.ImplantsManager = {
         window.navegarA('room-area');
     }
 };
+
+// =========================================
+// HOOK DE NAVEGACIÓN SEGURO (MANTIENE LAS CLASES NATIVAS)
+// =========================================
+if (!window.implantsNavHooked) {
+    window.navegarA_Original_Implants = window.navegarA;
+    window.navegarA = function(id) {
+        // Ejecuta el motor original para ocultar todo lo demás
+        if (typeof window.navegarA_Original_Implants === 'function') {
+            window.navegarA_Original_Implants(id);
+        }
+        
+        // Gestiona la pantalla de implantes limpiamente
+        const impScreen = document.getElementById('implants-area');
+        if (impScreen) {
+            if (id === 'implants-area') {
+                impScreen.classList.remove('hidden');
+                ImplantsManager.init();
+            } else {
+                impScreen.classList.add('hidden');
+            }
+        }
+    };
+    window.implantsNavHooked = true;
+}
