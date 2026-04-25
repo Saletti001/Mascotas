@@ -53,9 +53,13 @@ const dicAlas = {
     `
 };
 
+// =========================================
+// accesorios.js - V20 (REDUCCIÓN DRON V20% Y RECOLOREADO)
+// =========================================
+
 const dicDrones = {
     estandar: ``,
-    // ✨ REDISEÑO TOTAL: Dron Centinela de Malla Cibernética (Reposicionado y Neon Amarillo)
+    // ✨ REDISEÑO V20: Dron Centinela más pequeño, borde Oro Corona y antena Green/Red
     malla_cibernetica: `
         <g transform="translate(-35, 15)">
             <defs>
@@ -65,14 +69,21 @@ const dicDrones = {
                 </filter>
             </defs>
             <g class="anim-flotar-dron" style="transform-origin: 20px 20px;">
-                <rect x="0" y="0" width="40" height="40" rx="8" fill="#1a2a36" stroke="#ffff00" stroke-width="2.5" filter="url(#glow-dron-grid)"/>
-                <path d="M 10 0 L 10 40 M 20 0 L 20 40 M 30 0 L 30 40 M 0 10 L 40 10 M 0 20 L 40 20 M 0 30 L 40 30" stroke="#ffff00" stroke-width="1" opacity="0.3"/>
-                <circle cx="20" cy="20" r="8" fill="#000" stroke="#ffff00" stroke-width="2"/>
-                <circle cx="20" cy="20" r="4" fill="#00ffff" class="anim-flotar" style="transform-origin: 20px 20px;">
-                    <animate attributeName="fill" values="#00ffff;#ef4444;#00ffff" dur="0.8s" repeatCount="indefinite" />
-                </circle>
-                <line x1="20" y1="0" x2="20" y2="-10" stroke="#ffff00" stroke-width="2" stroke-linecap="round"/>
-                <circle cx="20" cy="-10" r="2" fill="#ef4444"/>
+                <g transform="scale(0.8)"> <rect x="0" y="0" width="40" height="40" rx="8" fill="#1a2a36" stroke="#facc15" stroke-width="2.5" filter="url(#glow-dron-grid)"/>
+                    
+                    <path d="M 10 0 L 10 40 M 20 0 L 20 40 M 30 0 L 30 40 M 0 10 L 40 10 M 0 20 L 40 20 M 0 30 L 40 30" stroke="#facc15" stroke-width="1" opacity="0.3"/>
+                    
+                    <circle cx="20" cy="20" r="8" fill="#000" stroke="#facc15" stroke-width="2"/>
+                    <circle cx="20" cy="20" r="4" fill="#00ffff" class="anim-flotar" style="transform-origin: 20px 20px;">
+                        <animate attributeName="fill" values="#00ffff;#ef4444;#00ffff" dur="0.8s" repeatCount="indefinite" />
+                    </circle>
+                    
+                    <line x1="20" y1="0" x2="20" y2="-10" stroke="#facc15" stroke-width="2" stroke-linecap="round"/>
+
+                    <circle cx="20" cy="-10" r="4" fill="#22c55e">
+                        <animate attributeName="fill" values="#22c55e;#ef4444;#22c55e" dur="1s" repeatCount="indefinite" />
+                    </circle>
+                </g>
             </g>
         </g>
     `
