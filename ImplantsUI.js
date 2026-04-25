@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsUI.js - INTERFAZ DEL LABORATORIO V9 (FIX CONTENEDOR NATIVO)
+// ImplantsUI.js - INTERFAZ DEL LABORATORIO V10 (DISEÑO UNIFICADO PC/MÓVIL)
 // =========================================
 
 window.ImplantsUI = {
@@ -8,17 +8,17 @@ window.ImplantsUI = {
         const style = document.createElement("style");
         style.id = "implants-styles";
         style.innerHTML = `
-            /* El secreto: que todo calcule sus márgenes hacia adentro */
+            /* REGLA MAESTRA: Todo hacia adentro para evitar desbordamientos */
             .implants-screen, .implants-screen * {
                 box-sizing: border-box !important;
             }
 
-            /* Respetamos tu .app-screen, solo añadimos fondo, padding y scroll */
+            /* Fondo sólido y scroll invisible */
             .implants-screen {
                 background-color: #0d161c !important; 
                 background-image: radial-gradient(circle at center, #1a2a36 0%, #0d161c 100%) !important;
                 padding: 15px !important;
-                padding-bottom: 20px !important; 
+                padding-bottom: 30px !important; 
                 color: #e0f7fa !important;
                 overflow-y: auto !important; 
                 overflow-x: hidden !important; 
@@ -26,34 +26,38 @@ window.ImplantsUI = {
                 -ms-overflow-style: none !important;  
                 scrollbar-width: none !important;  
             }
+            .implants-screen::-webkit-scrollbar { display: none !important; }
 
-            /* Ocultar barra lateral de scroll */
-            #implants-area::-webkit-scrollbar, 
-            .implants-screen::-webkit-scrollbar {
-                display: none !important;
-                width: 0 !important;
-                background: transparent !important;
-            }
-
+            /* CONTENEDOR UNIFICADO: Ancho fijo para PC y móvil */
             .lab-container {
                 display: flex;
                 flex-direction: column;
-                gap: 15px;
+                gap: 12px;
                 width: 100%;
-                max-width: 600px; /* Centrado en PC, ancho total en móvil */
+                max-width: 480px; /* Misma medida que el área de batalla del coliseo */
                 margin: 0 auto;
             }
 
+            .implants-screen h2 {
+                text-align: center;
+                color: #4dd0e1;
+                letter-spacing: 2px;
+                margin: 0 0 15px 0;
+                font-size: 18px;
+                text-transform: uppercase;
+            }
+
+            /* ESCÁNER GENO */
             .geno-scanner {
                 width: 100%;
                 background: rgba(0, 0, 0, 0.4);
                 border: 2px solid #00acc1;
                 border-radius: 16px;
-                padding: 15px;
+                padding: 12px;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                box-shadow: 0 0 30px rgba(0, 172, 193, 0.2);
+                box-shadow: 0 0 20px rgba(0, 172, 193, 0.2);
             }
 
             .preview-wrapper {
@@ -66,10 +70,10 @@ window.ImplantsUI = {
 
             .scanner-line {
                 position: absolute;
-                width: 60%;
+                width: 70%;
                 height: 2px;
                 background: rgba(77, 208, 225, 0.5);
-                left: 20%;
+                left: 15%;
                 box-shadow: 0 0 15px #4dd0e1;
                 animation: scanMove 3s infinite linear;
                 z-index: 10;
@@ -79,13 +83,13 @@ window.ImplantsUI = {
             @keyframes scanMove {
                 0% { top: 5%; opacity: 0; }
                 50% { opacity: 1; }
-                90% { top: 90%; opacity: 0; }
-                100% { top: 90%; opacity: 0; }
+                90% { top: 95%; opacity: 0; }
+                100% { top: 95%; opacity: 0; }
             }
 
             #implants-geno-preview {
-                width: 150px;
-                height: 150px;
+                width: 130px;
+                height: 130px;
                 filter: drop-shadow(0 0 10px rgba(77, 208, 225, 0.4));
                 z-index: 2;
                 display: flex;
@@ -93,33 +97,35 @@ window.ImplantsUI = {
                 align-items: center;
             }
 
+            /* ESTADÍSTICAS */
             .geno-lab-name {
                 text-align: center;
                 font-weight: bold;
                 color: #fff;
-                font-size: 14px;
+                font-size: 13px;
                 text-transform: uppercase;
-                margin-bottom: 10px;
+                margin-bottom: 8px;
                 word-break: break-word;
             }
-            .geno-lab-name span { color: #4dd0e1; font-size: 11px; }
+            .geno-lab-name span { color: #4dd0e1; font-size: 10px; }
             
             .geno-lab-stats {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
-                font-size: 12px;
+                font-size: 11px;
                 color: #80deea;
                 text-align: center;
-                gap: 8px;
+                gap: 6px;
                 width: 100%;
             }
             .geno-lab-stats div {
                 background: rgba(0,0,0,0.5);
-                padding: 8px;
+                padding: 6px;
                 border-radius: 6px;
                 border: 1px solid #333;
             }
 
+            /* PANEL DE CONTROL */
             .control-panel {
                 width: 100%;
                 display: flex;
@@ -129,8 +135,7 @@ window.ImplantsUI = {
 
             .lab-tabs {
                 display: flex;
-                gap: 10px;
-                margin-bottom: 5px;
+                gap: 8px;
             }
 
             .lab-tab {
@@ -145,29 +150,30 @@ window.ImplantsUI = {
                 border-radius: 8px;
                 transition: 0.3s;
                 text-transform: uppercase;
-                font-size: 13px;
+                font-size: 12px;
             }
 
             .lab-tab.active {
                 background: #00acc1;
                 color: white;
-                box-shadow: 0 0 15px rgba(0, 172, 193, 0.5);
+                box-shadow: 0 0 10px rgba(0, 172, 193, 0.4);
             }
 
+            /* GRID DE BOTONES 2x2 */
             .slot-grid {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
-                gap: 12px;
+                gap: 10px;
                 background: rgba(0,0,0,0.3);
-                padding: 12px;
+                padding: 10px;
                 border-radius: 12px;
             }
 
             .implant-slot {
                 background: #0d161c;
                 border: 1px dashed #4dd0e1;
-                padding: 12px;
-                border-radius: 10px;
+                padding: 10px;
+                border-radius: 8px;
                 text-align: center;
                 cursor: pointer;
                 transition: 0.2s;
@@ -180,15 +186,17 @@ window.ImplantsUI = {
 
             .implant-slot label {
                 display: block;
-                font-size: 10px;
+                font-size: 9px;
                 color: #4dd0e1;
-                margin-bottom: 5px;
+                margin-bottom: 2px;
                 text-transform: uppercase;
+                pointer-events: none;
             }
 
             .implant-slot .item-name {
-                font-size: 12px;
+                font-size: 11px;
                 font-weight: bold;
+                pointer-events: none;
             }
 
             #lab-inventory-selector {
@@ -197,7 +205,7 @@ window.ImplantsUI = {
                 left: 50%;
                 transform: translate(-50%, -50%);
                 width: 90%;
-                max-width: 400px;
+                max-width: 380px;
                 background: #1a2a36;
                 border: 2px solid #00acc1;
                 border-radius: 15px;
@@ -207,70 +215,17 @@ window.ImplantsUI = {
                 box-shadow: 0 0 100px rgba(0,0,0,0.9);
             }
 
-            /* ========================================= */
-            /* COMPRESIÓN PARA MÓVIL RESPETANDO TU APP-SCREEN */
-            /* ========================================= */
-            @media (max-width: 850px) {
-                .implants-screen {
-                    padding: 15px !important;
-                }
-                .implants-screen h2 {
-                    font-size: 16px !important;
-                    letter-spacing: 1px !important;
-                    margin-bottom: 5px !important;
-                }
-                .lab-subtitle {
-                    display: none !important; 
-                }
-                .lab-container {
-                    gap: 10px !important;
-                }
-                .geno-scanner {
-                    padding: 15px !important;
-                    border-radius: 12px !important;
-                }
-                #implants-geno-preview {
-                    width: 110px !important; 
-                    height: 110px !important;
-                }
-                .geno-lab-name {
-                    margin-bottom: 6px !important;
-                    font-size: 12px !important;
-                }
-                .geno-lab-stats {
-                    gap: 6px !important; 
-                }
-                .geno-lab-stats div {
-                    padding: 6px !important; 
-                    font-size: 11px !important;
-                }
-                .control-panel {
-                    gap: 10px !important; 
-                }
-                .lab-tab {
-                    padding: 10px !important; 
-                    font-size: 12px !important;
-                }
-                .slot-grid {
-                    padding: 10px !important;
-                    gap: 10px !important;
-                }
-                .implant-slot {
-                    padding: 10px !important; 
-                    border-radius: 8px !important;
-                }
-                .implant-slot label {
-                    font-size: 9px !important;
-                    margin-bottom: 4px !important;
-                }
-                .implant-slot .item-name {
-                    font-size: 11px !important; 
-                }
-                .btn-lab-back {
-                    padding: 12px !important; 
-                    margin: 15px auto 0 auto !important;
-                    font-size: 12px !important;
-                }
+            .btn-lab-back {
+                padding: 12px !important;
+                margin: 10px auto 0 auto !important;
+                font-size: 12px !important;
+                width: 100% !important;
+                max-width: 480px !important;
+                display: block !important;
+                position: relative !important;
+                left: auto !important;
+                bottom: auto !important;
+                transform: none !important;
             }
         `;
         document.head.appendChild(style);
@@ -285,16 +240,15 @@ window.ImplantsUI = {
         if (screen.innerHTML.includes("LABORATORIO DE IMPLANTES")) return;
 
         screen.innerHTML = `
-            <h2 style="text-align:center; color:#4dd0e1; letter-spacing:3px; margin-top:0;">LABORATORIO DE IMPLANTES</h2>
-            <p class="lab-subtitle" style="text-align: center; color: #888; font-size: 12px; margin-bottom: 15px;">Instala Módulos de Combate y Mejoras Físicas.</p>
-            
             <div class="lab-container">
+                <h2>LABORATORIO DE IMPLANTES</h2>
+                
                 <div class="geno-scanner">
                     <div class="preview-wrapper">
                         <div class="scanner-line"></div>
                         <div id="implants-geno-preview"></div>
                     </div>
-                    <div id="implants-geno-stats" style="margin-top:5px; width:100%;"></div>
+                    <div id="implants-geno-stats"></div>
                 </div>
 
                 <div class="control-panel">
@@ -316,7 +270,7 @@ window.ImplantsUI = {
                             <label>Soporte</label>
                             <span class="item-name" id="slot-atk-3">VACÍO</span>
                         </div>
-                        <div class="implant-slot" style="border-color: #555; cursor: not-allowed;">
+                        <div class="implant-slot" style="border-color: #555; cursor: not-allowed; opacity: 0.6;">
                             <label style="color:#555;">Definitivo</label>
                             <span class="item-name" style="color:#888;">🔒 Nv. 25+</span>
                         </div>
@@ -341,15 +295,15 @@ window.ImplantsUI = {
                         </div>
                     </div>
                 </div>
+
+                <button onclick="ImplantsManager.closeLab()" class="btn-secondary btn-lab-back">VOLVER AL NEXO</button>
             </div>
 
             <div id="lab-inventory-selector">
-                <h3 id="selector-title" style="color:#4dd0e1; margin-top:0;">Seleccionar Implante</h3>
-                <div id="lab-inventory-list" style="max-height:300px; overflow-y:auto; margin-bottom:15px;"></div>
-                <button onclick="ImplantsManager.closeSelector()" class="btn-secondary btn-lab-back" style="width:100%; position:relative; display:block; margin:0;">CERRAR</button>
+                <h3 id="selector-title" style="color:#4dd0e1; margin-top:0; font-size:16px; text-align:center;">SELECCIONAR</h3>
+                <div id="lab-inventory-list" style="max-height:250px; overflow-y:auto; margin-bottom:15px; border:1px solid #334; border-radius:8px; padding:10px;"></div>
+                <button onclick="ImplantsManager.closeSelector()" class="btn-secondary" style="width:100%; padding:10px;">CERRAR</button>
             </div>
-
-            <button onclick="ImplantsManager.closeLab()" class="btn-secondary btn-lab-back" style="position:relative; display:block; width: 100%; max-width: 600px; margin: 15px auto 10px auto;">VOLVER AL NEXO</button>
         `;
     }
 };
