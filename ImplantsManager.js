@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsManager.js - LÓGICA DEL LABORATORIO V7 (FIX ESTILOS DUROS)
+// ImplantsManager.js - LÓGICA DEL LABORATORIO V8 (FIX NAVEGACIÓN Y STATS)
 // =========================================
 
 window.ImplantsManager = {
@@ -42,7 +42,7 @@ window.ImplantsManager = {
             
             const stats = window.miMascota.stats || {hp:0, atk:0, spd:0, luk:0};
             
-            // FIX: Usamos las clases CSS limpias para que el modo móvil pueda ajustarlas
+            // Renderizamos los stats adaptados a una sola línea (Flexbox)
             statsBox.innerHTML = `
                 <div class="geno-lab-name">
                     ${window.miMascota.name || "Geno"} <span>(Nv. ${window.miMascota.level || 1})</span>
@@ -81,32 +81,37 @@ window.ImplantsManager = {
     },
 
     closeLab: function() {
-        const impScreen = document.getElementById('implants-area');
-        if(impScreen) {
-            impScreen.classList.add('hidden');
-            impScreen.style.setProperty('display', 'none', 'important');
-        }
+        // En vez de esconder manual, le decimos al juego que navegue a la sala principal
+        // El Hook de abajo se encarga de esconder todo correctamente.
         window.navegarA('room-area');
     }
 };
 
-// HOOK DE NAVEGACIÓN
+// =========================================
+// HOOK DE NAVEGACIÓN A PRUEBA DE BALAS
+// =========================================
 if (!window.implantsNavHooked) {
     window.navegarA_Original_Implants = window.navegarA;
     window.navegarA = function(id) {
+        
+        // 1. Ejecutamos el motor de navegación original PRIMERO
+        // Así el juego oculta las pantallas anteriores a su manera.
+        if (typeof window.navegarA_Original_Implants === 'function') {
+            window.navegarA_Original_Implants(id);
+        }
+        
+        // 2. FORZAMOS nuestra pantalla de implantes DESPUÉS
+        // Si el destino es implantes, aseguramos que esté visible.
         const impScreen = document.getElementById('implants-area');
         if (impScreen) {
             if (id === 'implants-area') {
                 impScreen.classList.remove('hidden');
                 impScreen.style.setProperty('display', 'block', 'important');
-                ImplantsManager.init();
+                ImplantsManager.init(); // Refrescamos el Geno
             } else {
                 impScreen.classList.add('hidden');
                 impScreen.style.setProperty('display', 'none', 'important');
             }
-        }
-        if (typeof window.navegarA_Original_Implants === 'function') {
-            window.navegarA_Original_Implants(id);
         }
     };
     window.implantsNavHooked = true;
