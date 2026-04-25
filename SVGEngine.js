@@ -87,6 +87,17 @@ function generarSvgGeno(genesVisuales) {
     const boca = obtenerPieza(typeof dicBocas !== 'undefined' ? dicBocas : {}, safeData.mouth_type, "estandar");
     const hat = obtenerPieza(typeof dicSombreros !== 'undefined' ? dicSombreros : {}, safeData.hat_type, "ninguno");
     const wing = obtenerPieza(typeof dicAlas !== 'undefined' ? dicAlas : {}, safeData.wing_type, "ninguno");
+    
+    // ✨ FIX: LEER PIEL Y AURA DESDE LOS DICCIONARIOS NUEVOS
+    const auraRaw = obtenerPieza(typeof dicAuras !== 'undefined' ? dicAuras : {}, safeData.aura_type, "ninguno");
+    let skinRaw = obtenerPieza(typeof dicPieles !== 'undefined' ? dicPieles : {}, safeData.skin_type, "estandar");
+
+    // Limpieza de IDs en la piel para que no colisionen múltiples Genos en pantalla
+    if (skinRaw) {
+        skinRaw = skinRaw.replace(/id="grid"/g, `id="grid-${rndId}"`).replace(/url\(#grid\)/g, `url(#grid-${rndId})`);
+        skinRaw = skinRaw.replace(/id="dots"/g, `id="dots-${rndId}"`).replace(/url\(#dots\)/g, `url(#dots-${rndId})`);
+        skinRaw = skinRaw.replace(/body-mask/g, maskId); // Vincula la máscara al cuerpo exacto de este Geno
+    }
 
     let pathD = "", shineD = "", extras = "", detallesFrente = ""; 
     
@@ -153,7 +164,6 @@ function generarSvgGeno(genesVisuales) {
             `;
         }
 
-        // ✨ EMBLEMA FUNDADOR REPOSICIONADO: Flota como un droide holográfico a la derecha para evitar superposición con sombreros
         if (idGenCosmetico === "emblema_fundador") {
             cssExtra += `
                 @keyframes emblemaGlow-${rndId} {
@@ -253,11 +263,13 @@ function generarSvgGeno(genesVisuales) {
         </style>
         
         ${capaFondo}
+        ${auraRaw ? `<g transform="translate(80, 85)">${auraRaw}</g>` : ""}
         
         <g class="g-cuerpo ${claseCuerpoExtra}" style="${estiloCuerpoEnLinea}">
             <g transform="translate(${safeAnclaje.espaldaX}, ${safeAnclaje.espaldaY})">${wing}</g>
             ${extras}
             <path d="${pathD}" fill="${color}" stroke="#1a2a36" stroke-width="5"/>
+            ${skinRaw}
             <path d="${pathD}" fill="url(#${gradId})"/>
             ${detallesFrente}
             <path d="${shineD}" fill="#fff" opacity="0.4"/>
