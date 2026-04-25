@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsUI.js - INTERFAZ DEL LABORATORIO V16 (SLOT BÁSICO BLOQUEADO)
+// ImplantsUI.js - INTERFAZ DEL LABORATORIO V17 (ADIÓS BARRA DEL ALMACÉN)
 // =========================================
 
 window.ImplantsUI = {
@@ -9,7 +9,18 @@ window.ImplantsUI = {
         style.id = "implants-styles";
         style.innerHTML = `
             .implants-screen * { box-sizing: border-box !important; }
-            .implants-screen::-webkit-scrollbar { display: none !important; }
+            
+            /* ANIQUILADOR DE BARRAS DE SCROLL (Pantalla principal y Lista del Almacén) */
+            .implants-screen::-webkit-scrollbar,
+            #lab-inventory-list::-webkit-scrollbar { 
+                display: none !important; 
+                width: 0 !important; 
+                background: transparent !important;
+            }
+            #lab-inventory-list {
+                -ms-overflow-style: none !important;  /* IE y Edge */
+                scrollbar-width: none !important;  /* Firefox */
+            }
 
             #implants-area.hidden { display: none !important; }
 
@@ -152,7 +163,6 @@ window.ImplantsUI = {
 
             .implant-slot:hover { background: rgba(77, 208, 225, 0.1); border-style: solid; }
 
-            /* Estilo para el botón Básico (Sólido y no clickeable) */
             .implant-slot.fixed-slot {
                 border: 1px solid #00acc1;
                 background: rgba(0, 172, 193, 0.15);
