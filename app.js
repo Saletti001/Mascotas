@@ -1,5 +1,5 @@
 // =========================================
-// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V9.3 FIX TAMAÑO Y ZOOM)
+// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V9.4 CENTRADO PERFECTO)
 // Requiere cargar 'genes.js' previamente en el HTML.
 // =========================================
 
@@ -291,8 +291,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const pColor = geno.color || geno.base_color || "#ccc";
             let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
             
-            // ✨ FIX 1: Zoom perfecto (viewBox ajustado) para no hacer pequeño al Geno pero que entre el Dron.
-            svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-40 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+            // ✨ FIX CENTRADO PERFECTO: Balanceando los márgenes del viewBox a "-40 0 240 160"
+            svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-40 0 240 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             
             card.innerHTML = `
                 <div style="width: 100px; height: 100px; color: ${pColor}; display: flex; justify-content: center; align-items: center;">${svg}</div>
@@ -303,8 +303,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 window.miMascota = geno;
                 if (pedestal) {
                     const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-                    // El pedestal de la pantalla principal también recibe el nuevo zoom
-                    let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-40 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+                    // Centrado perfecto también en la recarga del pedestal principal
+                    let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-40 0 240 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
                     pedestal.innerHTML = `<div class="geno-idle" style="color: ${pColor}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
                 }
                 const nameEl = document.getElementById('geno-name');
@@ -321,7 +321,6 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let i = 0; i < slotsLibres; i++) {
             const emptyCard = document.createElement("div");
             emptyCard.style = "background: rgba(26, 42, 54, 0.5); border: 1px dashed #4dd0e1; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.5;";
-            // También ampliamos las tarjetas vacías a 100x100 para mantener la simetría
             emptyCard.innerHTML = `<div style="width: 100px; height: 100px; display: flex; justify-content: center; align-items: center; font-size: 32px; color: #4dd0e1;">🧬</div><span style="color: #4dd0e1; font-weight: bold; font-size: 12px; margin-top: 10px; text-align: center;">Vacío</span>`;
             gridSwap.appendChild(emptyCard);
         }
@@ -332,7 +331,6 @@ document.addEventListener("DOMContentLoaded", () => {
         buyCard.style = "background: rgba(138, 43, 226, 0.1); border: 1px solid #8A2BE2; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;";
         buyCard.onmouseover = () => buyCard.style.boxShadow = "0 0 15px rgba(138, 43, 226, 0.4)";
         buyCard.onmouseout = () => buyCard.style.boxShadow = "none";
-        // También ampliamos la tarjeta de compra a 100x100
         buyCard.innerHTML = `<div style="width: 100px; height: 100px; display: flex; justify-content: center; align-items: center; font-size: 32px; color: #e0b0ff;">➕</div><span style="color: white; font-weight: bold; font-size: 12px; margin-top: 5px; text-align: center;">Comprar Slot #${siguienteSlot}</span><span style="color: #e0b0ff; font-weight: bold; font-size: 11px; margin-top: 5px; text-align: center;">${costoExpansion} POL</span>`;
 
         buyCard.onclick = () => {
@@ -458,7 +456,7 @@ function iniciarSecuenciaBienvenida() {
             else subtext.innerText = "Estable e integrado. Listo para la investigación.";
 
             let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
-            svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-40 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+            svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-40 0 240 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             svgContainer.innerHTML = svg;
             resultDiv.style.display = "flex"; 
         }, 2500);
@@ -472,7 +470,8 @@ function iniciarSecuenciaBienvenida() {
         if (pedestal) {
             pedestal.style.display = "block";
             const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
-            let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-40 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+            // ✨ FIX CENTRADO PERFECTO en la pantalla principal al reclamar primer geno
+            let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-40 0 240 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             pedestal.innerHTML = `<div class="geno-idle" style="color: ${miPrimerGeno.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
         }
         
