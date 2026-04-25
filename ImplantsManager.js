@@ -1,5 +1,5 @@
 // =========================================
-// ImplantsManager.js - V21 (SINCRONIZACIÓN GLOBAL DE INVENTARIO)
+// ImplantsManager.js - V22 (MOTOR DE EQUIPAR Y DESEQUIPAR REAL)
 // =========================================
 
 window.ImplantsManager = {
@@ -39,19 +39,13 @@ window.ImplantsManager = {
             svgNode.setAttribute("viewBox", "-20 -10 200 180");
         }
         
-        const s = window.miMascota.stats || {hp:0, atk:0, spd:0, luk:0};
-        statsBox.innerHTML = `
-            <div class="geno-lab-name">${window.miMascota.name || "Geno"} <span>(Nv. ${window.miMascota.level || 1})</span></div>
-            <div class="geno-lab-stats">
-                <div>❤️ ${s.hp}</div><div>⚔️ ${s.atk}</div><div>⚡ ${s.spd}</div><div>🍀 ${s.luk}</div>
-            </div>
-        `;
+        // FIX V22: Stats eliminados para diseño más limpio
+        statsBox.innerHTML = `<div class="geno-lab-name">${window.miMascota.name || "Geno"} <span>(Nv. ${window.miMascota.level || 1})</span></div>`;
     },
 
     updateSlotLabels: function() {
         if (!window.miMascota) return;
         
-        // --- 1. ETIQUETAS DE COMBATE ---
         if (!window.miMascota.ataques) window.miMascota.ataques = { atk_1: null, atk_2: null, atk_3: null, atk_4: null };
         
         const ataquesBasicos = {
@@ -76,7 +70,6 @@ window.ImplantsManager = {
             slot4.parentElement.onclick = () => this.openSelector('atk_4');
         }
 
-        // --- 2. ETIQUETAS FÍSICAS (COSMÉTICOS) ---
         const m = window.miMascota;
         const headEl = document.getElementById('slot-head');
         if(headEl) headEl.innerText = m.hat_type && m.hat_type !== "ninguno" ? m.hat_type.replace(/_/g, ' ').toUpperCase() : "VACÍO";
@@ -91,6 +84,59 @@ window.ImplantsManager = {
         if(auraEl) auraEl.innerText = m.aura_type && m.aura_type !== "ninguno" ? m.aura_type.replace(/_/g, ' ').toUpperCase() : "VACÍO";
     },
 
+    // ✨ FIX V22: Busca qué hay equipado para devolverlo a la mochila
+    getItemToUnequip: function(slot, isCosmetic) {
+        if (!window.miMascota) return null;
+        if (isCosmetic) {
+            const propMap = { head: 'hat_type', back: 'wing_type', skin: 'skin_type', aura: 'aura_type' };
+            const currentVal = window.miMascota[propMap[slot]];
+            if (currentVal && currentVal !== 'ninguno' && currentVal !== 'estandar') {
+                let item = window.miMascota.cosmeticos && window.miMascota.cosmeticos[slot];
+                if (!item) {
+                    // Si se equipó antes del update, lo reconstruimos para que no se pierda
+                    item = { id: "cos_" + slot + "_" + Date.now(), name: currentVal.replace(/_/g, ' ').toUpperCase(), icon: "📦", type: "Cosmético", subType: slot, maxStack: 1, evCost: 0, id_cosmetico: currentVal };
+                }
+                return item;
+            }
+        } else {
+            if (window.miMascota.ataques && window.miMascota.ataques[slot]) {
+                const atk = window.miMascota.ataques[slot];
+                let item = atk.itemData;
+                if (!item) {
+                    item = { id: atk.id + "_" + Date.now(), name: atk.nombre, icon: "💿", type: "MT", subType: slot === 'atk_4' ? "Definitivo" : (slot === 'atk_2' ? 'Técnica' : 'Soporte'), element: atk.element, maxStack: 1, id_ataque: atk.id, power: atk.power, evCost: 0 };
+                }
+                return item;
+            }
+        }
+        return null;
+    },
+
+    // ✨ FIX V22: Desequipar un ítem de forma manual (Botón rojo)
+    unequipCurrent: function(slot, isCosmetic) {
+        if (!window.miInventario || !window.miMascota) return;
+
+        const itemToReturn = this.getItemToUnequip(slot, isCosmetic);
+        if (!itemToReturn) return;
+
+        // Intentar añadir a la mochila
+        const added = window.miInventario.addItem(itemToReturn);
+        if (!added) return; // Si la mochila está llena, el addItem ya tiró el alert. Paramos aquí.
+
+        // Si se añadió con éxito, limpiamos al Geno
+        if (isCosmetic) {
+            const propMap = { head: 'hat_type', back: 'wing_type', skin: 'skin_type', aura: 'aura_type' };
+            window.miMascota[propMap[slot]] = (slot === 'skin' ? 'estandar' : 'ninguno');
+            if (window.miMascota.cosmeticos) delete window.miMascota.cosmeticos[slot];
+        } else {
+            window.miMascota.ataques[slot] = null;
+        }
+
+        this.syncAndSave();
+        this.closeSelector();
+        this.updateSlotLabels();
+        this.refreshPreview();
+    },
+
     openSelector: function(slot) {
         this.targetSlot = slot;
         const selector = document.getElementById('lab-inventory-selector');
@@ -98,11 +144,23 @@ window.ImplantsManager = {
         if(!selector || !listContainer) return;
         
         selector.style.display = 'block';
-        
-        let invArray = window.miInventario ? (window.miInventario.slots || window.miInventario.items || []) : [];
+        listContainer.innerHTML = "";
         
         const isCosmetic = ['head', 'back', 'skin', 'aura'].includes(slot);
 
+        // ✨ FIX V22: Detectar si ya hay algo equipado para mostrar botón de "DESEQUIPAR"
+        const itemEquipado = this.getItemToUnequip(slot, isCosmetic);
+        if (itemEquipado && slot !== 'atk_1') {
+            const unequipBtn = document.createElement("div");
+            unequipBtn.style = "background: rgba(217, 83, 79, 0.2); padding: 10px; margin-bottom: 15px; border-radius: 6px; border: 1px solid #d9534f; cursor: pointer; text-align: center; color: #ff6b6b; font-weight: bold; font-size: 12px; transition: 0.2s;";
+            unequipBtn.innerText = "❌ DESEQUIPAR ACTUAL";
+            unequipBtn.onmouseover = () => unequipBtn.style.background = "rgba(217, 83, 79, 0.4)";
+            unequipBtn.onmouseout = () => unequipBtn.style.background = "rgba(217, 83, 79, 0.2)";
+            unequipBtn.onclick = () => this.unequipCurrent(slot, isCosmetic);
+            listContainer.appendChild(unequipBtn);
+        }
+
+        let invArray = window.miInventario ? (window.miInventario.slots || window.miInventario.items || []) : [];
         const modulos = invArray
             .map((item, originalIndex) => ({ ...item, originalIndex }))
             .filter(item => {
@@ -114,14 +172,13 @@ window.ImplantsManager = {
             });
 
         if (modulos.length === 0) {
-            listContainer.innerHTML = `
-                <div style="text-align:center; color:#888; padding:20px;">
-                    No tienes ${isCosmetic ? 'Mejoras Físicas compatibles' : 'Módulos de Combate (MT)'} en tu Almacén Nexo.
-                </div>`;
+            const emptyMsg = document.createElement("div");
+            emptyMsg.style = "text-align:center; color:#888; padding:20px;";
+            emptyMsg.innerText = `No tienes ${isCosmetic ? 'Equipo compatible' : 'Módulos de Combate (MT)'} en tu Almacén Nexo.`;
+            listContainer.appendChild(emptyMsg);
             return;
         }
 
-        listContainer.innerHTML = "";
         modulos.forEach(item => {
             const compatible = isCosmetic ? true : this.checkCompatibility(item, slot);
             const costo = item.evCost || 0; 
@@ -129,12 +186,7 @@ window.ImplantsManager = {
             const colorTipo = isCosmetic ? '#fbcfe8' : (tipoEtiqueta === 'Soporte' ? '#77DD77' : (tipoEtiqueta === 'Definitivo' ? '#ff9800' : '#b19cd9'));
             
             const itemDiv = document.createElement("div");
-            itemDiv.style = `
-                background: rgba(255,255,255,0.05); padding: 10px; margin-bottom: 8px; border-radius: 6px;
-                border: 1px solid ${compatible ? '#00acc1' : '#555'};
-                opacity: ${compatible ? '1' : '0.5'};
-                cursor: ${compatible ? 'pointer' : 'not-allowed'};
-            `;
+            itemDiv.style = `background: rgba(255,255,255,0.05); padding: 10px; margin-bottom: 8px; border-radius: 6px; border: 1px solid ${compatible ? '#00acc1' : '#555'}; opacity: ${compatible ? '1' : '0.5'}; cursor: ${compatible ? 'pointer' : 'not-allowed'};`;
 
             itemDiv.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
@@ -178,7 +230,7 @@ window.ImplantsManager = {
             return;
         }
 
-        if (confirm(`¿Instalar ${item.name} ${costo > 0 ? 'por ' + costo + ' ✨ EV' : ''}? El objeto se consumirá.`)) {
+        if (confirm(`¿Equipar ${item.name} ${costo > 0 ? 'por ' + costo + ' ✨ EV' : ''}?`)) {
             
             if (costo > 0) {
                 window.miInventario.vitalEssence -= costo;
@@ -187,7 +239,22 @@ window.ImplantsManager = {
                 if (domEl) domEl.innerText = `✨ ${window.miInventario.vitalEssence}`;
             }
 
+            // ✨ FIX V22: Intercambio seguro (Auto-Desequipar).
+            // Primero sacamos el nuevo equipo de la mochila, luego metemos el viejo, para que nunca falte espacio.
+            const itemToReturn = this.getItemToUnequip(this.targetSlot, isCosmetic);
+            window.miInventario.removeItem(originalIndex, 1);
+            if (itemToReturn) {
+                window.miInventario.addItem(itemToReturn);
+            }
+
+            // Guardamos una copia limpia del item en el Geno para poder devolverla luego
+            const itemCopy = { ...item };
+            delete itemCopy.originalIndex;
+
             if (isCosmetic) {
+                if (!window.miMascota.cosmeticos) window.miMascota.cosmeticos = {};
+                window.miMascota.cosmeticos[this.targetSlot] = itemCopy;
+
                 if (this.targetSlot === 'head') window.miMascota.hat_type = item.id_cosmetico;
                 if (this.targetSlot === 'back') window.miMascota.wing_type = item.id_cosmetico;
                 if (this.targetSlot === 'skin') window.miMascota.skin_type = item.id_cosmetico;
@@ -198,22 +265,13 @@ window.ImplantsManager = {
                     id: item.id_ataque || item.id,
                     nombre: item.name,
                     element: item.element,
-                    power: item.power || 0
+                    power: item.power || 0,
+                    itemData: itemCopy 
                 };
             }
 
-            // ✨ FIX V21: Sincronización obligatoria con la base de datos "Mis Genos"
-            if (window.misGenos) {
-                const index = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
-                if (index !== -1) {
-                    window.misGenos[index] = window.miMascota;
-                }
-            }
-
-            window.miInventario.removeItem(originalIndex, 1);
-            if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
-
-            alert("¡Instalación completada con éxito!");
+            this.syncAndSave();
+            alert("¡Equipo instalado con éxito!");
             this.closeSelector();
             this.updateSlotLabels();
             this.refreshPreview(); 
@@ -228,6 +286,14 @@ window.ImplantsManager = {
         if (item.element === geno.element) return Math.floor(base * 0.7); 
         if (contrarios[item.element] === geno.element) return Math.floor(base * 1.2); 
         return base;
+    },
+
+    syncAndSave: function() {
+        if (window.misGenos) {
+            const index = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
+            if (index !== -1) window.misGenos[index] = window.miMascota;
+        }
+        if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
     },
 
     closeSelector: function() {
