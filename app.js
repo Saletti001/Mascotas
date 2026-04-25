@@ -1,5 +1,5 @@
 // =========================================
-// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V9.5 ZOOM IN Y CENTRADO)
+// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V9.6 CÁMARA CUADRADA Y CENTRADA)
 // Requiere cargar 'genes.js' previamente en el HTML.
 // =========================================
 
@@ -34,7 +34,6 @@ window.generarStatsPorRareza = function(rareza) {
 window.generarGenesV9 = function(rareza) {
     const slots = { A: null, B: null, C: null };
     
-    // Probabilidades base de DESBLOQUEAR los slots según rareza
     let probA = 0.05, probB = 0.22, probC = 0.06;
     if (rareza === "Raro") { probA = 0.08; probB = 0.35; probC = 0.12; }
     if (rareza === "Épico") { probA = 0.12; probB = 0.52; probC = 0.22; }
@@ -280,8 +279,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const pColor = geno.color || geno.base_color || "#ccc";
             let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
             
-            // ✨ FIX ZOOM Y CENTRADO (-25 -5 210 180). Hace al Geno más grande y perfectamente centrado.
-            svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-25 -5 210 180" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+            // ✨ FIX V9.6: Cámara cuadrada "-20 -20 200 200". Esto centra el cuerpo y lo hace más grande en el 100x100.
+            svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 -20 200 200" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             
             card.innerHTML = `
                 <div style="width: 100px; height: 100px; color: ${pColor}; display: flex; justify-content: center; align-items: center;">${svg}</div>
@@ -292,7 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 window.miMascota = geno;
                 if (pedestal) {
                     const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-                    let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-25 -5 210 180" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+                    let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 -20 200 200" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
                     pedestal.innerHTML = `<div class="geno-idle" style="color: ${pColor}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
                 }
                 const nameEl = document.getElementById('geno-name');
@@ -444,7 +443,7 @@ function iniciarSecuenciaBienvenida() {
             else subtext.innerText = "Estable e integrado. Listo para la investigación.";
 
             let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
-            svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-25 -5 210 180" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+            svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 -20 200 200" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             svgContainer.innerHTML = svg;
             resultDiv.style.display = "flex"; 
         }, 2500);
@@ -458,7 +457,7 @@ function iniciarSecuenciaBienvenida() {
         if (pedestal) {
             pedestal.style.display = "block";
             const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
-            let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-25 -5 210 180" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+            let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 -20 200 200" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             pedestal.innerHTML = `<div class="geno-idle" style="color: ${miPrimerGeno.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
         }
         
