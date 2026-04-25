@@ -1,5 +1,5 @@
 // =========================================
-// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V9.4 CENTRADO PERFECTO)
+// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V9.5 ZOOM IN Y CENTRADO)
 // Requiere cargar 'genes.js' previamente en el HTML.
 // =========================================
 
@@ -47,27 +47,20 @@ window.generarGenesV9 = function(rareza) {
     };
     const catsFuncionales = ["combate", "elemental", "crianza", "progresion", "reactor_santuario", "social"];
 
-    // 🎲 DADO 1: PRIVILEGIO (¿Se desbloquea el Slot A?)
     if (Math.random() <= probA) {
-        
-        // 🎲 DADO 2: UNIVERSAL DE SUERTE (¿Qué cosmético te toca?)
         const suerte = Math.random();
         let idElegido = "";
 
         if (suerte <= 0.55) {
-            // 55% de que sea RARO
             const raros = ["brillo_bioluminiscente", "rastro_elemental", "eco_visual"];
             idElegido = raros[Math.floor(Math.random() * raros.length)];
         } else if (suerte <= 0.85) {
-            // 30% de que sea ÉPICO
             const epicos = ["cromatico_latente", "forma_invertida", "sombra_genetica", "metamorfosis_estacional"];
             idElegido = epicos[Math.floor(Math.random() * epicos.length)];
         } else if (suerte <= 0.98) {
-            // 13% de que sea LEGENDARIO
             const legendarios = ["aura_linaje", "emblema_fundador"];
             idElegido = legendarios[Math.floor(Math.random() * legendarios.length)];
         } else {
-            // 2% de que sea MÍTICO (Jackpot absoluto)
             idElegido = "patron_holografico";
         }
 
@@ -76,14 +69,12 @@ window.generarGenesV9 = function(rareza) {
         }
     }
 
-    // Tirada Slot B (Funcional 1)
     let catB = null;
     if (Math.random() <= probB && window.BASE_DATOS_GENES_V9) {
         catB = catsFuncionales[Math.floor(Math.random() * catsFuncionales.length)];
         slots.B = randomFromCat(window.BASE_DATOS_GENES_V9[catB]);
     }
 
-    // Tirada Slot C (Funcional 2) con Regla de Exclusión: B != C
     if (Math.random() <= probC && window.BASE_DATOS_GENES_V9) {
         const catsDisponiblesC = catsFuncionales.filter(c => c !== catB);
         const catC = catsDisponiblesC[Math.floor(Math.random() * catsDisponiblesC.length)];
@@ -93,14 +84,12 @@ window.generarGenesV9 = function(rareza) {
     return slots;
 };
 
-// Motor de lectura de genes activos
 window.tieneGenActivoV9 = function(geno, idGen) {
     if (!geno || !geno.scanned || !geno.hidden_genes) return false;
     const { A, B, C } = geno.hidden_genes;
     return (A && A.id === idGen) || (B && B.id === idGen) || (C && C.id === idGen);
 };
 
-// Funciones Auxiliares de Genes Pasivos
 window.getMaxCrias = function(geno) { return window.tieneGenActivoV9(geno, "fertilidad_pura") ? 9 : 7; };
 window.getMultiplicadorXP = function(geno) { return window.tieneGenActivoV9(geno, "aprendiz_acelerado") ? 1.25 : 1.0; };
 window.getMultiplicadorEsencia = function(geno) { return window.tieneGenActivoV9(geno, "esencia_concentrada") ? 2.0 : 1.0; };
@@ -291,8 +280,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const pColor = geno.color || geno.base_color || "#ccc";
             let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
             
-            // ✨ FIX CENTRADO PERFECTO: Balanceando los márgenes del viewBox a "-40 0 240 160"
-            svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-40 0 240 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+            // ✨ FIX ZOOM Y CENTRADO (-25 -5 210 180). Hace al Geno más grande y perfectamente centrado.
+            svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-25 -5 210 180" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             
             card.innerHTML = `
                 <div style="width: 100px; height: 100px; color: ${pColor}; display: flex; justify-content: center; align-items: center;">${svg}</div>
@@ -303,8 +292,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 window.miMascota = geno;
                 if (pedestal) {
                     const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-                    // Centrado perfecto también en la recarga del pedestal principal
-                    let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-40 0 240 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+                    let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-25 -5 210 180" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
                     pedestal.innerHTML = `<div class="geno-idle" style="color: ${pColor}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
                 }
                 const nameEl = document.getElementById('geno-name');
@@ -456,7 +444,7 @@ function iniciarSecuenciaBienvenida() {
             else subtext.innerText = "Estable e integrado. Listo para la investigación.";
 
             let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
-            svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-40 0 240 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+            svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-25 -5 210 180" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             svgContainer.innerHTML = svg;
             resultDiv.style.display = "flex"; 
         }, 2500);
@@ -470,8 +458,7 @@ function iniciarSecuenciaBienvenida() {
         if (pedestal) {
             pedestal.style.display = "block";
             const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
-            // ✨ FIX CENTRADO PERFECTO en la pantalla principal al reclamar primer geno
-            let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-40 0 240 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+            let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-25 -5 210 180" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             pedestal.innerHTML = `<div class="geno-idle" style="color: ${miPrimerGeno.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
         }
         
