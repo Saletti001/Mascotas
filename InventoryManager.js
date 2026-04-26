@@ -1,12 +1,12 @@
 // =========================================
-// InventoryManager.js - SISTEMA DE ALMACÉN Y EMERGENCIA
+// InventoryManager.js - SISTEMA DE ALMACÉN CON TIENDA DEV INTEGRADA
 // =========================================
 
 class InventoryManager {
     constructor() {
-        this.maxSlots = 10; 
+        this.maxSlots = 10;
         this.overflowSlots = 2; // 2 Slots de Emergencia
-        this.slots = []; 
+        this.slots = [];
         this.vitalEssence = 0; 
         this.stackLimits = {
             basic: 99,
@@ -49,12 +49,11 @@ class InventoryManager {
 
         let limit = this.stackLimits[newItem.type] || 1;
         let existingSlot = this.slots.find(slot => slot.id === newItem.id && slot.count < limit && !slot.isOverflow);
-
+        
         if (existingSlot) {
             existingSlot.count += (newItem.count || 1);
         } else {
             const totalCapacity = this.maxSlots + this.overflowSlots;
-            
             if (this.slots.length < this.maxSlots) {
                 this.slots.push({ ...newItem, count: newItem.count || 1 });
             } else if (this.slots.length < totalCapacity) {
@@ -70,7 +69,7 @@ class InventoryManager {
             }
         }
         
-        this.reorganize(); 
+        this.reorganize();
         this.updateUI();
         this.renderGrid();
         this.guardarCambios();
@@ -90,7 +89,7 @@ class InventoryManager {
         if (this.slots[index]) {
             this.slots[index].count -= amount;
             if (this.slots[index].count <= 0) {
-                this.slots.splice(index, 1); 
+                this.slots.splice(index, 1);
                 this.selectedIndex = null; 
                 if(document.getElementById("item-actions")) document.getElementById("item-actions").classList.add("hidden");
             }
@@ -136,7 +135,6 @@ class InventoryManager {
         grid.innerHTML = ""; 
 
         const totalSlotsToDraw = this.maxSlots + this.overflowSlots;
-
         for (let i = 0; i < totalSlotsToDraw; i++) {
             const slotDiv = document.createElement("div");
             slotDiv.className = "inventory-slot";
@@ -201,22 +199,19 @@ class InventoryManager {
             this.renderGrid(); 
             document.getElementById("inventory-modal").classList.remove("hidden"); 
         });
-        
         document.getElementById("close-inventory").addEventListener("click", () => {
             document.getElementById("inventory-modal").classList.add("hidden"); 
             this.selectedIndex = null;
             const actionsPanel = document.getElementById("item-actions");
             if(actionsPanel) actionsPanel.classList.add("hidden");
         });
-        
         document.getElementById("btn-release-one").addEventListener("click", () => {
             if (this.selectedIndex !== null) this.removeItem(this.selectedIndex, 1);
         });
-        
         document.getElementById("btn-release-all").addEventListener("click", () => {
             if (this.selectedIndex !== null) this.removeItem(this.selectedIndex, this.slots[this.selectedIndex].count);
         });
-
+        
         setInterval(() => {
             let hasExpiredItems = false;
             
@@ -251,7 +246,7 @@ class InventoryManager {
         }, 1000);
     }
 
-    // ✨ NUEVO: Panel de herramientas Dev (Cajas + Esencia)
+    // ✨ PANEL DEV (AHORA CON TIENDA DE PRUEBAS INFALIBLE)
     injectDebugButton() {
         const header = document.querySelector("#inventory-modal .modal-header");
         if (header && !document.getElementById("debug-tools-container")) {
@@ -259,13 +254,12 @@ class InventoryManager {
             const debugContainer = document.createElement("div");
             debugContainer.id = "debug-tools-container";
             debugContainer.style = "display: flex; gap: 8px; margin-left: auto; margin-right: 15px;";
-
+            
             // Botón 1: Test Llenar Mochila
             const btnFill = document.createElement("button");
             btnFill.id = "btn-debug-fill";
             btnFill.innerText = "🧪 Llenar";
             btnFill.style = "background: #ff9800; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; color: white; font-weight: bold;";
-            
             btnFill.addEventListener("click", () => {
                 let added = 0;
                 while (this.slots.length < this.maxSlots) {
@@ -280,11 +274,42 @@ class InventoryManager {
             btnEssence.id = "btn-debug-essence";
             btnEssence.innerText = "🧪 +1000 ✨";
             btnEssence.style = "background: #8b5cf6; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; color: white; font-weight: bold;";
-            
             btnEssence.addEventListener("click", () => {
                 this.addEssence(1000);
             });
 
+            // ✨ BOTÓN 3: LA TIENDA DEV EXACTA (100% CÓDIGO REAL)
+            const btnDevStore = document.createElement("button");
+            btnDevStore.id = "btn-debug-devstore";
+            btnDevStore.innerText = "🛒 Tienda Dev";
+            btnDevStore.style = "background: #e91e63; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; color: white; font-weight: bold;";
+            btnDevStore.addEventListener("click", () => {
+                const devItems = [
+                    // COSMÉTICOS (Programados 100% como pide ImplantsManager.js)
+                    { id: "dev_head", name: "Corona Dev", icon: "👑", type: "Cosmético", subType: "head", id_cosmetico: "corona_rey", evCost: 0, desc: "Cabeza de prueba.", maxStack: 1 },
+                    { id: "dev_back", name: "Jetpack Dev", icon: "🚀", type: "Cosmético", subType: "back", id_cosmetico: "jetpack", evCost: 0, desc: "Espalda de prueba.", maxStack: 1 },
+                    { id: "dev_skin", name: "Dron Dev", icon: "🤖", type: "Cosmético", subType: "skin", id_cosmetico: "malla_cibernetica", evCost: 0, desc: "Dron de prueba.", maxStack: 1 },
+                    { id: "dev_aura", name: "Aura Dev", icon: "☀️", type: "Cosmético", subType: "aura", id_cosmetico: "fuego_solar", evCost: 0, desc: "Aura de prueba.", maxStack: 1 },
+                    
+                    // MTs DE COMBATE (Programados 100% como pide ImplantsManager.js)
+                    { id: "dev_mt2", name: "MT Técnica", icon: "💿", type: "MT", subType: "Técnica", element: "Biomutante", id_ataque: "espinas_oseas", power: 80, evCost: 0, desc: "Ataque de prueba (Técnica).", maxStack: 1 },
+                    { id: "dev_mt3", name: "MT Soporte", icon: "💿", type: "MT", subType: "Soporte", element: "Viral", id_ataque: "raiz_enredadora", power: 0, evCost: 0, desc: "Ataque de prueba (Soporte).", maxStack: 1 },
+                    { id: "dev_mt4", name: "MT Definitivo", icon: "💿", type: "MT", subType: "Definitivo", element: "Cibernético", id_ataque: "corte_plasma", power: 150, evCost: 0, desc: "Definitivo (Solo Cibernético).", maxStack: 1 }
+                ];
+
+                let added = 0;
+                devItems.forEach(item => {
+                    if (this.slots.length < this.maxSlots + this.overflowSlots) {
+                        this.addItem(item);
+                        added++;
+                    }
+                });
+                
+                if(added > 0) alert(`🛒 ¡Tienda Dev activada! Se han inyectado ${added} módulos de prueba en tu Almacén Nexo.`);
+                else alert("❌ El Almacén está lleno. Destruye objetos para hacer espacio.");
+            });
+
+            debugContainer.appendChild(btnDevStore);
             debugContainer.appendChild(btnFill);
             debugContainer.appendChild(btnEssence);
             header.insertBefore(debugContainer, document.getElementById("close-inventory"));
