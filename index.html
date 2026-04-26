@@ -14,7 +14,10 @@
     <div id="game-container" style="position: relative; overflow: hidden;">
         
         <div id="room-area" class="app-screen">
-            <div id="top-hud">
+            
+            <div id="stats-backdrop" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.5); z-index: 105; display: none; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);"></div>
+
+            <div id="top-hud" style="position: relative; z-index: 110;">
                 <div class="hud-top-row">
                     <div class="currency-badge"><span id="vital-essence-amount">✨ 0</span></div>
                     <div class="currency-badge pol"><span id="pol-amount">🔷 10.0 POL</span></div>
@@ -22,7 +25,7 @@
 
                 <div class="hud-action-row">
                     <div class="action-btn-container">
-                        <button id="btn-show-stats" class="action-btn">📊 Stats</button>
+                        <button id="btn-show-stats" class="action-btn">🔬 Stats</button>
                         
                         <div id="geno-stats-panel" class="hidden">
                             <span id="close-stats-btn" class="close-btn-small">❌</span>
@@ -47,8 +50,8 @@
                             <div class="stat-row"><span>❤️ Vit: <span id="stat-hp">10</span></span> <button class="btn-add-stat hidden" data-stat="hp">➕</button></div>
                             <div class="stat-row"><span>⚔️ Fue: <span id="stat-atk">5</span></span> <button class="btn-add-stat hidden" data-stat="atk">➕</button></div>
                             
-                            <div class="stat-row"><span>🛡️ Def: <span id="stat-def">5</span></span> <button class="btn-add-stat hidden" data-stat="def">➕</button></div>
-
+                            <div class="stat-row"><span>🛡️ Def: <span id="stat-def">0</span></span> <button class="btn-add-stat hidden" data-stat="def">➕</button></div>
+                            
                             <div class="stat-row"><span>⚡ Agi: <span id="stat-spd">5</span></span> <button class="btn-add-stat hidden" data-stat="spd">➕</button></div>
                             <div class="stat-row"><span>🍀 Sue: <span id="stat-luk">5</span></span> <button class="btn-add-stat hidden" data-stat="luk">➕</button></div>
                             <hr class="stats-divider">
@@ -58,7 +61,7 @@
                     </div>
 
                     <div class="action-btn-container">
-                        <button id="btn-show-genos" class="action-btn">🧬 Genos</button>
+                        <button id="btn-show-genos" class="action-btn">👾 Genos</button>
                     </div>
 
                     <div id="inventory-ui" class="action-btn-container">
@@ -70,7 +73,7 @@
                 </div>
             </div>
 
-            <div id="geno-swap-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 2000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
+            <div id="geno-swap-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 2000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);">
                 <div class="modal-content" style="max-height: 75vh; overflow-y: auto; width: 85%; max-width: 350px;">
                     <div class="modal-header">
                         <h3>Mis Genos</h3>
@@ -81,7 +84,7 @@
                 </div>
             </div>
 
-            <div id="inventory-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 2000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
+            <div id="inventory-modal" class="hidden" style="backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); background: rgba(11, 26, 46, 0.5);">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3>Almacén Nexo</h3>
@@ -202,7 +205,7 @@
                 </div>
             </div>
 
-            <div id="geno-id-card-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px);">
+            <div id="geno-id-card-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.3); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(3px);">
                 <div class="modal-content" style="background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border: 2px solid #00d2ff; box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3); width: 85%; max-width: 320px; border-radius: 12px; padding: 20px; box-sizing: border-box; position: relative;">
                     <button id="close-id-card" style="position: absolute; top: 10px; right: 15px; background: transparent; border: none; font-size: 18px; color: #fff; cursor: pointer; text-shadow: 0 0 5px #000;">❌</button>
                     <h3 style="margin: 0 0 15px 0 !important; color: #00d2ff !important; text-transform: uppercase !important; font-size: 16px !important; font-weight: 900 !important; letter-spacing: 2px !important; text-align: center !important; border-bottom: 1px solid rgba(0, 210, 255, 0.3) !important; padding-bottom: 10px !important; text-shadow: 0 0 10px rgba(0, 210, 255, 0.6) !important;">ANÁLISIS GENÉTICO</h3>
