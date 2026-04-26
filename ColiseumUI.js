@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumUI.js - VISTA Y ANIMACIONES V9.13 (CÁMARA REPARADA Y BOTONES DINÁMICOS)
+// ColiseumUI.js - VISTA Y ANIMACIONES V9.14 (BOTONES LIMPIOS Y COMPACTOS)
 // =========================================
 
 window.ColiseumUI = {
@@ -84,12 +84,9 @@ window.ColiseumUI = {
             }
 
             @keyframes vsPulse { 
-                0% { transform: scale(1);
-                text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
-                50% { transform: scale(1.5);
-                text-shadow: 0 0 30px rgba(255,204,0,1); } 
-                100% { transform: scale(1);
-                text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
+                0% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
+                50% { transform: scale(1.5); text-shadow: 0 0 30px rgba(255,204,0,1); } 
+                100% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
             }
             .vs-badge-battle { position: relative !important;
             display: inline-block !important; font-size: 24px !important; font-weight: 900 !important; font-style: italic !important; color: #ffcc00 !important;
@@ -106,12 +103,12 @@ window.ColiseumUI = {
             }
 
             /* ========================================= */
-            /* BOTONES DE ATAQUE: DISEÑO NEÓN (SIN ICONOS) */
+            /* BOTONES DE ATAQUE: DISEÑO COMPACTO Y LIMPIO */
             /* ========================================= */
             #battle-controls, .controls-container { 
                 width: 100% !important;
                 display: grid !important; 
-                grid-template-columns: 1fr 1fr !important; /* Cuadrícula 2x2 */
+                grid-template-columns: 1fr 1fr !important; 
                 gap: 12px !important;
                 margin-top: 15px !important; 
             }
@@ -120,10 +117,10 @@ window.ColiseumUI = {
                 padding: 12px 5px !important;
                 border-radius: 8px !important; 
                 text-transform: uppercase !important; 
-                letter-spacing: 1px !important; 
+                letter-spacing: 0.5px !important; /* Espaciado reducido para mejor ajuste */
                 transition: 0.2s !important; 
                 font-weight: bold !important; 
-                font-size: 11px !important;
+                font-size: 9px !important; /* Fuente reducida (antes 11px) */
                 cursor: pointer !important; 
                 background: #111b24 !important;
                 box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;
@@ -138,8 +135,7 @@ window.ColiseumUI = {
             .slot-4 { border: 1px solid #555 !important; color: #888 !important; background: #0a0f14 !important; } 
             
             .battle-btn:active { transform: scale(0.95) !important; }
-            .battle-btn:disabled { opacity: 0.5 !important; cursor: not-allowed !important;
-            transform: none !important; box-shadow: none !important; }
+            .battle-btn:disabled { opacity: 0.5 !important; cursor: not-allowed !important; transform: none !important; box-shadow: none !important; }
 
             /* BOTONES DE FLUJO */
             #btn-start-battle, .btn-primary { 
@@ -175,43 +171,30 @@ window.ColiseumUI = {
                 position: relative !important; margin: 20px auto 10px auto !important;
                 z-index: 100 !important;
             }
-            #btn-leave-battle:hover, .btn-secondary:hover { background-color: #1e3a5f !important;
-            color: #fff !important; }
+            #btn-leave-battle:hover, .btn-secondary:hover { background-color: #1e3a5f !important; color: #fff !important; }
             
             /* ANIMACIONES Y EFECTOS */
             @keyframes animarBoca { 0% { transform: scale(1); } 50% { transform: scale(1.6); } 100% { transform: scale(1); } }
             @keyframes animarEmbestida { 0% { transform: scale(1) translateY(0); } 50% { transform: scale(1.1) translateY(-10px); } 100% { transform: scale(1) translateY(0); } }
-            .anim-gritar [id*="boca"], .anim-gritar [class*="boca"], .anim-gritar [id*="mouth"], .anim-gritar [class*="mouth"] { transform-origin: center !important;
-            transform-box: fill-box !important; animation: animarBoca 0.4s ease-in-out !important; }
+            .anim-gritar [id*="boca"], .anim-gritar [class*="boca"], .anim-gritar [id*="mouth"], .anim-gritar [class*="mouth"] { transform-origin: center !important; transform-box: fill-box !important; animation: animarBoca 0.4s ease-in-out !important; }
             .anim-gritar svg { animation: animarEmbestida 0.4s ease-in-out !important; }
 
-            .hit-effect { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5) !important;
-            transform: scale(0.90) translateX(5px) !important; transition: 0.1s; }
-            .heal-effect { filter: brightness(1.5) drop-shadow(0 0 15px #4CAF50) !important;
-            transform: scale(1.05) !important; transition: 0.2s; }
+            .hit-effect { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5) !important; transform: scale(0.90) translateX(5px) !important; transition: 0.1s; }
+            .heal-effect { filter: brightness(1.5) drop-shadow(0 0 15px #4CAF50) !important; transform: scale(1.05) !important; transition: 0.2s; }
 
-            @keyframes floatUpFade { 0% { opacity: 1;
-            transform: translate(-50%, -50%) scale(1.5); } 10% { transform: translate(-50%, calc(-50% - 15px)) scale(1.8); } 100% { opacity: 0;
-            transform: translate(-50%, calc(-50% - 60px)) scale(1); } }
+            @keyframes floatUpFade { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); } 10% { transform: translate(-50%, calc(-50% - 15px)) scale(1.8); } 100% { opacity: 0; transform: translate(-50%, calc(-50% - 60px)) scale(1); } }
             
-            .floating-text { position: absolute;
-            font-weight: 900; z-index: 100; pointer-events: none; animation: floatUpFade 1.3s ease-out forwards;
-            text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 5px rgba(0,0,0,0.8);
-            white-space: nowrap !important; }
+            .floating-text { position: absolute; font-weight: 900; z-index: 100; pointer-events: none; animation: floatUpFade 1.3s ease-out forwards;
+            text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 5px rgba(0,0,0,0.8); white-space: nowrap !important; }
             
             .text-dmg { color: #ff3333; font-size: 28px; }
             .text-heal { color: #4CAF50; font-size: 24px; }
-            .text-crit { color: #ffcc00; font-size: 38px !important;
-            font-style: italic; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 0 #d32f2f, -2px -2px 0 #d32f2f, 2px -2px 0 #d32f2f, -2px 2px 0 #d32f2f, 0 0 15px rgba(255,0,0,1) !important; }
+            .text-crit { color: #ffcc00; font-size: 38px !important; font-style: italic; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 0 #d32f2f, -2px -2px 0 #d32f2f, 2px -2px 0 #d32f2f, -2px 2px 0 #d32f2f, 0 0 15px rgba(255,0,0,1) !important; }
             
             .shake-effect { animation: shake 0.4s; }
-            @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg);
-            } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg);
-            } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg);
-            } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg);
-            } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg);
-            } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg);
-            } }
+            @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg);
+            } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg);
+            } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }
         `;
         document.head.appendChild(style);
     },
@@ -275,33 +258,31 @@ window.ColiseumUI = {
         if (log) log.id = "battle-log";
     },
 
-    // ✨ NUEVO: Función para actualizar los nombres de los botones según el inventario del Geno
+    // ✨ FIX: Filtro .replace(/MT /gi, "") añadido para eliminar el prefijo
     actualizarBotonesAtaque: function(mascota) {
         if (!mascota) return;
         const btn1 = document.getElementById("btn-atk-1");
         const btn2 = document.getElementById("btn-atk-2");
         const btn3 = document.getElementById("btn-atk-3");
         const btn4 = document.getElementById("btn-atk-4");
-
         const ataquesBasicos = {
             "Biomutante": "PULSO VITAL", "Viral": "DESCARGA VIRAL", "Cibernético": "LÁSER DE PRECISIÓN",
             "Radiactivo": "PROYECTIL RADIACTIVO", "Tóxico": "COLMILLO VENENOSO", "Sintético": "RÁFAGA SINTÉTICA"
         };
-
         if (btn1) {
             btn1.innerText = mascota.element ? (ataquesBasicos[mascota.element] || "BÁSICO") : "BÁSICO";
-            btn1.disabled = false; // El básico siempre está activo
+            btn1.disabled = false;
         }
 
         const equipados = mascota.ataques || {};
 
         if (btn2) {
-            btn2.innerText = equipados.atk_2 ? equipados.atk_2.nombre.toUpperCase() : "VACÍO";
+            btn2.innerText = equipados.atk_2 ? equipados.atk_2.nombre.replace(/MT /gi, "").toUpperCase() : "VACÍO";
             btn2.disabled = !equipados.atk_2;
             if(!equipados.atk_2) btn2.classList.add("slot-4"); else btn2.classList.remove("slot-4");
         }
         if (btn3) {
-            btn3.innerText = equipados.atk_3 ? equipados.atk_3.nombre.toUpperCase() : "VACÍO";
+            btn3.innerText = equipados.atk_3 ? equipados.atk_3.nombre.replace(/MT /gi, "").toUpperCase() : "VACÍO";
             btn3.disabled = !equipados.atk_3;
             if(!equipados.atk_3) btn3.classList.add("slot-4"); else btn3.classList.remove("slot-4");
         }
@@ -311,7 +292,7 @@ window.ColiseumUI = {
                 btn4.disabled = true;
                 btn4.classList.add("slot-4");
             } else {
-                btn4.innerText = equipados.atk_4 ? equipados.atk_4.nombre.toUpperCase() : "VACÍO";
+                btn4.innerText = equipados.atk_4 ? equipados.atk_4.nombre.replace(/MT /gi, "").toUpperCase() : "VACÍO";
                 btn4.disabled = !equipados.atk_4;
                 if(equipados.atk_4) {
                     btn4.classList.remove("slot-4");
@@ -421,7 +402,6 @@ window.ColiseumUI = {
         setTimeout(() => floater.remove(), 1300);
     },
 
-    // ✨ FIX: Cámara cuadrada perfecta para el combate
     inyectarSvgSeguro: function(adnData) {
         if (typeof generarSvgGeno !== 'function') return '';
         let svgString = generarSvgGeno(adnData);
@@ -431,7 +411,7 @@ window.ColiseumUI = {
         if (svgEl) {
             svgEl.setAttribute('width', '100%');
             svgEl.setAttribute('height', '100%');
-            svgEl.setAttribute('viewBox', '-20 -20 200 200'); // Cámara cuadrada arreglada
+            svgEl.setAttribute('viewBox', '-20 -20 200 200'); 
             svgEl.style.overflow = 'visible';
         }
         return tempDiv.innerHTML;
