@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR V9.12 (ESTABLE Y CONECTADO)
+// ColiseumManager.js - CONTROLADOR V9.13 (FIX BOTONES DINÁMICOS)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -20,14 +20,18 @@ document.addEventListener("DOMContentLoaded", () => {
         let btnStart = document.getElementById("btn-start-battle");
         if (btnStart) btnStart.onclick = iniciarPelea;
 
-        let btnAtk = document.getElementById("btn-atk");
-        if (btnAtk) btnAtk.onclick = () => procesarRonda("ataque");
+        // ✨ CONEXIÓN ARREGLADA: Ahora lee los 4 slots dinámicos (btn-atk-1, 2, 3, 4)
+        let btnAtk1 = document.getElementById("btn-atk-1");
+        if (btnAtk1) btnAtk1.onclick = () => procesarRonda("ataque");
         
-        let btnSpecial = document.getElementById("btn-special");
-        if (btnSpecial) btnSpecial.onclick = () => procesarRonda("especial");
+        let btnAtk2 = document.getElementById("btn-atk-2");
+        if (btnAtk2) btnAtk2.onclick = () => procesarRonda("especial");
 
-        let btnBuff = document.getElementById("btn-buff");
-        if (btnBuff) btnBuff.onclick = () => procesarRonda("tactica");
+        let btnAtk3 = document.getElementById("btn-atk-3");
+        if (btnAtk3) btnAtk3.onclick = () => procesarRonda("tactica");
+
+        let btnAtk4 = document.getElementById("btn-atk-4");
+        if (btnAtk4) btnAtk4.onclick = () => procesarRonda("definitivo");
     };
 
     function iniciarPelea() {
@@ -177,23 +181,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function actualizarBotones() {
+        // ✨ Restaurar visualmente los botones según el inventario del Geno
+        if (typeof ColiseumUI.actualizarBotonesAtaque === 'function') {
+            ColiseumUI.actualizarBotonesAtaque(window.miMascota);
+        }
+        
         bloquearBotones(false);
-        const btnSpecial = document.getElementById("btn-special");
-        if (btnSpecial) {
+
+        // ✨ Aplicar cooldown al botón 2 si es necesario
+        const btnSpecial = document.getElementById("btn-atk-2");
+        if (btnSpecial && !btnSpecial.disabled && btnSpecial.innerText !== "VACÍO") {
             if (ColiseumLogic.cooldownEspecial > 0) {
                 btnSpecial.disabled = true;
                 btnSpecial.innerText = `ESPERA (${ColiseumLogic.cooldownEspecial})`;
-            } else {
-                btnSpecial.disabled = false;
-                btnSpecial.innerText = `TÉCNICA`;
             }
         }
     }
 
     function bloquearBotones(bloquear) {
-        ["btn-atk", "btn-special", "btn-buff", "btn-ultimate"].forEach(id => {
+        ["btn-atk-1", "btn-atk-2", "btn-atk-3", "btn-atk-4"].forEach(id => {
             let btn = document.getElementById(id);
-            if(btn) btn.disabled = bloquear;
+            // Solo desbloquea si no está vacío y no está bloqueado por nivel
+            if(btn && btn.innerText !== "VACÍO" && !btn.innerText.includes("NV. 25")) {
+                btn.disabled = bloquear;
+            }
         });
     }
 });
