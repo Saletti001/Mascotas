@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V10.0 (DEFENSA Y FÓRMULA V1.0 INTEGRADA)
+// ColiseumLogic.js - MODELO MATEMÁTICO V10.1 (MATCHMAKING Y BALANCE)
 // =========================================
 
 window.ColiseumLogic = {
@@ -15,12 +15,29 @@ window.ColiseumLogic = {
     },
 
     generarRivalProcedural: function(nivelJugador) {
-        const rarezas = ["Común", "Raro", "Épico"];
-        const eRareza = rarezas[Math.floor(Math.random() * rarezas.length)];
+        // ✨ FIX 1: MATCHMAKING JUSTO BASADO EN EL NIVEL DEL JUGADOR
+        let eRareza = "Común";
+        let roll = Math.random();
         
-        // Inyectamos un stat base en caso de fallo, pero usamos el generador que ya incluye DEF
+        if (nivelJugador <= 4) {
+            eRareza = roll < 0.85 ? "Común" : "Raro"; // 85% Común, 15% Raro (No Épicos en niveles bajos)
+        } else if (nivelJugador <= 10) {
+            eRareza = roll < 0.60 ? "Común" : (roll < 0.90 ? "Raro" : "Épico");
+        } else {
+            eRareza = roll < 0.40 ? "Común" : (roll < 0.70 ? "Raro" : (roll < 0.90 ? "Épico" : "Legendario"));
+        }
+        
         const eStats = window.generarStatsPorRareza ? 
             window.generarStatsPorRareza(eRareza) : {hp: 60, atk: 12, def: 8, spd: 10, luk: 5};
+
+        // ✨ FIX 2: EL ENEMIGO SE REPARTE PUNTOS DE NIVEL IGUAL QUE TÚ
+        let puntosExtra = (nivelJugador > 1) ? (nivelJugador - 1) * 3 : 0;
+        for(let i=0; i<puntosExtra; i++) {
+            const stats = ['hp', 'atk', 'def', 'spd', 'luk'];
+            const rStat = stats[Math.floor(Math.random() * stats.length)];
+            if(rStat === 'hp') eStats.hp += 5;
+            else eStats[rStat] += 1;
+        }
             
         const elementos = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
         const eElemento = elementos[Math.floor(Math.random() * elementos.length)];
@@ -45,7 +62,7 @@ window.ColiseumLogic = {
         this.enemy = {
             nombre: this.generarNombreAleatorio(), isPlayer: false, adn: adn,
             maxHp: eStats.hp, hp: eStats.hp, 
-            atk: eStats.atk, def: eStats.def || 5, spd: eStats.spd, luk: eStats.luk, // ✨ DEF Integrada
+            atk: eStats.atk, def: eStats.def || 5, spd: eStats.spd, luk: eStats.luk,
             element: eElemento, rareza: eRareza,
             genesId: [eHiddenGenes.B ? eHiddenGenes.B.id : "ninguno", eHiddenGenes.C ? eHiddenGenes.C.id : "ninguno"],
             estados: [], escudoCibernetico: eElemento === "Cibernético", resilienciaUsada: false, barreraUsada: false, 
@@ -57,11 +74,10 @@ window.ColiseumLogic = {
     prepararJugador: function(mascota) {
         const pElemento = (mascota.genes && mascota.genes.afinidad) ? mascota.genes.afinidad.dom : (mascota.element || "Normal");
         
-        // ✨ LECTURA DEL STAT TOTAL (AMARILLO): mascota.stats lee el total con los puntos de nivel sumados
         const pStats = { 
             hp: mascota.stats?.hp || 80, 
             atk: mascota.stats?.atk || 15, 
-            def: mascota.stats?.def || 5, // ✨ DEF Total Integrada
+            def: mascota.stats?.def || 5, 
             spd: mascota.stats?.spd || 15, 
             luk: mascota.stats?.luk || 10 
         };
@@ -72,7 +88,7 @@ window.ColiseumLogic = {
         this.player = {
             nombre: mascota.name || "Tu Geno", isPlayer: true, adn: mascota,
             maxHp: pStats.hp, hp: pStats.hp, 
-            atk: pStats.atk, def: pStats.def, spd: pStats.spd, luk: pStats.luk, // ✨ Stats completos
+            atk: pStats.atk, def: pStats.def, spd: pStats.spd, luk: pStats.luk,
             element: pElemento, rareza: mascota.rarity || "Común",
             genesId: [pGenB, pGenC], estados: [], escudoCibernetico: pElemento === "Cibernético", 
             resilienciaUsada: false, barreraUsada: false, ultimoElementoRecibido: null, sangreFriaUsada: false, 
@@ -91,7 +107,7 @@ window.ColiseumLogic = {
         if (accionElegida === "especial") {
             this.cooldownEspecial = 3;
             logs.push(`<span style="color:#e040fb">> ¡${atacante.nombre} usa un ATAQUE ESPECIAL!</span>`);
-            multDano = 1.35; // ✨ Multiplicador de potencia del Doc. V1.0
+            multDano = 1.35; 
         }
 
         let ataques = 1;
@@ -103,24 +119,22 @@ window.ColiseumLogic = {
         for(let i=0; i<ataques; i++) {
             if (defensor.hp <= 0) break;
             
-            // 1. Cálculo de Fuerza Bruta Base (ATK * Multiplicador)
             let atkBruto = atacante.atk * multDano * (i === 1 ? 0.5 : 1) * (0.85 + Math.random() * 0.3);
 
-            // 2. Multiplicador Elemental
             const ventajas = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
             let multElem = ventajas[atacante.element] === defensor.element ? 1.5 : (ventajas[defensor.element] === atacante.element ? 0.5 : 1.0);
             atkBruto = atkBruto * multElem;
             anims.multElem = multElem;
 
-            // ✨ 3. FÓRMULA DEL DOCUMENTO TÉCNICO V1.0 (ATK vs DEF)
-            // "Daño = max(ATK - DEF, ATK x 0.25)"
+            // ✨ FIX 3: BALANCEO DE FÓRMULA DE DAÑO
+            // Para que un ataque básico no pegue 1, aseguramos un mínimo de 35% del ataque + 2 de daño fijo.
             let defRival = defensor.def;
-            let dmg = Math.max(atkBruto - defRival, atkBruto * 0.25);
+            let dmgMinimo = (atkBruto * 0.35) + 2; 
+            let dmg = Math.max(atkBruto - defRival, dmgMinimo);
             dmg = Math.floor(dmg);
 
-            // 4. Cálculo de Crítico (Ignora parte de la defensa residual)
             let probCrit = 0.05 + (atacante.luk * 0.002);
-            if (atacante.element === "Sintético") probCrit += 0.15; // Pasivo Sintético
+            if (atacante.element === "Sintético") probCrit += 0.15; 
             let isCrit = Math.random() <= probCrit;
             
             if (isCrit) {
@@ -128,7 +142,6 @@ window.ColiseumLogic = {
                 anims.critico = true;
             }
 
-            // 5. Escudos y Pasivos de Combate
             if (defensor.escudoCibernetico) {
                 dmg = Math.floor(dmg * 0.60);
                 defensor.escudoCibernetico = false;
@@ -163,7 +176,6 @@ window.ColiseumLogic = {
                 if (isCrit) logs.push(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${atacante.nombre} causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} de daño</span>.${tipoGolpe}`);
                 else logs.push(`> ${atacante.nombre} causa <span style="color:#ff6b6b">${dmg} de daño</span>.${tipoGolpe}`);
 
-                // Efectos de Estado
                 if (dmg > 0) {
                     let efectoAplicar = null;
                     if (atacante.element === "Radiactivo" && Math.random() <= 0.25) efectoAplicar = "Quemadura";
@@ -191,7 +203,6 @@ window.ColiseumLogic = {
                     }
                 }
 
-                // Vampirismo Genético
                 if (atacante.genesId.includes("vampirismo_genetico") && dmg > 0) {
                     let roboVida = Math.floor(dmg * 0.15);
                     if (roboVida < 1) roboVida = 1;
@@ -200,7 +211,6 @@ window.ColiseumLogic = {
                     anims.curacionAtacante += roboVida;
                 }
 
-                // Reflejo Genético
                 if (isCrit && defensor.genesId.includes("reflejo_genetico") && dmg > 0) {
                     let danoReflejado = Math.floor(dmg * 0.30);
                     if (danoReflejado < 1) danoReflejado = 1;
@@ -210,7 +220,6 @@ window.ColiseumLogic = {
                 }
             }
 
-            // Resiliencia Última
             if (defensor.hp > 0 && defensor.hp <= (defensor.maxHp * 0.15) && defensor.genesId.includes("resiliencia_ultima") && !defensor.resilienciaUsada) {
                 defensor.resilienciaUsada = true;
                 defensor.atk = Math.floor(defensor.atk * 1.4); defensor.spd = Math.floor(defensor.spd * 1.4);
@@ -225,14 +234,12 @@ window.ColiseumLogic = {
         let anims = { heal: 0, dmg: 0 };
         if (fighter.hp <= 0) return { logs, anims };
         
-        // Regeneración Biomutante
         if (fighter.element === "Biomutante" && fighter.hp < fighter.maxHp) {
             let regen = Math.floor(fighter.maxHp * 0.06) + 2;
             fighter.hp = Math.min(fighter.maxHp, fighter.hp + regen);
             anims.heal += regen;
         }
         
-        // Daño por Quemadura
         if (fighter.estados.includes("Quemadura")) {
             let burnDmg = Math.floor(fighter.maxHp * 0.06) + 2;
             fighter.hp = Math.max(0, fighter.hp - burnDmg);
