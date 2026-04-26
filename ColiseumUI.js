@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumUI.js - VISTA Y ANIMACIONES V9.14 (BOTONES LIMPIOS Y COMPACTOS)
+// ColiseumUI.js - VISTA Y ANIMACIONES V9.15 (ANIMACIONES DE BUFFOS Y DASH)
 // =========================================
 
 window.ColiseumUI = {
@@ -36,165 +36,93 @@ window.ColiseumUI = {
             align-items: center !important; min-height: 250px !important; backdrop-filter: blur(5px); overflow: visible !important; transition: 0.3s ease-out !important; border-radius: 12px !important;
             }
             
-            @keyframes pulseGlowP { 0% { box-shadow: -8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(77,208,225,0.4);
-            } 50% { box-shadow: -8px 8px 30px rgba(0,0,0,0.8), 0 0 25px rgba(77,208,225,0.8);
-            } 100% { box-shadow: -8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(77,208,225,0.4);
-            } }
-            #player-sprite-battle, .fighter-left { border: 2px solid #4dd0e1 !important;
-            animation: pulseGlowP 3s infinite ease-in-out !important; }
-            #player-sprite-battle:hover, .fighter-left:hover { transform: translateY(-5px) scale(1.02) !important;
-            }
+            @keyframes pulseGlowP { 0% { box-shadow: -8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(77,208,225,0.4); } 50% { box-shadow: -8px 8px 30px rgba(0,0,0,0.8), 0 0 25px rgba(77,208,225,0.8); } 100% { box-shadow: -8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(77,208,225,0.4); } }
+            #player-sprite-battle, .fighter-left { border: 2px solid #4dd0e1 !important; animation: pulseGlowP 3s infinite ease-in-out !important; }
+            #player-sprite-battle:hover, .fighter-left:hover { transform: translateY(-5px) scale(1.02) !important; }
 
-            @keyframes pulseGlowE { 0% { box-shadow: 8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(255,107,107,0.4);
-            } 50% { box-shadow: 8px 8px 30px rgba(0,0,0,0.8), 0 0 25px rgba(255,107,107,0.8);
-            } 100% { box-shadow: 8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(255,107,107,0.4);
-            } }
-            #enemy-sprite-battle, .fighter-right { border: 2px solid #ff6b6b !important;
-            animation: pulseGlowE 3s infinite ease-in-out !important; }
-            #enemy-sprite-battle:hover, .fighter-right:hover { transform: translateY(-5px) scale(1.02) !important;
-            }
+            @keyframes pulseGlowE { 0% { box-shadow: 8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(255,107,107,0.4); } 50% { box-shadow: 8px 8px 30px rgba(0,0,0,0.8), 0 0 25px rgba(255,107,107,0.8); } 100% { box-shadow: 8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(255,107,107,0.4); } }
+            #enemy-sprite-battle, .fighter-right { border: 2px solid #ff6b6b !important; animation: pulseGlowE 3s infinite ease-in-out !important; }
+            #enemy-sprite-battle:hover, .fighter-right:hover { transform: translateY(-5px) scale(1.02) !important; }
 
             #player-visual-box, #enemy-visual-box, .fighter-sprite { width: 120px !important;
             height: 120px !important; margin: auto !important; display: flex; justify-content: center; align-items: center; position: relative; overflow: visible !important;
             filter: drop-shadow(0 8px 6px rgba(0,0,0,0.6)); transition: 0.2s ease-in-out; }
             #player-visual-box svg, #enemy-visual-box svg, .fighter-sprite svg { width: 100% !important;
             height: 100% !important; overflow: visible !important; transition: 0.2s; }
-            #player-visual-box:hover, #enemy-visual-box:hover, .fighter-sprite:hover { transform: scale(1.1) !important;
-            }
 
             .fighter-name { font-size: 13px !important; text-transform: uppercase;
-            letter-spacing: 1px; margin-top: 10px !important; text-align: center !important; width: 100% !important; line-height: 1.3 !important;
-            }
-            .fighter-left .fighter-name, #battle-player-name { color: #4dd0e1 !important;
-            }
-            .fighter-right .fighter-name, #battle-enemy-name { color: #ff6b6b !important;
-            }
+            letter-spacing: 1px; margin-top: 10px !important; text-align: center !important; width: 100% !important; line-height: 1.3 !important; }
+            .fighter-left .fighter-name, #battle-player-name { color: #4dd0e1 !important; }
+            .fighter-right .fighter-name, #battle-enemy-name { color: #ff6b6b !important; }
 
             .hp-bar-container, #player-sprite-battle > div:nth-child(3), #enemy-sprite-battle > div:nth-child(3) { background: #000 !important;
-            border: 1px solid #333 !important; box-shadow: inset 0 0 5px rgba(0,0,0,0.8) !important; height: 12px !important; border-radius: 6px !important;
-            width: 90% !important; margin: 8px auto 0 auto !important; }
-            .hp-bar-fill-green, #player-hp-bar { background: linear-gradient(90deg, #00d2ff, #4dd0e1) !important;
-            box-shadow: 0 0 10px rgba(77,208,225,0.6) !important; height: 100%; border-radius: 6px;
-            transition: width 0.3s;}
-            .hp-bar-fill-red, #enemy-hp-bar { background: linear-gradient(90deg, #ff6b6b, #d9534f) !important;
-            box-shadow: 0 0 10px rgba(255,107,107,0.6) !important; height: 100%; border-radius: 6px;
-            transition: width 0.3s;}
-            .hp-text, #player-hp-text, #enemy-hp-text { font-size: 11px !important;
-            color: #fff !important; font-weight: bold; margin-top: 4px !important; text-shadow: 0 1px 2px #000; text-align: center; width: 100%;
-            }
+            border: 1px solid #333 !important; box-shadow: inset 0 0 5px rgba(0,0,0,0.8) !important; height: 12px !important; border-radius: 6px !important; width: 90% !important; margin: 8px auto 0 auto !important; }
+            .hp-bar-fill-green, #player-hp-bar { background: linear-gradient(90deg, #00d2ff, #4dd0e1) !important; box-shadow: 0 0 10px rgba(77,208,225,0.6) !important; height: 100%; border-radius: 6px; transition: width 0.3s;}
+            .hp-bar-fill-red, #enemy-hp-bar { background: linear-gradient(90deg, #ff6b6b, #d9534f) !important; box-shadow: 0 0 10px rgba(255,107,107,0.6) !important; height: 100%; border-radius: 6px; transition: width 0.3s;}
+            .hp-text, #player-hp-text, #enemy-hp-text { font-size: 11px !important; color: #fff !important; font-weight: bold; margin-top: 4px !important; text-shadow: 0 1px 2px #000; text-align: center; width: 100%; }
 
-            @keyframes vsPulse { 
-                0% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
-                50% { transform: scale(1.5); text-shadow: 0 0 30px rgba(255,204,0,1); } 
-                100% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 
-            }
-            .vs-badge-battle { position: relative !important;
-            display: inline-block !important; font-size: 24px !important; font-weight: 900 !important; font-style: italic !important; color: #ffcc00 !important;
-            text-shadow: 0 0 20px rgba(255,0,0,0.8) !important; z-index: 50 !important; margin: 0 !important; animation: vsPulse 1.5s infinite ease-in-out !important;
-            }
+            @keyframes vsPulse { 0% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } 50% { transform: scale(1.5); text-shadow: 0 0 30px rgba(255,204,0,1); } 100% { transform: scale(1); text-shadow: 0 0 10px rgba(255,204,0,0.6); } }
+            .vs-badge-battle { position: relative !important; display: inline-block !important; font-size: 24px !important; font-weight: 900 !important; font-style: italic !important; color: #ffcc00 !important; text-shadow: 0 0 20px rgba(255,0,0,0.8) !important; z-index: 50 !important; margin: 0 !important; animation: vsPulse 1.5s infinite ease-in-out !important; }
 
-            #battle-log, .battle-log-container { background: rgba(13, 22, 30, 0.98) !important;
-            border: 1px solid rgba(255,255,255,0.1) !important; border-left: 3px solid #4dd0e1 !important; border-right: 3px solid #ff6b6b !important; color: #00ffcc !important;
-            border-radius: 12px !important; font-family: 'Courier New', monospace !important; font-size: 12px !important; padding: 15px !important; height: 130px !important; overflow-y: scroll !important;
-            -ms-overflow-style: none; scrollbar-width: none; box-sizing: border-box; width: calc(100% + 60px) !important; margin: 15px -30px 10px -30px !important;
-            box-shadow: 0 12px 25px rgba(0,0,0,0.8), -5px 0 15px rgba(77,208,225,0.15), 5px 0 15px rgba(255,107,107,0.15) !important; position: relative; z-index: 15; transform: translateY(-5px);
-            }
-            #battle-log::-webkit-scrollbar, .battle-log-container::-webkit-scrollbar { display: none !important;
-            }
+            #battle-log, .battle-log-container { background: rgba(13, 22, 30, 0.98) !important; border: 1px solid rgba(255,255,255,0.1) !important; border-left: 3px solid #4dd0e1 !important; border-right: 3px solid #ff6b6b !important; color: #00ffcc !important; border-radius: 12px !important; font-family: 'Courier New', monospace !important; font-size: 12px !important; padding: 15px !important; height: 130px !important; overflow-y: scroll !important; -ms-overflow-style: none; scrollbar-width: none; box-sizing: border-box; width: calc(100% + 60px) !important; margin: 15px -30px 10px -30px !important; box-shadow: 0 12px 25px rgba(0,0,0,0.8), -5px 0 15px rgba(77,208,225,0.15), 5px 0 15px rgba(255,107,107,0.15) !important; position: relative; z-index: 15; transform: translateY(-5px); }
+            #battle-log::-webkit-scrollbar, .battle-log-container::-webkit-scrollbar { display: none !important; }
 
-            /* ========================================= */
-            /* BOTONES DE ATAQUE: DISEÑO COMPACTO Y LIMPIO */
-            /* ========================================= */
-            #battle-controls, .controls-container { 
-                width: 100% !important;
-                display: grid !important; 
-                grid-template-columns: 1fr 1fr !important; 
-                gap: 12px !important;
-                margin-top: 15px !important; 
-            }
-            
-            .battle-btn { 
-                padding: 12px 5px !important;
-                border-radius: 8px !important; 
-                text-transform: uppercase !important; 
-                letter-spacing: 0.5px !important; /* Espaciado reducido para mejor ajuste */
-                transition: 0.2s !important; 
-                font-weight: bold !important; 
-                font-size: 9px !important; /* Fuente reducida (antes 11px) */
-                cursor: pointer !important; 
-                background: #111b24 !important;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;
-                text-shadow: none !important;
-                width: 100% !important;
-                box-sizing: border-box !important;
-            }
-            
-            .slot-1 { border: 1px solid #4dd0e1 !important; color: #4dd0e1 !important; } 
-            .slot-2 { border: 1px solid #ff6b6b !important; color: #ff6b6b !important; } 
-            .slot-3 { border: 1px solid #4CAF50 !important; color: #4CAF50 !important; } 
-            .slot-4 { border: 1px solid #555 !important; color: #888 !important; background: #0a0f14 !important; } 
-            
-            .battle-btn:active { transform: scale(0.95) !important; }
-            .battle-btn:disabled { opacity: 0.5 !important; cursor: not-allowed !important; transform: none !important; box-shadow: none !important; }
+            #battle-controls, .controls-container { width: 100% !important; display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 12px !important; margin-top: 15px !important; }
+            .battle-btn { padding: 12px 5px !important; border-radius: 8px !important; text-transform: uppercase !important; letter-spacing: 0.5px !important; transition: 0.2s !important; font-weight: bold !important; font-size: 9px !important; cursor: pointer !important; background: #111b24 !important; box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important; text-shadow: none !important; width: 100% !important; box-sizing: border-box !important; }
+            .slot-1 { border: 1px solid #4dd0e1 !important; color: #4dd0e1 !important; } .slot-2 { border: 1px solid #ff6b6b !important; color: #ff6b6b !important; } .slot-3 { border: 1px solid #4CAF50 !important; color: #4CAF50 !important; } .slot-4 { border: 1px solid #555 !important; color: #888 !important; background: #0a0f14 !important; } 
+            .battle-btn:active { transform: scale(0.95) !important; } .battle-btn:disabled { opacity: 0.5 !important; cursor: not-allowed !important; transform: none !important; box-shadow: none !important; }
 
-            /* BOTONES DE FLUJO */
-            #btn-start-battle, .btn-primary { 
-                background: linear-gradient(90deg, #00b4d8, #e53935) !important;
-                box-shadow: 0 6px 15px rgba(0,0,0,0.5), -5px 0 15px rgba(0,180,219,0.3), 5px 0 15px rgba(229,57,53,0.3) !important; 
-                border: 2px solid rgba(255,255,255,0.2) !important;
-                color: white !important; 
-                border-radius: 12px !important; 
-                text-transform: uppercase; 
-                letter-spacing: 1px !important; 
-                transition: 0.2s; 
-                padding: 12px 25px !important; 
-                font-weight: bold !important;
-                font-size: 13px !important; 
-                cursor: pointer; 
-                width: max-content !important; 
-                min-width: 200px !important; 
-                margin: 15px auto 0 auto !important; 
-                display: none;
-            }
+            #btn-start-battle, .btn-primary { background: linear-gradient(90deg, #00b4d8, #e53935) !important; box-shadow: 0 6px 15px rgba(0,0,0,0.5), -5px 0 15px rgba(0,180,219,0.3), 5px 0 15px rgba(229,57,53,0.3) !important; border: 2px solid rgba(255,255,255,0.2) !important; color: white !important; border-radius: 12px !important; text-transform: uppercase; letter-spacing: 1px !important; transition: 0.2s; padding: 12px 25px !important; font-weight: bold !important; font-size: 13px !important; cursor: pointer; width: max-content !important; min-width: 200px !important; margin: 15px auto 0 auto !important; display: none; }
             #btn-start-battle:hover, .btn-primary:hover { transform: translateY(-3px) !important; filter: brightness(1.2); }
             
-            #btn-leave-battle, .btn-secondary { 
-                background-color: #111b24 !important;
-                border: 1px solid #1e3a5f !important; color: #4dd0e1 !important; 
-                padding: 15px 30px !important; border-radius: 8px !important; text-transform: uppercase !important;
-                font-size: 13px !important; 
-                font-weight: bold !important; letter-spacing: 1px !important; cursor: pointer !important; 
-                display: block; 
-                transition: 0.2s !important; 
-                width: 70% !important;
-                max-width: 300px !important; box-shadow: none !important; animation: none !important; 
-                position: relative !important; margin: 20px auto 10px auto !important;
-                z-index: 100 !important;
-            }
+            #btn-leave-battle, .btn-secondary { background-color: #111b24 !important; border: 1px solid #1e3a5f !important; color: #4dd0e1 !important; padding: 15px 30px !important; border-radius: 8px !important; text-transform: uppercase !important; font-size: 13px !important; font-weight: bold !important; letter-spacing: 1px !important; cursor: pointer !important; display: block; transition: 0.2s !important; width: 70% !important; max-width: 300px !important; box-shadow: none !important; animation: none !important; position: relative !important; margin: 20px auto 10px auto !important; z-index: 100 !important; }
             #btn-leave-battle:hover, .btn-secondary:hover { background-color: #1e3a5f !important; color: #fff !important; }
             
-            /* ANIMACIONES Y EFECTOS */
+            /* ANIMACIONES BASE */
             @keyframes animarBoca { 0% { transform: scale(1); } 50% { transform: scale(1.6); } 100% { transform: scale(1); } }
             @keyframes animarEmbestida { 0% { transform: scale(1) translateY(0); } 50% { transform: scale(1.1) translateY(-10px); } 100% { transform: scale(1) translateY(0); } }
             .anim-gritar [id*="boca"], .anim-gritar [class*="boca"], .anim-gritar [id*="mouth"], .anim-gritar [class*="mouth"] { transform-origin: center !important; transform-box: fill-box !important; animation: animarBoca 0.4s ease-in-out !important; }
             .anim-gritar svg { animation: animarEmbestida 0.4s ease-in-out !important; }
-
             .hit-effect { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5) !important; transform: scale(0.90) translateX(5px) !important; transition: 0.1s; }
             .heal-effect { filter: brightness(1.5) drop-shadow(0 0 15px #4CAF50) !important; transform: scale(1.05) !important; transition: 0.2s; }
 
+            /* ✨ NUEVO: ANIMACIONES DE TÁCTICAS Y BUFFOS */
+            @keyframes animVelocidad {
+                0% { transform: translateX(0) skewX(0); filter: drop-shadow(0 0 0 #00ffff); }
+                15% { transform: translateX(40px) skewX(-20deg) scaleY(0.9); filter: drop-shadow(-15px 0 15px #00ffff); }
+                30% { transform: translateX(-40px) skewX(20deg) scaleY(0.9); filter: drop-shadow(15px 0 15px #00ffff); }
+                45% { transform: translateX(20px) skewX(-10deg); filter: drop-shadow(-10px 0 10px #00ffff); }
+                60% { transform: translateX(-20px) skewX(10deg); filter: drop-shadow(10px 0 10px #00ffff); }
+                100% { transform: translateX(0) skewX(0); filter: drop-shadow(0 0 0 #00ffff); }
+            }
+            .anim-velocidad svg { animation: animVelocidad 0.6s ease-in-out !important; }
+
+            @keyframes animFuerza {
+                0% { filter: drop-shadow(0 0 0px #ff3333); transform: scale(1); }
+                50% { filter: drop-shadow(0 0 30px #ff3333) drop-shadow(0 0 10px rgba(0,0,0,0.8)); transform: scale(1.2); }
+                100% { filter: drop-shadow(0 0 0px #ff3333); transform: scale(1); }
+            }
+            .anim-fuerza svg { animation: animFuerza 0.8s ease-in-out !important; }
+
+            @keyframes animEscudo {
+                0% { filter: drop-shadow(0 0 0px #4dd0e1); transform: scale(1); }
+                50% { filter: drop-shadow(0 0 25px #4dd0e1) drop-shadow(0 0 10px rgba(0,0,0,0.8)); transform: scale(1.05); }
+                100% { filter: drop-shadow(0 0 0px #4dd0e1); transform: scale(1); }
+            }
+            .anim-escudo svg { animation: animEscudo 0.8s ease-in-out !important; }
+
+            @keyframes animBuffGeneral {
+                0% { filter: drop-shadow(0 0 0px #80cbc4); transform: translateY(0); }
+                50% { filter: drop-shadow(0 0 20px #80cbc4); transform: translateY(-15px); }
+                100% { filter: drop-shadow(0 0 0px #80cbc4); transform: translateY(0); }
+            }
+            .anim-buff svg { animation: animBuffGeneral 0.8s ease-in-out !important; }
+
             @keyframes floatUpFade { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); } 10% { transform: translate(-50%, calc(-50% - 15px)) scale(1.8); } 100% { opacity: 0; transform: translate(-50%, calc(-50% - 60px)) scale(1); } }
-            
-            .floating-text { position: absolute; font-weight: 900; z-index: 100; pointer-events: none; animation: floatUpFade 1.3s ease-out forwards;
-            text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 5px rgba(0,0,0,0.8); white-space: nowrap !important; }
-            
-            .text-dmg { color: #ff3333; font-size: 28px; }
-            .text-heal { color: #4CAF50; font-size: 24px; }
-            .text-crit { color: #ffcc00; font-size: 38px !important; font-style: italic; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 0 #d32f2f, -2px -2px 0 #d32f2f, 2px -2px 0 #d32f2f, -2px 2px 0 #d32f2f, 0 0 15px rgba(255,0,0,1) !important; }
-            
+            .floating-text { position: absolute; font-weight: 900; z-index: 100; pointer-events: none; animation: floatUpFade 1.3s ease-out forwards; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 5px rgba(0,0,0,0.8); white-space: nowrap !important; }
+            .text-dmg { color: #ff3333; font-size: 28px; } .text-heal { color: #4CAF50; font-size: 24px; } .text-crit { color: #ffcc00; font-size: 38px !important; font-style: italic; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 0 #d32f2f, -2px -2px 0 #d32f2f, 2px -2px 0 #d32f2f, -2px 2px 0 #d32f2f, 0 0 15px rgba(255,0,0,1) !important; }
             .shake-effect { animation: shake 0.4s; }
-            @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg);
-            } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg);
-            } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }
+            @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }
         `;
         document.head.appendChild(style);
     },
@@ -217,19 +145,14 @@ window.ColiseumUI = {
         if (flexContainer) {
             flexContainer.classList.add("fighters-wrapper");
             for (let i = 0; i < flexContainer.children.length; i++) {
-                if (flexContainer.children[i].innerText.includes("VS")) {
-                    flexContainer.children[i].className = "vs-badge-battle";
-                }
+                if (flexContainer.children[i].innerText.includes("VS")) flexContainer.children[i].className = "vs-badge-battle";
             }
         }
 
         let controls = document.getElementById("battle-controls") || document.querySelector(".controls-container");
         if (controls) {
             area.appendChild(controls);
-            controls.id = "battle-controls";
-            controls.className = "controls-container";
-            
-            // INYECCIÓN LIMPIA: Nombres correctos, sin iconos y con clases para estilo neón.
+            controls.id = "battle-controls"; controls.className = "controls-container";
             controls.innerHTML = `
                 <button id="btn-atk-1" class="battle-btn slot-1">BÁSICO</button>
                 <button id="btn-atk-2" class="battle-btn slot-2">VACÍO</button>
@@ -240,68 +163,28 @@ window.ColiseumUI = {
         }
 
         let btnStart = document.getElementById("btn-start-battle") || document.querySelector(".btn-primary");
-        if (btnStart) {
-            btnStart.id = "btn-start-battle"; 
-            btnStart.className = "btn-start";
-            area.appendChild(btnStart);
-            btnStart.style.setProperty("display", "block", "important");
-        }
+        if (btnStart) { btnStart.id = "btn-start-battle"; btnStart.className = "btn-start"; area.appendChild(btnStart); btnStart.style.setProperty("display", "block", "important"); }
 
         let btnLeave = document.getElementById("btn-leave-battle") || document.querySelector(".btn-secondary");
-        if (btnLeave && currentScreen) {
-            btnLeave.id = "btn-leave-battle";
-            btnLeave.className = "btn-leave";
-            currentScreen.appendChild(btnLeave); 
-        }
+        if (btnLeave && currentScreen) { btnLeave.id = "btn-leave-battle"; btnLeave.className = "btn-leave"; currentScreen.appendChild(btnLeave); }
 
         let log = document.getElementById("battle-log") || document.querySelector(".battle-log-container");
         if (log) log.id = "battle-log";
     },
 
-    // ✨ FIX: Filtro .replace(/MT /gi, "") añadido para eliminar el prefijo
     actualizarBotonesAtaque: function(mascota) {
         if (!mascota) return;
-        const btn1 = document.getElementById("btn-atk-1");
-        const btn2 = document.getElementById("btn-atk-2");
-        const btn3 = document.getElementById("btn-atk-3");
-        const btn4 = document.getElementById("btn-atk-4");
-        const ataquesBasicos = {
-            "Biomutante": "PULSO VITAL", "Viral": "DESCARGA VIRAL", "Cibernético": "LÁSER DE PRECISIÓN",
-            "Radiactivo": "PROYECTIL RADIACTIVO", "Tóxico": "COLMILLO VENENOSO", "Sintético": "RÁFAGA SINTÉTICA"
-        };
-        if (btn1) {
-            btn1.innerText = mascota.element ? (ataquesBasicos[mascota.element] || "BÁSICO") : "BÁSICO";
-            btn1.disabled = false;
-        }
-
+        const btn1 = document.getElementById("btn-atk-1"); const btn2 = document.getElementById("btn-atk-2"); const btn3 = document.getElementById("btn-atk-3"); const btn4 = document.getElementById("btn-atk-4");
+        const ataquesBasicos = { "Biomutante": "PULSO VITAL", "Viral": "DESCARGA VIRAL", "Cibernético": "LÁSER DE PRECISIÓN", "Radiactivo": "PROYECTIL RADIACTIVO", "Tóxico": "COLMILLO VENENOSO", "Sintético": "RÁFAGA SINTÉTICA" };
+        if (btn1) { btn1.innerText = mascota.element ? (ataquesBasicos[mascota.element] || "BÁSICO") : "BÁSICO"; btn1.disabled = false; }
         const equipados = mascota.ataques || {};
-
-        if (btn2) {
-            btn2.innerText = equipados.atk_2 ? equipados.atk_2.nombre.replace(/MT /gi, "").toUpperCase() : "VACÍO";
-            btn2.disabled = !equipados.atk_2;
-            if(!equipados.atk_2) btn2.classList.add("slot-4"); else btn2.classList.remove("slot-4");
-        }
-        if (btn3) {
-            btn3.innerText = equipados.atk_3 ? equipados.atk_3.nombre.replace(/MT /gi, "").toUpperCase() : "VACÍO";
-            btn3.disabled = !equipados.atk_3;
-            if(!equipados.atk_3) btn3.classList.add("slot-4"); else btn3.classList.remove("slot-4");
-        }
+        if (btn2) { btn2.innerText = equipados.atk_2 ? equipados.atk_2.nombre.replace(/MT /gi, "").toUpperCase() : "VACÍO"; btn2.disabled = !equipados.atk_2; if(!equipados.atk_2) btn2.classList.add("slot-4"); else btn2.classList.remove("slot-4"); }
+        if (btn3) { btn3.innerText = equipados.atk_3 ? equipados.atk_3.nombre.replace(/MT /gi, "").toUpperCase() : "VACÍO"; btn3.disabled = !equipados.atk_3; if(!equipados.atk_3) btn3.classList.add("slot-4"); else btn3.classList.remove("slot-4"); }
         if (btn4) {
-            if (mascota.level < 25) {
-                btn4.innerText = "🔒 NV. 25+";
-                btn4.disabled = true;
-                btn4.classList.add("slot-4");
-            } else {
-                btn4.innerText = equipados.atk_4 ? equipados.atk_4.nombre.replace(/MT /gi, "").toUpperCase() : "VACÍO";
-                btn4.disabled = !equipados.atk_4;
-                if(equipados.atk_4) {
-                    btn4.classList.remove("slot-4");
-                    btn4.style.border = "1px solid #ff9800";
-                    btn4.style.color = "#ff9800";
-                } else {
-                    btn4.classList.add("slot-4");
-                    btn4.style.border = ""; btn4.style.color = "";
-                }
+            if (mascota.level < 25) { btn4.innerText = "🔒 NV. 25+"; btn4.disabled = true; btn4.classList.add("slot-4"); }
+            else { btn4.innerText = equipados.atk_4 ? equipados.atk_4.nombre.replace(/MT /gi, "").toUpperCase() : "VACÍO"; btn4.disabled = !equipados.atk_4;
+                if(equipados.atk_4) { btn4.classList.remove("slot-4"); btn4.style.border = "1px solid #ff9800"; btn4.style.color = "#ff9800"; }
+                else { btn4.classList.add("slot-4"); btn4.style.border = ""; btn4.style.color = ""; }
             }
         }
     },
@@ -309,13 +192,10 @@ window.ColiseumUI = {
     actualizarGraficos: function(p, e) {
         let pNameEl = document.getElementById("battle-player-name") || document.querySelector(".fighter-left .fighter-name");
         if (pNameEl) pNameEl.innerHTML = `<strong>${p.nombre}</strong><br><span style="color:#4dd0e1; font-size:10px; font-weight:normal;">(Nv. ${p.adn.level || 1})</span>`;
-        
         let eNameEl = document.getElementById("battle-enemy-name") || document.querySelector(".fighter-right .fighter-name");
         if (eNameEl) eNameEl.innerHTML = `<strong>${e.nombre}</strong><br><span style="color:#ff6b6b; font-size:10px; font-weight:normal;">(${e.rareza} - ${e.element})</span>`;
-
         let pVisual = document.getElementById("player-visual-box") || document.querySelector(".fighter-left .fighter-sprite");
         let eVisual = document.getElementById("enemy-visual-box") || document.querySelector(".fighter-right .fighter-sprite");
-        
         if (typeof generarSvgGeno === 'function') {
             if(pVisual) pVisual.innerHTML = this.inyectarSvgSeguro(p.adn);
             if(eVisual) eVisual.innerHTML = this.inyectarSvgSeguro(e.adn);
@@ -323,41 +203,40 @@ window.ColiseumUI = {
     },
 
     actualizarHP: function(p, e) {
-        const pctP = Math.max(0, (p.hp / p.maxHp) * 100);
-        const pctE = Math.max(0, (e.hp / e.maxHp) * 100);
-        
-        let pBar = document.getElementById("player-hp-bar") || document.querySelector(".fighter-left [class*='hp-bar-fill']");
-        let eBar = document.getElementById("enemy-hp-bar") || document.querySelector(".fighter-right [class*='hp-bar-fill']");
-        if(pBar) { pBar.className = "hp-bar-fill-green"; pBar.style.width = `${pctP}%`; }
-        if(eBar) { eBar.className = "hp-bar-fill-red"; eBar.style.width = `${pctE}%`; }
-
-        let pTxt = document.getElementById("player-hp-text") || document.querySelector(".fighter-left .hp-text");
-        let eTxt = document.getElementById("enemy-hp-text") || document.querySelector(".fighter-right .hp-text");
-        if(pTxt) pTxt.innerText = `${Math.floor(p.hp)} / ${p.maxHp}`;
-        if(eTxt) eTxt.innerText = `${Math.floor(e.hp)} / ${e.maxHp}`;
-
-        let pSide = document.getElementById("player-sprite-battle") || document.querySelector(".fighter-left");
-        let eSide = document.getElementById("enemy-sprite-battle") || document.querySelector(".fighter-right");
-        if(pSide) pSide.style.filter = p.hp <= 0 ? "grayscale(1) brightness(0.3)" : "none";
-        if(eSide) eSide.style.filter = e.hp <= 0 ? "grayscale(1) brightness(0.3)" : "none";
+        const pctP = Math.max(0, (p.hp / p.maxHp) * 100); const pctE = Math.max(0, (e.hp / e.maxHp) * 100);
+        let pBar = document.getElementById("player-hp-bar") || document.querySelector(".fighter-left [class*='hp-bar-fill']"); let eBar = document.getElementById("enemy-hp-bar") || document.querySelector(".fighter-right [class*='hp-bar-fill']");
+        if(pBar) { pBar.className = "hp-bar-fill-green"; pBar.style.width = `${pctP}%`; } if(eBar) { eBar.className = "hp-bar-fill-red"; eBar.style.width = `${pctE}%`; }
+        let pTxt = document.getElementById("player-hp-text") || document.querySelector(".fighter-left .hp-text"); let eTxt = document.getElementById("enemy-hp-text") || document.querySelector(".fighter-right .hp-text");
+        if(pTxt) pTxt.innerText = `${Math.floor(p.hp)} / ${p.maxHp}`; if(eTxt) eTxt.innerText = `${Math.floor(e.hp)} / ${e.maxHp}`;
+        let pSide = document.getElementById("player-sprite-battle") || document.querySelector(".fighter-left"); let eSide = document.getElementById("enemy-sprite-battle") || document.querySelector(".fighter-right");
+        if(pSide) pSide.style.filter = p.hp <= 0 ? "grayscale(1) brightness(0.3)" : "none"; if(eSide) eSide.style.filter = e.hp <= 0 ? "grayscale(1) brightness(0.3)" : "none";
     },
 
     agregarLog: function(texto) {
         const logBox = document.getElementById("battle-log") || document.querySelector(".battle-log-container");
-        if (logBox) {
-            logBox.innerHTML += `<div style="margin-top: 6px;">${texto}</div>`;
-            logBox.scrollTop = logBox.scrollHeight;
-        }
+        if (logBox) { logBox.innerHTML += `<div style="margin-top: 6px;">${texto}</div>`; logBox.scrollTop = logBox.scrollHeight; }
     },
 
-    limpiarLog: function() {
-        const logBox = document.getElementById("battle-log") || document.querySelector(".battle-log-container");
-        if (logBox) logBox.innerHTML = "";
-    },
+    limpiarLog: function() { const logBox = document.getElementById("battle-log") || document.querySelector(".battle-log-container"); if (logBox) logBox.innerHTML = ""; },
 
     animarAtaque: function(esJugador) {
         const el = esJugador ? (document.getElementById("player-visual-box") || document.querySelector(".fighter-left .fighter-sprite")) : (document.getElementById("enemy-visual-box") || document.querySelector(".fighter-right .fighter-sprite"));
         if(el) { el.classList.add("anim-gritar"); setTimeout(() => el.classList.remove("anim-gritar"), 500); }
+    },
+
+    // ✨ NUEVO: MOTOR DE ANIMACIONES DE SOPORTE INTELIGENTE
+    animarSoporte: function(esJugador, ataque) {
+        const el = esJugador ? (document.getElementById("player-visual-box") || document.querySelector(".fighter-left .fighter-sprite")) : (document.getElementById("enemy-visual-box") || document.querySelector(".fighter-right .fighter-sprite"));
+        if(!el) return;
+
+        let claseAnim = "anim-buff"; // Base mágica turquesa por defecto
+
+        if (ataque.buffSpd) claseAnim = "anim-velocidad";
+        else if (ataque.escudo) claseAnim = "anim-escudo";
+        else if (ataque.buffAtk) claseAnim = "anim-fuerza";
+
+        el.classList.add(claseAnim);
+        setTimeout(() => el.classList.remove(claseAnim), 800);
     },
 
     animarDano: function(esJugador) {
@@ -375,45 +254,17 @@ window.ColiseumUI = {
     mostrarTextoFlotante: function(esJugador, texto, claseAdicional) {
         const sideEl = esJugador ? (document.getElementById("player-sprite-battle") || document.querySelector(".fighter-left")) : (document.getElementById("enemy-sprite-battle") || document.querySelector(".fighter-right"));
         if(!sideEl) return;
-
-        const floater = document.createElement("div");
-        floater.className = `floating-text ${claseAdicional}`;
-        floater.innerText = texto;
-        let offsetX = (Math.random() - 0.5) * 40; 
-        let offsetY = (Math.random() - 0.5) * 20; 
-
-        let baseTop = "15%";
-        let baseLeft = "50%"; 
-        let targetContainer = sideEl; 
-
-        if (claseAdicional.includes("text-crit")) {
-            targetContainer = document.querySelector(".fighters-wrapper") || document.getElementById("battle-area"); 
-            baseTop = "-25px"; 
-            baseLeft = "50%";  
-            offsetX = 0; 
-            floater.style.zIndex = "1000";
-        }
-
-        floater.style.top = `calc(${baseTop} + ${offsetY}px)`;
-        floater.style.left = `calc(${baseLeft} + ${offsetX}px)`;
-        floater.style.transform = "translate(-50%, -50%)";
-        
-        targetContainer.appendChild(floater);
-        setTimeout(() => floater.remove(), 1300);
+        const floater = document.createElement("div"); floater.className = `floating-text ${claseAdicional}`; floater.innerText = texto;
+        let offsetX = (Math.random() - 0.5) * 40; let offsetY = (Math.random() - 0.5) * 20; let baseTop = "15%"; let baseLeft = "50%"; let targetContainer = sideEl; 
+        if (claseAdicional.includes("text-crit")) { targetContainer = document.querySelector(".fighters-wrapper") || document.getElementById("battle-area"); baseTop = "-25px"; baseLeft = "50%"; offsetX = 0; floater.style.zIndex = "1000"; }
+        floater.style.top = `calc(${baseTop} + ${offsetY}px)`; floater.style.left = `calc(${baseLeft} + ${offsetX}px)`; floater.style.transform = "translate(-50%, -50%)";
+        targetContainer.appendChild(floater); setTimeout(() => floater.remove(), 1300);
     },
 
     inyectarSvgSeguro: function(adnData) {
         if (typeof generarSvgGeno !== 'function') return '';
-        let svgString = generarSvgGeno(adnData);
-        let tempDiv = document.createElement('div');
-        tempDiv.innerHTML = svgString;
-        let svgEl = tempDiv.querySelector('svg');
-        if (svgEl) {
-            svgEl.setAttribute('width', '100%');
-            svgEl.setAttribute('height', '100%');
-            svgEl.setAttribute('viewBox', '-20 -20 200 200'); 
-            svgEl.style.overflow = 'visible';
-        }
+        let svgString = generarSvgGeno(adnData); let tempDiv = document.createElement('div'); tempDiv.innerHTML = svgString; let svgEl = tempDiv.querySelector('svg');
+        if (svgEl) { svgEl.setAttribute('width', '100%'); svgEl.setAttribute('height', '100%'); svgEl.setAttribute('viewBox', '-20 -20 200 200'); svgEl.style.overflow = 'visible'; }
         return tempDiv.innerHTML;
     }
 };

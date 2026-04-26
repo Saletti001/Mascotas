@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR V10.5 (PAUSA DE ATAQUE A 1.5s)
+// ColiseumManager.js - CONTROLADOR V10.6 (DISPARADOR INTELIGENTE DE ANIMACIONES)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -101,31 +101,33 @@ document.addEventListener("DOMContentLoaded", () => {
         ejecutarAccionYAnimar(ejecutor1, ejecutor2, accion1);
         
         if (ejecutor2.hp > 0) {
-            // ✨ TIEMPO REDUCIDO A 1.5s (Pausa entre ataques)
             setTimeout(() => {
                 ColiseumUI.agregarLog(`<span style="color:#555;">&nbsp;&nbsp;♦ ♦ ♦</span>`); 
-                
                 ejecutarAccionYAnimar(ejecutor2, ejecutor1, accion2);
-                
-                setTimeout(() => {
-                    finalizarRonda();
-                }, 1500);
-
+                setTimeout(() => { finalizarRonda(); }, 1500);
             }, 1500); 
         } else {
-            setTimeout(() => {
-                finalizarRonda();
-            }, 1500);
+            setTimeout(() => { finalizarRonda(); }, 1500);
         }
     }
 
     function ejecutarAccionYAnimar(atacante, defensor, accionElegida) {
         if (atacante.hp <= 0 || defensor.hp <= 0) return;
         
+        const ataqueUsado = atacante.ataquesEquipados[accionElegida];
         const resultado = ColiseumLogic.ejecutarAtaqueCompleto(atacante, defensor, accionElegida);
         
-        if (resultado.anims.atacanteGrita && atacante.ataquesEquipados[accionElegida] && atacante.ataquesEquipados[accionElegida].potencia > 0) {
-            ColiseumUI.animarAtaque(atacante.isPlayer);
+        // ✨ NUEVO: MOTOR DE DECISIÓN DE ANIMACIONES VISUALES
+        if (ataqueUsado) {
+            let potenciaEfectiva = ataqueUsado.potencia || (ataqueUsado.potenciaBase ? ataqueUsado.potenciaBase * 100 : 0);
+            if (potenciaEfectiva > 0 && potenciaEfectiva < 10) potenciaEfectiva *= 100;
+            
+            if (potenciaEfectiva > 0) {
+                if (resultado.anims.atacanteGrita) ColiseumUI.animarAtaque(atacante.isPlayer);
+            } else {
+                // Es Táctica de Soporte (Potencia 0), llama la animación específica de magia
+                ColiseumUI.animarSoporte(atacante.isPlayer, ataqueUsado);
+            }
         }
         
         resultado.logs.forEach(log => ColiseumUI.agregarLog(log));
