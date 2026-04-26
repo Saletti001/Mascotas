@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V11.3 (LECTURA DIRECTA DE DATOS)
+// ColiseumLogic.js - MODELO MATEMÁTICO V11.4 (INFO DE ATAQUES EN EL LOG)
 // =========================================
 
 window.ColiseumLogic = {
@@ -93,7 +93,6 @@ window.ColiseumLogic = {
             hidden_genes: eHiddenGenes, level: nivelJugador
         };
 
-        // ✨ FIX: Lee directamente de los datos reales del jugador, no de los botones
         let pAtks = window.miMascota && window.miMascota.ataques ? window.miMascota.ataques : {};
 
         let enemyAtaques = {
@@ -120,7 +119,6 @@ window.ColiseumLogic = {
         let pGenB = mascota.hidden_genes?.B?.id || "ninguno";
         let pGenC = mascota.hidden_genes?.C?.id || "ninguno";
         
-        // ✨ FIX: Lee directamente de la base de datos del equipo del Geno
         let pAtks = mascota.ataques || {};
 
         let playerAtaques = {
@@ -153,13 +151,17 @@ window.ColiseumLogic = {
             return { logs, anims };
         }
 
+        // ✨ NUEVO: Impresión de la descripción del ataque en el Log
         if (slotAccion === "especial") {
             if(atacante.isPlayer) this.cooldownEspecial = 3;
             logs.push(`<span style="color:#e040fb">> ¡${atacante.nombre} usa [${ataqueReal.nombre}]!</span>`);
+            if(ataqueReal.descripcion) logs.push(`<span style="color:#ce93d8; font-style:italic;">* Info: ${ataqueReal.descripcion}</span>`);
         } else if (slotAccion === "definitivo") {
             logs.push(`<span style="color:#ff0000; font-weight:bold; text-transform:uppercase;">> ¡${atacante.nombre} desata [${ataqueReal.nombre}]!</span>`);
+            if(ataqueReal.descripcion) logs.push(`<span style="color:#ff8a80; font-style:italic;">* Info: ${ataqueReal.descripcion}</span>`);
         } else if (slotAccion === "tactica") {
             logs.push(`<span style="color:#26a69a">> ¡${atacante.nombre} prepara [${ataqueReal.nombre}]!</span>`);
+            if(ataqueReal.descripcion) logs.push(`<span style="color:#80cbc4; font-style:italic;">* Efecto: ${ataqueReal.descripcion}</span>`);
         }
 
         let potenciaAtaque = ataqueReal.potencia || (ataqueReal.potenciaBase ? ataqueReal.potenciaBase * 100 : 0);
