@@ -1,5 +1,5 @@
 // =========================================
-// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (V10.3 - MODAL UNIFICADO ALMACÉN)
+// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (RESTAURADO Y FIX BLUR)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -25,6 +25,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if(!g.xpNeeded) g.xpNeeded = 100;
         if(!g.stats) g.stats = { hp: 50, atk: 15, def: 10, spd: 15, luk: 15 };
         if(g.statPoints === undefined) g.statPoints = 0;
+
+        if (panelStats) {
+            panelStats.style.minWidth = "260px";
+        }
 
         const nameEl = document.getElementById("geno-name");
         if(nameEl) nameEl.innerText = g.name || "Geno";
@@ -211,37 +215,52 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnCloseStats = document.getElementById("close-stats-btn");
     const btnScanner = document.getElementById("btn-use-scanner");
     const btnRename = document.getElementById("btn-rename-geno");
-    const statsBackdrop = document.getElementById("stats-modal-backdrop"); // ✨ Nuestro nuevo fondo unificado
 
-    // ✨ CÓDIGO LIMPIO PARA ABRIR Y CERRAR EL MODAL
+    // ✨ FIX SEGURO: FONDO DIFUMINADO DENTRO DEL CONTENEDOR PARA BLOQUEAR EL BOTÓN NEXO
+    let statsBackdrop = document.getElementById("stats-backdrop");
+    if (!statsBackdrop) {
+        statsBackdrop = document.createElement("div");
+        statsBackdrop.id = "stats-backdrop";
+        // 'absolute' evita que rompa tu marco móvil.
+        statsBackdrop.style = "position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px); z-index: 1500; display: none;";
+        
+        const gc = document.getElementById("game-container");
+        if(gc) gc.appendChild(statsBackdrop);
+
+        statsBackdrop.addEventListener("click", () => {
+            panelStats.classList.add("hidden");
+            statsBackdrop.style.display = "none";
+            const topHud = document.getElementById("top-hud");
+            if(topHud) topHud.style.zIndex = "";
+        });
+    }
+
     if (btnStats) {
         btnStats.addEventListener("click", () => {
-            if (statsBackdrop) statsBackdrop.classList.remove("hidden");
+            panelStats.classList.toggle("hidden");
+            if (!panelStats.classList.contains("hidden")) {
+                statsBackdrop.style.display = "block";
+                const topHud = document.getElementById("top-hud");
+                // Elevamos el HUD completo para que quede sobre el difuminado, protegiendo todo tu diseño
+                if(topHud) {
+                    topHud.style.position = "relative";
+                    topHud.style.zIndex = "1501";
+                }
+            } else {
+                statsBackdrop.style.display = "none";
+                const topHud = document.getElementById("top-hud");
+                if(topHud) topHud.style.zIndex = "";
+            }
         });
     }
 
     if (btnCloseStats) {
         btnCloseStats.addEventListener("click", () => {
-            if (statsBackdrop) statsBackdrop.classList.add("hidden");
+            panelStats.classList.add("hidden");
+            statsBackdrop.style.display = "none";
+            const topHud = document.getElementById("top-hud");
+            if(topHud) topHud.style.zIndex = "";
         });
-    }
-
-    if (statsBackdrop) {
-        statsBackdrop.addEventListener("click", (e) => {
-            if (e.target === statsBackdrop) {
-                statsBackdrop.classList.add("hidden");
-            }
-        });
-    }
-
-    // Gancho de seguridad de navegación
-    if (!window.rpgNavHooked) {
-        const originalNavegarA = window.navegarA;
-        window.navegarA = function(id) {
-            if (originalNavegarA) originalNavegarA(id);
-            if (statsBackdrop) statsBackdrop.classList.add("hidden");
-        };
-        window.rpgNavHooked = true;
     }
 
     if (btnScanner) {
@@ -262,6 +281,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 setTimeout(() => {
                     window.actualizarPanelRPG();
+                    panelStats.style.boxShadow = "0 0 20px #8B5CF6";
                     if(window.guardarProgreso) window.guardarProgreso();
                 }, 800);
 
