@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V12.5 (MEMORIA DE COMBOS MULTI-GOLPE)
+// ColiseumLogic.js - MODELO MATEMÁTICO V12.6 (DAÑO POR SOBRECARGA)
 // =========================================
 
 window.ColiseumLogic = {
@@ -125,7 +125,6 @@ window.ColiseumLogic = {
     },
 
     ejecutarAtaqueCompleto: function(atacante, defensor, slotAccion) {
-        // ✨ FIX: Agregada la lista "detalleGolpes" para registrar combos
         let logs = [];
         let anims = { atacanteGrita: true, danoDefensor: 0, critico: false, curacionAtacante: 0, danoReflejo: 0, multElem: 1, detalleGolpes: [] };
         
@@ -169,7 +168,6 @@ window.ColiseumLogic = {
             for(let i=0; i<numGolpes; i++) {
                 if (defensor.hp <= 0) break;
                 
-                // ✨ FIX: Registramos la info de cada golpe individualmente
                 let golpeActual = { dmg: 0, critico: false, absorbido: false };
 
                 let atkBruto = atacante.atk * (potenciaAtaque / 75) * (0.85 + Math.random() * 0.3);
@@ -292,6 +290,15 @@ window.ColiseumLogic = {
             let regen = Math.floor(fighter.maxHp * 0.06) + 2;
             fighter.hp = Math.min(fighter.maxHp, fighter.hp + regen); anims.heal += regen;
         }
+        
+        // ✨ FIX: Agregado el daño del 8% para la Sobrecarga de Sistema
+        if (fighter.estados.includes("Sobrecarga") || fighter.estados.includes("Sobrecarga del Sistema") || fighter.estados.includes("Sobrecarga del sistema")) {
+            let sobreDmg = Math.floor(fighter.maxHp * 0.08) + 1; // Pierde el 8% de su Vida Máxima (mínimo 1 HP)
+            fighter.hp = Math.max(0, fighter.hp - sobreDmg);
+            logs.push(`<span style="color:#ff3d00">⚡ [Sobrecarga] ${this.cName(fighter)} pierde ${sobreDmg} HP por el esfuerzo.</span>`); 
+            anims.dmg += sobreDmg;
+        }
+        
         if (fighter.estados.includes("Quemadura")) {
             let burnDmg = Math.floor(fighter.maxHp * 0.06) + 2;
             fighter.hp = Math.max(0, fighter.hp - burnDmg);
@@ -302,6 +309,7 @@ window.ColiseumLogic = {
             fighter.hp = Math.max(0, fighter.hp - venDmg);
             logs.push(`<span style="color:#9c27b0">☠️ [Veneno] ${this.cName(fighter)} pierde ${venDmg} HP.</span>`); anims.dmg += venDmg;
         }
+        
         return { logs, anims };
     }
 };
