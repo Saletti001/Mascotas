@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR V10.6 (DISPARADOR INTELIGENTE DE ANIMACIONES)
+// ColiseumManager.js - CONTROLADOR V10.7 (ENRUTADOR DE ANIMACIONES)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -117,15 +117,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const ataqueUsado = atacante.ataquesEquipados[accionElegida];
         const resultado = ColiseumLogic.ejecutarAtaqueCompleto(atacante, defensor, accionElegida);
         
-        // ✨ NUEVO: MOTOR DE DECISIÓN DE ANIMACIONES VISUALES
+        // ✨ AHORA ENVIAMOS LA INFORMACIÓN DEL ATAQUE A LA INTERFAZ
         if (ataqueUsado) {
             let potenciaEfectiva = ataqueUsado.potencia || (ataqueUsado.potenciaBase ? ataqueUsado.potenciaBase * 100 : 0);
             if (potenciaEfectiva > 0 && potenciaEfectiva < 10) potenciaEfectiva *= 100;
             
             if (potenciaEfectiva > 0) {
-                if (resultado.anims.atacanteGrita) ColiseumUI.animarAtaque(atacante.isPlayer);
+                if (resultado.anims.atacanteGrita) ColiseumUI.animarAtaque(atacante.isPlayer, ataqueUsado);
             } else {
-                // Es Táctica de Soporte (Potencia 0), llama la animación específica de magia
                 ColiseumUI.animarSoporte(atacante.isPlayer, ataqueUsado);
             }
         }
@@ -133,7 +132,9 @@ document.addEventListener("DOMContentLoaded", () => {
         resultado.logs.forEach(log => ColiseumUI.agregarLog(log));
 
         if (resultado.anims.danoDefensor > 0) {
-            ColiseumUI.animarDano(!atacante.isPlayer);
+            // ✨ Y AQUÍ LE DECIMOS A LA VISTA QUÉ TIPO DE IMPACTO SUFRE EL RIVAL
+            ColiseumUI.animarDano(!atacante.isPlayer, ataqueUsado);
+            
             if (resultado.anims.critico) ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "CRITICAL!", "text-crit");
             ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, `-${resultado.anims.danoDefensor}`, "text-dmg");
             if(window.Sonidos) window.Sonidos.play("hit");

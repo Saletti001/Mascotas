@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumUI.js - VISTA Y ANIMACIONES V9.15 (ANIMACIONES DE BUFFOS Y DASH)
+// ColiseumUI.js - VISTA Y ANIMACIONES V10.0 (ANIMACIONES ELEMENTALES Y EXPLOSIONES)
 // =========================================
 
 window.ColiseumUI = {
@@ -10,31 +10,15 @@ window.ColiseumUI = {
         style.innerHTML = `
             .coliseum-cyan-theme { background-color: #31c4d8 !important;
             background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 0, 0, 0.06) 2px, rgba(0, 0, 0, 0.06) 4px) !important; background-size: auto !important;
-            min-height: 100vh !important; padding-top: 20px !important; padding-bottom: 20px !important; box-sizing: border-box !important;
-            }
+            min-height: 100vh !important; padding-top: 20px !important; padding-bottom: 20px !important; box-sizing: border-box !important; }
 
-            @keyframes arenaGlow { 0% { box-shadow: 0 0 20px rgba(77, 208, 225, 0.6), inset 0 0 30px rgba(0,0,0,0.8);
-            border-color: rgba(77, 208, 225, 0.6); } 50% { box-shadow: 0 0 40px rgba(77, 208, 225, 1), 0 0 10px rgba(255, 255, 255, 0.7), inset 0 0 30px rgba(0,0,0,0.8);
-            border-color: rgba(77, 208, 225, 1); } 100% { box-shadow: 0 0 20px rgba(77, 208, 225, 0.6), inset 0 0 30px rgba(0,0,0,0.8);
-            border-color: rgba(77, 208, 225, 0.6); } }
-            #battle-area { background-color: rgba(13, 22, 30, 0.95) !important;
-            border: 2px solid #4dd0e1 !important; border-radius: 16px !important; padding: 25px 20px 20px 20px !important; position: relative; overflow: visible !important;
-            display: flex !important; flex-direction: column !important; align-items: center !important; width: 88% !important; max-width: 480px !important; margin: 0 auto !important;
-            box-sizing: border-box !important; animation: arenaGlow 3s infinite ease-in-out !important; }
+            @keyframes arenaGlow { 0% { box-shadow: 0 0 20px rgba(77, 208, 225, 0.6), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.6); } 50% { box-shadow: 0 0 40px rgba(77, 208, 225, 1), 0 0 10px rgba(255, 255, 255, 0.7), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 1); } 100% { box-shadow: 0 0 20px rgba(77, 208, 225, 0.6), inset 0 0 30px rgba(0,0,0,0.8); border-color: rgba(77, 208, 225, 0.6); } }
+            #battle-area { background-color: rgba(13, 22, 30, 0.95) !important; border: 2px solid #4dd0e1 !important; border-radius: 16px !important; padding: 25px 20px 20px 20px !important; position: relative; overflow: visible !important; display: flex !important; flex-direction: column !important; align-items: center !important; width: 88% !important; max-width: 480px !important; margin: 0 auto !important; box-sizing: border-box !important; animation: arenaGlow 3s infinite ease-in-out !important; }
 
-            .coliseum-title-inside { color: #4dd0e1 !important;
-            text-align: center !important; font-size: 18px !important; margin-top: 0 !important; margin-bottom: 25px !important; text-transform: uppercase !important; font-weight: bold !important;
-            letter-spacing: 2px !important; width: 100% !important; border-bottom: 1px dashed rgba(77, 208, 225, 0.3); padding-bottom: 10px; display: block !important;
-            }
-            
-            .fighters-wrapper { display: flex !important;
-            align-items: center !important; justify-content: space-between !important; width: calc(100% + 60px) !important; margin: 0 -30px 15px -30px !important; position: relative;
-            overflow: visible !important; z-index: 10; }
+            .coliseum-title-inside { color: #4dd0e1 !important; text-align: center !important; font-size: 18px !important; margin-top: 0 !important; margin-bottom: 25px !important; text-transform: uppercase !important; font-weight: bold !important; letter-spacing: 2px !important; width: 100% !important; border-bottom: 1px dashed rgba(77, 208, 225, 0.3); padding-bottom: 10px; display: block !important; }
+            .fighters-wrapper { display: flex !important; align-items: center !important; justify-content: space-between !important; width: calc(100% + 60px) !important; margin: 0 -30px 15px -30px !important; position: relative; overflow: visible !important; z-index: 10; }
 
-            #player-sprite-battle, #enemy-sprite-battle, .fighter-left, .fighter-right { background: rgba(45, 62, 79, 0.98) !important;
-            padding: 20px 10px 15px 10px !important; width: 42% !important; position: relative; display: flex !important; flex-direction: column !important; justify-content: flex-end !important;
-            align-items: center !important; min-height: 250px !important; backdrop-filter: blur(5px); overflow: visible !important; transition: 0.3s ease-out !important; border-radius: 12px !important;
-            }
+            #player-sprite-battle, #enemy-sprite-battle, .fighter-left, .fighter-right { background: rgba(45, 62, 79, 0.98) !important; padding: 20px 10px 15px 10px !important; width: 42% !important; position: relative; display: flex !important; flex-direction: column !important; justify-content: flex-end !important; align-items: center !important; min-height: 250px !important; backdrop-filter: blur(5px); overflow: visible !important; transition: 0.3s ease-out !important; border-radius: 12px !important; }
             
             @keyframes pulseGlowP { 0% { box-shadow: -8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(77,208,225,0.4); } 50% { box-shadow: -8px 8px 30px rgba(0,0,0,0.8), 0 0 25px rgba(77,208,225,0.8); } 100% { box-shadow: -8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(77,208,225,0.4); } }
             #player-sprite-battle, .fighter-left { border: 2px solid #4dd0e1 !important; animation: pulseGlowP 3s infinite ease-in-out !important; }
@@ -44,19 +28,14 @@ window.ColiseumUI = {
             #enemy-sprite-battle, .fighter-right { border: 2px solid #ff6b6b !important; animation: pulseGlowE 3s infinite ease-in-out !important; }
             #enemy-sprite-battle:hover, .fighter-right:hover { transform: translateY(-5px) scale(1.02) !important; }
 
-            #player-visual-box, #enemy-visual-box, .fighter-sprite { width: 120px !important;
-            height: 120px !important; margin: auto !important; display: flex; justify-content: center; align-items: center; position: relative; overflow: visible !important;
-            filter: drop-shadow(0 8px 6px rgba(0,0,0,0.6)); transition: 0.2s ease-in-out; }
-            #player-visual-box svg, #enemy-visual-box svg, .fighter-sprite svg { width: 100% !important;
-            height: 100% !important; overflow: visible !important; transition: 0.2s; }
+            #player-visual-box, #enemy-visual-box, .fighter-sprite { width: 120px !important; height: 120px !important; margin: auto !important; display: flex; justify-content: center; align-items: center; position: relative; overflow: visible !important; filter: drop-shadow(0 8px 6px rgba(0,0,0,0.6)); transition: 0.2s ease-in-out; }
+            #player-visual-box svg, #enemy-visual-box svg, .fighter-sprite svg { width: 100% !important; height: 100% !important; overflow: visible !important; transition: 0.2s; }
 
-            .fighter-name { font-size: 13px !important; text-transform: uppercase;
-            letter-spacing: 1px; margin-top: 10px !important; text-align: center !important; width: 100% !important; line-height: 1.3 !important; }
+            .fighter-name { font-size: 13px !important; text-transform: uppercase; letter-spacing: 1px; margin-top: 10px !important; text-align: center !important; width: 100% !important; line-height: 1.3 !important; }
             .fighter-left .fighter-name, #battle-player-name { color: #4dd0e1 !important; }
             .fighter-right .fighter-name, #battle-enemy-name { color: #ff6b6b !important; }
 
-            .hp-bar-container, #player-sprite-battle > div:nth-child(3), #enemy-sprite-battle > div:nth-child(3) { background: #000 !important;
-            border: 1px solid #333 !important; box-shadow: inset 0 0 5px rgba(0,0,0,0.8) !important; height: 12px !important; border-radius: 6px !important; width: 90% !important; margin: 8px auto 0 auto !important; }
+            .hp-bar-container, #player-sprite-battle > div:nth-child(3), #enemy-sprite-battle > div:nth-child(3) { background: #000 !important; border: 1px solid #333 !important; box-shadow: inset 0 0 5px rgba(0,0,0,0.8) !important; height: 12px !important; border-radius: 6px !important; width: 90% !important; margin: 8px auto 0 auto !important; }
             .hp-bar-fill-green, #player-hp-bar { background: linear-gradient(90deg, #00d2ff, #4dd0e1) !important; box-shadow: 0 0 10px rgba(77,208,225,0.6) !important; height: 100%; border-radius: 6px; transition: width 0.3s;}
             .hp-bar-fill-red, #enemy-hp-bar { background: linear-gradient(90deg, #ff6b6b, #d9534f) !important; box-shadow: 0 0 10px rgba(255,107,107,0.6) !important; height: 100%; border-radius: 6px; transition: width 0.3s;}
             .hp-text, #player-hp-text, #enemy-hp-text { font-size: 11px !important; color: #fff !important; font-weight: bold; margin-top: 4px !important; text-shadow: 0 1px 2px #000; text-align: center; width: 100%; }
@@ -78,51 +57,54 @@ window.ColiseumUI = {
             #btn-leave-battle, .btn-secondary { background-color: #111b24 !important; border: 1px solid #1e3a5f !important; color: #4dd0e1 !important; padding: 15px 30px !important; border-radius: 8px !important; text-transform: uppercase !important; font-size: 13px !important; font-weight: bold !important; letter-spacing: 1px !important; cursor: pointer !important; display: block; transition: 0.2s !important; width: 70% !important; max-width: 300px !important; box-shadow: none !important; animation: none !important; position: relative !important; margin: 20px auto 10px auto !important; z-index: 100 !important; }
             #btn-leave-battle:hover, .btn-secondary:hover { background-color: #1e3a5f !important; color: #fff !important; }
             
-            /* ANIMACIONES BASE */
-            @keyframes animarBoca { 0% { transform: scale(1); } 50% { transform: scale(1.6); } 100% { transform: scale(1); } }
+            /* ========================================= */
+            /* ✨ NUEVOS KEYFRAMES DE ATAQUE MAGISTRALES */
+            /* ========================================= */
+            
+            /* 1. Atacantes (Casters) */
+            @keyframes animCastNuclear { 0%{transform: scale(1);} 50%{transform: scale(1.35) translateY(-10px); filter: drop-shadow(0 0 30px #ff3d00) brightness(1.5);} 100%{transform: scale(1);} }
+            .anim-cast-nuclear svg { animation: animCastNuclear 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; }
+
+            @keyframes animCastLaser { 0%{transform: translateX(0);} 20%{transform: translateX(-15px) skewX(10deg);} 50%{transform: translateX(40px) skewX(-20deg) scale(1.1); filter: drop-shadow(0 0 20px #00e5ff) brightness(2);} 100%{transform: translateX(0);} }
+            .anim-cast-laser svg { animation: animCastLaser 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important; }
+
+            @keyframes animCastVenom { 0%{transform: scale(1);} 50%{transform: scaleX(1.2) scaleY(0.8); filter: drop-shadow(0 0 25px #d500f9) hue-rotate(90deg);} 100%{transform: scale(1);} }
+            .anim-cast-venom svg { animation: animCastVenom 0.6s ease-in-out !important; }
+
+            @keyframes animCastBio { 0%{transform: translateY(0);} 50%{transform: translateY(-20px) scaleY(1.2); filter: drop-shadow(0 0 20px #00e676) saturate(2);} 100%{transform: translateY(0);} }
+            .anim-cast-bio svg { animation: animCastBio 0.5s ease-in-out !important; }
+
             @keyframes animarEmbestida { 0% { transform: scale(1) translateY(0); } 50% { transform: scale(1.1) translateY(-10px); } 100% { transform: scale(1) translateY(0); } }
-            .anim-gritar [id*="boca"], .anim-gritar [class*="boca"], .anim-gritar [id*="mouth"], .anim-gritar [class*="mouth"] { transform-origin: center !important; transform-box: fill-box !important; animation: animarBoca 0.4s ease-in-out !important; }
             .anim-gritar svg { animation: animarEmbestida 0.4s ease-in-out !important; }
+
+            /* 2. Defensores (Impactos / Hits) */
+            .hit-nuclear { filter: brightness(2.5) sepia(1) hue-rotate(-30deg) saturate(10) drop-shadow(0 0 30px #ff3d00) !important; transform: scale(1.15) rotate(8deg) !important; transition: 0.1s; }
+            .hit-laser { filter: brightness(3) drop-shadow(0 0 25px #00e5ff) !important; transform: skewX(-25deg) translateX(15px) !important; transition: 0.1s; }
+            .hit-venom { filter: brightness(1.5) sepia(1) hue-rotate(250deg) saturate(5) drop-shadow(0 0 15px #aa00ff) !important; transform: scaleY(0.8) scaleX(1.1) translateY(10px) !important; transition: 0.1s; }
+            .hit-bio { filter: brightness(1.3) sepia(1) hue-rotate(80deg) saturate(3) drop-shadow(0 0 15px #00e676) !important; transform: translateY(-15px) !important; transition: 0.1s; }
             .hit-effect { filter: brightness(2) sepia(1) hue-rotate(-50deg) saturate(5) !important; transform: scale(0.90) translateX(5px) !important; transition: 0.1s; }
-            .heal-effect { filter: brightness(1.5) drop-shadow(0 0 15px #4CAF50) !important; transform: scale(1.05) !important; transition: 0.2s; }
 
-            /* ✨ NUEVO: ANIMACIONES DE TÁCTICAS Y BUFFOS */
-            @keyframes animVelocidad {
-                0% { transform: translateX(0) skewX(0); filter: drop-shadow(0 0 0 #00ffff); }
-                15% { transform: translateX(40px) skewX(-20deg) scaleY(0.9); filter: drop-shadow(-15px 0 15px #00ffff); }
-                30% { transform: translateX(-40px) skewX(20deg) scaleY(0.9); filter: drop-shadow(15px 0 15px #00ffff); }
-                45% { transform: translateX(20px) skewX(-10deg); filter: drop-shadow(-10px 0 10px #00ffff); }
-                60% { transform: translateX(-20px) skewX(10deg); filter: drop-shadow(10px 0 10px #00ffff); }
-                100% { transform: translateX(0) skewX(0); filter: drop-shadow(0 0 0 #00ffff); }
-            }
+            /* 3. Tácticas (Soporte) */
+            @keyframes animVelocidad { 0% { transform: translateX(0) skewX(0); filter: drop-shadow(0 0 0 #00ffff); } 15% { transform: translateX(40px) skewX(-20deg) scaleY(0.9); filter: drop-shadow(-15px 0 15px #00ffff); } 30% { transform: translateX(-40px) skewX(20deg) scaleY(0.9); filter: drop-shadow(15px 0 15px #00ffff); } 45% { transform: translateX(20px) skewX(-10deg); filter: drop-shadow(-10px 0 10px #00ffff); } 60% { transform: translateX(-20px) skewX(10deg); filter: drop-shadow(10px 0 10px #00ffff); } 100% { transform: translateX(0) skewX(0); filter: drop-shadow(0 0 0 #00ffff); } }
             .anim-velocidad svg { animation: animVelocidad 0.6s ease-in-out !important; }
-
-            @keyframes animFuerza {
-                0% { filter: drop-shadow(0 0 0px #ff3333); transform: scale(1); }
-                50% { filter: drop-shadow(0 0 30px #ff3333) drop-shadow(0 0 10px rgba(0,0,0,0.8)); transform: scale(1.2); }
-                100% { filter: drop-shadow(0 0 0px #ff3333); transform: scale(1); }
-            }
+            @keyframes animFuerza { 0% { filter: drop-shadow(0 0 0px #ff3333); transform: scale(1); } 50% { filter: drop-shadow(0 0 30px #ff3333) drop-shadow(0 0 10px rgba(0,0,0,0.8)); transform: scale(1.2); } 100% { filter: drop-shadow(0 0 0px #ff3333); transform: scale(1); } }
             .anim-fuerza svg { animation: animFuerza 0.8s ease-in-out !important; }
-
-            @keyframes animEscudo {
-                0% { filter: drop-shadow(0 0 0px #4dd0e1); transform: scale(1); }
-                50% { filter: drop-shadow(0 0 25px #4dd0e1) drop-shadow(0 0 10px rgba(0,0,0,0.8)); transform: scale(1.05); }
-                100% { filter: drop-shadow(0 0 0px #4dd0e1); transform: scale(1); }
-            }
+            @keyframes animEscudo { 0% { filter: drop-shadow(0 0 0px #4dd0e1); transform: scale(1); } 50% { filter: drop-shadow(0 0 25px #4dd0e1) drop-shadow(0 0 10px rgba(0,0,0,0.8)); transform: scale(1.05); } 100% { filter: drop-shadow(0 0 0px #4dd0e1); transform: scale(1); } }
             .anim-escudo svg { animation: animEscudo 0.8s ease-in-out !important; }
-
-            @keyframes animBuffGeneral {
-                0% { filter: drop-shadow(0 0 0px #80cbc4); transform: translateY(0); }
-                50% { filter: drop-shadow(0 0 20px #80cbc4); transform: translateY(-15px); }
-                100% { filter: drop-shadow(0 0 0px #80cbc4); transform: translateY(0); }
-            }
+            @keyframes animBuffGeneral { 0% { filter: drop-shadow(0 0 0px #80cbc4); transform: translateY(0); } 50% { filter: drop-shadow(0 0 20px #80cbc4); transform: translateY(-15px); } 100% { filter: drop-shadow(0 0 0px #80cbc4); transform: translateY(0); } }
             .anim-buff svg { animation: animBuffGeneral 0.8s ease-in-out !important; }
+
+            .heal-effect { filter: brightness(1.5) drop-shadow(0 0 15px #4CAF50) !important; transform: scale(1.05) !important; transition: 0.2s; }
+            
+            /* Temblor Fuerte de Pantalla */
+            .shake-effect { animation: shake 0.4s; }
+            .shake-hard { animation: shakeHard 0.5s; }
+            @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }
+            @keyframes shakeHard { 0% { transform: translate(3px, 3px) rotate(0deg); } 20% { transform: translate(-5px, 0px) rotate(2deg); } 40% { transform: translate(3px, -3px) rotate(-2deg); } 60% { transform: translate(-5px, 3px) rotate(0deg); } 80% { transform: translate(3px, -3px) rotate(2deg); } 100% { transform: translate(0px, 0px) rotate(0deg); } }
 
             @keyframes floatUpFade { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); } 10% { transform: translate(-50%, calc(-50% - 15px)) scale(1.8); } 100% { opacity: 0; transform: translate(-50%, calc(-50% - 60px)) scale(1); } }
             .floating-text { position: absolute; font-weight: 900; z-index: 100; pointer-events: none; animation: floatUpFade 1.3s ease-out forwards; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 5px rgba(0,0,0,0.8); white-space: nowrap !important; }
             .text-dmg { color: #ff3333; font-size: 28px; } .text-heal { color: #4CAF50; font-size: 24px; } .text-crit { color: #ffcc00; font-size: 38px !important; font-style: italic; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 0 #d32f2f, -2px -2px 0 #d32f2f, 2px -2px 0 #d32f2f, -2px 2px 0 #d32f2f, 0 0 15px rgba(255,0,0,1) !important; }
-            .shake-effect { animation: shake 0.4s; }
-            @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }
         `;
         document.head.appendChild(style);
     },
@@ -151,8 +133,7 @@ window.ColiseumUI = {
 
         let controls = document.getElementById("battle-controls") || document.querySelector(".controls-container");
         if (controls) {
-            area.appendChild(controls);
-            controls.id = "battle-controls"; controls.className = "controls-container";
+            area.appendChild(controls); controls.id = "battle-controls"; controls.className = "controls-container";
             controls.innerHTML = `
                 <button id="btn-atk-1" class="battle-btn slot-1">BÁSICO</button>
                 <button id="btn-atk-2" class="battle-btn slot-2">VACÍO</button>
@@ -219,31 +200,66 @@ window.ColiseumUI = {
 
     limpiarLog: function() { const logBox = document.getElementById("battle-log") || document.querySelector(".battle-log-container"); if (logBox) logBox.innerHTML = ""; },
 
-    animarAtaque: function(esJugador) {
-        const el = esJugador ? (document.getElementById("player-visual-box") || document.querySelector(".fighter-left .fighter-sprite")) : (document.getElementById("enemy-visual-box") || document.querySelector(".fighter-right .fighter-sprite"));
-        if(el) { el.classList.add("anim-gritar"); setTimeout(() => el.classList.remove("anim-gritar"), 500); }
-    },
-
-    // ✨ NUEVO: MOTOR DE ANIMACIONES DE SOPORTE INTELIGENTE
-    animarSoporte: function(esJugador, ataque) {
+    // ✨ NUEVO: MOTOR INTELIGENTE DE ANIMACIÓN DE ATAQUES (Casters)
+    animarAtaque: function(esJugador, ataque) {
         const el = esJugador ? (document.getElementById("player-visual-box") || document.querySelector(".fighter-left .fighter-sprite")) : (document.getElementById("enemy-visual-box") || document.querySelector(".fighter-right .fighter-sprite"));
         if(!el) return;
 
-        let claseAnim = "anim-buff"; // Base mágica turquesa por defecto
+        let claseAnim = "anim-gritar"; // Embestida normal por defecto
+        
+        if (ataque) {
+            let n = (ataque.nombre || "").toLowerCase();
+            let e = ataque.elemento || "";
+            
+            if (n.includes("nuclear") || n.includes("explosión") || n.includes("ardiente") || e === "Radiactivo") claseAnim = "anim-cast-nuclear";
+            else if (n.includes("láser") || n.includes("plasma") || n.includes("corte") || e === "Cibernético" || e === "Sintético") claseAnim = "anim-cast-laser";
+            else if (n.includes("veneno") || n.includes("infección") || n.includes("corrosión") || e === "Tóxico" || e === "Viral") claseAnim = "anim-cast-venom";
+            else if (n.includes("raíz") || n.includes("espinas") || e === "Biomutante") claseAnim = "anim-cast-bio";
+        }
 
+        el.classList.add(claseAnim);
+        setTimeout(() => el.classList.remove(claseAnim), 600);
+    },
+
+    animarSoporte: function(esJugador, ataque) {
+        const el = esJugador ? (document.getElementById("player-visual-box") || document.querySelector(".fighter-left .fighter-sprite")) : (document.getElementById("enemy-visual-box") || document.querySelector(".fighter-right .fighter-sprite"));
+        if(!el) return;
+        let claseAnim = "anim-buff"; 
         if (ataque.buffSpd) claseAnim = "anim-velocidad";
         else if (ataque.escudo) claseAnim = "anim-escudo";
         else if (ataque.buffAtk) claseAnim = "anim-fuerza";
-
         el.classList.add(claseAnim);
         setTimeout(() => el.classList.remove(claseAnim), 800);
     },
 
-    animarDano: function(esJugador) {
+    // ✨ NUEVO: MOTOR INTELIGENTE DE ANIMACIÓN DE IMPACTOS (Hits)
+    animarDano: function(esJugador, ataque) {
         const el = esJugador ? (document.getElementById("player-visual-box") || document.querySelector(".fighter-left .fighter-sprite")) : (document.getElementById("enemy-visual-box") || document.querySelector(".fighter-right .fighter-sprite"));
-        if(el) { el.classList.add("hit-effect"); setTimeout(() => el.classList.remove("hit-effect"), 150); }
         const area = document.getElementById("battle-area") || document.querySelector(".coliseum-card");
-        if(area) { area.classList.remove("shake-effect"); void area.offsetWidth; area.classList.add("shake-effect"); }
+        
+        if(!el) return;
+
+        let claseHit = "hit-effect"; // Hit normal
+        let shakeFuerte = false;
+
+        if (ataque) {
+            let n = (ataque.nombre || "").toLowerCase();
+            let e = ataque.elemento || "";
+            
+            if (n.includes("nuclear") || n.includes("explosión") || e === "Radiactivo") { claseHit = "hit-nuclear"; shakeFuerte = true; }
+            else if (n.includes("láser") || n.includes("plasma") || e === "Cibernético" || e === "Sintético") claseHit = "hit-laser";
+            else if (n.includes("veneno") || n.includes("corrosión") || e === "Tóxico" || e === "Viral") claseHit = "hit-venom";
+            else if (e === "Biomutante") claseHit = "hit-bio";
+        }
+
+        el.classList.add(claseHit);
+        setTimeout(() => el.classList.remove(claseHit), 150);
+
+        if(area) { 
+            area.classList.remove("shake-effect", "shake-hard"); 
+            void area.offsetWidth; 
+            area.classList.add(shakeFuerte ? "shake-hard" : "shake-effect"); 
+        }
     },
 
     animarCuracion: function(esJugador) {
