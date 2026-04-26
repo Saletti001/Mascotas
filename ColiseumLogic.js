@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V13.1 (ETIQUETAS DE GENES Y NOMBRES REALES)
+// ColiseumLogic.js - MODELO MATEMÁTICO V13.2 (DESCRIPCIÓN DE ESTADOS EN LOG)
 // =========================================
 
 window.ColiseumLogic = {
@@ -117,7 +117,6 @@ window.ColiseumLogic = {
         };
 
         this.player = {
-            // ✨ FIX: Busca apodos o alias personalizados antes que el nombre de la especie
             nombre: mascota.alias || mascota.apodo || mascota.nombre || mascota.name || "Tu Geno", 
             isPlayer: true, adn: mascota,
             maxHp: pStats.hp, hp: pStats.hp, atk: pStats.atk, def: pStats.def, spd: pStats.spd, luk: pStats.luk,
@@ -142,7 +141,6 @@ window.ColiseumLogic = {
             return { logs, anims };
         }
 
-        // ✨ GEN: CONTRA-GOLPE DEFINITIVO
         if (slotAccion === "definitivo" && defensor.genesId.includes("ults_counter")) {
             let buffAtk = Math.floor(defensor.baseAtk * 0.30);
             defensor.atk += buffAtk;
@@ -176,7 +174,6 @@ window.ColiseumLogic = {
 
         if (potenciaAtaque > 0) {
             let numGolpes = ataqueReal.hits || 1;
-            // ✨ GEN: VELOCIDAD FANTASMA
             if (atacante.genesId.includes("velocidad_fantasma") && Math.random() <= 0.20 && numGolpes === 1) {
                 numGolpes = 2;
                 logs.push(`<span style="color:#b19cd9">⚡ 🧬 [Gen Oculto: Velocidad Fantasma] ¡${this.cName(atacante)} ataca rápido dos veces!</span>`);
@@ -196,15 +193,12 @@ window.ColiseumLogic = {
                 let defRival = defensor.def;
 
                 if (ataqueReal.perforante || ataqueReal.rompeEscudos) {
-                    // ✨ GEN: MAESTRO DEL ENGAÑO
                     if (defensor.genesId.includes("decoy") && !defensor.decoyUsado) {
                         defensor.decoyUsado = true;
                         atkBruto = 0; 
                         golpeActual.evadido = true;
                         logs.push(`<span style="color:#e0e0e0; font-style:italic;">💨 🧬 [Gen Oculto: Maestro del Engaño] ¡${this.cName(defensor)} evadió el golpe perforante!</span>`);
-                    } 
-                    // ✨ GEN: POSTURA INQUEBRANTABLE
-                    else if (defensor.genesId.includes("steadfast")) {
+                    } else if (defensor.genesId.includes("steadfast")) {
                         defRival = Math.floor(defensor.def * 0.20); 
                         logs.push(`<span style="color:#80deea;">🛡️ 🧬 [Gen Oculto: Postura Inquebrantable] Absorbe parcialmente la perforación.</span>`);
                     } else {
@@ -216,7 +210,6 @@ window.ColiseumLogic = {
                 let dmgMinimo = Math.floor(atkBruto * minDmgMultiplier);
                 let dmg = Math.floor(Math.max(atkBruto - defRival, dmgMinimo));
 
-                // ✨ GEN: ARMADURA ADAPTATIVA
                 if (defensor.genesId.includes("adapt_a") && atkBruto > 0) {
                     if (defensor.ultimoElementoRecibido === ataqueReal.elemento) {
                         defensor.adaptativaStacks = Math.min(5, defensor.adaptativaStacks + 1);
@@ -240,9 +233,7 @@ window.ColiseumLogic = {
                     dmg = Math.floor(dmg * 0.60); defensor.escudoCibernetico = false;
                     logs.push(`<span style="color:#00d2ff">🛡️ [Pasivo: Escudo Cibernético] ${this.cName(defensor)} absorbe el impacto.</span>`);
                     golpeActual.bloqueado = true;
-                } 
-                // ✨ GEN: PIEL DE CRISTAL
-                else if (defensor.crystalSkin && atkBruto > 0) {
+                } else if (defensor.crystalSkin && atkBruto > 0) {
                     dmg = 0; defensor.crystalSkin = false;
                     logs.push(`<span style="color:#80deea">💎 🧬 [Gen Oculto: Piel de Cristal] ${this.cName(defensor)} anula el daño por completo.</span>`);
                     golpeActual.bloqueado = true;
@@ -255,7 +246,6 @@ window.ColiseumLogic = {
                     anims.danoDefensor += dmg;
                     golpeActual.dmg = dmg;
 
-                    // ✨ GEN: RUPTURA DEFENSIVA
                     if (atacante.genesId.includes("def_brk")) {
                         atacante.rachaGolpes++;
                         if (atacante.rachaGolpes >= 3) {
@@ -265,7 +255,6 @@ window.ColiseumLogic = {
                         }
                     }
 
-                    // ✨ GEN: RETROALIMENTACIÓN DE DAÑO
                     if (dmg > (defensor.maxHp * 0.15) && defensor.genesId.includes("dmg_echo")) {
                         let buffAtk = Math.floor(defensor.baseAtk * 0.15);
                         defensor.atk += buffAtk;
@@ -277,7 +266,6 @@ window.ColiseumLogic = {
                     if (isCrit) logs.push(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${this.cName(atacante)} causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} de daño</span>.${tipoGolpe}`);
                     else logs.push(`> ${this.cName(atacante)} causa <span style="color:#ff6b6b">${dmg} de daño</span>.${tipoGolpe}`);
 
-                    // ✨ GEN: VAMPIRISMO GENÉTICO
                     if (atacante.genesId.includes("vampirismo_genetico") && dmg > 0) {
                         let roboVida = Math.max(1, Math.floor(dmg * 0.15));
                         atacante.hp = Math.min(atacante.maxHp, atacante.hp + roboVida);
@@ -293,7 +281,6 @@ window.ColiseumLogic = {
         if (Math.random() <= probAply) {
             let duracionBase = ataqueReal.duracion || 3;
 
-            // ✨ GEN: NÚCLEO CORAZA
             let aplicarDebuffAtk = ataqueReal.debuffAtk;
             let aplicarDebuffSpd = ataqueReal.debuffSpd;
 
@@ -333,8 +320,8 @@ window.ColiseumLogic = {
 
             let estadoAply = ataqueReal.aplicaEstado || ataqueReal.aplicaEstadoPropio;
             let target = ataqueReal.aplicaEstado ? defensor : atacante;
+            
             if (estadoAply && target.hp > 0) {
-                // ✨ GEN: SANGRE FRÍA
                 if (target.genesId.includes("sangre_fria") && !target.sangreFriaUsada) {
                     target.sangreFriaUsada = true;
                     logs.push(`<span style="color:#00d2ff">❄️ 🧬 [Gen Oculto: Sangre Fría] ¡${this.cName(target)} bloquea el estado!</span>`);
@@ -344,9 +331,19 @@ window.ColiseumLogic = {
                     let configEstado = window.AttackCatalog && window.AttackCatalog.estados ? window.AttackCatalog.estados[estadoAply] : null;
                     let durEstado = configEstado ? configEstado.duracionBase : 3;
                     target.efectosActivos.push({ nombre: estadoAply, stat: "estado", valor: estadoAply, turnos: durEstado, isNuevo: true });
-                    logs.push(`<span style="color:#00bcd4">* ${this.cName(target)} sufre [${estadoAply}] por ${durEstado} turnos.</span>`);
                     
-                    // ✨ GEN: ACELERACIÓN DE ESTADO
+                    // ✨ NUEVO: DICCIONARIO DE DESCRIPCIONES DE ESTADOS EN EL LOG
+                    const descEstados = {
+                        "Regeneracion": "Cura HP cada turno", "Infeccion": "Baja un stat al azar", "Quemadura": "Pierde HP cada turno",
+                        "Quemadura Critica": "Pierde mucho HP cada turno", "Veneno": "Pierde HP (Acumulable)", "Veneno Fuerte": "Pierde mucho HP cada turno",
+                        "Paralisis": "SPD -35% y puede fallar turno", "Congelacion": "Pierde su próximo turno", "Vision Nublada": "Precisión -25%",
+                        "Enredado": "SPD -40% y bloquea soporte", "Corrosion": "ATK -15% permanente", "Campo Radiactivo": "Pierde 5% HP cada turno",
+                        "Irradiacion": "ATK -25%", "Debilitacion SPD": "SPD -20%"
+                    };
+                    let textoEfecto = descEstados[estadoAply] ? ` <span style="font-size: 11px; color:#aaa; font-style:italic;">(${descEstados[estadoAply]})</span>` : "";
+                    
+                    logs.push(`<span style="color:#00bcd4">* ${this.cName(target)} sufre [${estadoAply}]${textoEfecto} por ${durEstado} turnos.</span>`);
+                    
                     if (atacante.genesId.includes("state_rush") && (estadoAply === "Veneno" || estadoAply === "Quemadura")) {
                         logs.push(`<span style="color:#ffcc00">⚡ 🧬 [Gen Oculto: Acel. de Estado] ¡El estado surte efecto de inmediato!</span>`);
                         let estadoDmg = Math.floor(target.maxHp * (estadoAply === "Veneno" ? 0.05 : 0.06)) + 2;
@@ -401,8 +398,8 @@ window.ColiseumLogic = {
             fighter.hp = Math.max(0, fighter.hp - burnDmg);
             logs.push(`<span style="color:#ff9800">🔥 [Quemadura] ${this.cName(fighter)} pierde ${burnDmg} HP.</span>`); anims.dmg += burnDmg;
         }
-        if (fighter.estados.includes("Veneno")) {
-            let venDmg = Math.floor(fighter.maxHp * 0.05) + 2;
+        if (fighter.estados.includes("Veneno") || fighter.estados.includes("Veneno Fuerte")) {
+            let venDmg = Math.floor(fighter.maxHp * (fighter.estados.includes("Veneno Fuerte") ? 0.08 : 0.05)) + 2;
             fighter.hp = Math.max(0, fighter.hp - venDmg);
             logs.push(`<span style="color:#9c27b0">☠️ [Veneno] ${this.cName(fighter)} pierde ${venDmg} HP.</span>`); anims.dmg += venDmg;
         }
