@@ -44,10 +44,13 @@
 
                             <hr class="stats-divider">
                             <div class="stat-header"><span>Atributos</span><span id="stat-points-badge" class="hidden">+0 Pts</span></div>
+                            
                             <div class="stat-row"><span>❤️ Vit: <span id="stat-hp">10</span></span> <button class="btn-add-stat hidden" data-stat="hp">➕</button></div>
                             <div class="stat-row"><span>⚔️ Fue: <span id="stat-atk">5</span></span> <button class="btn-add-stat hidden" data-stat="atk">➕</button></div>
+                            <div class="stat-row"><span>🛡️ Def: <span id="stat-def">5</span></span> <button class="btn-add-stat hidden" data-stat="def">➕</button></div>
                             <div class="stat-row"><span>⚡ Agi: <span id="stat-spd">5</span></span> <button class="btn-add-stat hidden" data-stat="spd">➕</button></div>
                             <div class="stat-row"><span>🍀 Sue: <span id="stat-luk">5</span></span> <button class="btn-add-stat hidden" data-stat="luk">➕</button></div>
+                            
                             <hr class="stats-divider">
                             <div class="stat-info"><span>🧬 Gen Oculto:</span> <span id="geno-recessive" class="recessive-text">???</span></div>
                             <button id="btn-use-scanner" class="btn-scanner">Usar Escáner 🧬</button>
@@ -218,12 +221,17 @@
                         <div style="font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px;">Veredicto de Pureza</div>
                         <div id="id-card-quality" style="font-size: 22px; font-weight: 900; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.8);">--</div>
                     </div>
+                    
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; margin-bottom: 15px;">
                         <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333;">❤️ Vit: <span id="id-card-hp" style="float: right; font-weight: bold; color: #fff;">--</span></div>
                         <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333;">⚔️ Fue: <span id="id-card-atk" style="float: right; font-weight: bold; color: #fff;">--</span></div>
+                        
+                        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333; grid-column: span 2; text-align: center;">🛡️ Defensa: <span id="id-card-def" style="font-weight: bold; color: #fff; margin-left: 10px;">--</span></div>
+                        
                         <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333;">⚡ Agi: <span id="id-card-spd" style="float: right; font-weight: bold; color: #fff;">--</span></div>
                         <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333;">🍀 Sue: <span id="id-card-luk" style="float: right; font-weight: bold; color: #fff;">--</span></div>
                     </div>
+
                     <div id="id-card-secret-gene" style="background: rgba(138, 43, 226, 0.15); border-radius: 8px; padding: 12px; text-align: center; border: 1px dashed #8A2BE2;">
                         <div style="font-size: 10px; color: #e0b0ff; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; font-weight: bold;">Gen Oculto</div>
                         <div id="id-card-locked-text" style="color: #aaa; font-size: 12px; margin-bottom: 10px;">🔒 Secuencia Bloqueada</div>
@@ -305,9 +313,9 @@
                     <div class="drawer-item" id="btn-arcade"><div class="drawer-icon">🕹️</div><span>Arcade</span></div>
                     <div class="drawer-item" id="btn-coliseum"><div class="drawer-icon">⚔️</div><span>Coliseo</span></div>
                     <div class="drawer-item" id="btn-market"><div class="drawer-icon">🛒</div><span>Mercado</span></div>
-                    <div class="drawer-item" id="btn-implants" onclick="document.getElementById('drawer-menu').classList.add('hidden'); window.navegarA('implants-area');">
+                    
                     <div class="drawer-item" id="btn-implants" onclick="document.getElementById('drawer-menu').classList.add('hidden'); ImplantsManager.init(); navegarA('implants-area');">
-    <div class="drawer-icon">💾</div><span>Implantes</span>
+                        <div class="drawer-icon">💾</div><span>Implantes</span>
                     </div>
                 </div>
             </div>

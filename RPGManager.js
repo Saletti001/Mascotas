@@ -1,5 +1,5 @@
 // =========================================
-// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (V9.0)
+// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (V10.0 - SOPORTE DEFENSA)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -10,7 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Convertimos la función a global para que otras ventanas puedan llamarla
     window.verificarUmbralDespertar = function(g) {
         if (g.level >= 25 && window.tieneGenActivoV9 && window.tieneGenActivoV9(g, "umbral_despertar") && !g.umbralAplicado) {
-            g.stats.hp += 5; g.stats.atk += 5; g.stats.spd += 5; g.stats.luk += 5;
+            g.stats.hp += 5; g.stats.atk += 5; g.stats.def += 5; g.stats.spd += 5; g.stats.luk += 5;
             g.umbralAplicado = true;
             if(window.Sonidos) window.Sonidos.play("heal");
             alert("✨ ¡Gen Activado: Umbral del Despertar!\nLas estadísticas base de tu Geno han aumentado +5 de forma permanente.");
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if(!g.level) g.level = 1;
         if(g.xp === undefined) g.xp = 0;
         if(!g.xpNeeded) g.xpNeeded = 100;
-        if(!g.stats) g.stats = { hp: 50, atk: 15, spd: 15, luk: 15 };
+        if(!g.stats) g.stats = { hp: 50, atk: 15, def: 10, spd: 15, luk: 15 };
         if(g.statPoints === undefined) g.statPoints = 0;
 
         if (panelStats) {
@@ -70,12 +70,12 @@ document.addEventListener("DOMContentLoaded", () => {
             if (g.stats.rango && g.stats.calidadPorcentaje !== undefined) {
                 rango = g.stats.rango; pct = g.stats.calidadPorcentaje;
             } else {
-                const limites = (window.TABLA_IVS && window.TABLA_IVS[g.rarity]) ? window.TABLA_IVS[g.rarity] : { hp: [35, 55], atk: [10, 22], spd: [8, 25], luk: [5, 15] }; 
-                let tMin = limites.hp[0] + limites.atk[0] + limites.spd[0] + limites.luk[0];
-                let tMax = limites.hp[1] + limites.atk[1] + limites.spd[1] + limites.luk[1];
+                const limites = (window.TABLA_IVS && window.TABLA_IVS[g.rarity]) ? window.TABLA_IVS[g.rarity] : { hp: [35, 55], atk: [10, 22], def: [5, 15], spd: [8, 25], luk: [5, 15] }; 
+                let tMin = limites.hp[0] + limites.atk[0] + limites.def[0] + limites.spd[0] + limites.luk[0];
+                let tMax = limites.hp[1] + limites.atk[1] + limites.def[1] + limites.spd[1] + limites.luk[1];
                 let puntosInvertidos = (g.level - 1) * 3;
-                let bonoUmbral = g.umbralAplicado ? 20 : 0; 
-                let tObt = (g.stats.hp + g.stats.atk + g.stats.spd + g.stats.luk) - puntosInvertidos - bonoUmbral;
+                let bonoUmbral = g.umbralAplicado ? 25 : 0; 
+                let tObt = (g.stats.hp + g.stats.atk + g.stats.def + g.stats.spd + g.stats.luk) - puntosInvertidos - bonoUmbral;
 
                 pct = Math.round(((tObt - tMin) / (tMax - tMin)) * 100);
                 if (pct > 100) pct = 100; if (pct < 0) pct = 0;
@@ -90,6 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const shp = document.getElementById("stat-hp"); if(shp) shp.innerText = Math.floor(g.stats.hp);
         const satk = document.getElementById("stat-atk"); if(satk) satk.innerText = Math.floor(g.stats.atk);
+        const sdef = document.getElementById("stat-def"); if(sdef) sdef.innerText = Math.floor(g.stats.def || 0); // NUEVO
         const sspd = document.getElementById("stat-spd"); if(sspd) sspd.innerText = Math.floor(g.stats.spd);
         const sluk = document.getElementById("stat-luk"); if(sluk) sluk.innerText = Math.floor(g.stats.luk);
 
@@ -196,19 +197,21 @@ document.addEventListener("DOMContentLoaded", () => {
         window.actualizarPanelRPG();
     };
 
-    btnsAddStat.forEach(btn => {
-        btn.addEventListener("click", (e) => {
+    // Actualizamos los listeners para que los nuevos botones de DEF funcionen automáticamente
+    document.addEventListener("click", (e) => {
+        if (e.target && e.target.classList.contains("btn-add-stat")) {
             const stat = e.target.getAttribute("data-stat");
             if (window.miMascota && window.miMascota.statPoints > 0) {
                 if (stat === 'hp') window.miMascota.stats.hp += 5;
                 if (stat === 'atk') window.miMascota.stats.atk += 1;
+                if (stat === 'def') window.miMascota.stats.def += 1; // NUEVO
                 if (stat === 'spd') window.miMascota.stats.spd += 1;
                 if (stat === 'luk') window.miMascota.stats.luk += 1;
                 window.miMascota.statPoints--;
                 window.actualizarPanelRPG();
                 if(window.guardarProgreso) window.guardarProgreso();
             }
-        });
+        }
     });
 
     const btnStats = document.getElementById("btn-show-stats");
