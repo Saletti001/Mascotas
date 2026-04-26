@@ -1,11 +1,11 @@
 // =========================================
-// InventoryManager.js - SISTEMA DE ALMACÉN CON TIENDA DEV INTEGRADA (100% REAL)
+// InventoryManager.js - ALMACÉN CON EXPANSIÓN DEV AUTOMÁTICA
 // =========================================
 
 class InventoryManager {
     constructor() {
         this.maxSlots = 10;
-        this.overflowSlots = 2; // 2 Slots de Emergencia
+        this.overflowSlots = 2; 
         this.slots = [];
         this.vitalEssence = 0; 
         this.stackLimits = {
@@ -16,7 +16,6 @@ class InventoryManager {
         };
         this.selectedIndex = null; 
 
-        // 🛠️ INYECCIÓN CSS PARA LOS SLOTS DE EMERGENCIA
         const style = document.createElement('style');
         style.innerHTML = `
             .emergency-slot {
@@ -25,7 +24,7 @@ class InventoryManager {
                 box-shadow: inset 0 0 10px rgba(217, 83, 79, 0.2);
                 position: relative;
             }
-            .inventory-slot { position: relative; margin-bottom: 15px; } /* Espacio para el timer */
+            .inventory-slot { position: relative; margin-bottom: 15px; } 
         `;
         document.head.appendChild(style);
     }
@@ -246,7 +245,6 @@ class InventoryManager {
         }, 1000);
     }
 
-    // ✨ PANEL DEV (INYECCIÓN DE TUS OBJETOS 100% REALES DEL ATTACKCATALOG)
     injectDebugButton() {
         const header = document.querySelector("#inventory-modal .modal-header");
         if (header && !document.getElementById("debug-tools-container")) {
@@ -255,7 +253,6 @@ class InventoryManager {
             debugContainer.id = "debug-tools-container";
             debugContainer.style = "display: flex; gap: 8px; margin-left: auto; margin-right: 15px;";
             
-            // Botón 1: Test Llenar Mochila
             const btnFill = document.createElement("button");
             btnFill.id = "btn-debug-fill";
             btnFill.innerText = "🧪 Llenar";
@@ -269,7 +266,6 @@ class InventoryManager {
                 if (added > 0) alert("🎒 Inventario lleno."); else alert("El inventario ya está lleno.");
             });
 
-            // Botón 2: Test Esencia Vital
             const btnEssence = document.createElement("button");
             btnEssence.id = "btn-debug-essence";
             btnEssence.innerText = "🧪 +1000 ✨";
@@ -278,37 +274,68 @@ class InventoryManager {
                 this.addEssence(1000);
             });
 
-            // ✨ BOTÓN 3: LA TIENDA DEV CON TUS ATAQUES Y ACCESORIOS EXACTOS
+            // ✨ BOTÓN 3: LA TIENDA DEV (Expande Mochila y lee TODO el catálogo dinámicamente)
             const btnDevStore = document.createElement("button");
             btnDevStore.id = "btn-debug-devstore";
             btnDevStore.innerText = "🛒 Tienda Dev";
             btnDevStore.style = "background: #e91e63; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; color: white; font-weight: bold;";
             btnDevStore.addEventListener("click", () => {
+                
+                // 1. Expandir mochila brutalmente para que todo quepa
+                if (this.maxSlots < 100) {
+                    this.maxSlots = 100;
+                    this.overflowSlots = 10;
+                }
+
+                // 2. Base de cosméticos
                 const devItems = [
-                    // COSMÉTICOS EXACTOS DE TU accesorios.js
                     { id: "cosm_corona", name: "Corona Rey", icon: "👑", type: "Cosmético", subType: "head", id_cosmetico: "corona_rey", evCost: 0, desc: "Símbolo de realeza.", maxStack: 1 },
                     { id: "cosm_jetpack", name: "Jetpack", icon: "🚀", type: "Cosmético", subType: "back", id_cosmetico: "jetpack", evCost: 0, desc: "Propulsores de combate.", maxStack: 1 },
                     { id: "cosm_dron", name: "Dron Centinela", icon: "🤖", type: "Cosmético", subType: "skin", id_cosmetico: "malla_cibernetica", evCost: 0, desc: "Asistente automatizado.", maxStack: 1 },
-                    { id: "cosm_aura", name: "Fuego Solar", icon: "☀️", type: "Cosmético", subType: "aura", id_cosmetico: "fuego_solar", evCost: 0, desc: "Aura de plasma.", maxStack: 1 },
-                    
-                    // MTs EXACTAS DE TU AttackCatalog.js
-                    { id: "mt_espinas", name: "MT Espinas Óseas", icon: "💿", type: "MT", subType: "Técnica", element: "Biomutante", id_ataque: "espinas_oseas", power: 95, evCost: 0, desc: "Penetra 30% de escudos.", maxStack: 1 },
-                    { id: "mt_raiz", name: "MT Raíz Enredadora", icon: "💿", type: "MT", subType: "Soporte", element: "Biomutante", id_ataque: "raiz_enredadora", power: 0, evCost: 0, desc: "Aplica Enredado (SPD -40%).", maxStack: 1 },
-                    { id: "mt_corte", name: "MT Corte Plasma", icon: "💿", type: "MT", subType: "Técnica", element: "Cibernético", id_ataque: "corte_plasma", power: 110, evCost: 0, desc: "Ataque cibernético. (Precisión: 95).", maxStack: 1 },
-                    { id: "mt_pandemia", name: "MT Pandemia Global", icon: "💿", type: "MT", subType: "Definitivo", element: "Viral", id_ataque: "pandemia", power: 150, evCost: 0, desc: "Aplica Infección al rival.", maxStack: 1 },
-                    { id: "mt_fision", name: "MT Fisión Nuclear", icon: "💿", type: "MT", subType: "Definitivo", element: "Radiactivo", id_ataque: "fision", power: 200, evCost: 0, desc: "Ataque Radiactivo masivo.", maxStack: 1 }
+                    { id: "cosm_aura", name: "Fuego Solar", icon: "☀️", type: "Cosmético", subType: "aura", id_cosmetico: "fuego_solar", evCost: 0, desc: "Aura de plasma.", maxStack: 1 }
                 ];
+
+                // 3. Extraer MÁGICAMENTE los 54 ataques de tu AttackCatalog.js
+                if (window.AttackCatalog && window.AttackCatalog.ataquesPorElemento) {
+                    const cat = window.AttackCatalog.ataquesPorElemento;
+                    for (const [elemento, ramas] of Object.entries(cat)) {
+                        
+                        if (ramas.especiales) {
+                            ramas.especiales.forEach(atk => {
+                                devItems.push({ id: "mt_" + atk.id, name: "MT " + atk.nombre, icon: "💿", type: "MT", subType: "Técnica", element: elemento, id_ataque: atk.id, power: atk.potencia || 0, evCost: 0, desc: atk.descripcion, maxStack: 1 });
+                            });
+                        }
+                        if (ramas.soportes) {
+                            ramas.soportes.forEach(atk => {
+                                devItems.push({ id: "mt_" + atk.id, name: "MT " + atk.nombre, icon: "💿", type: "MT", subType: "Soporte", element: elemento, id_ataque: atk.id, power: atk.potencia || 0, evCost: 0, desc: atk.descripcion, maxStack: 1 });
+                            });
+                        }
+                        if (ramas.definitivos) {
+                            ramas.definitivos.forEach(atk => {
+                                devItems.push({ id: "mt_" + atk.id, name: "MT " + atk.nombre, icon: "💿", type: "MT", subType: "Definitivo", element: elemento, id_ataque: atk.id, power: atk.potencia || 0, evCost: 0, desc: atk.descripcion, maxStack: 1 });
+                            });
+                        }
+                    }
+                } else {
+                    alert("⚠️ No se encontró el AttackCatalog. Asegúrate de haberlo reemplazado primero.");
+                }
 
                 let added = 0;
                 devItems.forEach(item => {
-                    if (this.slots.length < this.maxSlots + this.overflowSlots) {
-                        this.addItem(item);
-                        added++;
+                    // Evitamos duplicados si ya tienes esa MT
+                    if (!this.slots.find(s => s.id === item.id)) {
+                        if (this.slots.length < this.maxSlots + this.overflowSlots) {
+                            this.addItem(item);
+                            added++;
+                        }
                     }
                 });
                 
-                if(added > 0) alert(`🛒 ¡Tienda Dev activada! Se inyectaron ${added} objetos REALES extraídos de tu catálogo.`);
-                else alert("❌ El Almacén está lleno. Destruye objetos para hacer espacio.");
+                if(added > 0) alert(`🛒 ¡Mochila expandida a 100 slots! Se inyectaron ${added} objetos únicos. Ve al Laboratorio a ver tu arsenal completo.`);
+                else alert("Ya tienes todos los objetos de la Tienda Dev en tu inventario.");
+                
+                this.updateUI();
+                this.renderGrid();
             });
 
             debugContainer.appendChild(btnDevStore);
@@ -325,7 +352,6 @@ class InventoryManager {
     }
 }
 
-// ✨ AUTO-REPARADOR CONTRA SAVEMANAGER
 document.addEventListener("DOMContentLoaded", () => {
     const iniciarOReconstruir = () => {
         if (!window.miInventario || typeof window.miInventario.addItem !== 'function') {
@@ -336,6 +362,12 @@ document.addEventListener("DOMContentLoaded", () => {
             else if (datosGuardados.items) window.miInventario.slots = datosGuardados.items;
             
             if (datosGuardados.vitalEssence) window.miInventario.vitalEssence = datosGuardados.vitalEssence;
+            
+            // Si la partida tenía más de 10 objetos guardados (por haber usado la tienda Dev antes), mantenemos el límite alto
+            if (window.miInventario.slots.length > 10) {
+                window.miInventario.maxSlots = 100;
+            }
+            
             window.miInventario.init();
         }
     };
