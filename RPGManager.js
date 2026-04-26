@@ -1,5 +1,5 @@
 // =========================================
-// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (RESTAURADO + EFECTO BLUR LIMPIO)
+// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (RESTAURADO + FIX DESCUADRE)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -25,10 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if(!g.xpNeeded) g.xpNeeded = 100;
         if(!g.stats) g.stats = { hp: 50, atk: 15, def: 10, spd: 15, luk: 15 };
         if(g.statPoints === undefined) g.statPoints = 0;
-
-        if (panelStats) {
-            panelStats.style.minWidth = "260px";
-        }
 
         const nameEl = document.getElementById("geno-name");
         if(nameEl) nameEl.innerText = g.name || "Geno";
@@ -221,71 +217,61 @@ document.addEventListener("DOMContentLoaded", () => {
     // ==========================================
     function blurFab() {
         const fab = document.getElementById("fab-menu");
+        // Desactivamos clicks y aplicamos blur visual al botón NEXO
         if(fab) { fab.style.pointerEvents = "none"; fab.style.filter = "blur(4px) opacity(0.6)"; }
     }
     
     function unblurFab() {
         const fab = document.getElementById("fab-menu");
+        // Restauramos el botón NEXO
         if(fab) { fab.style.pointerEvents = "auto"; fab.style.filter = "none"; }
     }
 
-    // Fondo difuminado interno (solo para proteger NEXO al abrir Stats)
-    let statsBackdrop = document.getElementById("stats-backdrop");
-    if (!statsBackdrop) {
-        statsBackdrop = document.createElement("div");
-        statsBackdrop.id = "stats-backdrop";
-        statsBackdrop.style.cssText = "position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.6); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 15; display: none;";
-        const roomArea = document.getElementById("room-area");
-        if(roomArea) roomArea.appendChild(statsBackdrop);
-
-        statsBackdrop.addEventListener("click", () => {
-            panelStats.classList.add("hidden");
-            statsBackdrop.style.display = "none";
-            unblurFab();
-        });
-    }
-
+    // Al abrir el nuevo panel de Stats superpuesto
     if (btnStats) {
         btnStats.addEventListener("click", () => {
+            if(!panelStats) return;
             panelStats.classList.toggle("hidden");
-            const isOpen = !panelStats.classList.contains("hidden");
-            if (isOpen) {
-                if(statsBackdrop) statsBackdrop.style.display = "block";
-                const topHud = document.getElementById("top-hud");
-                if(topHud) {
-                    topHud.style.position = "relative";
-                    topHud.style.zIndex = "20"; // El HUD queda por encima del cristal
-                }
-                blurFab(); // Difumina el botón NEXO
-            } else {
-                if(statsBackdrop) statsBackdrop.style.display = "none";
-                unblurFab(); // Restaura el botón NEXO
-            }
+            // Si lo abrimos, bloqueamos el botón NEXO
+            if (!panelStats.classList.contains("hidden")) blurFab();
         });
     }
 
+    // Al cerrar el panel de Stats
     if (btnCloseStats) {
         btnCloseStats.addEventListener("click", () => {
-            panelStats.classList.add("hidden");
-            if(statsBackdrop) statsBackdrop.style.display = "none";
-            unblurFab();
+            if(panelStats) panelStats.classList.add("hidden");
+            unblurFab(); // Restauramos el botón NEXO
+        });
+    }
+
+    // ✨ CERRAR AL TOCAR EL FONDO OSCURO (Igual que el Almacén)
+    if (panelStats) {
+        panelStats.addEventListener("click", (e) => {
+            // Si tocas el fondo oscuro (panelStats) y no la tarjeta (modal-content)
+            if (e.target === panelStats) {
+                panelStats.classList.add("hidden");
+                unblurFab();
+            }
         });
     }
 
     // Vigilar cuando se cierran las demás ventanas (Genos, Almacén) para restaurar el botón NEXO
     document.addEventListener("click", () => {
         setTimeout(() => {
-            const pStats = document.getElementById("geno-stats-panel");
             const mGenos = document.getElementById("geno-swap-modal");
             const mInv = document.getElementById("inventory-modal");
             const mId = document.getElementById("geno-id-card-modal");
 
-            const algunModalAbierto = 
-                (pStats && !pStats.classList.contains("hidden")) ||
-                (mGenos && !mGenos.classList.contains("hidden")) ||
-                (mInv && !mInv.classList.contains("hidden")) ||
-                (mId && !mId.classList.contains("hidden"));
+            // Si abrimos la ID Card, también bloqueamos el NEXO
+            if (mId && !mId.classList.contains("hidden")) { blurFab(); return; }
 
+            const algunModalAbierto = 
+                (panelStats && !panelStats.classList.contains("hidden")) ||
+                (mGenos && !mGenos.classList.contains("hidden")) ||
+                (mInv && !mInv.classList.contains("hidden"));
+
+            // Si no hay nada abierto, restauramos NEXO
             if (!algunModalAbierto) unblurFab();
         }, 50);
     });
@@ -314,7 +300,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 setTimeout(() => {
                     window.actualizarPanelRPG();
-                    panelStats.style.boxShadow = "0 0 20px #8B5CF6";
+                    if(panelStats) panelStats.style.boxShadow = "0 0 20px #8B5CF6";
                     if(window.guardarProgreso) window.guardarProgreso();
                 }, 800);
 
