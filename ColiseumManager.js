@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR V10.2 (RELOJES Y BLOQUEOS DE BOTONES)
+// ColiseumManager.js - CONTROLADOR V10.3 (TIEMPOS Y PAUSAS SECUENCIALES)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -73,13 +73,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function procesarRonda(accionJugador) {
-        ColiseumUI.agregarLog(`<br><span style="color:#4dd0e1">[TURNO ${ColiseumLogic.turno}]</span>`);
+        ColiseumUI.agregarLog(`<br><span style="color:#4dd0e1; font-weight:bold; letter-spacing: 1px;">[ --- TURNO ${ColiseumLogic.turno} --- ]</span>`);
         bloquearBotones(true);
 
         const p = ColiseumLogic.player;
         const e = ColiseumLogic.enemy;
 
-        // IA Enemiga (Respeta sus propios cooldowns)
+        // IA Enemiga
         let accionEnemigo = "ataque";
         let acts = Object.keys(e.ataquesEquipados).filter(k => e.ataquesEquipados[k] !== null);
         
@@ -99,15 +99,28 @@ document.addEventListener("DOMContentLoaded", () => {
         let accion1 = playerGoesFirst ? accionJugador : accionEnemigo;
         let accion2 = playerGoesFirst ? accionEnemigo : accionJugador;
 
+        // ✨ 1. EJECUTA EL PRIMER ATAQUE
         ejecutarAccionYAnimar(ejecutor1, ejecutor2, accion1);
         
         if (ejecutor2.hp > 0) {
+            // ✨ 2. PAUSA DRAMÁTICA DE 2.8 SEGUNDOS
             setTimeout(() => {
+                ColiseumUI.agregarLog(`<span style="color:#555;">&nbsp;&nbsp;♦ ♦ ♦</span>`); // Separador visual para el 2do ataque
+                
+                // ✨ 3. EJECUTA EL SEGUNDO ATAQUE
                 ejecutarAccionYAnimar(ejecutor2, ejecutor1, accion2);
-                finalizarRonda();
-            }, 900);
+                
+                // ✨ 4. PAUSA DE 2 SEGUNDOS ANTES DE CERRAR EL TURNO
+                setTimeout(() => {
+                    finalizarRonda();
+                }, 2000);
+
+            }, 2800); 
         } else {
-            finalizarRonda();
+            // Si el primero lo mató, no hay segundo ataque, pasamos al final
+            setTimeout(() => {
+                finalizarRonda();
+            }, 2000);
         }
     }
 
@@ -137,37 +150,46 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function finalizarRonda() {
-        setTimeout(() => {
-            const p = ColiseumLogic.player;
-            const e = ColiseumLogic.enemy;
+        const p = ColiseumLogic.player;
+        const e = ColiseumLogic.enemy;
 
-            let resP = ColiseumLogic.procesarEfectosFinTurno(p);
+        // Calculamos los efectos de fin de turno (venenos, quemaduras, buffos)
+        let resP = ColiseumLogic.procesarEfectosFinTurno(p);
+        let resE = ColiseumLogic.procesarEfectosFinTurno(e);
+        let huboEfectos = resP.logs.length > 0 || resE.logs.length > 0;
+
+        // Imprimimos la sección de efectos solo si algo ocurrió
+        if (huboEfectos) {
+            ColiseumUI.agregarLog(`<span style="color:#777; font-style:italic;">[Efectos y Condiciones]</span>`);
+            
             resP.logs.forEach(l => ColiseumUI.agregarLog(l));
             if(resP.anims.heal > 0) { ColiseumUI.animarCuracion(true); ColiseumUI.mostrarTextoFlotante(true, `+${resP.anims.heal}`, "text-heal"); }
             if(resP.anims.dmg > 0) { ColiseumUI.animarDano(true); ColiseumUI.mostrarTextoFlotante(true, `-${resP.anims.dmg}`, "text-dmg"); }
 
-            let resE = ColiseumLogic.procesarEfectosFinTurno(e);
             resE.logs.forEach(l => ColiseumUI.agregarLog(l));
             if(resE.anims.heal > 0) { ColiseumUI.animarCuracion(false); ColiseumUI.mostrarTextoFlotante(false, `+${resE.anims.heal}`, "text-heal"); }
             if(resE.anims.dmg > 0) { ColiseumUI.animarDano(false); ColiseumUI.mostrarTextoFlotante(false, `-${resE.anims.dmg}`, "text-dmg"); }
+        }
 
-            // ✨ NUEVO: REDUCIR COOLDOWNS DE BOTONES AL TERMINAR EL TURNO
-            if (p.cooldowns.especial > 0) p.cooldowns.especial--;
-            if (p.cooldowns.tactica > 0) p.cooldowns.tactica--;
-            if (p.cooldowns.definitivo > 0) p.cooldowns.definitivo--;
+        // Restamos Cooldowns de botones
+        if (p.cooldowns.especial > 0) p.cooldowns.especial--;
+        if (p.cooldowns.tactica > 0) p.cooldowns.tactica--;
+        if (p.cooldowns.definitivo > 0) p.cooldowns.definitivo--;
 
-            if (e.cooldowns.especial > 0) e.cooldowns.especial--;
-            if (e.cooldowns.tactica > 0) e.cooldowns.tactica--;
-            if (e.cooldowns.definitivo > 0) e.cooldowns.definitivo--;
+        if (e.cooldowns.especial > 0) e.cooldowns.especial--;
+        if (e.cooldowns.tactica > 0) e.cooldowns.tactica--;
+        if (e.cooldowns.definitivo > 0) e.cooldowns.definitivo--;
 
-            ColiseumUI.actualizarHP(p, e);
-            ColiseumLogic.turno++;
-            
-            setTimeout(() => {
-                if (p.hp <= 0 || e.hp <= 0) terminarCombate();
-                else actualizarBotones();
-            }, 600);
-        }, 800);
+        ColiseumUI.actualizarHP(p, e);
+        ColiseumLogic.turno++;
+        
+        // ✨ 5. SI HUBO VENENOS/EFECTOS DAMOS 1.5 SEGUNDOS PARA LEERLOS, SINO AVANZAMOS RÁPIDO
+        let pausaFinal = huboEfectos ? 1500 : 500;
+
+        setTimeout(() => {
+            if (p.hp <= 0 || e.hp <= 0) terminarCombate();
+            else actualizarBotones();
+        }, pausaFinal);
     }
 
     function terminarCombate() {
@@ -194,7 +216,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 1000);
     }
 
-    // ✨ NUEVO: ACTUALIZACIÓN VISUAL DE COOLDOWNS EN LOS BOTONES
     function actualizarBotones() {
         if (typeof ColiseumUI.actualizarBotonesAtaque === 'function') {
             ColiseumUI.actualizarBotonesAtaque(window.miMascota);
