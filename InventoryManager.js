@@ -1,5 +1,5 @@
 // =========================================
-// InventoryManager.js - SISTEMA DE ALMACÉN CON TIENDA DEV INTEGRADA
+// InventoryManager.js - SISTEMA DE ALMACÉN CON TIENDA DEV INTEGRADA (100% REAL)
 // =========================================
 
 class InventoryManager {
@@ -246,7 +246,7 @@ class InventoryManager {
         }, 1000);
     }
 
-    // ✨ PANEL DEV (AHORA CON TIENDA DE PRUEBAS INFALIBLE)
+    // ✨ PANEL DEV (INYECCIÓN DE TUS OBJETOS 100% REALES DEL ATTACKCATALOG)
     injectDebugButton() {
         const header = document.querySelector("#inventory-modal .modal-header");
         if (header && !document.getElementById("debug-tools-container")) {
@@ -278,23 +278,25 @@ class InventoryManager {
                 this.addEssence(1000);
             });
 
-            // ✨ BOTÓN 3: LA TIENDA DEV EXACTA (100% CÓDIGO REAL)
+            // ✨ BOTÓN 3: LA TIENDA DEV CON TUS ATAQUES Y ACCESORIOS EXACTOS
             const btnDevStore = document.createElement("button");
             btnDevStore.id = "btn-debug-devstore";
             btnDevStore.innerText = "🛒 Tienda Dev";
             btnDevStore.style = "background: #e91e63; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; color: white; font-weight: bold;";
             btnDevStore.addEventListener("click", () => {
                 const devItems = [
-                    // COSMÉTICOS (Programados 100% como pide ImplantsManager.js)
-                    { id: "dev_head", name: "Corona Dev", icon: "👑", type: "Cosmético", subType: "head", id_cosmetico: "corona_rey", evCost: 0, desc: "Cabeza de prueba.", maxStack: 1 },
-                    { id: "dev_back", name: "Jetpack Dev", icon: "🚀", type: "Cosmético", subType: "back", id_cosmetico: "jetpack", evCost: 0, desc: "Espalda de prueba.", maxStack: 1 },
-                    { id: "dev_skin", name: "Dron Dev", icon: "🤖", type: "Cosmético", subType: "skin", id_cosmetico: "malla_cibernetica", evCost: 0, desc: "Dron de prueba.", maxStack: 1 },
-                    { id: "dev_aura", name: "Aura Dev", icon: "☀️", type: "Cosmético", subType: "aura", id_cosmetico: "fuego_solar", evCost: 0, desc: "Aura de prueba.", maxStack: 1 },
+                    // COSMÉTICOS EXACTOS DE TU accesorios.js
+                    { id: "cosm_corona", name: "Corona Rey", icon: "👑", type: "Cosmético", subType: "head", id_cosmetico: "corona_rey", evCost: 0, desc: "Símbolo de realeza.", maxStack: 1 },
+                    { id: "cosm_jetpack", name: "Jetpack", icon: "🚀", type: "Cosmético", subType: "back", id_cosmetico: "jetpack", evCost: 0, desc: "Propulsores de combate.", maxStack: 1 },
+                    { id: "cosm_dron", name: "Dron Centinela", icon: "🤖", type: "Cosmético", subType: "skin", id_cosmetico: "malla_cibernetica", evCost: 0, desc: "Asistente automatizado.", maxStack: 1 },
+                    { id: "cosm_aura", name: "Fuego Solar", icon: "☀️", type: "Cosmético", subType: "aura", id_cosmetico: "fuego_solar", evCost: 0, desc: "Aura de plasma.", maxStack: 1 },
                     
-                    // MTs DE COMBATE (Programados 100% como pide ImplantsManager.js)
-                    { id: "dev_mt2", name: "MT Técnica", icon: "💿", type: "MT", subType: "Técnica", element: "Biomutante", id_ataque: "espinas_oseas", power: 80, evCost: 0, desc: "Ataque de prueba (Técnica).", maxStack: 1 },
-                    { id: "dev_mt3", name: "MT Soporte", icon: "💿", type: "MT", subType: "Soporte", element: "Viral", id_ataque: "raiz_enredadora", power: 0, evCost: 0, desc: "Ataque de prueba (Soporte).", maxStack: 1 },
-                    { id: "dev_mt4", name: "MT Definitivo", icon: "💿", type: "MT", subType: "Definitivo", element: "Cibernético", id_ataque: "corte_plasma", power: 150, evCost: 0, desc: "Definitivo (Solo Cibernético).", maxStack: 1 }
+                    // MTs EXACTAS DE TU AttackCatalog.js
+                    { id: "mt_espinas", name: "MT Espinas Óseas", icon: "💿", type: "MT", subType: "Técnica", element: "Biomutante", id_ataque: "espinas_oseas", power: 95, evCost: 0, desc: "Penetra 30% de escudos.", maxStack: 1 },
+                    { id: "mt_raiz", name: "MT Raíz Enredadora", icon: "💿", type: "MT", subType: "Soporte", element: "Biomutante", id_ataque: "raiz_enredadora", power: 0, evCost: 0, desc: "Aplica Enredado (SPD -40%).", maxStack: 1 },
+                    { id: "mt_corte", name: "MT Corte Plasma", icon: "💿", type: "MT", subType: "Técnica", element: "Cibernético", id_ataque: "corte_plasma", power: 110, evCost: 0, desc: "Ataque cibernético. (Precisión: 95).", maxStack: 1 },
+                    { id: "mt_pandemia", name: "MT Pandemia Global", icon: "💿", type: "MT", subType: "Definitivo", element: "Viral", id_ataque: "pandemia", power: 150, evCost: 0, desc: "Aplica Infección al rival.", maxStack: 1 },
+                    { id: "mt_fision", name: "MT Fisión Nuclear", icon: "💿", type: "MT", subType: "Definitivo", element: "Radiactivo", id_ataque: "fision", power: 200, evCost: 0, desc: "Ataque Radiactivo masivo.", maxStack: 1 }
                 ];
 
                 let added = 0;
@@ -305,7 +307,7 @@ class InventoryManager {
                     }
                 });
                 
-                if(added > 0) alert(`🛒 ¡Tienda Dev activada! Se han inyectado ${added} módulos de prueba en tu Almacén Nexo.`);
+                if(added > 0) alert(`🛒 ¡Tienda Dev activada! Se inyectaron ${added} objetos REALES extraídos de tu catálogo.`);
                 else alert("❌ El Almacén está lleno. Destruye objetos para hacer espacio.");
             });
 
