@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V12.1 (GENERACIÓN PROCEDURAL REPARADA)
+// ColiseumLogic.js - MODELO MATEMÁTICO V12.3 (RELOJ INTELIGENTE DE TURNOS)
 // =========================================
 
 window.ColiseumLogic = {
@@ -59,8 +59,6 @@ window.ColiseumLogic = {
             
         const elementos = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
         const eElemento = elementos[Math.floor(Math.random() * elementos.length)];
-        
-        // ✨ FIX: Restaurada la aleatoriedad visual del enemigo
         const formas = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
         const colores = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77", "#ff9800", "#ffb347", "#a8e6cf"];
         const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry", "cibernetico", "alien", "ojeras"];
@@ -154,7 +152,7 @@ window.ColiseumLogic = {
             let cura = Math.floor(atacante.maxHp * ataqueReal.curacion);
             atacante.hp = Math.min(atacante.maxHp, atacante.hp + Math.max(1, cura));
             anims.curacionAtacante += cura;
-            logs.push(`<span style="color:#4CAF50">* Recupera ${cura} HP.</span>`);
+            logs.push(`<span style="color:#4CAF50">* ${atacante.nombre} recupera ${cura} HP.</span>`);
         }
 
         if (potenciaAtaque > 0) {
@@ -184,28 +182,29 @@ window.ColiseumLogic = {
 
                 if (defensor.escudoCibernetico && !ataqueReal.perforante) {
                     dmg = Math.floor(dmg * 0.60); defensor.escudoCibernetico = false;
-                    logs.push(`<span style="color:#00d2ff">* [Escudo Cibernético] Absorbe el impacto.</span>`);
+                    logs.push(`<span style="color:#00d2ff">* [Escudo Cibernético] ${defensor.nombre} absorbe el impacto.</span>`);
                 } else if (defensor.crystalSkin) {
                     dmg = 0; defensor.crystalSkin = false;
-                    logs.push(`<span style="color:#80deea">* [Piel de Cristal] Daño: 0.</span>`);
+                    logs.push(`<span style="color:#80deea">* [Piel de Cristal] ${defensor.nombre} anula el daño.</span>`);
                 } else {
                     defensor.hp = Math.max(0, defensor.hp - dmg);
                     anims.danoDefensor += dmg;
 
                     let tipoGolpe = multElem === 1.5 ? ` <span style="color:#4CAF50; font-weight:bold;">(¡Súper Efectivo!)</span>` : (multElem === 0.5 ? ` <span style="color:#888; font-weight:bold;">(Poco efectivo...)</span>` : "");
-                    if (isCrit) logs.push(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> Causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} dmg</span>.${tipoGolpe}`);
-                    else logs.push(`> Causa <span style="color:#ff6b6b">${dmg} dmg</span>.${tipoGolpe}`);
+                    if (isCrit) logs.push(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${atacante.nombre} causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} de daño</span>.${tipoGolpe}`);
+                    else logs.push(`> ${atacante.nombre} causa <span style="color:#ff6b6b">${dmg} de daño</span>.${tipoGolpe}`);
 
                     if (atacante.genesId.includes("vampirismo_genetico") && dmg > 0) {
                         let roboVida = Math.max(1, Math.floor(dmg * 0.15));
                         atacante.hp = Math.min(atacante.maxHp, atacante.hp + roboVida);
                         anims.curacionAtacante += roboVida;
-                        logs.push(`<span style="color:#e0b0ff">* [Vampirismo] +${roboVida} HP.</span>`);
+                        logs.push(`<span style="color:#e0b0ff">* [Vampirismo] ${atacante.nombre} recupera ${roboVida} HP.</span>`);
                     }
                 }
             }
         }
 
+        // ✨ NUEVO: AGREGADA LA PROPIEDAD 'isNuevo: true' A LOS RELOJES
         let probAply = ataqueReal.probEstado !== undefined ? ataqueReal.probEstado : 1.0;
         if (Math.random() <= probAply) {
             let duracionBase = ataqueReal.duracion || 3;
@@ -213,27 +212,27 @@ window.ColiseumLogic = {
             if (ataqueReal.buffSpd) {
                 let val = Math.floor(atacante.baseSpd * ataqueReal.buffSpd);
                 atacante.spd += val;
-                atacante.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "spd", valor: val, turnos: duracionBase });
+                atacante.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "spd", valor: val, turnos: duracionBase, isNuevo: true });
             }
             if (ataqueReal.buffAtk) {
                 let val = Math.floor(atacante.baseAtk * ataqueReal.buffAtk);
                 atacante.atk += val;
-                atacante.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "atk", valor: val, turnos: duracionBase });
+                atacante.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "atk", valor: val, turnos: duracionBase, isNuevo: true });
             }
             if (ataqueReal.escudo) {
                 let val = Math.floor(atacante.maxHp * ataqueReal.escudo);
                 atacante.def += val;
-                atacante.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "def", valor: val, turnos: duracionBase });
+                atacante.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "def", valor: val, turnos: duracionBase, isNuevo: true });
             }
             if (ataqueReal.debuffSpd && defensor.hp > 0) {
                 let val = Math.floor(defensor.baseSpd * ataqueReal.debuffSpd);
                 defensor.spd = Math.max(1, defensor.spd - val);
-                defensor.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "spd", valor: -val, turnos: duracionBase });
+                defensor.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "spd", valor: -val, turnos: duracionBase, isNuevo: true });
             }
             if (ataqueReal.debuffAtk && defensor.hp > 0) {
                 let val = Math.floor(defensor.baseAtk * ataqueReal.debuffAtk);
                 defensor.atk = Math.max(1, defensor.atk - val);
-                defensor.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "atk", valor: -val, turnos: duracionBase });
+                defensor.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "atk", valor: -val, turnos: duracionBase, isNuevo: true });
             }
 
             let estadoAply = ataqueReal.aplicaEstado || ataqueReal.aplicaEstadoPropio;
@@ -241,13 +240,13 @@ window.ColiseumLogic = {
             if (estadoAply && target.hp > 0) {
                 if (target.genesId.includes("sangre_fria") && !target.sangreFriaUsada) {
                     target.sangreFriaUsada = true;
-                    logs.push(`<span style="color:#00d2ff">* [Sangre Fría] ¡Bloquea el estado!</span>`);
+                    logs.push(`<span style="color:#00d2ff">* [Sangre Fría] ¡${target.nombre} bloquea el estado!</span>`);
                 } else if (!target.estados.includes(estadoAply)) {
                     target.estados.push(estadoAply);
                     let configEstado = window.AttackCatalog && window.AttackCatalog.estados ? window.AttackCatalog.estados[estadoAply] : null;
                     let durEstado = configEstado ? configEstado.duracionBase : 3;
-                    target.efectosActivos.push({ nombre: estadoAply, stat: "estado", valor: estadoAply, turnos: durEstado });
-                    logs.push(`<span style="color:#00bcd4">* Sufre [${estadoAply}] por ${durEstado} turnos.</span>`);
+                    target.efectosActivos.push({ nombre: estadoAply, stat: "estado", valor: estadoAply, turnos: durEstado, isNuevo: true });
+                    logs.push(`<span style="color:#00bcd4">* ${target.nombre} sufre [${estadoAply}] por ${durEstado} turnos.</span>`);
                 }
             }
         }
@@ -258,19 +257,26 @@ window.ColiseumLogic = {
         let logs = []; let anims = { heal: 0, dmg: 0 };
         if (fighter.hp <= 0) return { logs, anims };
 
+        // ✨ NUEVO: REVISIÓN DEL RELOJ INTELIGENTE
         for (let i = fighter.efectosActivos.length - 1; i >= 0; i--) {
             let ef = fighter.efectosActivos[i];
-            ef.turnos--;
-            if (ef.turnos <= 0) {
-                if (ef.stat === "estado") {
-                    fighter.estados = fighter.estados.filter(e => e !== ef.valor);
-                    logs.push(`<span style="color:#888;">> ⏳ El estado [${ef.nombre}] sobre ${fighter.nombre} se disipó.</span>`);
-                } else if (ef.stat) {
-                    fighter[ef.stat] -= ef.valor;
-                    let accion = ef.valor > 0 ? "terminó" : "se recuperó";
-                    logs.push(`<span style="color:#888;">> ⏳ Efecto [${ef.nombre}] ${accion}. Sus stats vuelven a la normalidad.</span>`);
+            
+            // Si el efecto acaba de ser lanzado este turno, no restamos el reloj
+            if (ef.isNuevo) {
+                ef.isNuevo = false; 
+            } else {
+                ef.turnos--;
+                if (ef.turnos <= 0) {
+                    if (ef.stat === "estado") {
+                        fighter.estados = fighter.estados.filter(e => e !== ef.valor);
+                        logs.push(`<span style="color:#888;">> ⏳ El estado [${ef.nombre}] sobre ${fighter.nombre} se disipó.</span>`);
+                    } else if (ef.stat) {
+                        fighter[ef.stat] -= ef.valor;
+                        let accion = ef.valor > 0 ? "terminó" : "se recuperó";
+                        logs.push(`<span style="color:#888;">> ⏳ El efecto de [${ef.nombre}] ${accion} en ${fighter.nombre}. Sus stats vuelven a la normalidad.</span>`);
+                    }
+                    fighter.efectosActivos.splice(i, 1);
                 }
-                fighter.efectosActivos.splice(i, 1);
             }
         }
         
