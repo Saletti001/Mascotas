@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (g.level >= 25 && window.tieneGenActivoV9 && window.tieneGenActivoV9(g, "umbral_despertar") && !g.umbralAplicado) {
             g.stats.hp += 5; g.stats.atk += 5; g.stats.def += 5; g.stats.spd += 5; g.stats.luk += 5;
             
-            // Si el gen se despierta, esto se considera una mutación BASE.
             if(g.baseStats) {
                 g.baseStats.hp += 5; g.baseStats.atk += 5; g.baseStats.def += 5; g.baseStats.spd += 5; g.baseStats.luk += 5;
             }
@@ -33,7 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if(!g.stats) g.stats = { hp: 50, atk: 15, def: 10, spd: 15, luk: 15 };
         if(g.statPoints === undefined) g.statPoints = 0;
 
-        // Guardar permanentemente los Stats Originales (Base) con los que nació
         if(!g.baseStats) {
             g.baseStats = {
                 hp: g.stats.hp,
@@ -88,7 +86,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 let tMax = limites.hp[1] + limites.atk[1] + limites.def[1] + limites.spd[1] + limites.luk[1];
                 let bonoUmbral = g.umbralAplicado ? 25 : 0; 
                 
-                // ✨ LA CALIDAD ES ESTRICTAMENTE FIJA BASADA EN EL NACIMIENTO (Ignoramos puntos dados)
                 let tObt = (g.baseStats.hp + g.baseStats.atk + g.baseStats.def + g.baseStats.spd + g.baseStats.luk) - bonoUmbral;
 
                 pct = Math.round(((tObt - tMin) / (tMax - tMin)) * 100);
@@ -102,7 +99,6 @@ document.addEventListener("DOMContentLoaded", () => {
             qualityBadge.style.textShadow = rango === "S" ? "0 0 10px rgba(255, 204, 0, 0.8)" : "none";
         }
 
-        // ✨ LÓGICA DE DIBUJO: Formato BASE (+Añadido) TOTAL
         const drawStat = (statName) => {
             const baseEl = document.getElementById(`stat-${statName}-base`);
             const addedEl = document.getElementById(`stat-${statName}-added`);
@@ -114,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const totalVal = Math.floor(g.stats[statName]);
                     const diff = totalVal - baseVal;
                     
-                    baseEl.innerText = baseVal; // SIEMPRE muestra el base aquí (fijo)
+                    baseEl.innerText = baseVal; 
                     
                     if(diff > 0) {
                         if(addedEl) addedEl.innerText = `(+${diff})`;
@@ -124,7 +120,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         if(totalEl) totalEl.innerText = '';
                     }
                 } else {
-                    // Fallback de seguridad
                     baseEl.innerText = Math.floor(g.stats[statName]);
                     if(addedEl) addedEl.innerText = '';
                     if(totalEl) totalEl.innerText = '';
@@ -155,7 +150,7 @@ document.addEventListener("DOMContentLoaded", () => {
             structureContainer.style.gap = "6px";
             structureContainer.style.marginTop = "15px";
             structureContainer.style.paddingTop = "15px";
-            structureContainer.style.borderTop = "1px dashed rgba(77, 208, 225, 0.3)";
+            // ✨ SE HA ELIMINADO LA LÍNEA AZUL PUNTIAGUDA (borderTop) AQUÍ
             structureContainer.style.width = "100%";
             
             if (!g.scanned) {
@@ -261,9 +256,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnScanner = document.getElementById("btn-use-scanner");
     const btnRename = document.getElementById("btn-rename-geno");
 
-    // ==========================================
-    // LÓGICA DE APERTURA/CIERRE DEL MODAL DE STATS
-    // ==========================================
     const statsOverlay = document.getElementById("stats-modal-overlay");
 
     function blurFab() {
