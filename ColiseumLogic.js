@@ -1,11 +1,17 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V12.3 (RELOJ INTELIGENTE DE TURNOS)
+// ColiseumLogic.js - MODELO MATEMÁTICO V12.4 (NOMBRES A COLOR EN LOG)
 // =========================================
 
 window.ColiseumLogic = {
     player: null,
     enemy: null,
     turno: 1,
+
+    // ✨ NUEVO: Inyector de color para los nombres del log
+    cName: function(fighter) {
+        const color = fighter.isPlayer ? "#4dd0e1" : "#ff6b6b";
+        return `<span style="color:${color}; font-weight:bold;">${fighter.nombre}</span>`;
+    },
 
     generarNombreAleatorio: function() {
         const prefijos = ["Nex", "Crio", "Bio", "Zar", "Vor", "Kael", "Lum", "Pyro", "Grav", "Aero", "Tox", "Muta", "Viro"];
@@ -127,21 +133,21 @@ window.ColiseumLogic = {
         
         let ataqueReal = atacante.ataquesEquipados[slotAccion];
         if (!ataqueReal) {
-            logs.push(`<span style="color:#888;">> ${atacante.nombre} intenta atacar pero tropieza.</span>`);
+            logs.push(`<span style="color:#888;">> ${this.cName(atacante)} intenta atacar pero tropieza.</span>`);
             return { logs, anims };
         }
 
         if (slotAccion === "especial") {
             atacante.cooldowns.especial = 3;
-            logs.push(`<span style="color:#e040fb">> ¡${atacante.nombre} usa [${ataqueReal.nombre}]!</span>`);
+            logs.push(`<span style="color:#e040fb">> ¡${this.cName(atacante)} usa [${ataqueReal.nombre}]!</span>`);
             if(ataqueReal.descripcion) logs.push(`<span style="color:#ce93d8; font-style:italic;">* Info: ${ataqueReal.descripcion}</span>`);
         } else if (slotAccion === "definitivo") {
             atacante.cooldowns.definitivo = 5;
-            logs.push(`<span style="color:#ff0000; font-weight:bold; text-transform:uppercase;">> ¡${atacante.nombre} desata [${ataqueReal.nombre}]!</span>`);
+            logs.push(`<span style="color:#ff0000; font-weight:bold; text-transform:uppercase;">> ¡${this.cName(atacante)} desata [${ataqueReal.nombre}]!</span>`);
             if(ataqueReal.descripcion) logs.push(`<span style="color:#ff8a80; font-style:italic;">* Info: ${ataqueReal.descripcion}</span>`);
         } else if (slotAccion === "tactica") {
             atacante.cooldowns.tactica = 4;
-            logs.push(`<span style="color:#26a69a">> ¡${atacante.nombre} prepara [${ataqueReal.nombre}]!</span>`);
+            logs.push(`<span style="color:#26a69a">> ¡${this.cName(atacante)} prepara [${ataqueReal.nombre}]!</span>`);
             if(ataqueReal.descripcion) logs.push(`<span style="color:#80cbc4; font-style:italic;">* Efecto: ${ataqueReal.descripcion}</span>`);
         }
 
@@ -152,14 +158,14 @@ window.ColiseumLogic = {
             let cura = Math.floor(atacante.maxHp * ataqueReal.curacion);
             atacante.hp = Math.min(atacante.maxHp, atacante.hp + Math.max(1, cura));
             anims.curacionAtacante += cura;
-            logs.push(`<span style="color:#4CAF50">* ${atacante.nombre} recupera ${cura} HP.</span>`);
+            logs.push(`<span style="color:#4CAF50">* ${this.cName(atacante)} recupera ${cura} HP.</span>`);
         }
 
         if (potenciaAtaque > 0) {
             let numGolpes = ataqueReal.hits || 1;
             if (atacante.genesId.includes("velocidad_fantasma") && Math.random() <= 0.20 && numGolpes === 1) {
                 numGolpes = 2;
-                logs.push(`<span style="color:#b19cd9">* [Velocidad Fantasma] ¡${atacante.nombre} ataca rápido dos veces!</span>`);
+                logs.push(`<span style="color:#b19cd9">* [Velocidad Fantasma] ¡${this.cName(atacante)} ataca rápido dos veces!</span>`);
             }
 
             for(let i=0; i<numGolpes; i++) {
@@ -182,29 +188,28 @@ window.ColiseumLogic = {
 
                 if (defensor.escudoCibernetico && !ataqueReal.perforante) {
                     dmg = Math.floor(dmg * 0.60); defensor.escudoCibernetico = false;
-                    logs.push(`<span style="color:#00d2ff">* [Escudo Cibernético] ${defensor.nombre} absorbe el impacto.</span>`);
+                    logs.push(`<span style="color:#00d2ff">* [Escudo Cibernético] ${this.cName(defensor)} absorbe el impacto.</span>`);
                 } else if (defensor.crystalSkin) {
                     dmg = 0; defensor.crystalSkin = false;
-                    logs.push(`<span style="color:#80deea">* [Piel de Cristal] ${defensor.nombre} anula el daño.</span>`);
+                    logs.push(`<span style="color:#80deea">* [Piel de Cristal] ${this.cName(defensor)} anula el daño.</span>`);
                 } else {
                     defensor.hp = Math.max(0, defensor.hp - dmg);
                     anims.danoDefensor += dmg;
 
                     let tipoGolpe = multElem === 1.5 ? ` <span style="color:#4CAF50; font-weight:bold;">(¡Súper Efectivo!)</span>` : (multElem === 0.5 ? ` <span style="color:#888; font-weight:bold;">(Poco efectivo...)</span>` : "");
-                    if (isCrit) logs.push(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${atacante.nombre} causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} de daño</span>.${tipoGolpe}`);
-                    else logs.push(`> ${atacante.nombre} causa <span style="color:#ff6b6b">${dmg} de daño</span>.${tipoGolpe}`);
+                    if (isCrit) logs.push(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${this.cName(atacante)} causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} de daño</span>.${tipoGolpe}`);
+                    else logs.push(`> ${this.cName(atacante)} causa <span style="color:#ff6b6b">${dmg} de daño</span>.${tipoGolpe}`);
 
                     if (atacante.genesId.includes("vampirismo_genetico") && dmg > 0) {
                         let roboVida = Math.max(1, Math.floor(dmg * 0.15));
                         atacante.hp = Math.min(atacante.maxHp, atacante.hp + roboVida);
                         anims.curacionAtacante += roboVida;
-                        logs.push(`<span style="color:#e0b0ff">* [Vampirismo] ${atacante.nombre} recupera ${roboVida} HP.</span>`);
+                        logs.push(`<span style="color:#e0b0ff">* [Vampirismo] ${this.cName(atacante)} recupera ${roboVida} HP.</span>`);
                     }
                 }
             }
         }
 
-        // ✨ NUEVO: AGREGADA LA PROPIEDAD 'isNuevo: true' A LOS RELOJES
         let probAply = ataqueReal.probEstado !== undefined ? ataqueReal.probEstado : 1.0;
         if (Math.random() <= probAply) {
             let duracionBase = ataqueReal.duracion || 3;
@@ -240,13 +245,13 @@ window.ColiseumLogic = {
             if (estadoAply && target.hp > 0) {
                 if (target.genesId.includes("sangre_fria") && !target.sangreFriaUsada) {
                     target.sangreFriaUsada = true;
-                    logs.push(`<span style="color:#00d2ff">* [Sangre Fría] ¡${target.nombre} bloquea el estado!</span>`);
+                    logs.push(`<span style="color:#00d2ff">* [Sangre Fría] ¡${this.cName(target)} bloquea el estado!</span>`);
                 } else if (!target.estados.includes(estadoAply)) {
                     target.estados.push(estadoAply);
                     let configEstado = window.AttackCatalog && window.AttackCatalog.estados ? window.AttackCatalog.estados[estadoAply] : null;
                     let durEstado = configEstado ? configEstado.duracionBase : 3;
                     target.efectosActivos.push({ nombre: estadoAply, stat: "estado", valor: estadoAply, turnos: durEstado, isNuevo: true });
-                    logs.push(`<span style="color:#00bcd4">* ${target.nombre} sufre [${estadoAply}] por ${durEstado} turnos.</span>`);
+                    logs.push(`<span style="color:#00bcd4">* ${this.cName(target)} sufre [${estadoAply}] por ${durEstado} turnos.</span>`);
                 }
             }
         }
@@ -257,11 +262,9 @@ window.ColiseumLogic = {
         let logs = []; let anims = { heal: 0, dmg: 0 };
         if (fighter.hp <= 0) return { logs, anims };
 
-        // ✨ NUEVO: REVISIÓN DEL RELOJ INTELIGENTE
         for (let i = fighter.efectosActivos.length - 1; i >= 0; i--) {
             let ef = fighter.efectosActivos[i];
             
-            // Si el efecto acaba de ser lanzado este turno, no restamos el reloj
             if (ef.isNuevo) {
                 ef.isNuevo = false; 
             } else {
@@ -269,11 +272,11 @@ window.ColiseumLogic = {
                 if (ef.turnos <= 0) {
                     if (ef.stat === "estado") {
                         fighter.estados = fighter.estados.filter(e => e !== ef.valor);
-                        logs.push(`<span style="color:#888;">> ⏳ El estado [${ef.nombre}] sobre ${fighter.nombre} se disipó.</span>`);
+                        logs.push(`<span style="color:#888;">> ⏳ El estado [${ef.nombre}] sobre ${this.cName(fighter)} se disipó.</span>`);
                     } else if (ef.stat) {
                         fighter[ef.stat] -= ef.valor;
                         let accion = ef.valor > 0 ? "terminó" : "se recuperó";
-                        logs.push(`<span style="color:#888;">> ⏳ El efecto de [${ef.nombre}] ${accion} en ${fighter.nombre}. Sus stats vuelven a la normalidad.</span>`);
+                        logs.push(`<span style="color:#888;">> ⏳ El efecto de [${ef.nombre}] ${accion} en ${this.cName(fighter)}. Sus stats vuelven a la normalidad.</span>`);
                     }
                     fighter.efectosActivos.splice(i, 1);
                 }
@@ -287,12 +290,12 @@ window.ColiseumLogic = {
         if (fighter.estados.includes("Quemadura")) {
             let burnDmg = Math.floor(fighter.maxHp * 0.06) + 2;
             fighter.hp = Math.max(0, fighter.hp - burnDmg);
-            logs.push(`<span style="color:#ff9800">🔥 [Quemadura] ${fighter.nombre} pierde ${burnDmg} HP.</span>`); anims.dmg += burnDmg;
+            logs.push(`<span style="color:#ff9800">🔥 [Quemadura] ${this.cName(fighter)} pierde ${burnDmg} HP.</span>`); anims.dmg += burnDmg;
         }
         if (fighter.estados.includes("Veneno")) {
             let venDmg = Math.floor(fighter.maxHp * 0.05) + 2;
             fighter.hp = Math.max(0, fighter.hp - venDmg);
-            logs.push(`<span style="color:#9c27b0">☠️ [Veneno] ${fighter.nombre} pierde ${venDmg} HP.</span>`); anims.dmg += venDmg;
+            logs.push(`<span style="color:#9c27b0">☠️ [Veneno] ${this.cName(fighter)} pierde ${venDmg} HP.</span>`); anims.dmg += venDmg;
         }
         return { logs, anims };
     }
