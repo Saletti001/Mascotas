@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumUI.js - VISTA Y ANIMACIONES V10.1 (SOPORTE PARA COMBOS MÚLTIPLES)
+// ColiseumUI.js - VISTA Y ANIMACIONES V10.2 (ATAQUE BÁSICO DIFERENCIADO)
 // =========================================
 
 window.ColiseumUI = {
@@ -59,6 +59,12 @@ window.ColiseumUI = {
             /* KEYFRAMES MÁGICOS Y EMBESTIDAS */
             /* ========================================= */
             
+            /* ✨ NUEVO: Ataque Básico (Corto y sin tanta parafernalia) */
+            @keyframes animBasico { 0% { transform: scale(1); } 50% { transform: scale(1.1) translate(0, -5px); filter: brightness(1.3); } 100% { transform: scale(1); } }
+            .anim-basico svg { animation: animBasico 0.3s ease-in-out !important; }
+            .hit-basico { filter: brightness(1.5) !important; transform: scale(0.95) translateX(3px) !important; transition: 0.1s; }
+
+            /* Especiales */
             @keyframes animCastNuclear { 0%{transform: scale(1);} 50%{transform: scale(1.35) translateY(-10px); filter: drop-shadow(0 0 30px #ff3d00) brightness(1.5);} 100%{transform: scale(1);} }
             .anim-cast-nuclear svg { animation: animCastNuclear 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; }
             @keyframes animCastLaser { 0%{transform: translateX(0);} 20%{transform: translateX(-15px) skewX(10deg);} 50%{transform: translateX(40px) skewX(-20deg) scale(1.1); filter: drop-shadow(0 0 20px #00e5ff) brightness(2);} 100%{transform: translateX(0);} }
@@ -190,27 +196,32 @@ window.ColiseumUI = {
 
     limpiarLog: function() { const logBox = document.getElementById("battle-log") || document.querySelector(".battle-log-container"); if (logBox) logBox.innerHTML = ""; },
 
-    // ✨ FIX: Reinicio forzado (reflow) y filtro inteligente para Multi-golpes
-    animarAtaque: function(esJugador, ataque) {
+    // ✨ FIX: Agregado el parámetro 'tipoAccion' para detectar el ataque Básico
+    animarAtaque: function(esJugador, ataque, tipoAccion) {
         const el = esJugador ? (document.getElementById("player-visual-box") || document.querySelector(".fighter-left .fighter-sprite")) : (document.getElementById("enemy-visual-box") || document.querySelector(".fighter-right .fighter-sprite"));
         if(!el) return;
 
         let claseAnim = "anim-gritar"; 
         
-        if (ataque) {
+        // Si la acción proviene del botón "Básico", forzamos la animación básica
+        if (tipoAccion === "ataque") {
+            claseAnim = "anim-basico";
+        } 
+        // Si no, y hay un ataque especial equipado, leemos su elemento/nombre
+        else if (ataque) {
             let n = (ataque.nombre || "").toLowerCase();
             let e = ataque.elemento || "";
             let isMulti = (ataque.hits && ataque.hits > 1) || n.includes("cadena") || n.includes("ráfaga") || n.includes("descarga") || n.includes("múltiple");
 
-            if (isMulti) claseAnim = "anim-gritar"; // La clásica embestida rápida
+            if (isMulti) claseAnim = "anim-gritar"; 
             else if (n.includes("nuclear") || n.includes("explosión") || n.includes("ardiente") || e === "Radiactivo") claseAnim = "anim-cast-nuclear";
             else if (n.includes("láser") || n.includes("plasma") || n.includes("corte") || e === "Cibernético" || e === "Sintético") claseAnim = "anim-cast-laser";
             else if (n.includes("veneno") || n.includes("infección") || n.includes("corrosión") || e === "Tóxico" || e === "Viral") claseAnim = "anim-cast-venom";
             else if (n.includes("raíz") || n.includes("espinas") || e === "Biomutante") claseAnim = "anim-cast-bio";
         }
 
-        el.classList.remove("anim-gritar", "anim-cast-nuclear", "anim-cast-laser", "anim-cast-venom", "anim-cast-bio");
-        void el.offsetWidth; // MAGIA: Obliga al navegador a reiniciar la animación para combos
+        el.classList.remove("anim-gritar", "anim-cast-nuclear", "anim-cast-laser", "anim-cast-venom", "anim-cast-bio", "anim-basico");
+        void el.offsetWidth; 
         el.classList.add(claseAnim);
         setTimeout(() => el.classList.remove(claseAnim), 600);
     },
@@ -229,7 +240,8 @@ window.ColiseumUI = {
         setTimeout(() => el.classList.remove(claseAnim), 800);
     },
 
-    animarDano: function(esJugador, ataque) {
+    // ✨ FIX: Daño Básico con 'tipoAccion'
+    animarDano: function(esJugador, ataque, tipoAccion) {
         const el = esJugador ? (document.getElementById("player-visual-box") || document.querySelector(".fighter-left .fighter-sprite")) : (document.getElementById("enemy-visual-box") || document.querySelector(".fighter-right .fighter-sprite"));
         const area = document.getElementById("battle-area") || document.querySelector(".coliseum-card");
         if(!el) return;
@@ -237,19 +249,22 @@ window.ColiseumUI = {
         let claseHit = "hit-effect"; 
         let shakeFuerte = false;
 
-        if (ataque) {
+        if (tipoAccion === "ataque") {
+            claseHit = "hit-basico";
+            shakeFuerte = false;
+        } else if (ataque) {
             let n = (ataque.nombre || "").toLowerCase();
             let e = ataque.elemento || "";
             let isMulti = (ataque.hits && ataque.hits > 1) || n.includes("cadena") || n.includes("ráfaga") || n.includes("descarga") || n.includes("múltiple");
 
-            if (isMulti) { claseHit = "hit-effect"; shakeFuerte = false; } // El brillo rápido clásico
+            if (isMulti) { claseHit = "hit-effect"; shakeFuerte = false; } 
             else if (n.includes("nuclear") || n.includes("explosión") || e === "Radiactivo") { claseHit = "hit-nuclear"; shakeFuerte = true; }
             else if (n.includes("láser") || n.includes("plasma") || e === "Cibernético" || e === "Sintético") claseHit = "hit-laser";
             else if (n.includes("veneno") || n.includes("corrosión") || e === "Tóxico" || e === "Viral") claseHit = "hit-venom";
             else if (e === "Biomutante") claseHit = "hit-bio";
         }
 
-        el.classList.remove("hit-effect", "hit-nuclear", "hit-laser", "hit-venom", "hit-bio");
+        el.classList.remove("hit-effect", "hit-nuclear", "hit-laser", "hit-venom", "hit-bio", "hit-basico");
         void el.offsetWidth;
         el.classList.add(claseHit);
         setTimeout(() => el.classList.remove(claseHit), 400);

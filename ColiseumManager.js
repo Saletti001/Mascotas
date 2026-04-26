@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR V10.8 (ANIMACIÓN DE COMBOS SECUENCIALES)
+// ColiseumManager.js - CONTROLADOR V10.9 (ATAQUE BÁSICO ENRUTADO)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -125,16 +125,14 @@ document.addEventListener("DOMContentLoaded", () => {
             if (potenciaEfectiva > 0 && potenciaEfectiva < 10) potenciaEfectiva *= 100;
         }
 
-        // ✨ FIX: BUCLE TEMPORAL PARA ANIMAR MULTI-GOLPES COMO UN COMBO REAL
+        // ✨ FIX: Pasamos el 'accionElegida' para que la UI sepa diferenciar un Básico
         if (potenciaEfectiva > 0 && resultado.anims.detalleGolpes && resultado.anims.detalleGolpes.length > 0) {
             resultado.anims.detalleGolpes.forEach((golpe, idx) => {
                 setTimeout(() => {
-                    // El atacante embiste cada vez
-                    if (resultado.anims.atacanteGrita) ColiseumUI.animarAtaque(atacante.isPlayer, ataqueUsado);
+                    if (resultado.anims.atacanteGrita) ColiseumUI.animarAtaque(atacante.isPlayer, ataqueUsado, accionElegida);
                     
-                    // El defensor recibe el daño o lo bloquea cada vez
                     if (golpe.dmg > 0 || golpe.absorbido) {
-                        ColiseumUI.animarDano(!atacante.isPlayer, ataqueUsado);
+                        ColiseumUI.animarDano(!atacante.isPlayer, ataqueUsado, accionElegida);
                         if (golpe.dmg > 0) {
                             if (golpe.critico) ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "CRÍTICO!", "text-crit");
                             ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, `-${golpe.dmg}`, "text-dmg");
@@ -142,10 +140,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     }
                     ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
-                }, idx * 400); // 400ms de retraso entre cada golpe para sentir el impacto
+                }, idx * 400);
             });
         } else if (potenciaEfectiva === 0 && ataqueUsado) {
-            // Es Táctica de Soporte (Potencia 0)
             ColiseumUI.animarSoporte(atacante.isPlayer, ataqueUsado);
         }
         
