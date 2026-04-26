@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
             qualityBadge.style.textShadow = rango === "S" ? "0 0 10px rgba(255, 204, 0, 0.8)" : "none";
         }
 
-        // ✨ LÓGICA DE DIBUJO: Formato 37 (+10) 47 (Amarillo)
+        // ✨ LÓGICA DE DIBUJO: Formato BASE (+Añadido) TOTAL
         const drawStat = (statName) => {
             const baseEl = document.getElementById(`stat-${statName}-base`);
             const addedEl = document.getElementById(`stat-${statName}-added`);
