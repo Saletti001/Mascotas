@@ -1,5 +1,5 @@
 // =========================================
-// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (V10.1 - MODAL CENTRADO Y BLUR)
+// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (V10.2 - MODAL ARREGLADO)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -218,13 +218,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnScanner = document.getElementById("btn-use-scanner");
     const btnRename = document.getElementById("btn-rename-geno");
 
-    // ✨ FIX UI: CREAR EL FONDO DIFUMINADO PARA BLOQUEAR EL BOTÓN NEXO Y EL FONDO
+    // ✨ FIX UI: CREAR EL FONDO DIFUMINADO Y SACAR EL PANEL DE LA TRAMPA Z-INDEX
     let statsBackdrop = document.getElementById("stats-backdrop");
     if (!statsBackdrop) {
         statsBackdrop = document.createElement("div");
         statsBackdrop.id = "stats-backdrop";
-        statsBackdrop.style = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); z-index: 2500; display: none;";
+        statsBackdrop.style = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); z-index: 2500; display: none;";
         document.body.appendChild(statsBackdrop);
+
+        // 🚀 EL FIX CLAVE: Movemos el panel fuera de su contenedor original al body para que no se oscurezca
+        if (panelStats) {
+            document.body.appendChild(panelStats);
+            panelStats.style.background = "#1a2a36"; // Le damos un fondo oscuro sólido
+            panelStats.style.border = "1px solid #4dd0e1";
+            panelStats.style.borderRadius = "12px";
+            panelStats.style.padding = "20px";
+        }
 
         // Si el jugador toca fuera del panel (en lo oscuro), se cierra solo
         statsBackdrop.addEventListener("click", () => {
@@ -243,8 +252,10 @@ document.addEventListener("DOMContentLoaded", () => {
             panelStats.style.top = "50%";
             panelStats.style.left = "50%";
             panelStats.style.transform = "translate(-50%, -50%)";
-            panelStats.style.zIndex = "2501"; // Esto lo pone obligatoriamente por encima del FAB NEXO
+            panelStats.style.zIndex = "2501"; // Obligatoriamente por encima del backdrop
             panelStats.style.maxHeight = "85vh";
+            panelStats.style.width = "85%";
+            panelStats.style.maxWidth = "340px";
             panelStats.style.overflowY = "auto";
             panelStats.style.boxShadow = "0 10px 30px rgba(0,0,0,0.9), 0 0 15px rgba(77, 208, 225, 0.3)";
         });
@@ -257,7 +268,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Gancho de seguridad: Si el juego navega a otra pantalla mientras está abierto, cerramos el fondo
+    // Gancho de seguridad
     if (!window.rpgNavHooked) {
         const originalNavegarA = window.navegarA;
         window.navegarA = function(id) {
