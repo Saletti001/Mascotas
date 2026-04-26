@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumUI.js - VISTA Y ANIMACIONES V10.2 (ATAQUE BÁSICO DIFERENCIADO)
+// ColiseumUI.js - VISTA Y ANIMACIONES V10.3 (TEXTOS DE BLOQUEO Y EVASIÓN)
 // =========================================
 
 window.ColiseumUI = {
@@ -59,12 +59,10 @@ window.ColiseumUI = {
             /* KEYFRAMES MÁGICOS Y EMBESTIDAS */
             /* ========================================= */
             
-            /* ✨ NUEVO: Ataque Básico (Corto y sin tanta parafernalia) */
             @keyframes animBasico { 0% { transform: scale(1); } 50% { transform: scale(1.1) translate(0, -5px); filter: brightness(1.3); } 100% { transform: scale(1); } }
             .anim-basico svg { animation: animBasico 0.3s ease-in-out !important; }
             .hit-basico { filter: brightness(1.5) !important; transform: scale(0.95) translateX(3px) !important; transition: 0.1s; }
 
-            /* Especiales */
             @keyframes animCastNuclear { 0%{transform: scale(1);} 50%{transform: scale(1.35) translateY(-10px); filter: drop-shadow(0 0 30px #ff3d00) brightness(1.5);} 100%{transform: scale(1);} }
             .anim-cast-nuclear svg { animation: animCastNuclear 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; }
             @keyframes animCastLaser { 0%{transform: translateX(0);} 20%{transform: translateX(-15px) skewX(10deg);} 50%{transform: translateX(40px) skewX(-20deg) scale(1.1); filter: drop-shadow(0 0 20px #00e5ff) brightness(2);} 100%{transform: translateX(0);} }
@@ -100,7 +98,13 @@ window.ColiseumUI = {
 
             @keyframes floatUpFade { 0% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); } 10% { transform: translate(-50%, calc(-50% - 15px)) scale(1.8); } 100% { opacity: 0; transform: translate(-50%, calc(-50% - 60px)) scale(1); } }
             .floating-text { position: absolute; font-weight: 900; z-index: 100; pointer-events: none; animation: floatUpFade 1.3s ease-out forwards; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 5px rgba(0,0,0,0.8); white-space: nowrap !important; }
-            .text-dmg { color: #ff3333; font-size: 28px; } .text-heal { color: #4CAF50; font-size: 24px; } .text-crit { color: #ffcc00; font-size: 38px !important; font-style: italic; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 0 #d32f2f, -2px -2px 0 #d32f2f, 2px -2px 0 #d32f2f, -2px 2px 0 #d32f2f, 0 0 15px rgba(255,0,0,1) !important; }
+            
+            /* ✨ NUEVOS ESTILOS PARA BLOQUEOS Y EVASIÓN */
+            .text-dmg { color: #ff3333; font-size: 28px; } 
+            .text-heal { color: #4CAF50; font-size: 24px; } 
+            .text-block { color: #80deea; font-size: 26px; letter-spacing: 1px; } 
+            .text-evade { color: #e0e0e0; font-size: 26px; font-style: italic; letter-spacing: 2px; } 
+            .text-crit { color: #ffcc00; font-size: 38px !important; font-style: italic; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 0 #d32f2f, -2px -2px 0 #d32f2f, 2px -2px 0 #d32f2f, -2px 2px 0 #d32f2f, 0 0 15px rgba(255,0,0,1) !important; }
         `;
         document.head.appendChild(style);
     },
@@ -196,18 +200,15 @@ window.ColiseumUI = {
 
     limpiarLog: function() { const logBox = document.getElementById("battle-log") || document.querySelector(".battle-log-container"); if (logBox) logBox.innerHTML = ""; },
 
-    // ✨ FIX: Agregado el parámetro 'tipoAccion' para detectar el ataque Básico
     animarAtaque: function(esJugador, ataque, tipoAccion) {
         const el = esJugador ? (document.getElementById("player-visual-box") || document.querySelector(".fighter-left .fighter-sprite")) : (document.getElementById("enemy-visual-box") || document.querySelector(".fighter-right .fighter-sprite"));
         if(!el) return;
 
         let claseAnim = "anim-gritar"; 
         
-        // Si la acción proviene del botón "Básico", forzamos la animación básica
         if (tipoAccion === "ataque") {
             claseAnim = "anim-basico";
         } 
-        // Si no, y hay un ataque especial equipado, leemos su elemento/nombre
         else if (ataque) {
             let n = (ataque.nombre || "").toLowerCase();
             let e = ataque.elemento || "";
@@ -240,7 +241,6 @@ window.ColiseumUI = {
         setTimeout(() => el.classList.remove(claseAnim), 800);
     },
 
-    // ✨ FIX: Daño Básico con 'tipoAccion'
     animarDano: function(esJugador, ataque, tipoAccion) {
         const el = esJugador ? (document.getElementById("player-visual-box") || document.querySelector(".fighter-left .fighter-sprite")) : (document.getElementById("enemy-visual-box") || document.querySelector(".fighter-right .fighter-sprite"));
         const area = document.getElementById("battle-area") || document.querySelector(".coliseum-card");

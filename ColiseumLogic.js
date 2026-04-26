@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V12.6 (DAÑO POR SOBRECARGA)
+// ColiseumLogic.js - MODELO MATEMÁTICO V13.0 (DEFENSA, GENES Y BLOQUEOS)
 // =========================================
 
 window.ColiseumLogic = {
@@ -72,12 +72,9 @@ window.ColiseumLogic = {
         
         const adn = { 
             id: 888, scanned: true, rarity: eRareza, stats: eStats, element: eElemento,
-            body_shape: formas[Math.floor(Math.random() * formas.length)], 
-            color: colores[Math.floor(Math.random() * colores.length)],
-            eye_type: opcionesOjos[Math.floor(Math.random() * opcionesOjos.length)], 
-            mouth_type: opcionesBocas[Math.floor(Math.random() * opcionesBocas.length)], 
-            wing_type: "ninguno", hat_type: "ninguno", 
-            hidden_genes: eHiddenGenes, level: nivelJugador
+            body_shape: formas[Math.floor(Math.random() * formas.length)], color: colores[Math.floor(Math.random() * colores.length)],
+            eye_type: opcionesOjos[Math.floor(Math.random() * opcionesOjos.length)], mouth_type: opcionesBocas[Math.floor(Math.random() * opcionesBocas.length)], 
+            wing_type: "ninguno", hat_type: "ninguno", hidden_genes: eHiddenGenes, level: nivelJugador
         };
 
         let pAtks = window.miMascota && window.miMascota.ataques ? window.miMascota.ataques : {};
@@ -88,13 +85,20 @@ window.ColiseumLogic = {
             "definitivo": (pAtks.atk_4 && nivelJugador >= 25) ? this.obtenerAtaqueAleatorio(eElemento, "definitivos") : null
         };
         
+        // Convertimos a minúsculas los IDs de los genes para fácil lectura
+        let gB = (eHiddenGenes.B?.id || "ninguno").toLowerCase();
+        let gC = (eHiddenGenes.C?.id || "ninguno").toLowerCase();
+
         this.enemy = {
             nombre: this.generarNombreAleatorio(), isPlayer: false, adn: adn,
             maxHp: eStats.hp, hp: eStats.hp, atk: eStats.atk, def: eStats.def || 5, spd: eStats.spd, luk: eStats.luk,
             baseAtk: eStats.atk, baseDef: eStats.def || 5, baseSpd: eStats.spd, baseLuk: eStats.luk,
-            element: eElemento, rareza: eRareza, genesId: [eHiddenGenes.B ? eHiddenGenes.B.id : "ninguno", eHiddenGenes.C ? eHiddenGenes.C.id : "ninguno"],
+            element: eElemento, rareza: eRareza, genesId: [gB, gC],
             estados: [], efectosActivos: [], cooldowns: { especial: 0, tactica: 0, definitivo: 0 },
-            escudoCibernetico: eElemento === "Cibernético", crystalSkin: eHiddenGenes.B?.id === "piel_cristal" || eHiddenGenes.C?.id === "piel_cristal",
+            escudoCibernetico: eElemento === "Cibernético", 
+            crystalSkin: gB === "piel_cristal" || gC === "piel_cristal",
+            // ✨ NUEVAS VARIABLES DE GENES DEFENSIVOS
+            decoyUsado: false, coreArUsado: false, rachaGolpes: 0, adaptativaStacks: 0, ultimoElementoRecibido: null,
             ataquesEquipados: enemyAtaques
         };
     },
@@ -102,7 +106,9 @@ window.ColiseumLogic = {
     prepararJugador: function(mascota) {
         const pElemento = (mascota.genes && mascota.genes.afinidad) ? mascota.genes.afinidad.dom : (mascota.element || "Normal");
         const pStats = { hp: mascota.stats?.hp || 80, atk: mascota.stats?.atk || 15, def: mascota.stats?.def || 5, spd: mascota.stats?.spd || 15, luk: mascota.stats?.luk || 10 };
-        let pGenB = mascota.hidden_genes?.B?.id || "ninguno"; let pGenC = mascota.hidden_genes?.C?.id || "ninguno";
+        
+        let pGenB = (mascota.hidden_genes?.B?.id || "ninguno").toLowerCase(); 
+        let pGenC = (mascota.hidden_genes?.C?.id || "ninguno").toLowerCase();
         
         let pAtks = mascota.ataques || {};
         let playerAtaques = {
@@ -118,7 +124,10 @@ window.ColiseumLogic = {
             baseAtk: pStats.atk, baseDef: pStats.def, baseSpd: pStats.spd, baseLuk: pStats.luk,
             element: pElemento, rareza: mascota.rarity || "Común", genesId: [pGenB, pGenC], 
             estados: [], efectosActivos: [], cooldowns: { especial: 0, tactica: 0, definitivo: 0 },
-            escudoCibernetico: pElemento === "Cibernético", crystalSkin: pGenB === "piel_cristal" || pGenC === "piel_cristal",
+            escudoCibernetico: pElemento === "Cibernético", 
+            crystalSkin: pGenB === "piel_cristal" || pGenC === "piel_cristal",
+            // ✨ NUEVAS VARIABLES DE GENES DEFENSIVOS
+            decoyUsado: false, coreArUsado: false, rachaGolpes: 0, adaptativaStacks: 0, ultimoElementoRecibido: null,
             ataquesEquipados: playerAtaques
         };
         this.turno = 1;
@@ -132,6 +141,14 @@ window.ColiseumLogic = {
         if (!ataqueReal) {
             logs.push(`<span style="color:#888;">> ${this.cName(atacante)} intenta atacar pero tropieza.</span>`);
             return { logs, anims };
+        }
+
+        // ✨ GEN: CONTRA-GOLPE DEFINITIVO (Al recibir el Definitivo del rival)
+        if (slotAccion === "definitivo" && defensor.genesId.includes("ults_counter")) {
+            let buffAtk = Math.floor(defensor.baseAtk * 0.30);
+            defensor.atk += buffAtk;
+            defensor.efectosActivos.push({ nombre: "Contra-Golpe", stat: "atk", valor: buffAtk, turnos: 2, isNuevo: true });
+            logs.push(`<span style="color:#ff3333">🔥 [Contra-Golpe] ¡${this.cName(defensor)} gana +30% ATK por la adrenalina del Definitivo!</span>`);
         }
 
         if (slotAccion === "especial") {
@@ -168,7 +185,7 @@ window.ColiseumLogic = {
             for(let i=0; i<numGolpes; i++) {
                 if (defensor.hp <= 0) break;
                 
-                let golpeActual = { dmg: 0, critico: false, absorbido: false };
+                let golpeActual = { dmg: 0, critico: false, bloqueado: false, evadido: false };
 
                 let atkBruto = atacante.atk * (potenciaAtaque / 75) * (0.85 + Math.random() * 0.3);
                 const ventajas = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
@@ -176,27 +193,81 @@ window.ColiseumLogic = {
                 atkBruto = atkBruto * multElem;
                 anims.multElem = multElem;
 
-                let defRival = (ataqueReal.perforante || ataqueReal.rompeEscudos) ? 0 : defensor.def;
-                let dmg = Math.floor(Math.max(atkBruto - defRival, (atkBruto * 0.35) + 2));
+                let defRival = defensor.def;
+
+                // ✨ LÓGICA DE PERFORANTES, MAESTRO DEL ENGAÑO Y POSTURA INQUEBRANTABLE
+                if (ataqueReal.perforante || ataqueReal.rompeEscudos) {
+                    if (defensor.genesId.includes("decoy") && !defensor.decoyUsado) {
+                        defensor.decoyUsado = true;
+                        atkBruto = 0; // Falla automáticamente
+                        golpeActual.evadido = true;
+                        logs.push(`<span style="color:#e0e0e0; font-style:italic;">💨 [Maestro del Engaño] ¡${this.cName(defensor)} evadió el golpe perforante!</span>`);
+                    } else if (defensor.genesId.includes("steadfast")) {
+                        defRival = Math.floor(defensor.def * 0.20); // Retiene 20% de su defensa
+                        logs.push(`<span style="color:#80deea;">🛡️ [Postura Inquebrantable] Absorbe parcialmente la perforación.</span>`);
+                    } else {
+                        defRival = 0; // Ignora toda la defensa normalmente
+                    }
+                }
+
+                // ✨ FÓRMULA OFICIAL DE DAÑO (CON GEN DAÑO MÍNIMO GARANTIZADO)
+                let minDmgMultiplier = atacante.genesId.includes("min_dmg") ? 0.35 : 0.25;
+                let dmgMinimo = Math.floor(atkBruto * minDmgMultiplier);
+                let dmg = Math.floor(Math.max(atkBruto - defRival, dmgMinimo));
+
+                // ✨ GEN: ARMADURA ADAPTATIVA
+                if (defensor.genesId.includes("adapt_a") && atkBruto > 0) {
+                    if (defensor.ultimoElementoRecibido === ataqueReal.elemento) {
+                        defensor.adaptativaStacks = Math.min(5, defensor.adaptativaStacks + 1);
+                    } else {
+                        defensor.adaptativaStacks = 0;
+                        defensor.ultimoElementoRecibido = ataqueReal.elemento;
+                    }
+                    if (defensor.adaptativaStacks > 0) {
+                        dmg = Math.floor(dmg * (1 - (defensor.adaptativaStacks * 0.10)));
+                    }
+                }
 
                 let probCrit = 0.05 + (atacante.luk * 0.002) + (atacante.element === "Sintético" ? 0.15 : 0) + (ataqueReal.bonusCrit || 0);
                 if (ataqueReal.criticoGarantizado) probCrit = 1.0;
 
-                let isCrit = Math.random() <= probCrit;
+                let isCrit = Math.random() <= probCrit && atkBruto > 0;
                 if (isCrit) { dmg = Math.floor(dmg * 1.5); anims.critico = true; golpeActual.critico = true; }
 
-                if (defensor.escudoCibernetico && !ataqueReal.perforante) {
+                if (defensor.escudoCibernetico && !ataqueReal.perforante && atkBruto > 0) {
                     dmg = Math.floor(dmg * 0.60); defensor.escudoCibernetico = false;
                     logs.push(`<span style="color:#00d2ff">* [Escudo Cibernético] ${this.cName(defensor)} absorbe el impacto.</span>`);
-                    golpeActual.dmg = dmg;
-                } else if (defensor.crystalSkin) {
+                    golpeActual.bloqueado = true;
+                } else if (defensor.crystalSkin && atkBruto > 0) {
                     dmg = 0; defensor.crystalSkin = false;
                     logs.push(`<span style="color:#80deea">* [Piel de Cristal] ${this.cName(defensor)} anula el daño.</span>`);
-                    golpeActual.absorbido = true;
-                } else {
+                    golpeActual.bloqueado = true;
+                } 
+
+                if (golpeActual.evadido || golpeActual.bloqueado) {
+                    dmg = 0; // Aseguramos que el daño sea 0 si saltaron las evasiones absolutas
+                } else if (atkBruto > 0) {
                     defensor.hp = Math.max(0, defensor.hp - dmg);
                     anims.danoDefensor += dmg;
                     golpeActual.dmg = dmg;
+
+                    // ✨ GEN: RUPTURA DEFENSIVA
+                    if (atacante.genesId.includes("def_brk")) {
+                        atacante.rachaGolpes++;
+                        if (atacante.rachaGolpes >= 3) {
+                            defensor.def = Math.floor(defensor.def * 0.90);
+                            logs.push(`<span style="color:#ff9800">⚔️ [Ruptura Defensiva] DEF de ${this.cName(defensor)} -10% permanente.</span>`);
+                            atacante.rachaGolpes = 0;
+                        }
+                    }
+
+                    // ✨ GEN: RETROALIMENTACIÓN DE DAÑO
+                    if (dmg > (defensor.maxHp * 0.15) && defensor.genesId.includes("dmg_echo")) {
+                        let buffAtk = Math.floor(defensor.baseAtk * 0.15);
+                        defensor.atk += buffAtk;
+                        defensor.efectosActivos.push({ nombre: "Ret. Daño", stat: "atk", valor: buffAtk, turnos: 2, isNuevo: true });
+                        logs.push(`<span style="color:#ff3333">💢 [Retroalimentación] ${this.cName(defensor)} recibe +15% ATK por el gran impacto!</span>`);
+                    }
 
                     let tipoGolpe = multElem === 1.5 ? ` <span style="color:#4CAF50; font-weight:bold;">(¡Súper Efectivo!)</span>` : (multElem === 0.5 ? ` <span style="color:#888; font-weight:bold;">(Poco efectivo...)</span>` : "");
                     if (isCrit) logs.push(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${this.cName(atacante)} causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} de daño</span>.${tipoGolpe}`);
@@ -217,6 +288,18 @@ window.ColiseumLogic = {
         if (Math.random() <= probAply) {
             let duracionBase = ataqueReal.duracion || 3;
 
+            // ✨ GEN: NÚCLEO CORAZA (Bloquea primer debuff)
+            let aplicarDebuffAtk = ataqueReal.debuffAtk;
+            let aplicarDebuffSpd = ataqueReal.debuffSpd;
+
+            if ((aplicarDebuffAtk || aplicarDebuffSpd) && defensor.hp > 0 && defensor.genesId.includes("core_ar") && !defensor.coreArUsado) {
+                defensor.coreArUsado = true;
+                aplicarDebuffAtk = false; 
+                aplicarDebuffSpd = false;
+                logs.push(`<span style="color:#80deea">🛡️ [Núcleo Coraza] ¡${this.cName(defensor)} bloquea la reducción de stats!</span>`);
+                anims.detalleGolpes.push({dmg: 0, bloqueado: true}); // Para que salga el texto BLOCKED
+            }
+
             if (ataqueReal.buffSpd) {
                 let val = Math.floor(atacante.baseSpd * ataqueReal.buffSpd);
                 atacante.spd += val;
@@ -232,12 +315,12 @@ window.ColiseumLogic = {
                 atacante.def += val;
                 atacante.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "def", valor: val, turnos: duracionBase, isNuevo: true });
             }
-            if (ataqueReal.debuffSpd && defensor.hp > 0) {
+            if (aplicarDebuffSpd && defensor.hp > 0) {
                 let val = Math.floor(defensor.baseSpd * ataqueReal.debuffSpd);
                 defensor.spd = Math.max(1, defensor.spd - val);
                 defensor.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "spd", valor: -val, turnos: duracionBase, isNuevo: true });
             }
-            if (ataqueReal.debuffAtk && defensor.hp > 0) {
+            if (aplicarDebuffAtk && defensor.hp > 0) {
                 let val = Math.floor(defensor.baseAtk * ataqueReal.debuffAtk);
                 defensor.atk = Math.max(1, defensor.atk - val);
                 defensor.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "atk", valor: -val, turnos: duracionBase, isNuevo: true });
@@ -249,12 +332,21 @@ window.ColiseumLogic = {
                 if (target.genesId.includes("sangre_fria") && !target.sangreFriaUsada) {
                     target.sangreFriaUsada = true;
                     logs.push(`<span style="color:#00d2ff">* [Sangre Fría] ¡${this.cName(target)} bloquea el estado!</span>`);
+                    anims.detalleGolpes.push({dmg: 0, bloqueado: true});
                 } else if (!target.estados.includes(estadoAply)) {
                     target.estados.push(estadoAply);
                     let configEstado = window.AttackCatalog && window.AttackCatalog.estados ? window.AttackCatalog.estados[estadoAply] : null;
                     let durEstado = configEstado ? configEstado.duracionBase : 3;
                     target.efectosActivos.push({ nombre: estadoAply, stat: "estado", valor: estadoAply, turnos: durEstado, isNuevo: true });
                     logs.push(`<span style="color:#00bcd4">* ${this.cName(target)} sufre [${estadoAply}] por ${durEstado} turnos.</span>`);
+                    
+                    // ✨ GEN: ACELERACIÓN DE ESTADO (Aplica daño del estado inmediatamente)
+                    if (atacante.genesId.includes("state_rush") && (estadoAply === "Veneno" || estadoAply === "Quemadura")) {
+                        logs.push(`<span style="color:#ffcc00">⚡ [Acel. de Estado] ¡El estado surte efecto de inmediato!</span>`);
+                        let estadoDmg = Math.floor(target.maxHp * (estadoAply === "Veneno" ? 0.05 : 0.06)) + 2;
+                        target.hp = Math.max(0, target.hp - estadoDmg);
+                        anims.danoDefensor += estadoDmg;
+                    }
                 }
             }
         }
@@ -291,9 +383,8 @@ window.ColiseumLogic = {
             fighter.hp = Math.min(fighter.maxHp, fighter.hp + regen); anims.heal += regen;
         }
         
-        // ✨ FIX: Agregado el daño del 8% para la Sobrecarga de Sistema
         if (fighter.estados.includes("Sobrecarga") || fighter.estados.includes("Sobrecarga del Sistema") || fighter.estados.includes("Sobrecarga del sistema")) {
-            let sobreDmg = Math.floor(fighter.maxHp * 0.08) + 1; // Pierde el 8% de su Vida Máxima (mínimo 1 HP)
+            let sobreDmg = Math.floor(fighter.maxHp * 0.08) + 1; 
             fighter.hp = Math.max(0, fighter.hp - sobreDmg);
             logs.push(`<span style="color:#ff3d00">⚡ [Sobrecarga] ${this.cName(fighter)} pierde ${sobreDmg} HP por el esfuerzo.</span>`); 
             anims.dmg += sobreDmg;

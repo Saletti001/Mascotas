@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR V10.9 (ATAQUE BÁSICO ENRUTADO)
+// ColiseumManager.js - CONTROLADOR V11.0 (TEXTOS DE BLOQUEO Y EVASIÓN)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -125,20 +125,24 @@ document.addEventListener("DOMContentLoaded", () => {
             if (potenciaEfectiva > 0 && potenciaEfectiva < 10) potenciaEfectiva *= 100;
         }
 
-        // ✨ FIX: Pasamos el 'accionElegida' para que la UI sepa diferenciar un Básico
         if (potenciaEfectiva > 0 && resultado.anims.detalleGolpes && resultado.anims.detalleGolpes.length > 0) {
             resultado.anims.detalleGolpes.forEach((golpe, idx) => {
                 setTimeout(() => {
                     if (resultado.anims.atacanteGrita) ColiseumUI.animarAtaque(atacante.isPlayer, ataqueUsado, accionElegida);
                     
-                    if (golpe.dmg > 0 || golpe.absorbido) {
+                    // ✨ MAGIA: EVALUAMOS SI HAY DAÑO O SI SE BLOQUEÓ/EVADIÓ
+                    if (golpe.dmg > 0) {
                         ColiseumUI.animarDano(!atacante.isPlayer, ataqueUsado, accionElegida);
-                        if (golpe.dmg > 0) {
-                            if (golpe.critico) ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "CRÍTICO!", "text-crit");
-                            ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, `-${golpe.dmg}`, "text-dmg");
-                            if(window.Sonidos) window.Sonidos.play("hit");
-                        }
+                        if (golpe.critico) ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "CRITICAL!", "text-crit");
+                        ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, `-${golpe.dmg}`, "text-dmg");
+                        if(window.Sonidos) window.Sonidos.play("hit");
+                    } else if (golpe.bloqueado) {
+                        ColiseumUI.animarSoporte(!atacante.isPlayer, {escudo: true}); // Animación de escudo
+                        ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "BLOCKED!", "text-block");
+                    } else if (golpe.evadido) {
+                        ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "EVADED!", "text-evade");
                     }
+
                     ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
                 }, idx * 400);
             });

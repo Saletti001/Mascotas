@@ -17,6 +17,7 @@ window.BASE_DATOS_GENES_V9 = {
         { id: "metamorfosis_estacional", name: "Metamorfosis Estacional", desc: "Cambio de tonalidad estacional" }
     ],
     combate: [
+        // --- GENES V9.1 (ORIGINALES) ---
         { id: "resiliencia_ultima", name: "Resiliencia Última", desc: "x1.4 ATK/SPD si HP < 15%" },
         { id: "piel_cristal", name: "Piel de Cristal", desc: "Primer golpe recibe 0 daño" },
         { id: "velocidad_fantasma", name: "Velocidad Fantasma", desc: "20% probabilidad de turno doble" },
@@ -24,7 +25,17 @@ window.BASE_DATOS_GENES_V9 = {
         { id: "barrera_limite", name: "Barrera Límite", desc: "Sobrevive con 1 HP un golpe fatal." },
         { id: "vampirismo_genetico", name: "Vampirismo Genético", desc: "Recupera 15% del daño infligido como HP." },
         { id: "armadura_adaptativa", name: "Armadura Adaptativa", desc: "Reduce daño repetido del mismo elemento." },
-        { id: "sangre_fria", name: "Sangre Fría", desc: "Inmune al primer efecto de estado." }
+        { id: "sangre_fria", name: "Sangre Fría", desc: "Inmune al primer efecto de estado." },
+        
+        // --- ✨ NUEVOS GENES DE COLISEO V1.0 ---
+        { id: "core_ar", name: "Núcleo Coraza", desc: "Absorbe el primer debuff de DEF o ATK." },
+        { id: "min_dmg", name: "Daño Mínimo", desc: "El daño mínimo garantizado sube a 35% del ATK." },
+        { id: "def_brk", name: "Ruptura Defensiva", desc: "3 golpes seguidos bajan DEF rival 10% permanente." },
+        { id: "steadfast", name: "Postura Inquebrantable", desc: "Retiene el 20% de DEF contra ataques Perforantes." },
+        { id: "state_rush", name: "Aceleración de Estado", desc: "Los estados aplican daño desde el turno 1." },
+        { id: "dmg_echo", name: "Retroalimentación", desc: "+15% ATK tras recibir un golpe mayor al 15% de HP." },
+        { id: "decoy", name: "Maestro del Engaño", desc: "El primer ataque Perforante rival falla." },
+        { id: "ults_counter", name: "Contra-Golpe Definitivo", desc: "+30% ATK tras recibir el Definitivo del rival." }
     ],
     elemental: [
         { id: "elemento_dual", name: "Elemento Dual", desc: "Segundo elemento activable en combate" },
