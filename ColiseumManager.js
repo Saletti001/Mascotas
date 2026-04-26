@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR V10.3 (TIEMPOS Y PAUSAS SECUENCIALES)
+// ColiseumManager.js - CONTROLADOR V10.4 (TIEMPOS OPTIMIZADOS -25%)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -79,7 +79,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const p = ColiseumLogic.player;
         const e = ColiseumLogic.enemy;
 
-        // IA Enemiga
         let accionEnemigo = "ataque";
         let acts = Object.keys(e.ataquesEquipados).filter(k => e.ataquesEquipados[k] !== null);
         
@@ -99,28 +98,26 @@ document.addEventListener("DOMContentLoaded", () => {
         let accion1 = playerGoesFirst ? accionJugador : accionEnemigo;
         let accion2 = playerGoesFirst ? accionEnemigo : accionJugador;
 
-        // ✨ 1. EJECUTA EL PRIMER ATAQUE
         ejecutarAccionYAnimar(ejecutor1, ejecutor2, accion1);
         
         if (ejecutor2.hp > 0) {
-            // ✨ 2. PAUSA DRAMÁTICA DE 2.8 SEGUNDOS
+            // ✨ TIEMPO REDUCIDO A 2.1s
             setTimeout(() => {
-                ColiseumUI.agregarLog(`<span style="color:#555;">&nbsp;&nbsp;♦ ♦ ♦</span>`); // Separador visual para el 2do ataque
+                ColiseumUI.agregarLog(`<span style="color:#555;">&nbsp;&nbsp;♦ ♦ ♦</span>`); 
                 
-                // ✨ 3. EJECUTA EL SEGUNDO ATAQUE
                 ejecutarAccionYAnimar(ejecutor2, ejecutor1, accion2);
                 
-                // ✨ 4. PAUSA DE 2 SEGUNDOS ANTES DE CERRAR EL TURNO
+                // ✨ TIEMPO REDUCIDO A 1.5s
                 setTimeout(() => {
                     finalizarRonda();
-                }, 2000);
+                }, 1500);
 
-            }, 2800); 
+            }, 2100); 
         } else {
-            // Si el primero lo mató, no hay segundo ataque, pasamos al final
+            // ✨ TIEMPO REDUCIDO A 1.5s
             setTimeout(() => {
                 finalizarRonda();
-            }, 2000);
+            }, 1500);
         }
     }
 
@@ -153,12 +150,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const p = ColiseumLogic.player;
         const e = ColiseumLogic.enemy;
 
-        // Calculamos los efectos de fin de turno (venenos, quemaduras, buffos)
         let resP = ColiseumLogic.procesarEfectosFinTurno(p);
         let resE = ColiseumLogic.procesarEfectosFinTurno(e);
         let huboEfectos = resP.logs.length > 0 || resE.logs.length > 0;
 
-        // Imprimimos la sección de efectos solo si algo ocurrió
         if (huboEfectos) {
             ColiseumUI.agregarLog(`<span style="color:#777; font-style:italic;">[Efectos y Condiciones]</span>`);
             
@@ -171,7 +166,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if(resE.anims.dmg > 0) { ColiseumUI.animarDano(false); ColiseumUI.mostrarTextoFlotante(false, `-${resE.anims.dmg}`, "text-dmg"); }
         }
 
-        // Restamos Cooldowns de botones
         if (p.cooldowns.especial > 0) p.cooldowns.especial--;
         if (p.cooldowns.tactica > 0) p.cooldowns.tactica--;
         if (p.cooldowns.definitivo > 0) p.cooldowns.definitivo--;
@@ -183,8 +177,8 @@ document.addEventListener("DOMContentLoaded", () => {
         ColiseumUI.actualizarHP(p, e);
         ColiseumLogic.turno++;
         
-        // ✨ 5. SI HUBO VENENOS/EFECTOS DAMOS 1.5 SEGUNDOS PARA LEERLOS, SINO AVANZAMOS RÁPIDO
-        let pausaFinal = huboEfectos ? 1500 : 500;
+        // ✨ TIEMPO REDUCIDO A 1.1s (con efectos) o 0.4s (sin efectos)
+        let pausaFinal = huboEfectos ? 1100 : 400;
 
         setTimeout(() => {
             if (p.hp <= 0 || e.hp <= 0) terminarCombate();
