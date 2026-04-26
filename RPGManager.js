@@ -1,5 +1,5 @@
 // =========================================
-// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (V10.0 - SOPORTE DEFENSA)
+// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (V10.1 - MODAL CENTRADO Y BLUR)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const shp = document.getElementById("stat-hp"); if(shp) shp.innerText = Math.floor(g.stats.hp);
         const satk = document.getElementById("stat-atk"); if(satk) satk.innerText = Math.floor(g.stats.atk);
-        const sdef = document.getElementById("stat-def"); if(sdef) sdef.innerText = Math.floor(g.stats.def || 0); // NUEVO
+        const sdef = document.getElementById("stat-def"); if(sdef) sdef.innerText = Math.floor(g.stats.def || 0);
         const sspd = document.getElementById("stat-spd"); if(sspd) sspd.innerText = Math.floor(g.stats.spd);
         const sluk = document.getElementById("stat-luk"); if(sluk) sluk.innerText = Math.floor(g.stats.luk);
 
@@ -197,14 +197,13 @@ document.addEventListener("DOMContentLoaded", () => {
         window.actualizarPanelRPG();
     };
 
-    // Actualizamos los listeners para que los nuevos botones de DEF funcionen automáticamente
     document.addEventListener("click", (e) => {
         if (e.target && e.target.classList.contains("btn-add-stat")) {
             const stat = e.target.getAttribute("data-stat");
             if (window.miMascota && window.miMascota.statPoints > 0) {
                 if (stat === 'hp') window.miMascota.stats.hp += 5;
                 if (stat === 'atk') window.miMascota.stats.atk += 1;
-                if (stat === 'def') window.miMascota.stats.def += 1; // NUEVO
+                if (stat === 'def') window.miMascota.stats.def += 1;
                 if (stat === 'spd') window.miMascota.stats.spd += 1;
                 if (stat === 'luk') window.miMascota.stats.luk += 1;
                 window.miMascota.statPoints--;
@@ -219,8 +218,55 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnScanner = document.getElementById("btn-use-scanner");
     const btnRename = document.getElementById("btn-rename-geno");
 
-    if (btnStats) btnStats.addEventListener("click", () => panelStats.classList.toggle("hidden"));
-    if (btnCloseStats) btnCloseStats.addEventListener("click", () => panelStats.classList.add("hidden"));
+    // ✨ FIX UI: CREAR EL FONDO DIFUMINADO PARA BLOQUEAR EL BOTÓN NEXO Y EL FONDO
+    let statsBackdrop = document.getElementById("stats-backdrop");
+    if (!statsBackdrop) {
+        statsBackdrop = document.createElement("div");
+        statsBackdrop.id = "stats-backdrop";
+        statsBackdrop.style = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); z-index: 2500; display: none;";
+        document.body.appendChild(statsBackdrop);
+
+        // Si el jugador toca fuera del panel (en lo oscuro), se cierra solo
+        statsBackdrop.addEventListener("click", () => {
+            panelStats.classList.add("hidden");
+            statsBackdrop.style.display = "none";
+        });
+    }
+
+    if (btnStats) {
+        btnStats.addEventListener("click", () => {
+            panelStats.classList.remove("hidden");
+            statsBackdrop.style.display = "block";
+            
+            // Transformamos el panel en un Modal Flotante Centrado Absoluto
+            panelStats.style.position = "fixed";
+            panelStats.style.top = "50%";
+            panelStats.style.left = "50%";
+            panelStats.style.transform = "translate(-50%, -50%)";
+            panelStats.style.zIndex = "2501"; // Esto lo pone obligatoriamente por encima del FAB NEXO
+            panelStats.style.maxHeight = "85vh";
+            panelStats.style.overflowY = "auto";
+            panelStats.style.boxShadow = "0 10px 30px rgba(0,0,0,0.9), 0 0 15px rgba(77, 208, 225, 0.3)";
+        });
+    }
+
+    if (btnCloseStats) {
+        btnCloseStats.addEventListener("click", () => {
+            panelStats.classList.add("hidden");
+            statsBackdrop.style.display = "none";
+        });
+    }
+
+    // Gancho de seguridad: Si el juego navega a otra pantalla mientras está abierto, cerramos el fondo
+    if (!window.rpgNavHooked) {
+        const originalNavegarA = window.navegarA;
+        window.navegarA = function(id) {
+            if (originalNavegarA) originalNavegarA(id);
+            if (panelStats) panelStats.classList.add("hidden");
+            if (statsBackdrop) statsBackdrop.style.display = "none";
+        };
+        window.rpgNavHooked = true;
+    }
 
     if (btnScanner) {
         btnScanner.addEventListener("click", () => {
@@ -240,7 +286,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 setTimeout(() => {
                     window.actualizarPanelRPG();
-                    panelStats.style.boxShadow = "0 0 20px #8B5CF6";
+                    panelStats.style.boxShadow = "0 10px 30px rgba(0,0,0,0.9), 0 0 25px #8B5CF6";
                     if(window.guardarProgreso) window.guardarProgreso();
                 }, 800);
 
