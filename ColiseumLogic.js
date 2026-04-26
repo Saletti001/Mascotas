@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V11.0 (CONEXIÓN CON CATALOGO DE ATAQUES)
+// ColiseumLogic.js - MODELO MATEMÁTICO V11.1 (ANTI-TROPIEZOS Y LECTURA BLINDADA)
 // =========================================
 
 window.ColiseumLogic = {
@@ -14,13 +14,25 @@ window.ColiseumLogic = {
         return prefijos[Math.floor(Math.random() * prefijos.length)] + sufijos[Math.floor(Math.random() * sufijos.length)];
     },
 
+    // ✨ FIX: LECTURA A PRUEBA DE BALAS (Ignora saltos de línea y dobles espacios)
     buscarAtaquePorNombre: function(nombreBtn) {
         if (!nombreBtn || !window.AttackCatalog) return null;
-        let nomNormalizado = nombreBtn.replace("MT ", "").trim().toLowerCase();
-        for (const el in window.AttackCatalog.ataquesPorElemento) {
-            const ramas = window.AttackCatalog.ataquesPorElemento[el];
+        
+        let nomNormalizado = nombreBtn
+            .replace(/💿/g, "")
+            .replace(/MT /i, "")
+            .replace(/\n/g, " ")
+            .replace(/\s+/g, " ")
+            .trim()
+            .toLowerCase();
+
+        let catalogoAUsar = window.AttackCatalog.ataquesPorElemento || window.AttackCatalog.movimientos;
+        if (!catalogoAUsar) return null;
+
+        for (const el in catalogoAUsar) {
+            const ramas = catalogoAUsar[el];
             for (const cat in ramas) {
-                let encontrado = ramas[cat].find(a => a.nombre.toLowerCase() === nomNormalizado);
+                let encontrado = ramas[cat].find(a => nomNormalizado.includes(a.nombre.toLowerCase()));
                 if (encontrado) return { ...encontrado, elemento: el };
             }
         }
@@ -28,8 +40,11 @@ window.ColiseumLogic = {
     },
 
     obtenerAtaqueAleatorio: function(elemento, categoria) {
-        if (!window.AttackCatalog || !window.AttackCatalog.ataquesPorElemento[elemento]) return null;
-        const lista = window.AttackCatalog.ataquesPorElemento[elemento][categoria];
+        if (!window.AttackCatalog) return null;
+        let catalogoAUsar = window.AttackCatalog.ataquesPorElemento || window.AttackCatalog.movimientos;
+        if (!catalogoAUsar || !catalogoAUsar[elemento]) return null;
+
+        const lista = catalogoAUsar[elemento][categoria];
         if (!lista || lista.length === 0) return null;
         return { ...lista[Math.floor(Math.random() * lista.length)], elemento: elemento };
     },
@@ -144,7 +159,10 @@ window.ColiseumLogic = {
         }
 
         // ATAQUES DE SOPORTE (Curación o Buffs sin daño)
-        if (ataqueReal.potencia === 0) {
+        let potenciaAtaque = ataqueReal.potencia || (ataqueReal.potenciaBase ? ataqueReal.potenciaBase * 100 : 0);
+        if (potenciaAtaque > 0 && potenciaAtaque < 10) potenciaAtaque = potenciaAtaque * 100; // Soporte para decimales (0.95 -> 95)
+
+        if (potenciaAtaque === 0) {
             if (ataqueReal.curacion) {
                 let cura = Math.floor(atacante.maxHp * ataqueReal.curacion);
                 if (cura < 1) cura = 1;
@@ -172,8 +190,7 @@ window.ColiseumLogic = {
         for(let i=0; i<numGolpes; i++) {
             if (defensor.hp <= 0) break;
             
-            // Fórmula base normalizada: Potencia 75 = 1.0x multiplicador de ATK
-            let multPotencia = (ataqueReal.potencia / 75);
+            let multPotencia = (potenciaAtaque / 75);
             let atkBruto = atacante.atk * multPotencia * (0.85 + Math.random() * 0.3);
 
             const ventajas = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
@@ -181,7 +198,7 @@ window.ColiseumLogic = {
             atkBruto = atkBruto * multElem;
             anims.multElem = multElem;
 
-            let defRival = ataqueReal.perforante ? 0 : defensor.def;
+            let defRival = (ataqueReal.perforante || ataqueReal.rompeEscudos) ? 0 : defensor.def;
             let dmgMinimo = (atkBruto * 0.35) + 2; 
             let dmg = Math.max(atkBruto - defRival, dmgMinimo);
             dmg = Math.floor(dmg);
@@ -198,7 +215,7 @@ window.ColiseumLogic = {
                 anims.critico = true;
             }
 
-            if (defensor.escudoCibernetico && !ataqueReal.perforante) {
+            if (defensor.escudoCibernetico && !ataqueReal.perforante && !ataqueReal.rompeEscudos) {
                 dmg = Math.floor(dmg * 0.60);
                 defensor.escudoCibernetico = false;
                 logs.push(`<span style="color:#00d2ff">* [Escudo Cibernético] ${defensor.nombre} absorbe el impacto.</span>`);
@@ -224,7 +241,7 @@ window.ColiseumLogic = {
                 if (isCrit) logs.push(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${atacante.nombre} causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} de daño</span>.${tipoGolpe}`);
                 else logs.push(`> ${atacante.nombre} causa <span style="color:#ff6b6b">${dmg} de daño</span>.${tipoGolpe}`);
 
-                // APLICACIÓN DE ESTADOS ALTERADOS DEL ATAQUE
+                // APLICACIÓN DE ESTADOS
                 if (dmg > 0 && ataqueReal.aplicaEstado) {
                     let probAply = ataqueReal.probEstado !== undefined ? ataqueReal.probEstado : 1.0;
                     if (Math.random() <= probAply) {
