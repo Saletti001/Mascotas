@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR V10.1 (ESCÁNER DE COMBATE INICIAL)
+// ColiseumManager.js - CONTROLADOR V10.2 (RELOJES Y BLOQUEOS DE BOTONES)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -11,7 +11,6 @@ document.addEventListener("DOMContentLoaded", () => {
             window.navegarA("room-area");
             return;
         }
-
         ColiseumUI.configurarDOM();
         ColiseumUI.limpiarLog();
         ColiseumUI.agregarLog(`<span style="color:#aaa;">> Conectando con los servidores del Coliseo...</span><br><span style="color:#4dd0e1">> Arena lista. Esperando combatientes.</span>`);
@@ -21,13 +20,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let btnAtk1 = document.getElementById("btn-atk-1");
         if (btnAtk1) btnAtk1.onclick = () => procesarRonda("ataque");
-        
         let btnAtk2 = document.getElementById("btn-atk-2");
         if (btnAtk2) btnAtk2.onclick = () => procesarRonda("especial");
-
         let btnAtk3 = document.getElementById("btn-atk-3");
         if (btnAtk3) btnAtk3.onclick = () => procesarRonda("tactica");
-
         let btnAtk4 = document.getElementById("btn-atk-4");
         if (btnAtk4) btnAtk4.onclick = () => procesarRonda("definitivo");
     };
@@ -48,49 +44,31 @@ document.addEventListener("DOMContentLoaded", () => {
         ColiseumLogic.prepararJugador(window.miMascota);
         ColiseumLogic.generarRivalProcedural(window.miMascota.level || 1);
         
-        // ✨ NUEVO: ESCÁNER TÁCTICO INICIAL
         const p = ColiseumLogic.player;
         const e = ColiseumLogic.enemy;
 
-        // 1. Determinar la calidad genética del rival
         let calidadEnemigo = "C";
         if (e.adn && e.adn.stats && e.adn.stats.pureza) {
             let pureza = e.adn.stats.pureza;
-            if (pureza >= 90) calidadEnemigo = "S";
-            else if (pureza >= 80) calidadEnemigo = "A";
-            else if (pureza >= 60) calidadEnemigo = "B";
-            else if (pureza >= 40) calidadEnemigo = "C";
-            else calidadEnemigo = "D";
+            if (pureza >= 90) calidadEnemigo = "S"; else if (pureza >= 80) calidadEnemigo = "A";
+            else if (pureza >= 60) calidadEnemigo = "B"; else if (pureza >= 40) calidadEnemigo = "C"; else calidadEnemigo = "D";
         } else {
-            // Si es un enemigo procedural puro, estimamos su calidad por su rareza
             const prob = Math.random();
-            if (e.rareza === "Legendario" || e.rareza === "Épico") {
-                calidadEnemigo = prob > 0.5 ? "S" : "A";
-            } else if (e.rareza === "Raro") {
-                calidadEnemigo = prob > 0.5 ? "A" : "B";
-            } else {
-                calidadEnemigo = prob > 0.7 ? "B" : (prob > 0.3 ? "C" : "D");
-            }
+            if (e.rareza === "Legendario" || e.rareza === "Épico") calidadEnemigo = prob > 0.5 ? "S" : "A";
+            else if (e.rareza === "Raro") calidadEnemigo = prob > 0.5 ? "A" : "B";
+            else calidadEnemigo = prob > 0.7 ? "B" : (prob > 0.3 ? "C" : "D");
         }
 
         ColiseumUI.agregarLog(`<span style="color:#b19cd9;">> 🧬 Escáner detecta Genética Rival: Calidad [${calidadEnemigo}].</span>`);
-
-        // 2. Analizar ventajas elementales
         const ventajas = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
 
-        if (ventajas[p.element] === e.element) {
-            ColiseumUI.agregarLog(`<span style="color:#4CAF50; font-weight:bold;">> ⚔️ Matchup: ¡VENTAJA! (${p.element} domina a ${e.element}). Harás +50% Daño.</span>`);
-        } else if (ventajas[e.element] === p.element) {
-            ColiseumUI.agregarLog(`<span style="color:#ff5722; font-weight:bold;">> ⚠️ Matchup: ¡PELIGRO! (${e.element} domina a ${p.element}). Recibirás +50% Daño.</span>`);
-        } else {
-            ColiseumUI.agregarLog(`<span style="color:#80deea;">> ⚖️ Matchup: Neutral (${p.element} vs ${e.element}). Terreno equilibrado.</span>`);
-        }
-        ColiseumUI.agregarLog(`<br>`); // Espaciador antes del primer turno
-        // -------------------------------------
+        if (ventajas[p.element] === e.element) ColiseumUI.agregarLog(`<span style="color:#4CAF50; font-weight:bold;">> ⚔️ Matchup: ¡VENTAJA! (${p.element} domina a ${e.element}). Harás +50% Daño.</span>`);
+        else if (ventajas[e.element] === p.element) ColiseumUI.agregarLog(`<span style="color:#ff5722; font-weight:bold;">> ⚠️ Matchup: ¡PELIGRO! (${e.element} domina a ${p.element}). Recibirás +50% Daño.</span>`);
+        else ColiseumUI.agregarLog(`<span style="color:#80deea;">> ⚖️ Matchup: Neutral (${p.element} vs ${e.element}). Terreno equilibrado.</span>`);
+        ColiseumUI.agregarLog(`<br>`);
 
         ColiseumUI.actualizarGraficos(ColiseumLogic.player, ColiseumLogic.enemy);
         ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
-        
         actualizarBotones();
     }
 
@@ -101,14 +79,15 @@ document.addEventListener("DOMContentLoaded", () => {
         const p = ColiseumLogic.player;
         const e = ColiseumLogic.enemy;
 
+        // IA Enemiga (Respeta sus propios cooldowns)
         let accionEnemigo = "ataque";
         let acts = Object.keys(e.ataquesEquipados).filter(k => e.ataquesEquipados[k] !== null);
         
-        if (acts.includes("tactica") && e.hp <= e.maxHp * 0.4 && Math.random() < 0.7) {
+        if (acts.includes("tactica") && e.cooldowns.tactica === 0 && e.hp <= e.maxHp * 0.4 && Math.random() < 0.7) {
             accionEnemigo = "tactica";
-        } else if (acts.includes("definitivo") && Math.random() < 0.2) {
+        } else if (acts.includes("definitivo") && e.cooldowns.definitivo === 0 && Math.random() < 0.2) {
             accionEnemigo = "definitivo";
-        } else if (acts.includes("especial") && Math.random() < 0.4) {
+        } else if (acts.includes("especial") && e.cooldowns.especial === 0 && Math.random() < 0.4) {
             accionEnemigo = "especial";
         }
 
@@ -154,37 +133,39 @@ document.addEventListener("DOMContentLoaded", () => {
             ColiseumUI.animarCuracion(atacante.isPlayer);
             ColiseumUI.mostrarTextoFlotante(atacante.isPlayer, `+${resultado.anims.curacionAtacante}`, "text-heal");
         }
-
-        if (resultado.anims.danoReflejo > 0) {
-            ColiseumUI.animarDano(atacante.isPlayer);
-            ColiseumUI.mostrarTextoFlotante(atacante.isPlayer, `-${resultado.anims.danoReflejo}`, "text-dmg");
-        }
-        
         ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
     }
 
     function finalizarRonda() {
         setTimeout(() => {
-            let resP = ColiseumLogic.procesarEfectosFinTurno(ColiseumLogic.player);
+            const p = ColiseumLogic.player;
+            const e = ColiseumLogic.enemy;
+
+            let resP = ColiseumLogic.procesarEfectosFinTurno(p);
             resP.logs.forEach(l => ColiseumUI.agregarLog(l));
             if(resP.anims.heal > 0) { ColiseumUI.animarCuracion(true); ColiseumUI.mostrarTextoFlotante(true, `+${resP.anims.heal}`, "text-heal"); }
             if(resP.anims.dmg > 0) { ColiseumUI.animarDano(true); ColiseumUI.mostrarTextoFlotante(true, `-${resP.anims.dmg}`, "text-dmg"); }
 
-            let resE = ColiseumLogic.procesarEfectosFinTurno(ColiseumLogic.enemy);
+            let resE = ColiseumLogic.procesarEfectosFinTurno(e);
             resE.logs.forEach(l => ColiseumUI.agregarLog(l));
             if(resE.anims.heal > 0) { ColiseumUI.animarCuracion(false); ColiseumUI.mostrarTextoFlotante(false, `+${resE.anims.heal}`, "text-heal"); }
             if(resE.anims.dmg > 0) { ColiseumUI.animarDano(false); ColiseumUI.mostrarTextoFlotante(false, `-${resE.anims.dmg}`, "text-dmg"); }
 
-            ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
-            if (ColiseumLogic.cooldownEspecial > 0) ColiseumLogic.cooldownEspecial--;
+            // ✨ NUEVO: REDUCIR COOLDOWNS DE BOTONES AL TERMINAR EL TURNO
+            if (p.cooldowns.especial > 0) p.cooldowns.especial--;
+            if (p.cooldowns.tactica > 0) p.cooldowns.tactica--;
+            if (p.cooldowns.definitivo > 0) p.cooldowns.definitivo--;
+
+            if (e.cooldowns.especial > 0) e.cooldowns.especial--;
+            if (e.cooldowns.tactica > 0) e.cooldowns.tactica--;
+            if (e.cooldowns.definitivo > 0) e.cooldowns.definitivo--;
+
+            ColiseumUI.actualizarHP(p, e);
             ColiseumLogic.turno++;
             
             setTimeout(() => {
-                if (ColiseumLogic.player.hp <= 0 || ColiseumLogic.enemy.hp <= 0) {
-                    terminarCombate();
-                } else {
-                    actualizarBotones();
-                }
+                if (p.hp <= 0 || e.hp <= 0) terminarCombate();
+                else actualizarBotones();
             }, 600);
         }, 800);
     }
@@ -208,29 +189,37 @@ document.addEventListener("DOMContentLoaded", () => {
             let btnLeave = document.getElementById("btn-leave-battle"); 
             
             if(controls) controls.style.setProperty("display", "none", "important");
-            if(btnStart) {
-                btnStart.style.setProperty("display", "block", "important");
-                btnStart.innerText = "Buscar otro rival";
-            }
-            if(btnLeave) {
-                btnLeave.style.setProperty("display", "block", "important"); 
-            }
+            if(btnStart) { btnStart.style.setProperty("display", "block", "important"); btnStart.innerText = "Buscar otro rival"; }
+            if(btnLeave) btnLeave.style.setProperty("display", "block", "important"); 
         }, 1000);
     }
 
+    // ✨ NUEVO: ACTUALIZACIÓN VISUAL DE COOLDOWNS EN LOS BOTONES
     function actualizarBotones() {
         if (typeof ColiseumUI.actualizarBotonesAtaque === 'function') {
             ColiseumUI.actualizarBotonesAtaque(window.miMascota);
         }
         
         bloquearBotones(false);
+        const p = ColiseumLogic.player;
+        const equipados = p.ataquesEquipados;
 
-        const btnSpecial = document.getElementById("btn-atk-2");
-        if (btnSpecial && !btnSpecial.disabled && btnSpecial.innerText !== "VACÍO") {
-            if (ColiseumLogic.cooldownEspecial > 0) {
-                btnSpecial.disabled = true;
-                btnSpecial.innerText = `ESPERA (${ColiseumLogic.cooldownEspecial})`;
-            }
+        const btn2 = document.getElementById("btn-atk-2");
+        if (btn2 && equipados.especial && p.cooldowns.especial > 0) {
+            btn2.disabled = true;
+            btn2.innerText = `ESPERA (${p.cooldowns.especial})`;
+        }
+        
+        const btn3 = document.getElementById("btn-atk-3");
+        if (btn3 && equipados.tactica && p.cooldowns.tactica > 0) {
+            btn3.disabled = true;
+            btn3.innerText = `ESPERA (${p.cooldowns.tactica})`;
+        }
+
+        const btn4 = document.getElementById("btn-atk-4");
+        if (btn4 && equipados.definitivo && p.cooldowns.definitivo > 0 && !btn4.innerText.includes("NV. 25")) {
+            btn4.disabled = true;
+            btn4.innerText = `ESPERA (${p.cooldowns.definitivo})`;
         }
     }
 
