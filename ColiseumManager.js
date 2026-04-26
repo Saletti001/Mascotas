@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR V10.7 (ENRUTADOR DE ANIMACIONES)
+// ColiseumManager.js - CONTROLADOR V10.8 (ANIMACIÓN DE COMBOS SECUENCIALES)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -117,34 +117,42 @@ document.addEventListener("DOMContentLoaded", () => {
         const ataqueUsado = atacante.ataquesEquipados[accionElegida];
         const resultado = ColiseumLogic.ejecutarAtaqueCompleto(atacante, defensor, accionElegida);
         
-        // ✨ AHORA ENVIAMOS LA INFORMACIÓN DEL ATAQUE A LA INTERFAZ
-        if (ataqueUsado) {
-            let potenciaEfectiva = ataqueUsado.potencia || (ataqueUsado.potenciaBase ? ataqueUsado.potenciaBase * 100 : 0);
-            if (potenciaEfectiva > 0 && potenciaEfectiva < 10) potenciaEfectiva *= 100;
-            
-            if (potenciaEfectiva > 0) {
-                if (resultado.anims.atacanteGrita) ColiseumUI.animarAtaque(atacante.isPlayer, ataqueUsado);
-            } else {
-                ColiseumUI.animarSoporte(atacante.isPlayer, ataqueUsado);
-            }
-        }
-        
         resultado.logs.forEach(log => ColiseumUI.agregarLog(log));
 
-        if (resultado.anims.danoDefensor > 0) {
-            // ✨ Y AQUÍ LE DECIMOS A LA VISTA QUÉ TIPO DE IMPACTO SUFRE EL RIVAL
-            ColiseumUI.animarDano(!atacante.isPlayer, ataqueUsado);
-            
-            if (resultado.anims.critico) ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "CRITICAL!", "text-crit");
-            ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, `-${resultado.anims.danoDefensor}`, "text-dmg");
-            if(window.Sonidos) window.Sonidos.play("hit");
+        let potenciaEfectiva = 0;
+        if (ataqueUsado) {
+            potenciaEfectiva = ataqueUsado.potencia || (ataqueUsado.potenciaBase ? ataqueUsado.potenciaBase * 100 : 0);
+            if (potenciaEfectiva > 0 && potenciaEfectiva < 10) potenciaEfectiva *= 100;
         }
 
+        // ✨ FIX: BUCLE TEMPORAL PARA ANIMAR MULTI-GOLPES COMO UN COMBO REAL
+        if (potenciaEfectiva > 0 && resultado.anims.detalleGolpes && resultado.anims.detalleGolpes.length > 0) {
+            resultado.anims.detalleGolpes.forEach((golpe, idx) => {
+                setTimeout(() => {
+                    // El atacante embiste cada vez
+                    if (resultado.anims.atacanteGrita) ColiseumUI.animarAtaque(atacante.isPlayer, ataqueUsado);
+                    
+                    // El defensor recibe el daño o lo bloquea cada vez
+                    if (golpe.dmg > 0 || golpe.absorbido) {
+                        ColiseumUI.animarDano(!atacante.isPlayer, ataqueUsado);
+                        if (golpe.dmg > 0) {
+                            if (golpe.critico) ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "CRÍTICO!", "text-crit");
+                            ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, `-${golpe.dmg}`, "text-dmg");
+                            if(window.Sonidos) window.Sonidos.play("hit");
+                        }
+                    }
+                    ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
+                }, idx * 400); // 400ms de retraso entre cada golpe para sentir el impacto
+            });
+        } else if (potenciaEfectiva === 0 && ataqueUsado) {
+            // Es Táctica de Soporte (Potencia 0)
+            ColiseumUI.animarSoporte(atacante.isPlayer, ataqueUsado);
+        }
+        
         if (resultado.anims.curacionAtacante > 0) {
             ColiseumUI.animarCuracion(atacante.isPlayer);
             ColiseumUI.mostrarTextoFlotante(atacante.isPlayer, `+${resultado.anims.curacionAtacante}`, "text-heal");
         }
-        ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
     }
 
     function finalizarRonda() {
