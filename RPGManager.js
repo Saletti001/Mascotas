@@ -1,5 +1,5 @@
 // =========================================
-// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (RESTAURADO CON BLUR SEGURO)
+// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (RESTAURADO + EFECTO BLUR LIMPIO)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -25,6 +25,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if(!g.xpNeeded) g.xpNeeded = 100;
         if(!g.stats) g.stats = { hp: 50, atk: 15, def: 10, spd: 15, luk: 15 };
         if(g.statPoints === undefined) g.statPoints = 0;
+
+        if (panelStats) {
+            panelStats.style.minWidth = "260px";
+        }
 
         const nameEl = document.getElementById("geno-name");
         if(nameEl) nameEl.innerText = g.name || "Geno";
@@ -211,20 +215,51 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnCloseStats = document.getElementById("close-stats-btn");
     const btnScanner = document.getElementById("btn-use-scanner");
     const btnRename = document.getElementById("btn-rename-geno");
-    const statsBackdrop = document.getElementById("stats-backdrop");
 
-    // ✨ APAGAR/ENCENDER EL DIFUMINADO DEL PANEL DE STATS
+    // ==========================================
+    // ✨ SISTEMA SEGURO DE EFECTO BLUR AL BOTÓN NEXO
+    // ==========================================
+    function blurFab() {
+        const fab = document.getElementById("fab-menu");
+        if(fab) { fab.style.pointerEvents = "none"; fab.style.filter = "blur(4px) opacity(0.6)"; }
+    }
+    
+    function unblurFab() {
+        const fab = document.getElementById("fab-menu");
+        if(fab) { fab.style.pointerEvents = "auto"; fab.style.filter = "none"; }
+    }
+
+    // Fondo difuminado interno (solo para proteger NEXO al abrir Stats)
+    let statsBackdrop = document.getElementById("stats-backdrop");
+    if (!statsBackdrop) {
+        statsBackdrop = document.createElement("div");
+        statsBackdrop.id = "stats-backdrop";
+        statsBackdrop.style.cssText = "position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.6); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 15; display: none;";
+        const roomArea = document.getElementById("room-area");
+        if(roomArea) roomArea.appendChild(statsBackdrop);
+
+        statsBackdrop.addEventListener("click", () => {
+            panelStats.classList.add("hidden");
+            statsBackdrop.style.display = "none";
+            unblurFab();
+        });
+    }
+
     if (btnStats) {
         btnStats.addEventListener("click", () => {
             panelStats.classList.toggle("hidden");
-            if (statsBackdrop) {
-                if (!panelStats.classList.contains("hidden")) {
-                    statsBackdrop.classList.remove("hidden");
-                    statsBackdrop.style.display = "block";
-                } else {
-                    statsBackdrop.classList.add("hidden");
-                    statsBackdrop.style.display = "none";
+            const isOpen = !panelStats.classList.contains("hidden");
+            if (isOpen) {
+                if(statsBackdrop) statsBackdrop.style.display = "block";
+                const topHud = document.getElementById("top-hud");
+                if(topHud) {
+                    topHud.style.position = "relative";
+                    topHud.style.zIndex = "20"; // El HUD queda por encima del cristal
                 }
+                blurFab(); // Difumina el botón NEXO
+            } else {
+                if(statsBackdrop) statsBackdrop.style.display = "none";
+                unblurFab(); // Restaura el botón NEXO
             }
         });
     }
@@ -232,35 +267,34 @@ document.addEventListener("DOMContentLoaded", () => {
     if (btnCloseStats) {
         btnCloseStats.addEventListener("click", () => {
             panelStats.classList.add("hidden");
-            if (statsBackdrop) {
-                statsBackdrop.classList.add("hidden");
-                statsBackdrop.style.display = "none";
-            }
+            if(statsBackdrop) statsBackdrop.style.display = "none";
+            unblurFab();
         });
     }
 
-    // Cierra el panel si el jugador toca en lo oscuro
-    if (statsBackdrop) {
-        statsBackdrop.addEventListener("click", () => {
-            panelStats.classList.add("hidden");
-            statsBackdrop.classList.add("hidden");
-            statsBackdrop.style.display = "none";
-        });
-    }
+    // Vigilar cuando se cierran las demás ventanas (Genos, Almacén) para restaurar el botón NEXO
+    document.addEventListener("click", () => {
+        setTimeout(() => {
+            const pStats = document.getElementById("geno-stats-panel");
+            const mGenos = document.getElementById("geno-swap-modal");
+            const mInv = document.getElementById("inventory-modal");
+            const mId = document.getElementById("geno-id-card-modal");
 
-    // Gancho de seguridad: si cambias de pantalla, apaga el difuminado
-    if (!window.rpgNavHooked) {
-        const originalNavegarA = window.navegarA;
-        window.navegarA = function(id) {
-            if (originalNavegarA) originalNavegarA(id);
-            if (panelStats) panelStats.classList.add("hidden");
-            if (statsBackdrop) {
-                statsBackdrop.classList.add("hidden");
-                statsBackdrop.style.display = "none";
-            }
-        };
-        window.rpgNavHooked = true;
-    }
+            const algunModalAbierto = 
+                (pStats && !pStats.classList.contains("hidden")) ||
+                (mGenos && !mGenos.classList.contains("hidden")) ||
+                (mInv && !mInv.classList.contains("hidden")) ||
+                (mId && !mId.classList.contains("hidden"));
+
+            if (!algunModalAbierto) unblurFab();
+        }, 50);
+    });
+
+    // Activar difuminado de NEXO al abrir otras ventanas
+    const btnGenos = document.getElementById("btn-show-genos");
+    const btnInv = document.getElementById("backpack-icon");
+    if(btnGenos) btnGenos.addEventListener("click", blurFab);
+    if(btnInv) btnInv.addEventListener("click", blurFab);
 
     if (btnScanner) {
         btnScanner.addEventListener("click", () => {
