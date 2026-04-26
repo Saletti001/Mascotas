@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V12.0 (DURACIONES, STATS REALES Y COOLDOWNS)
+// ColiseumLogic.js - MODELO MATEMÁTICO V12.1 (GENERACIÓN PROCEDURAL REPARADA)
 // =========================================
 
 window.ColiseumLogic = {
@@ -59,14 +59,23 @@ window.ColiseumLogic = {
             
         const elementos = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
         const eElemento = elementos[Math.floor(Math.random() * elementos.length)];
+        
+        // ✨ FIX: Restaurada la aleatoriedad visual del enemigo
+        const formas = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
         const colores = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77", "#ff9800", "#ffb347", "#a8e6cf"];
+        const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry", "cibernetico", "alien", "ojeras"];
+        const opcionesBocas = typeof dicBocas !== 'undefined' ? Object.keys(dicBocas) : ["estandar", "feliz", "colmillos", "abierta", "sorpresa", "lengua"];
+        
         let eHiddenGenes = {A: null, B: null, C: null};
         if (typeof window.generarGenesV9 === 'function') eHiddenGenes = window.generarGenesV9(eRareza);
         
         const adn = { 
             id: 888, scanned: true, rarity: eRareza, stats: eStats, element: eElemento,
-            body_shape: "frijol", color: colores[Math.floor(Math.random() * colores.length)],
-            eye_type: "estandar", mouth_type: "estandar", wing_type: "ninguno", hat_type: "ninguno", 
+            body_shape: formas[Math.floor(Math.random() * formas.length)], 
+            color: colores[Math.floor(Math.random() * colores.length)],
+            eye_type: opcionesOjos[Math.floor(Math.random() * opcionesOjos.length)], 
+            mouth_type: opcionesBocas[Math.floor(Math.random() * opcionesBocas.length)], 
+            wing_type: "ninguno", hat_type: "ninguno", 
             hidden_genes: eHiddenGenes, level: nivelJugador
         };
 
@@ -124,7 +133,6 @@ window.ColiseumLogic = {
             return { logs, anims };
         }
 
-        // ✨ NUEVO: APLICAR COOLDOWNS DE BOTONES
         if (slotAccion === "especial") {
             atacante.cooldowns.especial = 3;
             logs.push(`<span style="color:#e040fb">> ¡${atacante.nombre} usa [${ataqueReal.nombre}]!</span>`);
@@ -142,7 +150,6 @@ window.ColiseumLogic = {
         let potenciaAtaque = ataqueReal.potencia || (ataqueReal.potenciaBase ? ataqueReal.potenciaBase * 100 : 0);
         if (potenciaAtaque > 0 && potenciaAtaque < 10) potenciaAtaque = potenciaAtaque * 100; 
 
-        // CURACIÓN
         if (ataqueReal.curacion) {
             let cura = Math.floor(atacante.maxHp * ataqueReal.curacion);
             atacante.hp = Math.min(atacante.maxHp, atacante.hp + Math.max(1, cura));
@@ -150,7 +157,6 @@ window.ColiseumLogic = {
             logs.push(`<span style="color:#4CAF50">* Recupera ${cura} HP.</span>`);
         }
 
-        // DAÑO
         if (potenciaAtaque > 0) {
             let numGolpes = ataqueReal.hits || 1;
             if (atacante.genesId.includes("velocidad_fantasma") && Math.random() <= 0.20 && numGolpes === 1) {
@@ -200,7 +206,6 @@ window.ColiseumLogic = {
             }
         }
 
-        // ✨ NUEVO: APLICACIÓN DE ESTADOS Y MODIFICADORES DE STATS REALES
         let probAply = ataqueReal.probEstado !== undefined ? ataqueReal.probEstado : 1.0;
         if (Math.random() <= probAply) {
             let duracionBase = ataqueReal.duracion || 3;
@@ -253,7 +258,6 @@ window.ColiseumLogic = {
         let logs = []; let anims = { heal: 0, dmg: 0 };
         if (fighter.hp <= 0) return { logs, anims };
 
-        // ✨ NUEVO: REDUCCIÓN DE DURACIÓN Y REVERSIÓN DE STATS
         for (let i = fighter.efectosActivos.length - 1; i >= 0; i--) {
             let ef = fighter.efectosActivos[i];
             ef.turnos--;
@@ -262,7 +266,7 @@ window.ColiseumLogic = {
                     fighter.estados = fighter.estados.filter(e => e !== ef.valor);
                     logs.push(`<span style="color:#888;">> ⏳ El estado [${ef.nombre}] sobre ${fighter.nombre} se disipó.</span>`);
                 } else if (ef.stat) {
-                    fighter[ef.stat] -= ef.valor; // Revertir Stat
+                    fighter[ef.stat] -= ef.valor;
                     let accion = ef.valor > 0 ? "terminó" : "se recuperó";
                     logs.push(`<span style="color:#888;">> ⏳ Efecto [${ef.nombre}] ${accion}. Sus stats vuelven a la normalidad.</span>`);
                 }
