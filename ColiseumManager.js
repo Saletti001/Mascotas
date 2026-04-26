@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR V10.0 (CONEXIÓN LÓGICA DE CATÁLOGO)
+// ColiseumManager.js - CONTROLADOR V10.1 (ESCÁNER DE COMBATE INICIAL)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -48,6 +48,46 @@ document.addEventListener("DOMContentLoaded", () => {
         ColiseumLogic.prepararJugador(window.miMascota);
         ColiseumLogic.generarRivalProcedural(window.miMascota.level || 1);
         
+        // ✨ NUEVO: ESCÁNER TÁCTICO INICIAL
+        const p = ColiseumLogic.player;
+        const e = ColiseumLogic.enemy;
+
+        // 1. Determinar la calidad genética del rival
+        let calidadEnemigo = "C";
+        if (e.adn && e.adn.stats && e.adn.stats.pureza) {
+            let pureza = e.adn.stats.pureza;
+            if (pureza >= 90) calidadEnemigo = "S";
+            else if (pureza >= 80) calidadEnemigo = "A";
+            else if (pureza >= 60) calidadEnemigo = "B";
+            else if (pureza >= 40) calidadEnemigo = "C";
+            else calidadEnemigo = "D";
+        } else {
+            // Si es un enemigo procedural puro, estimamos su calidad por su rareza
+            const prob = Math.random();
+            if (e.rareza === "Legendario" || e.rareza === "Épico") {
+                calidadEnemigo = prob > 0.5 ? "S" : "A";
+            } else if (e.rareza === "Raro") {
+                calidadEnemigo = prob > 0.5 ? "A" : "B";
+            } else {
+                calidadEnemigo = prob > 0.7 ? "B" : (prob > 0.3 ? "C" : "D");
+            }
+        }
+
+        ColiseumUI.agregarLog(`<span style="color:#b19cd9;">> 🧬 Escáner detecta Genética Rival: Calidad [${calidadEnemigo}].</span>`);
+
+        // 2. Analizar ventajas elementales
+        const ventajas = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
+
+        if (ventajas[p.element] === e.element) {
+            ColiseumUI.agregarLog(`<span style="color:#4CAF50; font-weight:bold;">> ⚔️ Matchup: ¡VENTAJA! (${p.element} domina a ${e.element}). Harás +50% Daño.</span>`);
+        } else if (ventajas[e.element] === p.element) {
+            ColiseumUI.agregarLog(`<span style="color:#ff5722; font-weight:bold;">> ⚠️ Matchup: ¡PELIGRO! (${e.element} domina a ${p.element}). Recibirás +50% Daño.</span>`);
+        } else {
+            ColiseumUI.agregarLog(`<span style="color:#80deea;">> ⚖️ Matchup: Neutral (${p.element} vs ${e.element}). Terreno equilibrado.</span>`);
+        }
+        ColiseumUI.agregarLog(`<br>`); // Espaciador antes del primer turno
+        // -------------------------------------
+
         ColiseumUI.actualizarGraficos(ColiseumLogic.player, ColiseumLogic.enemy);
         ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
         
@@ -61,7 +101,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const p = ColiseumLogic.player;
         const e = ColiseumLogic.enemy;
 
-        // IA Enemiga que lee si tiene los ataques equipados en su objeto
         let accionEnemigo = "ataque";
         let acts = Object.keys(e.ataquesEquipados).filter(k => e.ataquesEquipados[k] !== null);
         
