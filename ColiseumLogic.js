@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V11.2 (MATCHMAKING POR STATS / CP)
+// ColiseumLogic.js - MODELO MATEMÁTICO V11.3 (LECTURA DIRECTA DE DATOS)
 // =========================================
 
 window.ColiseumLogic = {
@@ -14,12 +14,12 @@ window.ColiseumLogic = {
         return prefijos[Math.floor(Math.random() * prefijos.length)] + sufijos[Math.floor(Math.random() * sufijos.length)];
     },
 
-    buscarAtaquePorNombre: function(nombreBtn) {
-        if (!nombreBtn || !window.AttackCatalog) return null;
+    buscarAtaquePorNombre: function(nombreItem) {
+        if (!nombreItem || !window.AttackCatalog) return null;
         
-        let nomNormalizado = nombreBtn
+        let nomNormalizado = nombreItem
             .replace(/💿/g, "")
-            .replace(/MT /i, "")
+            .replace(/MT /gi, "")
             .replace(/\n/g, " ")
             .replace(/\s+/g, " ")
             .trim()
@@ -31,7 +31,10 @@ window.ColiseumLogic = {
         for (const el in catalogoAUsar) {
             const ramas = catalogoAUsar[el];
             for (const cat in ramas) {
-                let encontrado = ramas[cat].find(a => nomNormalizado.includes(a.nombre.toLowerCase()));
+                let encontrado = ramas[cat].find(a => 
+                    nomNormalizado.includes(a.nombre.toLowerCase()) || 
+                    a.nombre.toLowerCase().includes(nomNormalizado)
+                );
                 if (encontrado) return { ...encontrado, elemento: el };
             }
         }
@@ -52,21 +55,16 @@ window.ColiseumLogic = {
         let eRareza = "Común";
         let roll = Math.random();
         
-        // ✨ NUEVO: MATCHMAKING BASADO EN PODER TOTAL (Suma de Stats)
-        let poderJugador = 100; // Valor por defecto
+        let poderJugador = 100; 
         if (this.player) {
             poderJugador = this.player.maxHp + this.player.atk + this.player.def + this.player.spd + this.player.luk;
         }
 
-        // Ligas basadas en la fuerza real de tu Geno
         if (poderJugador < 130) {
-            // Liga Baja (Geno débil o recién nacido) -> 85% Común, 15% Raro
             eRareza = roll < 0.85 ? "Común" : "Raro"; 
         } else if (poderJugador < 170) {
-            // Liga Media (Geno entrenado o buena genética) -> 60% Común, 30% Raro, 10% Épico
             eRareza = roll < 0.60 ? "Común" : (roll < 0.90 ? "Raro" : "Épico"); 
         } else {
-            // Liga Alta (Bestias genéticas y niveles altos) -> 0% Comunes. 30% Raro, 40% Épico, 30% Legendario
             eRareza = roll < 0.30 ? "Raro" : (roll < 0.70 ? "Épico" : "Legendario"); 
         }
         
@@ -95,15 +93,14 @@ window.ColiseumLogic = {
             hidden_genes: eHiddenGenes, level: nivelJugador
         };
 
-        const btn2 = document.getElementById("btn-atk-2");
-        const btn3 = document.getElementById("btn-atk-3");
-        const btn4 = document.getElementById("btn-atk-4");
+        // ✨ FIX: Lee directamente de los datos reales del jugador, no de los botones
+        let pAtks = window.miMascota && window.miMascota.ataques ? window.miMascota.ataques : {};
 
         let enemyAtaques = {
             "ataque": this.obtenerAtaqueAleatorio(eElemento, "basicos"),
-            "especial": (btn2 && btn2.innerText !== "VACÍO" && !btn2.innerText.includes("NV.")) ? this.obtenerAtaqueAleatorio(eElemento, "especiales") : null,
-            "tactica": (btn3 && btn3.innerText !== "VACÍO" && !btn3.innerText.includes("NV.")) ? this.obtenerAtaqueAleatorio(eElemento, "soportes") : null,
-            "definitivo": (btn4 && btn4.innerText !== "VACÍO" && !btn4.innerText.includes("NV.")) ? this.obtenerAtaqueAleatorio(eElemento, "definitivos") : null
+            "especial": pAtks.atk_2 ? this.obtenerAtaqueAleatorio(eElemento, "especiales") : null,
+            "tactica": pAtks.atk_3 ? this.obtenerAtaqueAleatorio(eElemento, "soportes") : null,
+            "definitivo": (pAtks.atk_4 && nivelJugador >= 25) ? this.obtenerAtaqueAleatorio(eElemento, "definitivos") : null
         };
         
         this.enemy = {
@@ -123,16 +120,14 @@ window.ColiseumLogic = {
         let pGenB = mascota.hidden_genes?.B?.id || "ninguno";
         let pGenC = mascota.hidden_genes?.C?.id || "ninguno";
         
-        const btn1 = document.getElementById("btn-atk-1");
-        const btn2 = document.getElementById("btn-atk-2");
-        const btn3 = document.getElementById("btn-atk-3");
-        const btn4 = document.getElementById("btn-atk-4");
+        // ✨ FIX: Lee directamente de la base de datos del equipo del Geno
+        let pAtks = mascota.ataques || {};
 
         let playerAtaques = {
-            "ataque": this.buscarAtaquePorNombre(btn1 ? btn1.innerText : "") || this.obtenerAtaqueAleatorio(pElemento, "basicos"),
-            "especial": this.buscarAtaquePorNombre(btn2 ? btn2.innerText : ""),
-            "tactica": this.buscarAtaquePorNombre(btn3 ? btn3.innerText : ""),
-            "definitivo": this.buscarAtaquePorNombre(btn4 ? btn4.innerText : "")
+            "ataque": this.obtenerAtaqueAleatorio(pElemento, "basicos"),
+            "especial": pAtks.atk_2 ? this.buscarAtaquePorNombre(pAtks.atk_2.nombre) : null,
+            "tactica": pAtks.atk_3 ? this.buscarAtaquePorNombre(pAtks.atk_3.nombre) : null,
+            "definitivo": pAtks.atk_4 ? this.buscarAtaquePorNombre(pAtks.atk_4.nombre) : null
         };
 
         this.player = {
