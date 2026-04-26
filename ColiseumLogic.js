@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V12.4 (NOMBRES A COLOR EN LOG)
+// ColiseumLogic.js - MODELO MATEMÁTICO V12.5 (MEMORIA DE COMBOS MULTI-GOLPE)
 // =========================================
 
 window.ColiseumLogic = {
@@ -7,7 +7,6 @@ window.ColiseumLogic = {
     enemy: null,
     turno: 1,
 
-    // ✨ NUEVO: Inyector de color para los nombres del log
     cName: function(fighter) {
         const color = fighter.isPlayer ? "#4dd0e1" : "#ff6b6b";
         return `<span style="color:${color}; font-weight:bold;">${fighter.nombre}</span>`;
@@ -45,9 +44,7 @@ window.ColiseumLogic = {
     },
 
     generarRivalProcedural: function(nivelJugador) {
-        let eRareza = "Común";
-        let roll = Math.random();
-        
+        let eRareza = "Común"; let roll = Math.random();
         let poderJugador = 100; 
         if (this.player) poderJugador = this.player.maxHp + this.player.atk + this.player.def + this.player.spd + this.player.luk;
 
@@ -128,8 +125,9 @@ window.ColiseumLogic = {
     },
 
     ejecutarAtaqueCompleto: function(atacante, defensor, slotAccion) {
+        // ✨ FIX: Agregada la lista "detalleGolpes" para registrar combos
         let logs = [];
-        let anims = { atacanteGrita: true, danoDefensor: 0, critico: false, curacionAtacante: 0, danoReflejo: 0, multElem: 1 };
+        let anims = { atacanteGrita: true, danoDefensor: 0, critico: false, curacionAtacante: 0, danoReflejo: 0, multElem: 1, detalleGolpes: [] };
         
         let ataqueReal = atacante.ataquesEquipados[slotAccion];
         if (!ataqueReal) {
@@ -171,6 +169,9 @@ window.ColiseumLogic = {
             for(let i=0; i<numGolpes; i++) {
                 if (defensor.hp <= 0) break;
                 
+                // ✨ FIX: Registramos la info de cada golpe individualmente
+                let golpeActual = { dmg: 0, critico: false, absorbido: false };
+
                 let atkBruto = atacante.atk * (potenciaAtaque / 75) * (0.85 + Math.random() * 0.3);
                 const ventajas = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
                 let multElem = ventajas[ataqueReal.elemento] === defensor.element ? 1.5 : (ventajas[defensor.element] === ataqueReal.elemento ? 0.5 : 1.0);
@@ -184,17 +185,20 @@ window.ColiseumLogic = {
                 if (ataqueReal.criticoGarantizado) probCrit = 1.0;
 
                 let isCrit = Math.random() <= probCrit;
-                if (isCrit) { dmg = Math.floor(dmg * 1.5); anims.critico = true; }
+                if (isCrit) { dmg = Math.floor(dmg * 1.5); anims.critico = true; golpeActual.critico = true; }
 
                 if (defensor.escudoCibernetico && !ataqueReal.perforante) {
                     dmg = Math.floor(dmg * 0.60); defensor.escudoCibernetico = false;
                     logs.push(`<span style="color:#00d2ff">* [Escudo Cibernético] ${this.cName(defensor)} absorbe el impacto.</span>`);
+                    golpeActual.dmg = dmg;
                 } else if (defensor.crystalSkin) {
                     dmg = 0; defensor.crystalSkin = false;
                     logs.push(`<span style="color:#80deea">* [Piel de Cristal] ${this.cName(defensor)} anula el daño.</span>`);
+                    golpeActual.absorbido = true;
                 } else {
                     defensor.hp = Math.max(0, defensor.hp - dmg);
                     anims.danoDefensor += dmg;
+                    golpeActual.dmg = dmg;
 
                     let tipoGolpe = multElem === 1.5 ? ` <span style="color:#4CAF50; font-weight:bold;">(¡Súper Efectivo!)</span>` : (multElem === 0.5 ? ` <span style="color:#888; font-weight:bold;">(Poco efectivo...)</span>` : "");
                     if (isCrit) logs.push(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${this.cName(atacante)} causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} de daño</span>.${tipoGolpe}`);
@@ -207,6 +211,7 @@ window.ColiseumLogic = {
                         logs.push(`<span style="color:#e0b0ff">* [Vampirismo] ${this.cName(atacante)} recupera ${roboVida} HP.</span>`);
                     }
                 }
+                anims.detalleGolpes.push(golpeActual);
             }
         }
 
