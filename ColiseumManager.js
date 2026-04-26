@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR V10.4 (TIEMPOS OPTIMIZADOS -25%)
+// ColiseumManager.js - CONTROLADOR V10.5 (PAUSA DE ATAQUE A 1.5s)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -101,20 +101,18 @@ document.addEventListener("DOMContentLoaded", () => {
         ejecutarAccionYAnimar(ejecutor1, ejecutor2, accion1);
         
         if (ejecutor2.hp > 0) {
-            // ✨ TIEMPO REDUCIDO A 2.1s
+            // ✨ TIEMPO REDUCIDO A 1.5s (Pausa entre ataques)
             setTimeout(() => {
                 ColiseumUI.agregarLog(`<span style="color:#555;">&nbsp;&nbsp;♦ ♦ ♦</span>`); 
                 
                 ejecutarAccionYAnimar(ejecutor2, ejecutor1, accion2);
                 
-                // ✨ TIEMPO REDUCIDO A 1.5s
                 setTimeout(() => {
                     finalizarRonda();
                 }, 1500);
 
-            }, 2100); 
+            }, 1500); 
         } else {
-            // ✨ TIEMPO REDUCIDO A 1.5s
             setTimeout(() => {
                 finalizarRonda();
             }, 1500);
@@ -177,7 +175,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ColiseumUI.actualizarHP(p, e);
         ColiseumLogic.turno++;
         
-        // ✨ TIEMPO REDUCIDO A 1.1s (con efectos) o 0.4s (sin efectos)
         let pausaFinal = huboEfectos ? 1100 : 400;
 
         setTimeout(() => {
