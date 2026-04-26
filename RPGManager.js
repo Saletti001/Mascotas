@@ -1,8 +1,9 @@
 // =========================================
-// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (RESTAURADO + FIX DESCUADRE)
+// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (MODAL SEGURO + STATS BASE/AÑADIDOS)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
+    const overlayStats = document.getElementById("stats-modal-overlay");
     const panelStats = document.getElementById("geno-stats-panel");
     const badgePuntos = document.getElementById("stat-points-badge");
     const btnsAddStat = document.querySelectorAll(".btn-add-stat");
@@ -10,6 +11,12 @@ document.addEventListener("DOMContentLoaded", () => {
     window.verificarUmbralDespertar = function(g) {
         if (g.level >= 25 && window.tieneGenActivoV9 && window.tieneGenActivoV9(g, "umbral_despertar") && !g.umbralAplicado) {
             g.stats.hp += 5; g.stats.atk += 5; g.stats.def += 5; g.stats.spd += 5; g.stats.luk += 5;
+            
+            // Si el gen se despierta, esto se considera una mutación BASE, no puntos de nivel.
+            if(g.baseStats) {
+                g.baseStats.hp += 5; g.baseStats.atk += 5; g.baseStats.def += 5; g.baseStats.spd += 5; g.baseStats.luk += 5;
+            }
+            
             g.umbralAplicado = true;
             if(window.Sonidos) window.Sonidos.play("heal");
             alert("✨ ¡Gen Activado: Umbral del Despertar!\nLas estadísticas base de tu Geno han aumentado +5 de forma permanente.");
@@ -25,6 +32,17 @@ document.addEventListener("DOMContentLoaded", () => {
         if(!g.xpNeeded) g.xpNeeded = 100;
         if(!g.stats) g.stats = { hp: 50, atk: 15, def: 10, spd: 15, luk: 15 };
         if(g.statPoints === undefined) g.statPoints = 0;
+
+        // ✨ NUEVO: Guardar permanentemente los Stats Originales con los que nació
+        if(!g.baseStats) {
+            g.baseStats = {
+                hp: g.stats.hp,
+                atk: g.stats.atk,
+                def: g.stats.def !== undefined ? g.stats.def : 0,
+                spd: g.stats.spd,
+                luk: g.stats.luk
+            };
+        }
 
         const nameEl = document.getElementById("geno-name");
         if(nameEl) nameEl.innerText = g.name || "Geno";
@@ -70,7 +88,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 let tMax = limites.hp[1] + limites.atk[1] + limites.def[1] + limites.spd[1] + limites.luk[1];
                 let puntosInvertidos = (g.level - 1) * 3;
                 let bonoUmbral = g.umbralAplicado ? 25 : 0; 
-                let tObt = (g.stats.hp + g.stats.atk + g.stats.def + g.stats.spd + g.stats.luk) - puntosInvertidos - bonoUmbral;
+                
+                // Usamos los Stats Base para medir la Calidad Pura (así no sube falsamente al subir de nivel)
+                let tObt = (g.baseStats.hp + g.baseStats.atk + g.baseStats.def + g.baseStats.spd + g.baseStats.luk) - bonoUmbral;
 
                 pct = Math.round(((tObt - tMin) / (tMax - tMin)) * 100);
                 if (pct > 100) pct = 100; if (pct < 0) pct = 0;
@@ -83,11 +103,24 @@ document.addEventListener("DOMContentLoaded", () => {
             qualityBadge.style.textShadow = rango === "S" ? "0 0 10px rgba(255, 204, 0, 0.8)" : "none";
         }
 
-        const shp = document.getElementById("stat-hp"); if(shp) shp.innerText = Math.floor(g.stats.hp);
-        const satk = document.getElementById("stat-atk"); if(satk) satk.innerText = Math.floor(g.stats.atk);
-        const sdef = document.getElementById("stat-def"); if(sdef) sdef.innerText = Math.floor(g.stats.def || 0);
-        const sspd = document.getElementById("stat-spd"); if(sspd) sspd.innerText = Math.floor(g.stats.spd);
-        const sluk = document.getElementById("stat-luk"); if(sluk) sluk.innerText = Math.floor(g.stats.luk);
+        // ✨ NUEVO: FUNCIÓN PARA PINTAR STAT BASE + PUNTOS AÑADIDOS
+        const drawStat = (statName) => {
+            const baseEl = document.getElementById(`stat-${statName}-base`);
+            const addedEl = document.getElementById(`stat-${statName}-added`);
+            if(baseEl && g.baseStats[statName] !== undefined) {
+                baseEl.innerText = Math.floor(g.baseStats[statName]);
+                if(addedEl) {
+                    const diff = g.stats[statName] - g.baseStats[statName];
+                    addedEl.innerText = diff > 0 ? `(+${Math.floor(diff)})` : '';
+                }
+            }
+        };
+
+        drawStat('hp');
+        drawStat('atk');
+        drawStat('def');
+        drawStat('spd');
+        drawStat('luk');
 
         let structureContainer = document.getElementById("genetic-structure-container");
         
@@ -213,70 +246,71 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnRename = document.getElementById("btn-rename-geno");
 
     // ==========================================
-    // ✨ SISTEMA SEGURO DE EFECTO BLUR AL BOTÓN NEXO
+    // LÓGICA DE APERTURA/CIERRE DEL MODAL DE STATS
     // ==========================================
+    const statsOverlay = document.getElementById("stats-modal-overlay");
+
     function blurFab() {
         const fab = document.getElementById("fab-menu");
-        // Desactivamos clicks y aplicamos blur visual al botón NEXO
         if(fab) { fab.style.pointerEvents = "none"; fab.style.filter = "blur(4px) opacity(0.6)"; }
     }
     
     function unblurFab() {
         const fab = document.getElementById("fab-menu");
-        // Restauramos el botón NEXO
         if(fab) { fab.style.pointerEvents = "auto"; fab.style.filter = "none"; }
     }
 
-    // Al abrir el nuevo panel de Stats superpuesto
-    if (btnStats) {
+    if (btnStats && statsOverlay) {
         btnStats.addEventListener("click", () => {
-            if(!panelStats) return;
-            panelStats.classList.toggle("hidden");
-            // Si lo abrimos, bloqueamos el botón NEXO
-            if (!panelStats.classList.contains("hidden")) blurFab();
+            statsOverlay.classList.remove("hidden");
+            blurFab();
         });
     }
 
-    // Al cerrar el panel de Stats
-    if (btnCloseStats) {
+    if (btnCloseStats && statsOverlay) {
         btnCloseStats.addEventListener("click", () => {
-            if(panelStats) panelStats.classList.add("hidden");
-            unblurFab(); // Restauramos el botón NEXO
+            statsOverlay.classList.add("hidden");
+            unblurFab();
         });
     }
 
-    // ✨ CERRAR AL TOCAR EL FONDO OSCURO (Igual que el Almacén)
-    if (panelStats) {
-        panelStats.addEventListener("click", (e) => {
-            // Si tocas el fondo oscuro (panelStats) y no la tarjeta (modal-content)
-            if (e.target === panelStats) {
-                panelStats.classList.add("hidden");
+    if (statsOverlay) {
+        statsOverlay.addEventListener("click", (e) => {
+            // Cierra si tocan lo oscuro fuera de la tarjeta
+            if (e.target === statsOverlay) {
+                statsOverlay.classList.add("hidden");
                 unblurFab();
             }
         });
     }
 
-    // Vigilar cuando se cierran las demás ventanas (Genos, Almacén) para restaurar el botón NEXO
+    // Gancho de seguridad para la navegación
+    if (!window.rpgNavHooked) {
+        const originalNavegarA = window.navegarA;
+        window.navegarA = function(id) {
+            if (originalNavegarA) originalNavegarA(id);
+            if (statsOverlay) statsOverlay.classList.add("hidden");
+        };
+        window.rpgNavHooked = true;
+    }
+
     document.addEventListener("click", () => {
         setTimeout(() => {
             const mGenos = document.getElementById("geno-swap-modal");
             const mInv = document.getElementById("inventory-modal");
             const mId = document.getElementById("geno-id-card-modal");
 
-            // Si abrimos la ID Card, también bloqueamos el NEXO
             if (mId && !mId.classList.contains("hidden")) { blurFab(); return; }
 
             const algunModalAbierto = 
-                (panelStats && !panelStats.classList.contains("hidden")) ||
+                (statsOverlay && !statsOverlay.classList.contains("hidden")) ||
                 (mGenos && !mGenos.classList.contains("hidden")) ||
                 (mInv && !mInv.classList.contains("hidden"));
 
-            // Si no hay nada abierto, restauramos NEXO
             if (!algunModalAbierto) unblurFab();
         }, 50);
     });
 
-    // Activar difuminado de NEXO al abrir otras ventanas
     const btnGenos = document.getElementById("btn-show-genos");
     const btnInv = document.getElementById("backpack-icon");
     if(btnGenos) btnGenos.addEventListener("click", blurFab);
@@ -300,7 +334,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 setTimeout(() => {
                     window.actualizarPanelRPG();
-                    if(panelStats) panelStats.style.boxShadow = "0 0 20px #8B5CF6";
                     if(window.guardarProgreso) window.guardarProgreso();
                 }, 800);
 
