@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V11.1 (ANTI-TROPIEZOS Y LECTURA BLINDADA)
+// ColiseumLogic.js - MODELO MATEMÁTICO V11.2 (MATCHMAKING POR STATS / CP)
 // =========================================
 
 window.ColiseumLogic = {
@@ -14,7 +14,6 @@ window.ColiseumLogic = {
         return prefijos[Math.floor(Math.random() * prefijos.length)] + sufijos[Math.floor(Math.random() * sufijos.length)];
     },
 
-    // ✨ FIX: LECTURA A PRUEBA DE BALAS (Ignora saltos de línea y dobles espacios)
     buscarAtaquePorNombre: function(nombreBtn) {
         if (!nombreBtn || !window.AttackCatalog) return null;
         
@@ -53,12 +52,22 @@ window.ColiseumLogic = {
         let eRareza = "Común";
         let roll = Math.random();
         
-        if (nivelJugador <= 4) {
-            eRareza = roll < 0.85 ? "Común" : "Raro";
-        } else if (nivelJugador <= 10) {
-            eRareza = roll < 0.60 ? "Común" : (roll < 0.90 ? "Raro" : "Épico");
+        // ✨ NUEVO: MATCHMAKING BASADO EN PODER TOTAL (Suma de Stats)
+        let poderJugador = 100; // Valor por defecto
+        if (this.player) {
+            poderJugador = this.player.maxHp + this.player.atk + this.player.def + this.player.spd + this.player.luk;
+        }
+
+        // Ligas basadas en la fuerza real de tu Geno
+        if (poderJugador < 130) {
+            // Liga Baja (Geno débil o recién nacido) -> 85% Común, 15% Raro
+            eRareza = roll < 0.85 ? "Común" : "Raro"; 
+        } else if (poderJugador < 170) {
+            // Liga Media (Geno entrenado o buena genética) -> 60% Común, 30% Raro, 10% Épico
+            eRareza = roll < 0.60 ? "Común" : (roll < 0.90 ? "Raro" : "Épico"); 
         } else {
-            eRareza = roll < 0.40 ? "Común" : (roll < 0.70 ? "Raro" : (roll < 0.90 ? "Épico" : "Legendario"));
+            // Liga Alta (Bestias genéticas y niveles altos) -> 0% Comunes. 30% Raro, 40% Épico, 30% Legendario
+            eRareza = roll < 0.30 ? "Raro" : (roll < 0.70 ? "Épico" : "Legendario"); 
         }
         
         const eStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(eRareza) : {hp: 60, atk: 12, def: 8, spd: 10, luk: 5};
@@ -158,9 +167,8 @@ window.ColiseumLogic = {
             logs.push(`<span style="color:#26a69a">> ¡${atacante.nombre} prepara [${ataqueReal.nombre}]!</span>`);
         }
 
-        // ATAQUES DE SOPORTE (Curación o Buffs sin daño)
         let potenciaAtaque = ataqueReal.potencia || (ataqueReal.potenciaBase ? ataqueReal.potenciaBase * 100 : 0);
-        if (potenciaAtaque > 0 && potenciaAtaque < 10) potenciaAtaque = potenciaAtaque * 100; // Soporte para decimales (0.95 -> 95)
+        if (potenciaAtaque > 0 && potenciaAtaque < 10) potenciaAtaque = potenciaAtaque * 100; 
 
         if (potenciaAtaque === 0) {
             if (ataqueReal.curacion) {
@@ -241,7 +249,6 @@ window.ColiseumLogic = {
                 if (isCrit) logs.push(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${atacante.nombre} causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} de daño</span>.${tipoGolpe}`);
                 else logs.push(`> ${atacante.nombre} causa <span style="color:#ff6b6b">${dmg} de daño</span>.${tipoGolpe}`);
 
-                // APLICACIÓN DE ESTADOS
                 if (dmg > 0 && ataqueReal.aplicaEstado) {
                     let probAply = ataqueReal.probEstado !== undefined ? ataqueReal.probEstado : 1.0;
                     if (Math.random() <= probAply) {
