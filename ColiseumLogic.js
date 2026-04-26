@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V10.1 (MATCHMAKING Y BALANCE)
+// ColiseumLogic.js - MODELO MATEMÁTICO V10.2 (IA EN ESPEJO Y DEFINITIVOS)
 // =========================================
 
 window.ColiseumLogic = {
@@ -15,12 +15,11 @@ window.ColiseumLogic = {
     },
 
     generarRivalProcedural: function(nivelJugador) {
-        // ✨ FIX 1: MATCHMAKING JUSTO BASADO EN EL NIVEL DEL JUGADOR
         let eRareza = "Común";
         let roll = Math.random();
         
         if (nivelJugador <= 4) {
-            eRareza = roll < 0.85 ? "Común" : "Raro"; // 85% Común, 15% Raro (No Épicos en niveles bajos)
+            eRareza = roll < 0.85 ? "Común" : "Raro";
         } else if (nivelJugador <= 10) {
             eRareza = roll < 0.60 ? "Común" : (roll < 0.90 ? "Raro" : "Épico");
         } else {
@@ -30,7 +29,6 @@ window.ColiseumLogic = {
         const eStats = window.generarStatsPorRareza ? 
             window.generarStatsPorRareza(eRareza) : {hp: 60, atk: 12, def: 8, spd: 10, luk: 5};
 
-        // ✨ FIX 2: EL ENEMIGO SE REPARTE PUNTOS DE NIVEL IGUAL QUE TÚ
         let puntosExtra = (nivelJugador > 1) ? (nivelJugador - 1) * 3 : 0;
         for(let i=0; i<puntosExtra; i++) {
             const stats = ['hp', 'atk', 'def', 'spd', 'luk'];
@@ -58,6 +56,16 @@ window.ColiseumLogic = {
             mouth_type: opcionesBocas[Math.floor(Math.random() * opcionesBocas.length)], 
             wing_type: "ninguno", hat_type: "ninguno", hidden_genes: eHiddenGenes, level: nivelJugador
         };
+
+        // ✨ NUEVO: MATCHMAKING EN ESPEJO (El rival copia las categorías de tus MTs)
+        let ataquesEnemigo = ["ataque"];
+        const btn2 = document.getElementById("btn-atk-2");
+        const btn3 = document.getElementById("btn-atk-3");
+        const btn4 = document.getElementById("btn-atk-4");
+
+        if (btn2 && btn2.innerText !== "VACÍO" && !btn2.innerText.includes("NV.")) ataquesEnemigo.push("especial");
+        if (btn3 && btn3.innerText !== "VACÍO" && !btn3.innerText.includes("NV.")) ataquesEnemigo.push("tactica");
+        if (btn4 && btn4.innerText !== "VACÍO" && !btn4.innerText.includes("NV.")) ataquesEnemigo.push("definitivo");
         
         this.enemy = {
             nombre: this.generarNombreAleatorio(), isPlayer: false, adn: adn,
@@ -67,7 +75,8 @@ window.ColiseumLogic = {
             genesId: [eHiddenGenes.B ? eHiddenGenes.B.id : "ninguno", eHiddenGenes.C ? eHiddenGenes.C.id : "ninguno"],
             estados: [], escudoCibernetico: eElemento === "Cibernético", resilienciaUsada: false, barreraUsada: false, 
             ultimoElementoRecibido: null, sangreFriaUsada: false, 
-            crystalSkin: eHiddenGenes.B?.id === "piel_cristal" || eHiddenGenes.C?.id === "piel_cristal"
+            crystalSkin: eHiddenGenes.B?.id === "piel_cristal" || eHiddenGenes.C?.id === "piel_cristal",
+            ataquesDisponibles: ataquesEnemigo // Se le entregan los mismos slots que tienes tú
         };
     },
 
@@ -104,10 +113,14 @@ window.ColiseumLogic = {
         let anims = { atacanteGrita: true, danoDefensor: 0, critico: false, curacionAtacante: 0, danoReflejo: 0, multElem: 1 };
         let multDano = 1;
         
+        // ✨ NUEVO: MATEMÁTICAS PARA LOS DIFERENTES TIPOS DE ATAQUES
         if (accionElegida === "especial") {
-            this.cooldownEspecial = 3;
-            logs.push(`<span style="color:#e040fb">> ¡${atacante.nombre} usa un ATAQUE ESPECIAL!</span>`);
+            if(atacante.isPlayer) this.cooldownEspecial = 3;
+            logs.push(`<span style="color:#e040fb">> ¡${atacante.nombre} usa una TÉCNICA ESPECIAL!</span>`);
             multDano = 1.35; 
+        } else if (accionElegida === "definitivo") {
+            logs.push(`<span style="color:#ff0000; font-weight:bold; text-transform:uppercase;">> ¡${atacante.nombre} desata su ATAQUE DEFINITIVO!</span>`);
+            multDano = 2.00; // Doble de daño por usar el Slot 4
         }
 
         let ataques = 1;
@@ -126,8 +139,6 @@ window.ColiseumLogic = {
             atkBruto = atkBruto * multElem;
             anims.multElem = multElem;
 
-            // ✨ FIX 3: BALANCEO DE FÓRMULA DE DAÑO
-            // Para que un ataque básico no pegue 1, aseguramos un mínimo de 35% del ataque + 2 de daño fijo.
             let defRival = defensor.def;
             let dmgMinimo = (atkBruto * 0.35) + 2; 
             let dmg = Math.max(atkBruto - defRival, dmgMinimo);
