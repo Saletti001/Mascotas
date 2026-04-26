@@ -1,5 +1,5 @@
 // =========================================
-// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (V10.2 - MODAL ARREGLADO)
+// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (V10.3 - MODAL UNIFICADO ALMACÉN)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const badgePuntos = document.getElementById("stat-points-badge");
     const btnsAddStat = document.querySelectorAll(".btn-add-stat");
 
-    // Convertimos la función a global para que otras ventanas puedan llamarla
     window.verificarUmbralDespertar = function(g) {
         if (g.level >= 25 && window.tieneGenActivoV9 && window.tieneGenActivoV9(g, "umbral_despertar") && !g.umbralAplicado) {
             g.stats.hp += 5; g.stats.atk += 5; g.stats.def += 5; g.stats.spd += 5; g.stats.luk += 5;
@@ -26,10 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if(!g.xpNeeded) g.xpNeeded = 100;
         if(!g.stats) g.stats = { hp: 50, atk: 15, def: 10, spd: 15, luk: 15 };
         if(g.statPoints === undefined) g.statPoints = 0;
-
-        if (panelStats) {
-            panelStats.style.minWidth = "260px";
-        }
 
         const nameEl = document.getElementById("geno-name");
         if(nameEl) nameEl.innerText = g.name || "Geno";
@@ -94,7 +89,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const sspd = document.getElementById("stat-spd"); if(sspd) sspd.innerText = Math.floor(g.stats.spd);
         const sluk = document.getElementById("stat-luk"); if(sluk) sluk.innerText = Math.floor(g.stats.luk);
 
-        // UI DE GENES V9.0
         let structureContainer = document.getElementById("genetic-structure-container");
         
         if (!structureContainer) {
@@ -217,64 +211,35 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnCloseStats = document.getElementById("close-stats-btn");
     const btnScanner = document.getElementById("btn-use-scanner");
     const btnRename = document.getElementById("btn-rename-geno");
+    const statsBackdrop = document.getElementById("stats-modal-backdrop"); // ✨ Nuestro nuevo fondo unificado
 
-    // ✨ FIX UI: CREAR EL FONDO DIFUMINADO Y SACAR EL PANEL DE LA TRAMPA Z-INDEX
-    let statsBackdrop = document.getElementById("stats-backdrop");
-    if (!statsBackdrop) {
-        statsBackdrop = document.createElement("div");
-        statsBackdrop.id = "stats-backdrop";
-        statsBackdrop.style = "position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); z-index: 2500; display: none;";
-        document.body.appendChild(statsBackdrop);
-
-        // 🚀 EL FIX CLAVE: Movemos el panel fuera de su contenedor original al body para que no se oscurezca
-        if (panelStats) {
-            document.body.appendChild(panelStats);
-            panelStats.style.background = "#1a2a36"; // Le damos un fondo oscuro sólido
-            panelStats.style.border = "1px solid #4dd0e1";
-            panelStats.style.borderRadius = "12px";
-            panelStats.style.padding = "20px";
-        }
-
-        // Si el jugador toca fuera del panel (en lo oscuro), se cierra solo
-        statsBackdrop.addEventListener("click", () => {
-            panelStats.classList.add("hidden");
-            statsBackdrop.style.display = "none";
-        });
-    }
-
+    // ✨ CÓDIGO LIMPIO PARA ABRIR Y CERRAR EL MODAL
     if (btnStats) {
         btnStats.addEventListener("click", () => {
-            panelStats.classList.remove("hidden");
-            statsBackdrop.style.display = "block";
-            
-            // Transformamos el panel en un Modal Flotante Centrado Absoluto
-            panelStats.style.position = "fixed";
-            panelStats.style.top = "50%";
-            panelStats.style.left = "50%";
-            panelStats.style.transform = "translate(-50%, -50%)";
-            panelStats.style.zIndex = "2501"; // Obligatoriamente por encima del backdrop
-            panelStats.style.maxHeight = "85vh";
-            panelStats.style.width = "85%";
-            panelStats.style.maxWidth = "340px";
-            panelStats.style.overflowY = "auto";
-            panelStats.style.boxShadow = "0 10px 30px rgba(0,0,0,0.9), 0 0 15px rgba(77, 208, 225, 0.3)";
+            if (statsBackdrop) statsBackdrop.classList.remove("hidden");
         });
     }
 
     if (btnCloseStats) {
         btnCloseStats.addEventListener("click", () => {
-            panelStats.classList.add("hidden");
-            statsBackdrop.style.display = "none";
+            if (statsBackdrop) statsBackdrop.classList.add("hidden");
         });
     }
 
-    // Gancho de seguridad
+    if (statsBackdrop) {
+        statsBackdrop.addEventListener("click", (e) => {
+            if (e.target === statsBackdrop) {
+                statsBackdrop.classList.add("hidden");
+            }
+        });
+    }
+
+    // Gancho de seguridad de navegación
     if (!window.rpgNavHooked) {
         const originalNavegarA = window.navegarA;
         window.navegarA = function(id) {
             if (originalNavegarA) originalNavegarA(id);
-            if (panelStats) panelStats.classList.add("hidden");
-            if (statsBackdrop) statsBackdrop.style.display = "none";
+            if (statsBackdrop) statsBackdrop.classList.add("hidden");
         };
         window.rpgNavHooked = true;
     }
@@ -297,7 +262,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 setTimeout(() => {
                     window.actualizarPanelRPG();
-                    panelStats.style.boxShadow = "0 10px 30px rgba(0,0,0,0.9), 0 0 25px #8B5CF6";
                     if(window.guardarProgreso) window.guardarProgreso();
                 }, 800);
 
