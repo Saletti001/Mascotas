@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR V9.12 (FIX GRID Y TEXTOS LIMPIOS)
+// ColiseumManager.js - CONTROLADOR V9.12 (ESTABLE Y CONECTADO)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         ColiseumUI.configurarDOM();
+   
         ColiseumUI.limpiarLog();
         ColiseumUI.agregarLog(`<span style="color:#aaa;">> Conectando con los servidores del Coliseo...</span><br><span style="color:#4dd0e1">> Arena lista. Esperando combatientes.</span>`);
 
@@ -21,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let btnAtk = document.getElementById("btn-atk");
         if (btnAtk) btnAtk.onclick = () => procesarRonda("ataque");
-
+        
         let btnSpecial = document.getElementById("btn-special");
         if (btnSpecial) btnSpecial.onclick = () => procesarRonda("especial");
 
@@ -35,11 +36,10 @@ document.addEventListener("DOMContentLoaded", () => {
         let controls = document.getElementById("battle-controls");
         
         if(btnStart) btnStart.style.setProperty("display", "none", "important");
-        if(btnLeave) btnLeave.style.setProperty("display", "none", "important"); 
+        if(btnLeave) btnLeave.style.setProperty("display", "none", "important");
         
-        // AQUI ESTABA EL ERROR: Cambiado de "flex" a "grid" para que respete el 2x2
         if(controls) controls.style.setProperty("display", "grid", "important");
-
+        
         ColiseumUI.limpiarLog();
         ColiseumUI.agregarLog(`<span style="color:#4dd0e1">> INICIALIZANDO SECUENCIA DE COMBATE...</span>`);
         ColiseumUI.agregarLog(`<br><span style="color:#ffcc00; font-weight:bold;">--- BATTLE START ---</span>`);
@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function ejecutarAccionYAnimar(atacante, defensor, accionElegida) {
         if (atacante.hp <= 0 || defensor.hp <= 0) return;
-
+        
         if (accionElegida === "tactica") {
             ColiseumUI.agregarLog(`<span style="color:#26a69a">> ¡${atacante.nombre} aplica una TÁCTICA!</span>`);
             let cura = Math.floor(atacante.maxHp * 0.15); 
@@ -104,7 +104,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 ColiseumUI.animarDano(!atacante.isPlayer);
                 if (resultado.anims.critico) ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "CRITICAL!", "text-crit");
                 ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, `-${resultado.anims.danoDefensor}`, "text-dmg");
-                if(window.Sonidos) window.Sonidos.play("hit"); 
+                if(window.Sonidos) window.Sonidos.play("hit");
             }
 
             if (resultado.anims.curacionAtacante > 0) {
@@ -134,7 +134,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if(resE.anims.dmg > 0) { ColiseumUI.animarDano(false); ColiseumUI.mostrarTextoFlotante(false, `-${resE.anims.dmg}`, "text-dmg"); }
 
             ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
-
             if (ColiseumLogic.cooldownEspecial > 0) ColiseumLogic.cooldownEspecial--;
             ColiseumLogic.turno++;
             
@@ -181,7 +180,6 @@ document.addEventListener("DOMContentLoaded", () => {
         bloquearBotones(false);
         const btnSpecial = document.getElementById("btn-special");
         if (btnSpecial) {
-            // AQUI ESTABA EL OTRO ERROR: Se reescribian los iconos cada turno
             if (ColiseumLogic.cooldownEspecial > 0) {
                 btnSpecial.disabled = true;
                 btnSpecial.innerText = `ESPERA (${ColiseumLogic.cooldownEspecial})`;

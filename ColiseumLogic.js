@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V9.4 (TODAS LAS MECÁNICAS RESTAURADAS)
+// ColiseumLogic.js - MODELO MATEMÁTICO V10.0 (DEFENSA Y FÓRMULA V1.0 INTEGRADA)
 // =========================================
 
 window.ColiseumLogic = {
@@ -17,7 +17,11 @@ window.ColiseumLogic = {
     generarRivalProcedural: function(nivelJugador) {
         const rarezas = ["Común", "Raro", "Épico"];
         const eRareza = rarezas[Math.floor(Math.random() * rarezas.length)];
-        const eStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(eRareza) : {hp: 60, atk: 12, spd: 10, luk: 5};
+        
+        // Inyectamos un stat base en caso de fallo, pero usamos el generador que ya incluye DEF
+        const eStats = window.generarStatsPorRareza ? 
+            window.generarStatsPorRareza(eRareza) : {hp: 60, atk: 12, def: 8, spd: 10, luk: 5};
+            
         const elementos = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
         const eElemento = elementos[Math.floor(Math.random() * elementos.length)];
         
@@ -25,10 +29,10 @@ window.ColiseumLogic = {
         const colores = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77", "#ff9800", "#ffb347", "#a8e6cf"];
         const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry"];
         const opcionesBocas = typeof dicBocas !== 'undefined' ? Object.keys(dicBocas) : ["estandar", "feliz", "colmillos"];
-
+        
         let eHiddenGenes = {A: null, B: null, C: null};
         if (typeof window.generarGenesV9 === 'function') eHiddenGenes = window.generarGenesV9(eRareza);
-
+        
         const adn = { 
             id: 888, scanned: true, rarity: eRareza, stats: eStats, element: eElemento,
             body_shape: formas[Math.floor(Math.random() * formas.length)], 
@@ -37,27 +41,42 @@ window.ColiseumLogic = {
             mouth_type: opcionesBocas[Math.floor(Math.random() * opcionesBocas.length)], 
             wing_type: "ninguno", hat_type: "ninguno", hidden_genes: eHiddenGenes, level: nivelJugador
         };
-
+        
         this.enemy = {
             nombre: this.generarNombreAleatorio(), isPlayer: false, adn: adn,
-            maxHp: eStats.hp, hp: eStats.hp, atk: eStats.atk, spd: eStats.spd, luk: eStats.luk,
+            maxHp: eStats.hp, hp: eStats.hp, 
+            atk: eStats.atk, def: eStats.def || 5, spd: eStats.spd, luk: eStats.luk, // ✨ DEF Integrada
             element: eElemento, rareza: eRareza,
             genesId: [eHiddenGenes.B ? eHiddenGenes.B.id : "ninguno", eHiddenGenes.C ? eHiddenGenes.C.id : "ninguno"],
-            estados: [], escudoCibernetico: eElemento === "Cibernético", resilienciaUsada: false, barreraUsada: false, ultimoElementoRecibido: null, sangreFriaUsada: false, crystalSkin: eHiddenGenes.B?.id === "piel_cristal" || eHiddenGenes.C?.id === "piel_cristal"
+            estados: [], escudoCibernetico: eElemento === "Cibernético", resilienciaUsada: false, barreraUsada: false, 
+            ultimoElementoRecibido: null, sangreFriaUsada: false, 
+            crystalSkin: eHiddenGenes.B?.id === "piel_cristal" || eHiddenGenes.C?.id === "piel_cristal"
         };
     },
 
     prepararJugador: function(mascota) {
         const pElemento = (mascota.genes && mascota.genes.afinidad) ? mascota.genes.afinidad.dom : (mascota.element || "Normal");
-        const pStats = { hp: mascota.stats?.hp || 80, atk: mascota.stats?.atk || 15, spd: mascota.stats?.spd || 15, luk: mascota.stats?.luk || 10 };
+        
+        // ✨ LECTURA DEL STAT TOTAL (AMARILLO): mascota.stats lee el total con los puntos de nivel sumados
+        const pStats = { 
+            hp: mascota.stats?.hp || 80, 
+            atk: mascota.stats?.atk || 15, 
+            def: mascota.stats?.def || 5, // ✨ DEF Total Integrada
+            spd: mascota.stats?.spd || 15, 
+            luk: mascota.stats?.luk || 10 
+        };
+        
         let pGenB = mascota.hidden_genes?.B?.id || "ninguno";
         let pGenC = mascota.hidden_genes?.C?.id || "ninguno";
-
+        
         this.player = {
             nombre: mascota.name || "Tu Geno", isPlayer: true, adn: mascota,
-            maxHp: pStats.hp, hp: pStats.hp, atk: pStats.atk, spd: pStats.spd, luk: pStats.luk,
+            maxHp: pStats.hp, hp: pStats.hp, 
+            atk: pStats.atk, def: pStats.def, spd: pStats.spd, luk: pStats.luk, // ✨ Stats completos
             element: pElemento, rareza: mascota.rarity || "Común",
-            genesId: [pGenB, pGenC], estados: [], escudoCibernetico: pElemento === "Cibernético", resilienciaUsada: false, barreraUsada: false, ultimoElementoRecibido: null, sangreFriaUsada: false, crystalSkin: pGenB === "piel_cristal" || pGenC === "piel_cristal"
+            genesId: [pGenB, pGenC], estados: [], escudoCibernetico: pElemento === "Cibernético", 
+            resilienciaUsada: false, barreraUsada: false, ultimoElementoRecibido: null, sangreFriaUsada: false, 
+            crystalSkin: pGenB === "piel_cristal" || pGenC === "piel_cristal"
         };
         
         this.turno = 1;
@@ -67,12 +86,12 @@ window.ColiseumLogic = {
     ejecutarAtaqueCompleto: function(atacante, defensor, accionElegida) {
         let logs = [];
         let anims = { atacanteGrita: true, danoDefensor: 0, critico: false, curacionAtacante: 0, danoReflejo: 0, multElem: 1 };
-
         let multDano = 1;
+        
         if (accionElegida === "especial") {
             this.cooldownEspecial = 3;
             logs.push(`<span style="color:#e040fb">> ¡${atacante.nombre} usa un ATAQUE ESPECIAL!</span>`);
-            multDano = 1.5;
+            multDano = 1.35; // ✨ Multiplicador de potencia del Doc. V1.0
         }
 
         let ataques = 1;
@@ -83,39 +102,55 @@ window.ColiseumLogic = {
 
         for(let i=0; i<ataques; i++) {
             if (defensor.hp <= 0) break;
-
-            let dmg = Math.floor(atacante.atk * multDano * (i === 1 ? 0.5 : 1) * (0.85 + Math.random() * 0.3));
             
+            // 1. Cálculo de Fuerza Bruta Base (ATK * Multiplicador)
+            let atkBruto = atacante.atk * multDano * (i === 1 ? 0.5 : 1) * (0.85 + Math.random() * 0.3);
+
+            // 2. Multiplicador Elemental
             const ventajas = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
             let multElem = ventajas[atacante.element] === defensor.element ? 1.5 : (ventajas[defensor.element] === atacante.element ? 0.5 : 1.0);
-            dmg = Math.floor(dmg * multElem);
+            atkBruto = atkBruto * multElem;
             anims.multElem = multElem;
 
-            let probCrit = 0.05 + (atacante.luk * 0.002);
-            if (atacante.element === "Sintético") probCrit += 0.15;
-            let isCrit = Math.random() <= probCrit;
-            if (isCrit) dmg = Math.floor(dmg * 1.5);
-            if (isCrit) anims.critico = true;
+            // ✨ 3. FÓRMULA DEL DOCUMENTO TÉCNICO V1.0 (ATK vs DEF)
+            // "Daño = max(ATK - DEF, ATK x 0.25)"
+            let defRival = defensor.def;
+            let dmg = Math.max(atkBruto - defRival, atkBruto * 0.25);
+            dmg = Math.floor(dmg);
 
+            // 4. Cálculo de Crítico (Ignora parte de la defensa residual)
+            let probCrit = 0.05 + (atacante.luk * 0.002);
+            if (atacante.element === "Sintético") probCrit += 0.15; // Pasivo Sintético
+            let isCrit = Math.random() <= probCrit;
+            
+            if (isCrit) {
+                dmg = Math.floor(dmg * 1.5);
+                anims.critico = true;
+            }
+
+            // 5. Escudos y Pasivos de Combate
             if (defensor.escudoCibernetico) {
-                dmg = Math.floor(dmg * 0.60); defensor.escudoCibernetico = false;
-                logs.push(`<span style="color:#00d2ff">* [Escudo Cibernético] ${defensor.nombre} absorbe 40% del impacto.</span>`);
+                dmg = Math.floor(dmg * 0.60);
+                defensor.escudoCibernetico = false;
+                logs.push(`<span style="color:#00d2ff">* [Escudo Cibernético] ${defensor.nombre} absorbe el impacto inicial.</span>`);
             }
 
             if (defensor.genesId.includes("armadura_adaptativa")) {
                 if (defensor.ultimoElementoRecibido === atacante.element) {
                     dmg = Math.floor(dmg * 0.6);
-                    logs.push(`<span style="color:#77DD77">* [Armadura Adaptativa] ¡Resiste el ataque! (-40% Daño)</span>`);
+                    logs.push(`<span style="color:#77DD77">* [Armadura Adaptativa] ¡Resiste el ataque conocido! (-40% Daño)</span>`);
                 }
                 defensor.ultimoElementoRecibido = atacante.element;
             }
 
             if (defensor.crystalSkin) {
-                dmg = 0; defensor.crystalSkin = false;
+                dmg = 0;
+                defensor.crystalSkin = false;
                 logs.push(`<span style="color:#80deea">* [Piel de Cristal] ${defensor.nombre} absorbió el impacto (Daño: 0).</span>`);
             } else {
                 if (defensor.hp - dmg <= 0 && defensor.genesId.includes("barrera_limite") && !defensor.barreraUsada) {
-                    dmg = defensor.hp - 1; defensor.barreraUsada = true;
+                    dmg = defensor.hp - 1;
+                    defensor.barreraUsada = true;
                     logs.push(`<span style="color:#ff5722">* [Barrera Límite] ¡${defensor.nombre} sobrevive con 1 HP!</span>`);
                 }
 
@@ -124,7 +159,7 @@ window.ColiseumLogic = {
                 anims.danoDefensor += dmg;
 
                 let tipoGolpe = multElem === 1.5 ? ` <span style="color:#4CAF50; font-weight:bold;">(¡Súper Efectivo!)</span>` : (multElem === 0.5 ? ` <span style="color:#888; font-weight:bold;">(Poco efectivo...)</span>` : "");
-
+                
                 if (isCrit) logs.push(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${atacante.nombre} causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} de daño</span>.${tipoGolpe}`);
                 else logs.push(`> ${atacante.nombre} causa <span style="color:#ff6b6b">${dmg} de daño</span>.${tipoGolpe}`);
 
@@ -134,7 +169,7 @@ window.ColiseumLogic = {
                     if (atacante.element === "Radiactivo" && Math.random() <= 0.25) efectoAplicar = "Quemadura";
                     if (atacante.element === "Tóxico" && Math.random() <= 0.25) efectoAplicar = "Debilidad";
                     if (atacante.element === "Viral" && Math.random() <= 0.25) efectoAplicar = "Infección";
-
+                    
                     if (efectoAplicar) {
                         if (defensor.genesId.includes("sangre_fria") && !defensor.sangreFriaUsada) {
                             defensor.sangreFriaUsada = true;
