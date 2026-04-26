@@ -1,5 +1,5 @@
 // =========================================
-// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (MODAL SEGURO + STATS BASE/AÑADIDOS)
+// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (CALIDAD FIJA + TOTAL AMARILLO)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (g.level >= 25 && window.tieneGenActivoV9 && window.tieneGenActivoV9(g, "umbral_despertar") && !g.umbralAplicado) {
             g.stats.hp += 5; g.stats.atk += 5; g.stats.def += 5; g.stats.spd += 5; g.stats.luk += 5;
             
-            // Si el gen se despierta, esto se considera una mutación BASE, no puntos de nivel.
+            // Si el gen se despierta, esto se considera una mutación BASE.
             if(g.baseStats) {
                 g.baseStats.hp += 5; g.baseStats.atk += 5; g.baseStats.def += 5; g.baseStats.spd += 5; g.baseStats.luk += 5;
             }
@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if(!g.stats) g.stats = { hp: 50, atk: 15, def: 10, spd: 15, luk: 15 };
         if(g.statPoints === undefined) g.statPoints = 0;
 
-        // ✨ NUEVO: Guardar permanentemente los Stats Originales con los que nació
+        // Guardar permanentemente los Stats Originales (Base) con los que nació
         if(!g.baseStats) {
             g.baseStats = {
                 hp: g.stats.hp,
@@ -86,10 +86,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 const limites = (window.TABLA_IVS && window.TABLA_IVS[g.rarity]) ? window.TABLA_IVS[g.rarity] : { hp: [35, 55], atk: [10, 22], def: [5, 15], spd: [8, 25], luk: [5, 15] }; 
                 let tMin = limites.hp[0] + limites.atk[0] + limites.def[0] + limites.spd[0] + limites.luk[0];
                 let tMax = limites.hp[1] + limites.atk[1] + limites.def[1] + limites.spd[1] + limites.luk[1];
-                let puntosInvertidos = (g.level - 1) * 3;
                 let bonoUmbral = g.umbralAplicado ? 25 : 0; 
                 
-                // Usamos los Stats Base para medir la Calidad Pura (así no sube falsamente al subir de nivel)
+                // ✨ LA CALIDAD ES ESTRICTAMENTE FIJA BASADA EN EL NACIMIENTO (Ignoramos puntos dados)
                 let tObt = (g.baseStats.hp + g.baseStats.atk + g.baseStats.def + g.baseStats.spd + g.baseStats.luk) - bonoUmbral;
 
                 pct = Math.round(((tObt - tMin) / (tMax - tMin)) * 100);
@@ -103,15 +102,32 @@ document.addEventListener("DOMContentLoaded", () => {
             qualityBadge.style.textShadow = rango === "S" ? "0 0 10px rgba(255, 204, 0, 0.8)" : "none";
         }
 
-        // ✨ NUEVO: FUNCIÓN PARA PINTAR STAT BASE + PUNTOS AÑADIDOS
+        // ✨ LÓGICA DE DIBUJO: Formato 37 (+10) 47 (Amarillo)
         const drawStat = (statName) => {
             const baseEl = document.getElementById(`stat-${statName}-base`);
             const addedEl = document.getElementById(`stat-${statName}-added`);
-            if(baseEl && g.baseStats[statName] !== undefined) {
-                baseEl.innerText = Math.floor(g.baseStats[statName]);
-                if(addedEl) {
-                    const diff = g.stats[statName] - g.baseStats[statName];
-                    addedEl.innerText = diff > 0 ? `(+${Math.floor(diff)})` : '';
+            const totalEl = document.getElementById(`stat-${statName}-total`);
+            
+            if(baseEl && g.stats[statName] !== undefined) {
+                if(g.baseStats && g.baseStats[statName] !== undefined) {
+                    const baseVal = Math.floor(g.baseStats[statName]);
+                    const totalVal = Math.floor(g.stats[statName]);
+                    const diff = totalVal - baseVal;
+                    
+                    baseEl.innerText = baseVal; // SIEMPRE muestra el base aquí (fijo)
+                    
+                    if(diff > 0) {
+                        if(addedEl) addedEl.innerText = `(+${diff})`;
+                        if(totalEl) totalEl.innerText = `${totalVal}`;
+                    } else {
+                        if(addedEl) addedEl.innerText = '';
+                        if(totalEl) totalEl.innerText = '';
+                    }
+                } else {
+                    // Fallback de seguridad
+                    baseEl.innerText = Math.floor(g.stats[statName]);
+                    if(addedEl) addedEl.innerText = '';
+                    if(totalEl) totalEl.innerText = '';
                 }
             }
         };
@@ -276,7 +292,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (statsOverlay) {
         statsOverlay.addEventListener("click", (e) => {
-            // Cierra si tocan lo oscuro fuera de la tarjeta
             if (e.target === statsOverlay) {
                 statsOverlay.classList.add("hidden");
                 unblurFab();
@@ -284,7 +299,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Gancho de seguridad para la navegación
     if (!window.rpgNavHooked) {
         const originalNavegarA = window.navegarA;
         window.navegarA = function(id) {
