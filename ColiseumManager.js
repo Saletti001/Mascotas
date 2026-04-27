@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR V11.0 (TEXTOS DE BLOQUEO Y EVASIÓN)
+// ColiseumManager.js - CONTROLADOR V11.1 (ESCÁNER PERSONALIZADO CON NOMBRES)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -59,12 +59,17 @@ document.addEventListener("DOMContentLoaded", () => {
             else calidadEnemigo = prob > 0.7 ? "B" : (prob > 0.3 ? "C" : "D");
         }
 
-        ColiseumUI.agregarLog(`<span style="color:#b19cd9;">> 🧬 Escáner detecta Genética Rival: Calidad [${calidadEnemigo}].</span>`);
+        // ✨ FIX: Nombres personalizados inyectados directamente en el reporte de inicio
+        ColiseumUI.agregarLog(`<span style="color:#b19cd9;">> 🧬 Escáner detecta Genética de ${ColiseumLogic.cName(e)}: Calidad [${calidadEnemigo}].</span>`);
         const ventajas = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
 
-        if (ventajas[p.element] === e.element) ColiseumUI.agregarLog(`<span style="color:#4CAF50; font-weight:bold;">> ⚔️ Matchup: ¡VENTAJA! (${p.element} domina a ${e.element}). Harás +50% Daño.</span>`);
-        else if (ventajas[e.element] === p.element) ColiseumUI.agregarLog(`<span style="color:#ff5722; font-weight:bold;">> ⚠️ Matchup: ¡PELIGRO! (${e.element} domina a ${p.element}). Recibirás +50% Daño.</span>`);
-        else ColiseumUI.agregarLog(`<span style="color:#80deea;">> ⚖️ Matchup: Neutral (${p.element} vs ${e.element}). Terreno equilibrado.</span>`);
+        if (ventajas[p.element] === e.element) {
+            ColiseumUI.agregarLog(`<span style="color:#4CAF50; font-weight:bold;">> ⚔️ Matchup: ¡VENTAJA! El elemento de ${ColiseumLogic.cName(p)} (${p.element}) domina al de ${ColiseumLogic.cName(e)} (${e.element}). Harás +50% Daño.</span>`);
+        } else if (ventajas[e.element] === p.element) {
+            ColiseumUI.agregarLog(`<span style="color:#ff5722; font-weight:bold;">> ⚠️ Matchup: ¡PELIGRO! El elemento de ${ColiseumLogic.cName(e)} (${e.element}) domina al de ${ColiseumLogic.cName(p)} (${p.element}). Recibirás +50% Daño.</span>`);
+        } else {
+            ColiseumUI.agregarLog(`<span style="color:#80deea;">> ⚖️ Matchup: Neutral (${p.element} vs ${e.element}). Terreno equilibrado entre ${ColiseumLogic.cName(p)} y ${ColiseumLogic.cName(e)}.</span>`);
+        }
         ColiseumUI.agregarLog(`<br>`);
 
         ColiseumUI.actualizarGraficos(ColiseumLogic.player, ColiseumLogic.enemy);
@@ -130,14 +135,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 setTimeout(() => {
                     if (resultado.anims.atacanteGrita) ColiseumUI.animarAtaque(atacante.isPlayer, ataqueUsado, accionElegida);
                     
-                    // ✨ MAGIA: EVALUAMOS SI HAY DAÑO O SI SE BLOQUEÓ/EVADIÓ
                     if (golpe.dmg > 0) {
                         ColiseumUI.animarDano(!atacante.isPlayer, ataqueUsado, accionElegida);
-                        if (golpe.critico) ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "CRITICAL!", "text-crit");
+                        if (golpe.critico) ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "CRÍTICO!", "text-crit");
                         ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, `-${golpe.dmg}`, "text-dmg");
                         if(window.Sonidos) window.Sonidos.play("hit");
                     } else if (golpe.bloqueado) {
-                        ColiseumUI.animarSoporte(!atacante.isPlayer, {escudo: true}); // Animación de escudo
+                        ColiseumUI.animarSoporte(!atacante.isPlayer, {escudo: true}); 
                         ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "BLOCKED!", "text-block");
                     } else if (golpe.evadido) {
                         ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "EVADED!", "text-evade");
