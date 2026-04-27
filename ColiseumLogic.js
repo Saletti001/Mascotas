@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V13.5 (COMPLETO Y SIN CORTES)
+// ColiseumLogic.js - MODELO MATEMÁTICO V13.6 (LOG DE PASIVA BIOMUTANTE)
 // =========================================
 
 window.ColiseumLogic = {
@@ -395,6 +395,7 @@ window.ColiseumLogic = {
 
             let estadoAply = ataqueReal.aplicaEstado || ataqueReal.aplicaEstadoPropio;
             let target = ataqueReal.aplicaEstado ? defensor : atacante;
+            
             if (estadoAply && target.hp > 0) {
                 if (target.genesId.includes("sangre_fria") && !target.sangreFriaUsada) {
                     target.sangreFriaUsada = true;
@@ -443,6 +444,11 @@ window.ColiseumLogic = {
                     
                     logs.push(`<span style="color:#00bcd4">* ${this.cName(target)} sufre [${estadoAply}]${textoEfecto} por ${durEstado} turnos.</span>`);
                     
+                    // ✨ FIX: AÑADIDO LOG DE PASIVA BIOMUTANTE
+                    if (estadoAply === "Regeneracion" && target.element === "Biomutante") {
+                         logs.push(`<span style="color:#4CAF50">🌿 [Pasiva: Biomutante] ${this.cName(target)} activa regeneración natural.</span>`);
+                    }
+                    
                     if (atacante.genesId.includes("state_rush") && (estadoAply.includes("Veneno") || estadoAply.includes("Quemadura"))) {
                         logs.push(`<span style="color:#ffcc00">⚡ 🧬 [Gen Oculto: Acel. de Estado] ¡El estado surte efecto de inmediato!</span>`);
                         let estadoDmg = Math.floor(target.maxHp * (estadoAply.includes("Veneno") ? 0.05 : 0.06)) + 2;
@@ -487,6 +493,8 @@ window.ColiseumLogic = {
         if (fighter.element === "Biomutante" && fighter.hp < fighter.maxHp) {
             let regen = Math.floor(fighter.maxHp * 0.06) + 2;
             fighter.hp = Math.min(fighter.maxHp, fighter.hp + regen); anims.heal += regen;
+            // ✨ FIX: AÑADIDO EL LOG DE LA PASIVA
+            logs.push(`<span style="color:#4CAF50">🌿 [Pasivo: Biomutante] ${this.cName(fighter)} regenera ${regen} HP.</span>`);
         }
 
         if (fighter.estados.includes("Regeneracion")) {
