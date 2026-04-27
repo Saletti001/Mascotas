@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V13.3 (DOBLE DADO PARA ACCESORIOS MÚLTIPLES)
+// ColiseumLogic.js - MODELO MATEMÁTICO V13.4 (SINERGIAS Y CONTRAATAQUES ACTIVADOS)
 // =========================================
 
 window.ColiseumLogic = {
@@ -67,7 +67,6 @@ window.ColiseumLogic = {
         const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry", "cibernetico", "alien", "ojeras"];
         const opcionesBocas = typeof dicBocas !== 'undefined' ? Object.keys(dicBocas) : ["estandar", "feliz", "colmillos", "abierta", "sorpresa", "lengua"];
         
-        // ✨ NUEVO: MOTOR DE 4 ACCESORIOS CON DADO EN CADENA
         const opcionesSombreros = typeof dicSombreros !== 'undefined' ? Object.keys(dicSombreros).filter(k => k !== "ninguno") : ["gorra", "corona", "casco", "cinta"];
         const opcionesAlas = typeof dicAlas !== 'undefined' ? Object.keys(dicAlas).filter(k => k !== "ninguno") : ["alas_angel", "alas_murcielago", "jetpack", "capa"];
         const opcionesGafas = typeof dicGafas !== 'undefined' ? Object.keys(dicGafas).filter(k => k !== "ninguno") : ["lentes", "parche", "visor", "monoculo"];
@@ -77,17 +76,13 @@ window.ColiseumLogic = {
         let cantidadAccesorios = 0;
 
         if (Math.random() < probBase) {
-            cantidadAccesorios = 1; // Ya tiene 1 seguro por pasar el dado base
-            
-            // Segundo dado para cantidad extra, la probabilidad va cayendo en cascada
+            cantidadAccesorios = 1;
             let probExtra = probBase * 0.6; 
             if (Math.random() < probExtra) {
                 cantidadAccesorios = 2;
                 if (Math.random() < (probExtra * 0.5)) { 
                     cantidadAccesorios = 3;
-                    if (Math.random() < (probExtra * 0.25)) { 
-                        cantidadAccesorios = 4; // Bote total, los 4 accesorios equipados
-                    }
+                    if (Math.random() < (probExtra * 0.25)) cantidadAccesorios = 4; 
                 }
             }
         }
@@ -95,9 +90,7 @@ window.ColiseumLogic = {
         let eHat = "ninguno", eWing = "ninguno", eGlasses = "ninguno", eExtra = "ninguno";
         
         if (cantidadAccesorios > 0) {
-            // Mezclamos los 4 slots disponibles y tomamos solo los que nos ganamos en el dado
             let slotsDisponibles = ["hat", "wing", "glasses", "extra"].sort(() => 0.5 - Math.random()).slice(0, cantidadAccesorios);
-            
             if (slotsDisponibles.includes("hat") && opcionesSombreros.length > 0) eHat = opcionesSombreros[Math.floor(Math.random() * opcionesSombreros.length)];
             if (slotsDisponibles.includes("wing") && opcionesAlas.length > 0) eWing = opcionesAlas[Math.floor(Math.random() * opcionesAlas.length)];
             if (slotsDisponibles.includes("glasses") && opcionesGafas.length > 0) eGlasses = opcionesGafas[Math.floor(Math.random() * opcionesGafas.length)];
@@ -111,7 +104,7 @@ window.ColiseumLogic = {
             id: 888, scanned: true, rarity: eRareza, stats: eStats, element: eElemento,
             body_shape: formas[Math.floor(Math.random() * formas.length)], color: colores[Math.floor(Math.random() * colores.length)],
             eye_type: opcionesOjos[Math.floor(Math.random() * opcionesOjos.length)], mouth_type: opcionesBocas[Math.floor(Math.random() * opcionesBocas.length)], 
-            wing_type: eWing, hat_type: eHat, glasses_type: eGlasses, extra_type: eExtra, // Se envían los 4 slots al renderizador SVG
+            wing_type: eWing, hat_type: eHat, glasses_type: eGlasses, extra_type: eExtra,
             hidden_genes: eHiddenGenes, level: nivelJugador
         };
 
@@ -135,6 +128,9 @@ window.ColiseumLogic = {
             escudoCibernetico: eElemento === "Cibernético", 
             crystalSkin: gB === "piel_cristal" || gC === "piel_cristal",
             decoyUsado: false, coreArUsado: false, rachaGolpes: 0, adaptativaStacks: 0, ultimoElementoRecibido: null,
+            
+            // ✨ FIX: Memoria de daño para poder contrarrestar
+            danoRecibidoEsteTurno: 0, danoRecibidoTurnoAnterior: 0, proxVenenoDoble: false,
             ataquesEquipados: enemyAtaques
         };
     },
@@ -164,6 +160,9 @@ window.ColiseumLogic = {
             escudoCibernetico: pElemento === "Cibernético", 
             crystalSkin: pGenB === "piel_cristal" || pGenC === "piel_cristal",
             decoyUsado: false, coreArUsado: false, rachaGolpes: 0, adaptativaStacks: 0, ultimoElementoRecibido: null,
+            
+            // ✨ FIX: Memoria de daño para poder contrarrestar
+            danoRecibidoEsteTurno: 0, danoRecibidoTurnoAnterior: 0, proxVenenoDoble: false,
             ataquesEquipados: playerAtaques
         };
         this.turno = 1;
@@ -200,8 +199,50 @@ window.ColiseumLogic = {
             if(ataqueReal.descripcion) logs.push(`<span style="color:#80cbc4; font-style:italic;">* Efecto: ${ataqueReal.descripcion}</span>`);
         }
 
-        let potenciaAtaque = ataqueReal.potencia || (ataqueReal.potenciaBase ? ataqueReal.potenciaBase * 100 : 0);
-        if (potenciaAtaque > 0 && potenciaAtaque < 10) potenciaAtaque = potenciaAtaque * 100; 
+        // ✨ MOTOR DE SINERGIAS Y CONDICIONES (Activa los bonificadores de tu documento)
+        let potenciaAtaque = ataqueReal.potencia || 0;
+
+        if (ataqueReal.escalaConHP) {
+            let pctHP = atacante.hp / atacante.maxHp;
+            if (pctHP > 0.70) potenciaAtaque += Math.floor((pctHP - 0.70) * 100);
+        }
+        if (ataqueReal.bonusPorEstado) {
+            potenciaAtaque += (defensor.estados.length * ataqueReal.bonusPorEstado);
+        }
+        if (ataqueReal.requiereEstado && defensor.estados.includes(ataqueReal.requiereEstado)) {
+            potenciaAtaque *= (ataqueReal.bonusMultiplicador || 1);
+        }
+        if (ataqueReal.bonusContraEstado && defensor.estados.includes(ataqueReal.bonusContraEstado)) {
+            potenciaAtaque *= (ataqueReal.multiplier || 1);
+        }
+        if (ataqueReal.bonusSiPrimero && (atacante.spd >= defensor.spd)) {
+            potenciaAtaque = ataqueReal.bonusSiPrimero;
+        }
+        if (ataqueReal.duplicaSiguienteVeneno) {
+            atacante.proxVenenoDoble = true;
+        }
+
+        // ✨ ATAQUES REACTIVOS ("Contrarrestar" ahora funciona)
+        if (ataqueReal.reactivo) {
+            let danoPrevio = atacante.danoRecibidoEsteTurno > 0 ? atacante.danoRecibidoEsteTurno : (atacante.danoRecibidoTurnoAnterior || 0);
+            let dmgDevuelto = Math.floor(danoPrevio * ataqueReal.reactivo);
+            
+            if (dmgDevuelto > 0) {
+                defensor.hp = Math.max(0, defensor.hp - dmgDevuelto);
+                anims.danoDefensor += dmgDevuelto;
+                anims.detalleGolpes.push({ dmg: dmgDevuelto, critico: false, bloqueado: false, evadido: false });
+                logs.push(`> ⚡ [Contrarrestar] ¡${this.cName(atacante)} devuelve el impacto y causa <span style="color:#ff6b6b; font-weight:bold;">${dmgDevuelto} de daño puro</span>!`);
+
+                if (atacante.genesId.includes("vampirismo_genetico")) {
+                    let roboVida = Math.max(1, Math.floor(dmgDevuelto * 0.15));
+                    atacante.hp = Math.min(atacante.maxHp, atacante.hp + roboVida);
+                    anims.curacionAtacante += roboVida;
+                    logs.push(`<span style="color:#e0b0ff">🦇 🧬 [Gen Oculto: Vampirismo] ${this.cName(atacante)} recupera ${roboVida} HP.</span>`);
+                }
+            } else {
+                logs.push(`<span style="color:#888;">> ...pero ${this.cName(atacante)} no había recibido daño reciente. ¡El contraataque falla!</span>`);
+            }
+        }
 
         if (ataqueReal.curacion) {
             let cura = Math.floor(atacante.maxHp * ataqueReal.curacion);
@@ -283,6 +324,7 @@ window.ColiseumLogic = {
                     defensor.hp = Math.max(0, defensor.hp - dmg);
                     anims.danoDefensor += dmg;
                     golpeActual.dmg = dmg;
+                    defensor.danoRecibidoEsteTurno += dmg; // ✨ AQUÍ GUARDAMOS MEMORIA PARA CONTRARRESTAR
 
                     if (atacante.genesId.includes("def_brk")) {
                         atacante.rachaGolpes++;
@@ -364,9 +406,18 @@ window.ColiseumLogic = {
                     logs.push(`<span style="color:#00d2ff">❄️ 🧬 [Gen Oculto: Sangre Fría] ¡${this.cName(target)} bloquea el estado!</span>`);
                     anims.detalleGolpes.push({dmg: 0, bloqueado: true});
                 } else if (!target.estados.includes(estadoAply)) {
-                    target.estados.push(estadoAply);
                     let configEstado = window.AttackCatalog && window.AttackCatalog.estados ? window.AttackCatalog.estados[estadoAply] : null;
                     let durEstado = configEstado ? configEstado.duracionBase : 3;
+
+                    // ✨ Concentrar Veneno ahora activa y gasta su beneficio
+                    if (atacante.proxVenenoDoble && (estadoAply === "Veneno" || estadoAply === "Veneno Fuerte")) {
+                        estadoAply = "Veneno Fuerte";
+                        durEstado *= 2;
+                        atacante.proxVenenoDoble = false;
+                        logs.push(`<span style="color:#9c27b0">🧪 ¡El Veneno fue concentrado con doble intensidad y duración!</span>`);
+                    }
+
+                    target.estados.push(estadoAply);
                     target.efectosActivos.push({ nombre: estadoAply, stat: "estado", valor: estadoAply, turnos: durEstado, isNuevo: true });
                     
                     const descEstados = {
@@ -380,11 +431,12 @@ window.ColiseumLogic = {
                     
                     logs.push(`<span style="color:#00bcd4">* ${this.cName(target)} sufre [${estadoAply}]${textoEfecto} por ${durEstado} turnos.</span>`);
                     
-                    if (atacante.genesId.includes("state_rush") && (estadoAply === "Veneno" || estadoAply === "Quemadura")) {
+                    if (atacante.genesId.includes("state_rush") && (estadoAply.includes("Veneno") || estadoAply.includes("Quemadura"))) {
                         logs.push(`<span style="color:#ffcc00">⚡ 🧬 [Gen Oculto: Acel. de Estado] ¡El estado surte efecto de inmediato!</span>`);
-                        let estadoDmg = Math.floor(target.maxHp * (estadoAply === "Veneno" ? 0.05 : 0.06)) + 2;
+                        let estadoDmg = Math.floor(target.maxHp * (estadoAply.includes("Veneno") ? 0.05 : 0.06)) + 2;
                         target.hp = Math.max(0, target.hp - estadoDmg);
                         anims.danoDefensor += estadoDmg;
+                        target.danoRecibidoEsteTurno += estadoDmg;
                     }
                 }
             }
@@ -395,6 +447,10 @@ window.ColiseumLogic = {
     procesarEfectosFinTurno: function(fighter) {
         let logs = []; let anims = { heal: 0, dmg: 0 };
         if (fighter.hp <= 0) return { logs, anims };
+
+        // ✨ Traslada la memoria de daño al final del turno para poder "Contrarrestar"
+        fighter.danoRecibidoTurnoAnterior = fighter.danoRecibidoEsteTurno || 0;
+        fighter.danoRecibidoEsteTurno = 0;
 
         for (let i = fighter.efectosActivos.length - 1; i >= 0; i--) {
             let ef = fighter.efectosActivos[i];
