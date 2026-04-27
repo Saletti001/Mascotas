@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V13.6 (LOG DE PASIVA BIOMUTANTE)
+// ColiseumLogic.js - MODELO MATEMÁTICO V13.7 (LIGAS POR RAREZA Y FIX ELEMENTAL)
 // =========================================
 
 window.ColiseumLogic = {
@@ -44,13 +44,21 @@ window.ColiseumLogic = {
     },
 
     generarRivalProcedural: function(nivelJugador) {
-        let eRareza = "Común"; let roll = Math.random();
-        let poderJugador = 100; 
-        if (this.player) poderJugador = this.player.maxHp + this.player.atk + this.player.def + this.player.spd + this.player.luk;
+        let roll = Math.random();
+        let eRareza = "Común"; 
+        
+        // ✨ FIX: LIGAS SEPARADAS POR RAREZA (Basado en el documento)
+        let pRareza = this.player ? (this.player.rareza || this.player.rarity || "Común") : "Común";
 
-        if (poderJugador < 130) eRareza = roll < 0.85 ? "Común" : "Raro"; 
-        else if (poderJugador < 170) eRareza = roll < 0.60 ? "Común" : (roll < 0.90 ? "Raro" : "Épico"); 
-        else eRareza = roll < 0.30 ? "Raro" : (roll < 0.70 ? "Épico" : "Legendario"); 
+        if (pRareza === "Común") {
+            eRareza = roll < 0.85 ? "Común" : "Raro"; // 85% Común, 15% Raro (Jefe difícil)
+        } else if (pRareza === "Raro") {
+            eRareza = roll < 0.25 ? "Común" : (roll < 0.85 ? "Raro" : "Épico");
+        } else if (pRareza === "Épico") {
+            eRareza = roll < 0.30 ? "Raro" : (roll < 0.85 ? "Épico" : "Legendario");
+        } else if (pRareza === "Legendario" || pRareza === "Mítico") {
+            eRareza = roll < 0.40 ? "Épico" : "Legendario";
+        }
         
         const eStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(eRareza) : {hp: 60, atk: 12, def: 8, spd: 10, luk: 5};
         let puntosExtra = (nivelJugador > 1) ? (nivelJugador - 1) * 3 : 0;
@@ -259,7 +267,18 @@ window.ColiseumLogic = {
                 let golpeActual = { dmg: 0, critico: false, bloqueado: false, evadido: false };
 
                 let atkBruto = atacante.atk * (potenciaAtaque / 75) * (0.85 + Math.random() * 0.3);
-                const ventajas = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
+                
+                // ✨ FIX: CICLO ELEMENTAL CORREGIDO (Según Documento de Diseño)
+                // Biomutante > Sintético > Tóxico > Radiactivo > Cibernético > Viral > Biomutante
+                const ventajas = { 
+                    "Biomutante": "Sintético", 
+                    "Sintético": "Tóxico", 
+                    "Tóxico": "Radiactivo", 
+                    "Radiactivo": "Cibernético", 
+                    "Cibernético": "Viral", 
+                    "Viral": "Biomutante" 
+                };
+                
                 let multElem = ventajas[ataqueReal.elemento] === defensor.element ? 1.5 : (ventajas[defensor.element] === ataqueReal.elemento ? 0.5 : 1.0);
                 atkBruto = atkBruto * multElem;
                 anims.multElem = multElem;
@@ -444,7 +463,6 @@ window.ColiseumLogic = {
                     
                     logs.push(`<span style="color:#00bcd4">* ${this.cName(target)} sufre [${estadoAply}]${textoEfecto} por ${durEstado} turnos.</span>`);
                     
-                    // ✨ FIX: AÑADIDO LOG DE PASIVA BIOMUTANTE
                     if (estadoAply === "Regeneracion" && target.element === "Biomutante") {
                          logs.push(`<span style="color:#4CAF50">🌿 [Pasiva: Biomutante] ${this.cName(target)} activa regeneración natural.</span>`);
                     }
@@ -493,7 +511,6 @@ window.ColiseumLogic = {
         if (fighter.element === "Biomutante" && fighter.hp < fighter.maxHp) {
             let regen = Math.floor(fighter.maxHp * 0.06) + 2;
             fighter.hp = Math.min(fighter.maxHp, fighter.hp + regen); anims.heal += regen;
-            // ✨ FIX: AÑADIDO EL LOG DE LA PASIVA
             logs.push(`<span style="color:#4CAF50">🌿 [Pasivo: Biomutante] ${this.cName(fighter)} regenera ${regen} HP.</span>`);
         }
 
