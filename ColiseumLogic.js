@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V13.4 (SINERGIAS Y CONTRAATAQUES ACTIVADOS)
+// ColiseumLogic.js - MODELO MATEMÁTICO V13.5 (ESTADOS Y DEBUFFS ACTIVADOS)
 // =========================================
 
 window.ColiseumLogic = {
@@ -88,7 +88,6 @@ window.ColiseumLogic = {
         }
 
         let eHat = "ninguno", eWing = "ninguno", eGlasses = "ninguno", eExtra = "ninguno";
-        
         if (cantidadAccesorios > 0) {
             let slotsDisponibles = ["hat", "wing", "glasses", "extra"].sort(() => 0.5 - Math.random()).slice(0, cantidadAccesorios);
             if (slotsDisponibles.includes("hat") && opcionesSombreros.length > 0) eHat = opcionesSombreros[Math.floor(Math.random() * opcionesSombreros.length)];
@@ -128,8 +127,6 @@ window.ColiseumLogic = {
             escudoCibernetico: eElemento === "Cibernético", 
             crystalSkin: gB === "piel_cristal" || gC === "piel_cristal",
             decoyUsado: false, coreArUsado: false, rachaGolpes: 0, adaptativaStacks: 0, ultimoElementoRecibido: null,
-            
-            // ✨ FIX: Memoria de daño para poder contrarrestar
             danoRecibidoEsteTurno: 0, danoRecibidoTurnoAnterior: 0, proxVenenoDoble: false,
             ataquesEquipados: enemyAtaques
         };
@@ -160,8 +157,6 @@ window.ColiseumLogic = {
             escudoCibernetico: pElemento === "Cibernético", 
             crystalSkin: pGenB === "piel_cristal" || pGenC === "piel_cristal",
             decoyUsado: false, coreArUsado: false, rachaGolpes: 0, adaptativaStacks: 0, ultimoElementoRecibido: null,
-            
-            // ✨ FIX: Memoria de daño para poder contrarrestar
             danoRecibidoEsteTurno: 0, danoRecibidoTurnoAnterior: 0, proxVenenoDoble: false,
             ataquesEquipados: playerAtaques
         };
@@ -199,7 +194,6 @@ window.ColiseumLogic = {
             if(ataqueReal.descripcion) logs.push(`<span style="color:#80cbc4; font-style:italic;">* Efecto: ${ataqueReal.descripcion}</span>`);
         }
 
-        // ✨ MOTOR DE SINERGIAS Y CONDICIONES (Activa los bonificadores de tu documento)
         let potenciaAtaque = ataqueReal.potencia || 0;
 
         if (ataqueReal.escalaConHP) {
@@ -222,7 +216,6 @@ window.ColiseumLogic = {
             atacante.proxVenenoDoble = true;
         }
 
-        // ✨ ATAQUES REACTIVOS ("Contrarrestar" ahora funciona)
         if (ataqueReal.reactivo) {
             let danoPrevio = atacante.danoRecibidoEsteTurno > 0 ? atacante.danoRecibidoEsteTurno : (atacante.danoRecibidoTurnoAnterior || 0);
             let dmgDevuelto = Math.floor(danoPrevio * ataqueReal.reactivo);
@@ -243,6 +236,8 @@ window.ColiseumLogic = {
                 logs.push(`<span style="color:#888;">> ...pero ${this.cName(atacante)} no había recibido daño reciente. ¡El contraataque falla!</span>`);
             }
         }
+
+        if (potenciaAtaque > 0 && potenciaAtaque < 10) potenciaAtaque = potenciaAtaque * 100; 
 
         if (ataqueReal.curacion) {
             let cura = Math.floor(atacante.maxHp * ataqueReal.curacion);
@@ -324,7 +319,7 @@ window.ColiseumLogic = {
                     defensor.hp = Math.max(0, defensor.hp - dmg);
                     anims.danoDefensor += dmg;
                     golpeActual.dmg = dmg;
-                    defensor.danoRecibidoEsteTurno += dmg; // ✨ AQUÍ GUARDAMOS MEMORIA PARA CONTRARRESTAR
+                    defensor.danoRecibidoEsteTurno += dmg;
 
                     if (atacante.genesId.includes("def_brk")) {
                         atacante.rachaGolpes++;
@@ -409,7 +404,6 @@ window.ColiseumLogic = {
                     let configEstado = window.AttackCatalog && window.AttackCatalog.estados ? window.AttackCatalog.estados[estadoAply] : null;
                     let durEstado = configEstado ? configEstado.duracionBase : 3;
 
-                    // ✨ Concentrar Veneno ahora activa y gasta su beneficio
                     if (atacante.proxVenenoDoble && (estadoAply === "Veneno" || estadoAply === "Veneno Fuerte")) {
                         estadoAply = "Veneno Fuerte";
                         durEstado *= 2;
@@ -420,6 +414,25 @@ window.ColiseumLogic = {
                     target.estados.push(estadoAply);
                     target.efectosActivos.push({ nombre: estadoAply, stat: "estado", valor: estadoAply, turnos: durEstado, isNuevo: true });
                     
+                    // ✨ LÓGICA DE EXTRACCIÓN DE ESTADÍSTICAS POR ESTADOS
+                    if (configEstado) {
+                        if (configEstado.efecto === "baja_atk" || configEstado.efecto === "baja_atk_permanente") {
+                            let val = Math.floor(target.baseAtk * configEstado.valor);
+                            target.atk = Math.max(1, target.atk - val);
+                            if (configEstado.efecto !== "baja_atk_permanente") target.efectosActivos.push({ nombre: estadoAply + " (-ATK)", stat: "atk", valor: -val, turnos: durEstado, isNuevo: true });
+                        } else if (configEstado.efecto === "baja_spd" || configEstado.efecto === "baja_spd_bloquea") {
+                            let val = Math.floor(target.baseSpd * configEstado.valor);
+                            target.spd = Math.max(1, target.spd - val);
+                            target.efectosActivos.push({ nombre: estadoAply + " (-SPD)", stat: "spd", valor: -val, turnos: durEstado, isNuevo: true });
+                        } else if (configEstado.efecto === "baja_stat_random") {
+                            let pos = ["atk", "def", "spd"]; let s = pos[Math.floor(Math.random() * pos.length)];
+                            let base = s === "atk" ? target.baseAtk : (s === "def" ? target.baseDef : target.baseSpd);
+                            let val = Math.floor(base * configEstado.valor);
+                            target[s] = Math.max(1, target[s] - val);
+                            target.efectosActivos.push({ nombre: estadoAply + " (-"+s.toUpperCase()+")", stat: s, valor: -val, turnos: durEstado, isNuevo: true });
+                        }
+                    }
+
                     const descEstados = {
                         "Regeneracion": "Cura HP cada turno", "Infeccion": "Baja un stat al azar", "Quemadura": "Pierde HP cada turno",
                         "Quemadura Critica": "Pierde mucho HP cada turno", "Veneno": "Pierde HP (Acumulable)", "Veneno Fuerte": "Pierde mucho HP cada turno",
@@ -448,7 +461,6 @@ window.ColiseumLogic = {
         let logs = []; let anims = { heal: 0, dmg: 0 };
         if (fighter.hp <= 0) return { logs, anims };
 
-        // ✨ Traslada la memoria de daño al final del turno para poder "Contrarrestar"
         fighter.danoRecibidoTurnoAnterior = fighter.danoRecibidoEsteTurno || 0;
         fighter.danoRecibidoEsteTurno = 0;
 
@@ -465,37 +477,4 @@ window.ColiseumLogic = {
                         logs.push(`<span style="color:#888;">> ⏳ El estado [${ef.nombre}] sobre ${this.cName(fighter)} se disipó.</span>`);
                     } else if (ef.stat) {
                         fighter[ef.stat] -= ef.valor;
-                        let accion = ef.valor > 0 ? "terminó" : "se recuperó";
-                        logs.push(`<span style="color:#888;">> ⏳ El efecto de [${ef.nombre}] ${accion} en ${this.cName(fighter)}. Sus stats vuelven a la normalidad.</span>`);
-                    }
-                    fighter.efectosActivos.splice(i, 1);
-                }
-            }
-        }
-        
-        if (fighter.element === "Biomutante" && fighter.hp < fighter.maxHp) {
-            let regen = Math.floor(fighter.maxHp * 0.06) + 2;
-            fighter.hp = Math.min(fighter.maxHp, fighter.hp + regen); anims.heal += regen;
-        }
-        
-        if (fighter.estados.includes("Sobrecarga") || fighter.estados.includes("Sobrecarga del Sistema") || fighter.estados.includes("Sobrecarga del sistema")) {
-            let sobreDmg = Math.floor(fighter.maxHp * 0.08) + 1; 
-            fighter.hp = Math.max(0, fighter.hp - sobreDmg);
-            logs.push(`<span style="color:#ff3d00">⚡ [Sobrecarga] ${this.cName(fighter)} pierde ${sobreDmg} HP por el esfuerzo.</span>`); 
-            anims.dmg += sobreDmg;
-        }
-        
-        if (fighter.estados.includes("Quemadura")) {
-            let burnDmg = Math.floor(fighter.maxHp * 0.06) + 2;
-            fighter.hp = Math.max(0, fighter.hp - burnDmg);
-            logs.push(`<span style="color:#ff9800">🔥 [Quemadura] ${this.cName(fighter)} pierde ${burnDmg} HP.</span>`); anims.dmg += burnDmg;
-        }
-        if (fighter.estados.includes("Veneno") || fighter.estados.includes("Veneno Fuerte")) {
-            let venDmg = Math.floor(fighter.maxHp * (fighter.estados.includes("Veneno Fuerte") ? 0.08 : 0.05)) + 2;
-            fighter.hp = Math.max(0, fighter.hp - venDmg);
-            logs.push(`<span style="color:#9c27b0">☠️ [Veneno] ${this.cName(fighter)} pierde ${venDmg} HP.</span>`); anims.dmg += venDmg;
-        }
-        
-        return { logs, anims };
-    }
-};
+                        let accion = ef.valor > 0 ? "terminó"

@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR V11.1 (ESCÁNER PERSONALIZADO CON NOMBRES)
+// ColiseumManager.js - CONTROLADOR V11.2 (SOPORTE PARA ANIMACIÓN REACTIVA)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -59,7 +59,6 @@ document.addEventListener("DOMContentLoaded", () => {
             else calidadEnemigo = prob > 0.7 ? "B" : (prob > 0.3 ? "C" : "D");
         }
 
-        // ✨ FIX: Nombres personalizados inyectados directamente en el reporte de inicio
         ColiseumUI.agregarLog(`<span style="color:#b19cd9;">> 🧬 Escáner detecta Genética de ${ColiseumLogic.cName(e)}: Calidad [${calidadEnemigo}].</span>`);
         const ventajas = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
 
@@ -124,16 +123,16 @@ document.addEventListener("DOMContentLoaded", () => {
         
         resultado.logs.forEach(log => ColiseumUI.agregarLog(log));
 
-        let potenciaEfectiva = 0;
-        if (ataqueUsado) {
-            potenciaEfectiva = ataqueUsado.potencia || (ataqueUsado.potenciaBase ? ataqueUsado.potenciaBase * 100 : 0);
-            if (potenciaEfectiva > 0 && potenciaEfectiva < 10) potenciaEfectiva *= 100;
-        }
+        // ✨ FIX: Motor capaz de detectar "daño oculto/reactivo" (como Contrarrestar) aunque la potencia base sea 0
+        let hayGolpesDirectos = resultado.anims.detalleGolpes && resultado.anims.detalleGolpes.length > 0;
 
-        if (potenciaEfectiva > 0 && resultado.anims.detalleGolpes && resultado.anims.detalleGolpes.length > 0) {
+        if (hayGolpesDirectos) {
             resultado.anims.detalleGolpes.forEach((golpe, idx) => {
                 setTimeout(() => {
-                    if (resultado.anims.atacanteGrita) ColiseumUI.animarAtaque(atacante.isPlayer, ataqueUsado, accionElegida);
+                    // Si hizo daño puro/reactivo (o daño normal), forzamos la animación de ataque
+                    if (resultado.anims.atacanteGrita || golpe.dmg > 0) {
+                        ColiseumUI.animarAtaque(atacante.isPlayer, ataqueUsado, accionElegida);
+                    }
                     
                     if (golpe.dmg > 0) {
                         ColiseumUI.animarDano(!atacante.isPlayer, ataqueUsado, accionElegida);
@@ -150,7 +149,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
                 }, idx * 400);
             });
-        } else if (potenciaEfectiva === 0 && ataqueUsado) {
+        } else if (ataqueUsado) {
+            // No hizo ningún tipo de daño, debe ser solo Buffs, Debuffs o Curación
             ColiseumUI.animarSoporte(atacante.isPlayer, ataqueUsado);
         }
         
