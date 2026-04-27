@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V13.2 (DESCRIPCIÓN DE ESTADOS EN LOG)
+// ColiseumLogic.js - MODELO MATEMÁTICO V13.3 (DOBLE DADO PARA ACCESORIOS MÚLTIPLES)
 // =========================================
 
 window.ColiseumLogic = {
@@ -67,6 +67,43 @@ window.ColiseumLogic = {
         const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry", "cibernetico", "alien", "ojeras"];
         const opcionesBocas = typeof dicBocas !== 'undefined' ? Object.keys(dicBocas) : ["estandar", "feliz", "colmillos", "abierta", "sorpresa", "lengua"];
         
+        // ✨ NUEVO: MOTOR DE 4 ACCESORIOS CON DADO EN CADENA
+        const opcionesSombreros = typeof dicSombreros !== 'undefined' ? Object.keys(dicSombreros).filter(k => k !== "ninguno") : ["gorra", "corona", "casco", "cinta"];
+        const opcionesAlas = typeof dicAlas !== 'undefined' ? Object.keys(dicAlas).filter(k => k !== "ninguno") : ["alas_angel", "alas_murcielago", "jetpack", "capa"];
+        const opcionesGafas = typeof dicGafas !== 'undefined' ? Object.keys(dicGafas).filter(k => k !== "ninguno") : ["lentes", "parche", "visor", "monoculo"];
+        const opcionesExtras = typeof dicExtras !== 'undefined' ? Object.keys(dicExtras).filter(k => k !== "ninguno") : ["bufanda", "collar", "auriculares", "corbata"];
+
+        let probBase = eRareza === "Legendario" ? 0.85 : (eRareza === "Épico" ? 0.65 : (eRareza === "Raro" ? 0.40 : 0.15));
+        let cantidadAccesorios = 0;
+
+        if (Math.random() < probBase) {
+            cantidadAccesorios = 1; // Ya tiene 1 seguro por pasar el dado base
+            
+            // Segundo dado para cantidad extra, la probabilidad va cayendo en cascada
+            let probExtra = probBase * 0.6; 
+            if (Math.random() < probExtra) {
+                cantidadAccesorios = 2;
+                if (Math.random() < (probExtra * 0.5)) { 
+                    cantidadAccesorios = 3;
+                    if (Math.random() < (probExtra * 0.25)) { 
+                        cantidadAccesorios = 4; // Bote total, los 4 accesorios equipados
+                    }
+                }
+            }
+        }
+
+        let eHat = "ninguno", eWing = "ninguno", eGlasses = "ninguno", eExtra = "ninguno";
+        
+        if (cantidadAccesorios > 0) {
+            // Mezclamos los 4 slots disponibles y tomamos solo los que nos ganamos en el dado
+            let slotsDisponibles = ["hat", "wing", "glasses", "extra"].sort(() => 0.5 - Math.random()).slice(0, cantidadAccesorios);
+            
+            if (slotsDisponibles.includes("hat") && opcionesSombreros.length > 0) eHat = opcionesSombreros[Math.floor(Math.random() * opcionesSombreros.length)];
+            if (slotsDisponibles.includes("wing") && opcionesAlas.length > 0) eWing = opcionesAlas[Math.floor(Math.random() * opcionesAlas.length)];
+            if (slotsDisponibles.includes("glasses") && opcionesGafas.length > 0) eGlasses = opcionesGafas[Math.floor(Math.random() * opcionesGafas.length)];
+            if (slotsDisponibles.includes("extra") && opcionesExtras.length > 0) eExtra = opcionesExtras[Math.floor(Math.random() * opcionesExtras.length)];
+        }
+
         let eHiddenGenes = {A: null, B: null, C: null};
         if (typeof window.generarGenesV9 === 'function') eHiddenGenes = window.generarGenesV9(eRareza);
         
@@ -74,7 +111,8 @@ window.ColiseumLogic = {
             id: 888, scanned: true, rarity: eRareza, stats: eStats, element: eElemento,
             body_shape: formas[Math.floor(Math.random() * formas.length)], color: colores[Math.floor(Math.random() * colores.length)],
             eye_type: opcionesOjos[Math.floor(Math.random() * opcionesOjos.length)], mouth_type: opcionesBocas[Math.floor(Math.random() * opcionesBocas.length)], 
-            wing_type: "ninguno", hat_type: "ninguno", hidden_genes: eHiddenGenes, level: nivelJugador
+            wing_type: eWing, hat_type: eHat, glasses_type: eGlasses, extra_type: eExtra, // Se envían los 4 slots al renderizador SVG
+            hidden_genes: eHiddenGenes, level: nivelJugador
         };
 
         let pAtks = window.miMascota && window.miMascota.ataques ? window.miMascota.ataques : {};
@@ -320,7 +358,6 @@ window.ColiseumLogic = {
 
             let estadoAply = ataqueReal.aplicaEstado || ataqueReal.aplicaEstadoPropio;
             let target = ataqueReal.aplicaEstado ? defensor : atacante;
-            
             if (estadoAply && target.hp > 0) {
                 if (target.genesId.includes("sangre_fria") && !target.sangreFriaUsada) {
                     target.sangreFriaUsada = true;
@@ -332,7 +369,6 @@ window.ColiseumLogic = {
                     let durEstado = configEstado ? configEstado.duracionBase : 3;
                     target.efectosActivos.push({ nombre: estadoAply, stat: "estado", valor: estadoAply, turnos: durEstado, isNuevo: true });
                     
-                    // ✨ NUEVO: DICCIONARIO DE DESCRIPCIONES DE ESTADOS EN EL LOG
                     const descEstados = {
                         "Regeneracion": "Cura HP cada turno", "Infeccion": "Baja un stat al azar", "Quemadura": "Pierde HP cada turno",
                         "Quemadura Critica": "Pierde mucho HP cada turno", "Veneno": "Pierde HP (Acumulable)", "Veneno Fuerte": "Pierde mucho HP cada turno",
