@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V13.5 (ESTADOS Y DEBUFFS ACTIVADOS)
+// ColiseumLogic.js - MODELO MATEMÁTICO V13.5 (COMPLETO Y SIN CORTES)
 // =========================================
 
 window.ColiseumLogic = {
@@ -414,7 +414,6 @@ window.ColiseumLogic = {
                     target.estados.push(estadoAply);
                     target.efectosActivos.push({ nombre: estadoAply, stat: "estado", valor: estadoAply, turnos: durEstado, isNuevo: true });
                     
-                    // ✨ LÓGICA DE EXTRACCIÓN DE ESTADÍSTICAS POR ESTADOS
                     if (configEstado) {
                         if (configEstado.efecto === "baja_atk" || configEstado.efecto === "baja_atk_permanente") {
                             let val = Math.floor(target.baseAtk * configEstado.valor);
@@ -477,4 +476,50 @@ window.ColiseumLogic = {
                         logs.push(`<span style="color:#888;">> ⏳ El estado [${ef.nombre}] sobre ${this.cName(fighter)} se disipó.</span>`);
                     } else if (ef.stat) {
                         fighter[ef.stat] -= ef.valor;
-                        let accion = ef.valor > 0 ? "terminó"
+                        let accion = ef.valor > 0 ? "terminó" : "se recuperó";
+                        logs.push(`<span style="color:#888;">> ⏳ El efecto de [${ef.nombre}] ${accion} en ${this.cName(fighter)}. Sus stats vuelven a la normalidad.</span>`);
+                    }
+                    fighter.efectosActivos.splice(i, 1);
+                }
+            }
+        }
+        
+        if (fighter.element === "Biomutante" && fighter.hp < fighter.maxHp) {
+            let regen = Math.floor(fighter.maxHp * 0.06) + 2;
+            fighter.hp = Math.min(fighter.maxHp, fighter.hp + regen); anims.heal += regen;
+        }
+
+        if (fighter.estados.includes("Regeneracion")) {
+            let healDmg = Math.floor(fighter.maxHp * 0.15) + 1;
+            fighter.hp = Math.min(fighter.maxHp, fighter.hp + healDmg);
+            logs.push(`<span style="color:#4CAF50">✨ [Regeneración] ${this.cName(fighter)} recupera ${healDmg} HP.</span>`); 
+            anims.heal += healDmg;
+        }
+        if (fighter.estados.includes("Campo Radiactivo")) {
+            let radDmg = Math.floor(fighter.maxHp * 0.05) + 1;
+            fighter.hp = Math.max(0, fighter.hp - radDmg);
+            logs.push(`<span style="color:#b2ff59">☢️ [Campo Radiactivo] ${this.cName(fighter)} pierde ${radDmg} HP.</span>`); 
+            anims.dmg += radDmg;
+        }
+        
+        if (fighter.estados.includes("Sobrecarga") || fighter.estados.includes("Sobrecarga del Sistema") || fighter.estados.includes("Sobrecarga del sistema")) {
+            let sobreDmg = Math.floor(fighter.maxHp * 0.08) + 1; 
+            fighter.hp = Math.max(0, fighter.hp - sobreDmg);
+            logs.push(`<span style="color:#ff3d00">⚡ [Sobrecarga] ${this.cName(fighter)} pierde ${sobreDmg} HP por el esfuerzo.</span>`); 
+            anims.dmg += sobreDmg;
+        }
+        
+        if (fighter.estados.includes("Quemadura")) {
+            let burnDmg = Math.floor(fighter.maxHp * 0.06) + 2;
+            fighter.hp = Math.max(0, fighter.hp - burnDmg);
+            logs.push(`<span style="color:#ff9800">🔥 [Quemadura] ${this.cName(fighter)} pierde ${burnDmg} HP.</span>`); anims.dmg += burnDmg;
+        }
+        if (fighter.estados.includes("Veneno") || fighter.estados.includes("Veneno Fuerte")) {
+            let venDmg = Math.floor(fighter.maxHp * (fighter.estados.includes("Veneno Fuerte") ? 0.08 : 0.05)) + 2;
+            fighter.hp = Math.max(0, fighter.hp - venDmg);
+            logs.push(`<span style="color:#9c27b0">☠️ [Veneno] ${this.cName(fighter)} pierde ${venDmg} HP.</span>`); anims.dmg += venDmg;
+        }
+        
+        return { logs, anims };
+    }
+};
