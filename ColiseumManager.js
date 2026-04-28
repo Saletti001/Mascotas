@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR V11.2 (SOPORTE PARA ANIMACIÓN REACTIVA)
+// ColiseumManager.js - CONTROLADOR V11.4 (SOPORTE DE BANDEJA DE ESTADOS)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         ColiseumUI.configurarDOM();
+    
         ColiseumUI.limpiarLog();
         ColiseumUI.agregarLog(`<span style="color:#aaa;">> Conectando con los servidores del Coliseo...</span><br><span style="color:#4dd0e1">> Arena lista. Esperando combatientes.</span>`);
 
@@ -30,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function iniciarPelea() {
         let btnStart = document.getElementById("btn-start-battle");
-        let btnLeave = document.getElementById("btn-leave-battle"); 
+        let btnLeave = document.getElementById("btn-leave-battle");
         let controls = document.getElementById("battle-controls");
         
         if(btnStart) btnStart.style.setProperty("display", "none", "important");
@@ -61,7 +62,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         ColiseumUI.agregarLog(`<span style="color:#b19cd9;">> 🧬 Escáner detecta Genética de ${ColiseumLogic.cName(e)}: Calidad [${calidadEnemigo}].</span>`);
         const ventajas = { "Biomutante": "Sintético", "Sintético": "Tóxico", "Tóxico": "Radiactivo", "Radiactivo": "Cibernético", "Cibernético": "Viral", "Viral": "Biomutante" };
-
         if (ventajas[p.element] === e.element) {
             ColiseumUI.agregarLog(`<span style="color:#4CAF50; font-weight:bold;">> ⚔️ Matchup: ¡VENTAJA! Tus ataques ${p.element} harán +35% de Daño a ${ColiseumLogic.cName(e)}, y los suyos te harán -25%.</span>`);
         } else if (ventajas[e.element] === p.element) {
@@ -73,6 +73,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
         ColiseumUI.actualizarGraficos(ColiseumLogic.player, ColiseumLogic.enemy);
         ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
+        
+        // ✨ FIX: Inicializar la bandeja de estados vacía al empezar
+        ColiseumUI.actualizarEstados(ColiseumLogic.player, ColiseumLogic.enemy);
+        
         actualizarBotones();
     }
 
@@ -103,13 +107,12 @@ document.addEventListener("DOMContentLoaded", () => {
         let accion2 = playerGoesFirst ? accionEnemigo : accionJugador;
 
         ejecutarAccionYAnimar(ejecutor1, ejecutor2, accion1);
-        
         if (ejecutor2.hp > 0) {
             setTimeout(() => {
                 ColiseumUI.agregarLog(`<span style="color:#555;">&nbsp;&nbsp;♦ ♦ ♦</span>`); 
                 ejecutarAccionYAnimar(ejecutor2, ejecutor1, accion2);
                 setTimeout(() => { finalizarRonda(); }, 1500);
-            }, 1500); 
+            }, 1500);
         } else {
             setTimeout(() => { finalizarRonda(); }, 1500);
         }
@@ -117,36 +120,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function ejecutarAccionYAnimar(atacante, defensor, accionElegida) {
         if (atacante.hp <= 0 || defensor.hp <= 0) return;
-        
         const ataqueUsado = atacante.ataquesEquipados[accionElegida];
         const resultado = ColiseumLogic.ejecutarAtaqueCompleto(atacante, defensor, accionElegida);
         
         resultado.logs.forEach(log => ColiseumUI.agregarLog(log));
-
-        // ✨ FIX: Motor capaz de detectar "daño oculto/reactivo" (como Contrarrestar) aunque la potencia base sea 0
         let hayGolpesDirectos = resultado.anims.detalleGolpes && resultado.anims.detalleGolpes.length > 0;
-
+        
         if (hayGolpesDirectos) {
             resultado.anims.detalleGolpes.forEach((golpe, idx) => {
                 setTimeout(() => {
                     // Si hizo daño puro/reactivo (o daño normal), forzamos la animación de ataque
                     if (resultado.anims.atacanteGrita || golpe.dmg > 0) {
-                        ColiseumUI.animarAtaque(atacante.isPlayer, ataqueUsado, accionElegida);
+                         ColiseumUI.animarAtaque(atacante.isPlayer, ataqueUsado, accionElegida);
                     }
                     
                     if (golpe.dmg > 0) {
-                        ColiseumUI.animarDano(!atacante.isPlayer, ataqueUsado, accionElegida);
+                         ColiseumUI.animarDano(!atacante.isPlayer, ataqueUsado, accionElegida);
                         if (golpe.critico) ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "CRÍTICO!", "text-crit");
                         ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, `-${golpe.dmg}`, "text-dmg");
                         if(window.Sonidos) window.Sonidos.play("hit");
-                    } else if (golpe.bloqueado) {
-                        ColiseumUI.animarSoporte(!atacante.isPlayer, {escudo: true}); 
+            
+                     } else if (golpe.bloqueado) {
+                        ColiseumUI.animarSoporte(!atacante.isPlayer, {escudo: true});
                         ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "BLOCKED!", "text-block");
                     } else if (golpe.evadido) {
                         ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "EVADED!", "text-evade");
                     }
 
                     ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
+                    // ✨ FIX: Actualizar los estados inmediatamente al sufrir un impacto
+                    ColiseumUI.actualizarEstados(ColiseumLogic.player, ColiseumLogic.enemy);
                 }, idx * 400);
             });
         } else if (ataqueUsado) {
@@ -166,18 +169,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let resP = ColiseumLogic.procesarEfectosFinTurno(p);
         let resE = ColiseumLogic.procesarEfectosFinTurno(e);
-        let huboEfectos = resP.logs.length > 0 || resE.logs.length > 0;
+        let huboEfectos = resP.logs.length > 0 ||
+        resE.logs.length > 0;
 
         if (huboEfectos) {
             ColiseumUI.agregarLog(`<span style="color:#777; font-style:italic;">[Efectos y Condiciones]</span>`);
-            
             resP.logs.forEach(l => ColiseumUI.agregarLog(l));
-            if(resP.anims.heal > 0) { ColiseumUI.animarCuracion(true); ColiseumUI.mostrarTextoFlotante(true, `+${resP.anims.heal}`, "text-heal"); }
-            if(resP.anims.dmg > 0) { ColiseumUI.animarDano(true); ColiseumUI.mostrarTextoFlotante(true, `-${resP.anims.dmg}`, "text-dmg"); }
+            if(resP.anims.heal > 0) { ColiseumUI.animarCuracion(true); ColiseumUI.mostrarTextoFlotante(true, `+${resP.anims.heal}`, "text-heal");
+            }
+            if(resP.anims.dmg > 0) { ColiseumUI.animarDano(true); ColiseumUI.mostrarTextoFlotante(true, `-${resP.anims.dmg}`, "text-dmg");
+            }
 
             resE.logs.forEach(l => ColiseumUI.agregarLog(l));
-            if(resE.anims.heal > 0) { ColiseumUI.animarCuracion(false); ColiseumUI.mostrarTextoFlotante(false, `+${resE.anims.heal}`, "text-heal"); }
-            if(resE.anims.dmg > 0) { ColiseumUI.animarDano(false); ColiseumUI.mostrarTextoFlotante(false, `-${resE.anims.dmg}`, "text-dmg"); }
+            if(resE.anims.heal > 0) { ColiseumUI.animarCuracion(false);
+            ColiseumUI.mostrarTextoFlotante(false, `+${resE.anims.heal}`, "text-heal"); }
+            if(resE.anims.dmg > 0) { ColiseumUI.animarDano(false);
+            ColiseumUI.mostrarTextoFlotante(false, `-${resE.anims.dmg}`, "text-dmg"); }
         }
 
         if (p.cooldowns.especial > 0) p.cooldowns.especial--;
@@ -189,10 +196,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (e.cooldowns.definitivo > 0) e.cooldowns.definitivo--;
 
         ColiseumUI.actualizarHP(p, e);
+        
+        // ✨ FIX: Refrescar la bandeja al limpiar los estados expirados
+        ColiseumUI.actualizarEstados(p, e);
+        
         ColiseumLogic.turno++;
         
         let pausaFinal = huboEfectos ? 1100 : 400;
-
         setTimeout(() => {
             if (p.hp <= 0 || e.hp <= 0) terminarCombate();
             else actualizarBotones();
@@ -202,7 +212,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function terminarCombate() {
         bloquearBotones(true);
         ColiseumUI.agregarLog(`<br><span style="color:#ffcc00; font-size: 16px; font-weight: bold;">--- FIN DEL COMBATE ---</span>`);
-        
         if (ColiseumLogic.player.hp > 0) {
             ColiseumUI.agregarLog(`<span style="color:#4CAF50">🏆 ¡VICTORIA!</span>`, "#ffd54f");
             const xpGanada = 50 + (ColiseumLogic.player.adn.level * 10);
@@ -218,7 +227,8 @@ document.addEventListener("DOMContentLoaded", () => {
             let btnLeave = document.getElementById("btn-leave-battle"); 
             
             if(controls) controls.style.setProperty("display", "none", "important");
-            if(btnStart) { btnStart.style.setProperty("display", "block", "important"); btnStart.innerText = "Buscar otro rival"; }
+            if(btnStart) { btnStart.style.setProperty("display", "block", "important"); 
+            btnStart.innerText = "Buscar otro rival"; }
             if(btnLeave) btnLeave.style.setProperty("display", "block", "important"); 
         }, 1000);
     }
@@ -257,6 +267,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if(btn && btn.innerText !== "VACÍO" && !btn.innerText.includes("NV. 25")) {
                 btn.disabled = bloquear;
             }
+        
         });
     }
 });
