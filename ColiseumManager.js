@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR V11.7 (BARRAS DE VIDA SECUENCIALES)
+// ColiseumManager.js - CONTROLADOR V11.8 (FIX BARRAS DE VIDA CLONADAS)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -124,7 +124,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function ejecutarAccionYAnimar(atacante, defensor, accionElegida) {
         if (atacante.hp <= 0 || defensor.hp <= 0) return 0;
         
-        // ✨ FIX VISUAL: Guardamos la vida actual antes de ejecutar las matemáticas
         let hpVisualAtacante = atacante.hp;
         let hpVisualDefensor = defensor.hp;
 
@@ -151,10 +150,8 @@ document.addEventListener("DOMContentLoaded", () => {
                         ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, `-${golpe.dmg}`, "text-dmg");
                         if(window.Sonidos) window.Sonidos.play("hit");
 
-                        // ✨ FIX VISUAL: Restamos la vida golpe a golpe simulando el daño progresivo
                         hpVisualDefensor = Math.max(0, hpVisualDefensor - golpe.dmg);
                         
-                        // Si hay robo de vida progresivo, lo sumamos al visual
                         if (atacante.genesId.includes("vampirismo_genetico")) {
                             let robo = Math.max(1, Math.floor(golpe.dmg * 0.15));
                             hpVisualAtacante = Math.min(atacante.maxHp, hpVisualAtacante + robo);
@@ -166,9 +163,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "EVADED!", "text-evade");
                     }
 
-                    // ✨ FIX VISUAL: Creamos clones "falsos" con la vida transitoria solo para que la UI los dibuje
+                    // ✨ LA SOLUCIÓN: Separamos las condiciones para asegurar que cada carta recibe la información correcta.
                     let pFalso = atacante.isPlayer ? { ...atacante, hp: hpVisualAtacante } : { ...defensor, hp: hpVisualDefensor };
-                    let eFalso = defensor.isPlayer ? { ...defensor, hp: hpVisualDefensor } : { ...atacante, hp: hpVisualAtacante };
+                    let eFalso = atacante.isPlayer ? { ...defensor, hp: hpVisualDefensor } : { ...atacante, hp: hpVisualAtacante };
+                    
                     ColiseumUI.actualizarHP(pFalso, eFalso);
 
                     if (typeof ColiseumUI.actualizarEstados === 'function') {
@@ -184,7 +182,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
         
-        // Final catch-up para curaciones completas o desajustes menores al terminar la secuencia de ataque
         setTimeout(() => {
             if (resultado.anims.curacionAtacante > 0) {
                 ColiseumUI.animarCuracion(atacante.isPlayer);
