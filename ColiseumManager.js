@@ -60,12 +60,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         ColiseumUI.agregarLog(`<span style="color:#b19cd9;">> 🧬 Escáner detecta Genética de ${ColiseumLogic.cName(e)}: Calidad [${calidadEnemigo}].</span>`);
-        const ventajas = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
+        const ventajas = { "Biomutante": "Sintético", "Sintético": "Tóxico", "Tóxico": "Radiactivo", "Radiactivo": "Cibernético", "Cibernético": "Viral", "Viral": "Biomutante" };
 
         if (ventajas[p.element] === e.element) {
-            ColiseumUI.agregarLog(`<span style="color:#4CAF50; font-weight:bold;">> ⚔️ Matchup: ¡VENTAJA! El elemento de ${ColiseumLogic.cName(p)} (${p.element}) domina al de ${ColiseumLogic.cName(e)} (${e.element}). Harás +50% Daño.</span>`);
+            ColiseumUI.agregarLog(`<span style="color:#4CAF50; font-weight:bold;">> ⚔️ Matchup: ¡VENTAJA! Tus ataques ${p.element} harán +35% de Daño a ${ColiseumLogic.cName(e)}, y los suyos te harán -25%.</span>`);
         } else if (ventajas[e.element] === p.element) {
-            ColiseumUI.agregarLog(`<span style="color:#ff5722; font-weight:bold;">> ⚠️ Matchup: ¡PELIGRO! El elemento de ${ColiseumLogic.cName(e)} (${e.element}) domina al de ${ColiseumLogic.cName(p)} (${p.element}). Recibirás +50% Daño.</span>`);
+            ColiseumUI.agregarLog(`<span style="color:#ff5722; font-weight:bold;">> ⚠️ Matchup: ¡PELIGRO! Los ataques ${e.element} de ${ColiseumLogic.cName(e)} te harán +35% de Daño, y los tuyos harán -25%.</span>`);
         } else {
             ColiseumUI.agregarLog(`<span style="color:#80deea;">> ⚖️ Matchup: Neutral (${p.element} vs ${e.element}). Terreno equilibrado entre ${ColiseumLogic.cName(p)} y ${ColiseumLogic.cName(e)}.</span>`);
         }

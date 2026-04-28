@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V13.7 (LIGAS POR RAREZA Y FIX ELEMENTAL)
+// ColiseumLogic.js - MODELO MATEMÁTICO V13.9 (AFINIDAD Y BALANCE 1.35x/0.75x)
 // =========================================
 
 window.ColiseumLogic = {
@@ -46,12 +46,10 @@ window.ColiseumLogic = {
     generarRivalProcedural: function(nivelJugador) {
         let roll = Math.random();
         let eRareza = "Común"; 
-        
-        // ✨ FIX: LIGAS SEPARADAS POR RAREZA (Basado en el documento)
         let pRareza = this.player ? (this.player.rareza || this.player.rarity || "Común") : "Común";
 
         if (pRareza === "Común") {
-            eRareza = roll < 0.85 ? "Común" : "Raro"; // 85% Común, 15% Raro (Jefe difícil)
+            eRareza = roll < 0.85 ? "Común" : "Raro"; 
         } else if (pRareza === "Raro") {
             eRareza = roll < 0.25 ? "Común" : (roll < 0.85 ? "Raro" : "Épico");
         } else if (pRareza === "Épico") {
@@ -268,19 +266,18 @@ window.ColiseumLogic = {
 
                 let atkBruto = atacante.atk * (potenciaAtaque / 75) * (0.85 + Math.random() * 0.3);
                 
-                // ✨ FIX: CICLO ELEMENTAL CORREGIDO (Según Documento de Diseño)
-                // Biomutante > Sintético > Tóxico > Radiactivo > Cibernético > Viral > Biomutante
                 const ventajas = { 
-                    "Biomutante": "Sintético", 
-                    "Sintético": "Tóxico", 
-                    "Tóxico": "Radiactivo", 
-                    "Radiactivo": "Cibernético", 
-                    "Cibernético": "Viral", 
-                    "Viral": "Biomutante" 
+                    "Biomutante": "Sintético", "Sintético": "Tóxico", "Tóxico": "Radiactivo", 
+                    "Radiactivo": "Cibernético", "Cibernético": "Viral", "Viral": "Biomutante" 
                 };
                 
-                let multElem = ventajas[ataqueReal.elemento] === defensor.element ? 1.5 : (ventajas[defensor.element] === ataqueReal.elemento ? 0.5 : 1.0);
-                atkBruto = atkBruto * multElem;
+                // ✨ FIX: Multiplicador del ATAQUE vs DEFENSOR a 1.35 / 0.75
+                let multElem = ventajas[ataqueReal.elemento] === defensor.element ? 1.35 : (ventajas[defensor.element] === ataqueReal.elemento ? 0.75 : 1.0);
+                
+                // ✨ NUEVO: Bonus STAB (Same Type Attack Bonus)
+                let stab = atacante.element === ataqueReal.elemento ? 1.20 : 1.0;
+
+                atkBruto = atkBruto * multElem * stab;
                 anims.multElem = multElem;
 
                 let defRival = defensor.def;
@@ -356,9 +353,11 @@ window.ColiseumLogic = {
                         logs.push(`<span style="color:#ff3333">💢 🧬 [Gen Oculto: Retroalimentación] ${this.cName(defensor)} recibe +15% ATK por el gran impacto!</span>`);
                     }
 
-                    let tipoGolpe = multElem === 1.5 ? ` <span style="color:#4CAF50; font-weight:bold;">(¡Súper Efectivo!)</span>` : (multElem === 0.5 ? ` <span style="color:#888; font-weight:bold;">(Poco efectivo...)</span>` : "");
-                    if (isCrit) logs.push(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${this.cName(atacante)} causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} de daño</span>.${tipoGolpe}`);
-                    else logs.push(`> ${this.cName(atacante)} causa <span style="color:#ff6b6b">${dmg} de daño</span>.${tipoGolpe}`);
+                    let tipoGolpe = multElem === 1.35 ? ` <span style="color:#4CAF50; font-weight:bold;">(¡Súper Efectivo!)</span>` : (multElem === 0.75 ? ` <span style="color:#888; font-weight:bold;">(Poco efectivo...)</span>` : "");
+                    let textoStab = (stab > 1.0) ? ` <span style="color:#ce93d8; font-size:10px;">[+Afinidad]</span>` : "";
+
+                    if (isCrit) logs.push(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${this.cName(atacante)} causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} de daño</span>.${tipoGolpe}${textoStab}`);
+                    else logs.push(`> ${this.cName(atacante)} causa <span style="color:#ff6b6b">${dmg} de daño</span>.${tipoGolpe}${textoStab}`);
 
                     if (atacante.genesId.includes("vampirismo_genetico") && dmg > 0) {
                         let roboVida = Math.max(1, Math.floor(dmg * 0.15));
