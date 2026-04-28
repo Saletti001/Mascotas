@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR V11.9 (SECUENCIA DE EFECTOS FIN DE TURNO)
+// ColiseumManager.js - CONTROLADOR V11.10 (ANIMACIÓN DE DEBUFFS)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -175,6 +175,15 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         } else if (ataqueUsado) {
             ColiseumUI.animarSoporte(atacante.isPlayer, ataqueUsado);
+            
+            // ✨ FIX VISUAL: Si la táctica aplica un estado o perjudica al rival, lo hacemos temblar
+            if (ataqueUsado.aplicaEstado || ataqueUsado.debuffAtk || ataqueUsado.debuffSpd || ataqueUsado.nombre === "Campo Radioactivo") {
+                setTimeout(() => {
+                    ColiseumUI.animarDano(!atacante.isPlayer, ataqueUsado, accionElegida);
+                }, 300);
+                tiempoAnimacion = 1000; 
+            }
+
             ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
             if (typeof ColiseumUI.actualizarEstados === 'function') {
                 ColiseumUI.actualizarEstados(ColiseumLogic.player, ColiseumLogic.enemy);
@@ -192,12 +201,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return tiempoAnimacion; 
     }
 
-    // ✨ FIX: SECUENCIA ORDENADA DE EFECTOS FIN DE TURNO (CURACIÓN -> ESPERA -> DAÑO)
     function finalizarRonda() {
         const p = ColiseumLogic.player;
         const e = ColiseumLogic.enemy;
 
-        // Guardamos la vida visual actual antes de ejecutar las matemáticas de fondo
         let hpVisualP = p.hp;
         let hpVisualE = e.hp;
 
@@ -217,9 +224,8 @@ document.addEventListener("DOMContentLoaded", () => {
             let dmgP = resP.anims.dmg > 0;
             let dmgE = resE.anims.dmg > 0;
 
-            // 1. Mostrar curaciones (Regeneración)
             if (healP || healE) {
-                delayDmg = 800; // Si hubo curación, el daño esperará 800ms
+                delayDmg = 800; 
                 setTimeout(() => {
                     if (healP) {
                         ColiseumUI.animarCuracion(true);
@@ -238,7 +244,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 }, 100);
             }
 
-            // 2. Mostrar daños (Veneno, Campo Radiactivo) tras la espera
             if (dmgP || dmgE) {
                 setTimeout(() => {
                     if (dmgP) {
@@ -267,11 +272,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (e.cooldowns.tactica > 0) e.cooldowns.tactica--;
         if (e.cooldowns.definitivo > 0) e.cooldowns.definitivo--;
 
-        // Calculamos el tiempo total que duró toda esta animación
         let tiempoTotalEfectos = huboEfectos ? (100 + delayDmg + 800) : 400;
 
         setTimeout(() => {
-            // Sincronización final matemática y refresco de estado
             ColiseumUI.actualizarHP(p, e);
             
             if (typeof ColiseumUI.actualizarEstados === 'function') {
