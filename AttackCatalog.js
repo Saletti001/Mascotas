@@ -38,7 +38,9 @@ window.AttackCatalog = {
                 { id: "frenesia_organica", nombre: "Frenesía Orgánica", slot: 3, potencia: 0, buffAtk: 0.35, duracion: 3, restriccion: "no_soporte", precision: 100, usos: 1, descripcion: "ATK +35% durante 3 turnos." } // [cite: 189, 192]
             ],
             definitivos: [
-                { id: "gran_regeneracion", nombre: "Gran Regeneración", slot: 4, potencia: 0, curacion: 0.35, aplicaEstadoPropio: "Regeneracion", precision: 100, usos: 1, descripcion: "Cura 35% y da Regeneración extrema." } // [cite: 193, 196]
+                { id: "gran_regeneracion", nombre: "Gran Regeneración", slot: 4, potencia: 60, curacion: 0.50, precision: 100, usos: 1, descripcion: "Causa daño y cura el 50% de tu HP Máximo." },
+                { id: "ira_naturaleza", nombre: "Ira de la Naturaleza", slot: 4, potencia: 130, perforante: true, precision: 90, usos: 1, descripcion: "Golpe brutal que ignora el 100% de la DEF rival." },
+                { id: "esporas_drenantes", nombre: "Esporas Drenantes", slot: 4, potencia: 80, aplicaEstado: "Enredado", probEstado: 1.0, curacion: 0.20, usos: 1, descripcion: "Causa daño, cura 20% HP y atrapa al rival (Enredado)." }
             ]
         },
 
@@ -59,7 +61,9 @@ window.AttackCatalog = {
                 { id: "evasion_viral", nombre: "Evasión Viral", slot: 3, potencia: 0, buffEvasion: 0.60, duracion: 1, precision: 100, usos: 3, descripcion: "60% prob. de evadir el próximo ataque." } // [cite: 229, 232]
             ],
             definitivos: [
-                { id: "pandemia", nombre: "Pandemia Global", slot: 4, potencia: 60, debuffGlobal: 0.15, duracion: 3, precision: 100, usos: 1, descripcion: "Reduce ATK, SPD y LUK rival un 15%." } // [cite: 233, 237]
+                { id: "pandemia_global", nombre: "Pandemia Global", slot: 4, potencia: 40, hits: 3, aplicaEstado: "Infeccion", probEstado: 0.80, precision: 95, usos: 1, descripcion: "3 golpes. 80% prob. de aplicar Infección por golpe." },
+                { id: "asimilacion_celular", nombre: "Asimilación Celular", slot: 4, potencia: 100, aplicaEstado: "Corrosion", probEstado: 1.0, curacion: 0.25, usos: 1, descripcion: "Roba 25% HP y aplica Corrosión (ATK -15% permanente)." },
+                { id: "falla_genetica", nombre: "Falla Genética", slot: 4, potencia: 0, aplicaEstado: "Paralisis", probEstado: 1.0, debuffAtk: 0.30, duracion: 3, usos: 1, descripcion: "Paraliza al rival y reduce su ATK un 30% por 3 turnos." }
             ]
         },
 
@@ -80,7 +84,9 @@ window.AttackCatalog = {
                 { id: "recalibrado_rapido", nombre: "Recalibrado Rápido", slot: 3, potencia: 0, buffSpd: 0.25, proximoHitGarantizado: true, precision: 100, usos: 3, descripcion: "SPD +25% y próximo ataque no falla." } // [cite: 271, 274]
             ],
             definitivos: [
-                { id: "colapso_sistema", nombre: "Colapso del Sistema", slot: 4, potencia: 120, aplicaEstado: "Congelacion", limpiaBuffsRival: true, precision: 95, usos: 1, descripcion: "Congela al rival 1 turno y limpia sus buffs." } // [cite: 275, 278]
+                { id: "colapso_sistema", nombre: "Colapso del Sistema", slot: 4, potencia: 110, rompeEscudos: true, aplicaEstado: "Paralisis", probEstado: 0.60, precision: 100, usos: 1, descripcion: "Ignora escudos y tiene 60% prob. de Paralizar." },
+                { id: "canon_orbital", nombre: "Cañón Orbital", slot: 4, potencia: 140, criticoGarantizado: true, precision: 85, usos: 1, descripcion: "Precisión 85%, pero si acierta es un Crítico garantizado." },
+                { id: "matriz_sobrecarga", nombre: "Matriz de Sobrecarga", slot: 4, potencia: 180, aplicaEstadoPropio: "Sobrecarga", probEstado: 1.0, precision: 100, usos: 1, descripcion: "Poder devastador, pero el usuario sufre Sobrecarga." }
             ]
         },
 
@@ -101,7 +107,9 @@ window.AttackCatalog = {
                 { id: "autoirradiacion", nombre: "Autoirradiación", slot: 3, potencia: 0, costoHp: 0.12, buffProxAtaque: 0.60, precision: 100, usos: 2, descripcion: "Pierdes 12% HP para dar +60% potencia al prox hit." } // [cite: 310, 313]
             ],
             definitivos: [
-                { id: "critico_nuclear", nombre: "Crítico Nuclear", slot: 4, potencia: 90, aplicaEstado: "Quemadura Critica", precision: 100, usos: 1, descripcion: "Quemadura extrema (-6% HP x4 turnos)." } // [cite: 314, 317]
+                { id: "critico_nuclear", nombre: "Crítico Nuclear", slot: 4, potencia: 120, aplicaEstado: "Campo Radiactivo", probEstado: 1.0, precision: 90, usos: 1, descripcion: "Gran daño. Envuelve al rival en un Campo Radiactivo." },
+                { id: "fision_inestable", nombre: "Fisión Inestable", slot: 4, potencia: 160, aplicaEstadoPropio: "Quemadura", probEstado: 1.0, precision: 100, usos: 1, descripcion: "Daño masivo, pero el usuario sufre Quemadura." },
+                { id: "desintegracion_atomica", nombre: "Desintegración Atómica", slot: 4, potencia: 95, perforante: true, aplicaEstado: "Irradiacion", probEstado: 1.0, usos: 1, descripcion: "Ignora DEF y aplica Irradiación (ATK rival -25%)." }
             ]
         },
 
@@ -122,7 +130,9 @@ window.AttackCatalog = {
                 { id: "concentrar_veneno", nombre: "Concentrar Veneno", slot: 3, potencia: 0, duplicaSiguienteVeneno: true, precision: 100, usos: 3, descripcion: "El prox veneno que apliques es el doble de fuerte." } // [cite: 350, 353]
             ],
             definitivos: [
-                { id: "plaga_final", nombre: "Plaga Final", slot: 4, potencia: 70, aplicaEstadoMultiple: ["Veneno", "Corrosion", "Debilitacion SPD"], precision: 95, usos: 1, descripcion: "Aplica Veneno, Corrosión ATK y Baja SPD a la vez." } // [cite: 354, 357]
+                { id: "plaga_final", nombre: "Plaga Final", slot: 4, potenciaBase: 60, bonusPorEstado: 40, precision: 100, usos: 1, descripcion: "Poder 60. Aumenta +40 de potencia por cada estado en el rival." },
+                { id: "lluvia_acida", nombre: "Lluvia Ácida", slot: 4, potencia: 30, hits: 4, aplicaEstado: "Veneno Fuerte", probEstado: 0.50, precision: 95, usos: 1, descripcion: "4 impactos. 50% prob. de Veneno Fuerte por golpe." },
+                { id: "niebla_asfixiante", nombre: "Niebla Asfixiante", slot: 4, potencia: 75, aplicaEstado: "Vision Nublada", probEstado: 1.0, debuffSpd: 0.30, usos: 1, descripcion: "Aplica Visión Nublada (Fallo) y reduce SPD rival 30%." }
             ]
         },
 
@@ -143,7 +153,9 @@ window.AttackCatalog = {
                 { id: "esquiva_calculada", nombre: "Esquiva Calculada", slot: 3, potencia: 0, probEvasion: 0.75, buffSpdSiEvade: 0.10, precision: 100, usos: 3, descripcion: "75% prob evasión. Si esquivas, SPD +10%." } // [cite: 390, 393]
             ],
             definitivos: [
-                { id: "tormenta_criticos", nombre: "Tormenta de Críticos", slot: 4, potencia: 30, hits: 5, bonusCritPorGolpe: 0.40, precision: 90, usos: 1, descripcion: "5 golpes con 40% prob de Crítico cada uno." } // [cite: 394, 398]
+                { id: "tormenta_criticos", nombre: "Tormenta de Críticos", slot: 4, potencia: 25, hits: 5, bonusCrit: 0.20, precision: 90, usos: 1, descripcion: "5 golpes ultrarrápidos con +20% de prob. de Crítico." },
+                { id: "aceleracion_cuantica", nombre: "Aceleración Cuántica", slot: 4, potencia: 85, buffSpd: 0.50, buffAtk: 0.50, duracion: 3, precision: 100, usos: 1, descripcion: "Golpea y otorga +50% SPD y +50% ATK al usuario." },
+                { id: "impacto_prisma", nombre: "Impacto Prisma", slot: 4, potencia: 90, bonusSiPrimero: 150, precision: 100, usos: 1, descripcion: "Potencia 90. Sube a 150 si el usuario ataca primero." }
             ]
         }
     }
