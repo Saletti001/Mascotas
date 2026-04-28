@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumUI.js - VISTA Y ANIMACIONES V10.5 (ICONOS SVG NATIVOS PARA ESTADOS)
+// ColiseumUI.js - VISTA Y ANIMACIONES V10.6 (BANDEJA AMPLIADA PARA 4 ICONOS)
 // =========================================
 
 window.ColiseumUI = {
@@ -223,19 +223,20 @@ window.ColiseumUI = {
             text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 5px rgba(0,0,0,0.8);
             white-space: nowrap !important; }
             
-            /* ✨ NUEVOS ESTILOS PARA BLOQUEOS, EVASIÓN Y ESTADOS */
+            /* ✨ NUEVOS ESTILOS PARA BLOQUEOS Y EVASIÓN */
             .text-dmg { color: #ff3333; font-size: 28px; } 
             .text-heal { color: #4CAF50; font-size: 24px; } 
             .text-block { color: #80deea; font-size: 26px; letter-spacing: 1px; } 
             .text-evade { color: #e0e0e0; font-size: 26px; font-style: italic; letter-spacing: 2px; } 
             .text-crit { color: #ffcc00; font-size: 38px !important; font-style: italic; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 0 #d32f2f, -2px -2px 0 #d32f2f, 2px -2px 0 #d32f2f, -2px 2px 0 #d32f2f, 0 0 15px rgba(255,0,0,1) !important; }
             
-            /* TRAY DE ESTADOS SVG */
+            /* ✨ TRAY DE ESTADOS SVG (AMPLIADO A 140PX) */
             .status-tray {
                 position: absolute;
                 top: 15px; left: 15px;
                 display: flex; flex-wrap: wrap; gap: 5px;
-                max-width: 90px; z-index: 20;
+                max-width: 140px; /* Suficiente para 4 iconos antes del salto de línea */
+                z-index: 20;
             }
             .status-bubble {
                 background: rgba(15, 23, 42, 0.85);
@@ -353,7 +354,6 @@ window.ColiseumUI = {
         "grayscale(1) brightness(0.3)" : "none";
     },
 
-    // ✨ MOTOR VISUAL DE ESTADOS Y BUFFS (AHORA 100% SVG NATIVO)
     actualizarEstados: function(player, enemy) {
         const svgIconos = {
             "Veneno": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><path d="M8 20v2h8v-2"/><path d="m12.5 17-.5-1-.5 1h1z"/><path d="M16 20a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20"/></svg>`,
@@ -395,7 +395,6 @@ window.ColiseumUI = {
             tray.innerHTML = ""; 
             let mostrados = new Set(); 
 
-            // Efectos de estado Alterado
             if (fighter.estados) {
                 fighter.estados.forEach(estado => {
                     if (!mostrados.has(estado)) {
@@ -412,7 +411,6 @@ window.ColiseumUI = {
                 });
             }
 
-            // Buffs / Debuffs numéricos (ATK, SPD, etc)
             if (fighter.efectosActivos) {
                 fighter.efectosActivos.forEach(efecto => {
                     if (efecto.stat && efecto.stat !== "estado") {
