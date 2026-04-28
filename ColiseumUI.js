@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumUI.js - VISTA Y ANIMACIONES V10.4 (BANDEJA DE ESTADOS Y EMOJIS)
+// ColiseumUI.js - VISTA Y ANIMACIONES V10.5 (ICONOS SVG NATIVOS PARA ESTADOS)
 // =========================================
 
 window.ColiseumUI = {
@@ -223,50 +223,33 @@ window.ColiseumUI = {
             text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 2px 2px 5px rgba(0,0,0,0.8);
             white-space: nowrap !important; }
             
-            /* ✨ ESTILOS PARA BLOQUEOS, EVASIÓN Y DAÑO */
-            .text-dmg { color: #ff3333;
-            font-size: 28px; } 
-            .text-heal { color: #4CAF50;
-            font-size: 24px; } 
-            .text-block { color: #80deea;
-            font-size: 26px; letter-spacing: 1px; } 
-            .text-evade { color: #e0e0e0;
-            font-size: 26px; font-style: italic; letter-spacing: 2px; } 
-            .text-crit { color: #ffcc00;
-            font-size: 38px !important; font-style: italic; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 0 #d32f2f, -2px -2px 0 #d32f2f, 2px -2px 0 #d32f2f, -2px 2px 0 #d32f2f, 0 0 15px rgba(255,0,0,1) !important;
-            }
+            /* ✨ NUEVOS ESTILOS PARA BLOQUEOS, EVASIÓN Y ESTADOS */
+            .text-dmg { color: #ff3333; font-size: 28px; } 
+            .text-heal { color: #4CAF50; font-size: 24px; } 
+            .text-block { color: #80deea; font-size: 26px; letter-spacing: 1px; } 
+            .text-evade { color: #e0e0e0; font-size: 26px; font-style: italic; letter-spacing: 2px; } 
+            .text-crit { color: #ffcc00; font-size: 38px !important; font-style: italic; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 0 #d32f2f, -2px -2px 0 #d32f2f, 2px -2px 0 #d32f2f, -2px 2px 0 #d32f2f, 0 0 15px rgba(255,0,0,1) !important; }
             
-            /* ✨ NUEVOS ESTILOS PARA BANDEJA DE ESTADOS ALTERADOS */
+            /* TRAY DE ESTADOS SVG */
             .status-tray {
                 position: absolute;
-                top: 15px;
-                left: 15px;
-                display: flex;
-                flex-wrap: wrap;
-                gap: 5px;
-                max-width: 90px;
-                z-index: 20;
+                top: 15px; left: 15px;
+                display: flex; flex-wrap: wrap; gap: 5px;
+                max-width: 90px; z-index: 20;
             }
             .status-bubble {
                 background: rgba(15, 23, 42, 0.85);
                 border: 2px solid #888;
-                border-radius: 50%;
-                width: 26px;
-                height: 26px;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                font-size: 14px;
+                border-radius: 50%; width: 26px; height: 26px;
+                display: flex; justify-content: center; align-items: center;
                 box-shadow: 0 0 8px rgba(0,0,0,0.5);
                 animation: status-pulse 1.5s infinite alternate;
                 cursor: help;
             }
             .status-bubble.buff { border-color: #4CAF50; box-shadow: 0 0 6px #4CAF50; }
             .status-bubble.debuff { border-color: #f44336; box-shadow: 0 0 6px #f44336; }
-            @keyframes status-pulse {
-                0% { transform: scale(1); }
-                100% { transform: scale(1.15); }
-            }
+            .status-bubble svg { width: 14px; height: 14px; stroke: #fff; }
+            @keyframes status-pulse { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
         `;
         document.head.appendChild(style);
     },
@@ -293,8 +276,7 @@ window.ColiseumUI = {
             }
         }
 
-        let controls = document.getElementById("battle-controls") ||
-        document.querySelector(".controls-container");
+        let controls = document.getElementById("battle-controls") || document.querySelector(".controls-container");
         if (controls) {
             area.appendChild(controls); controls.id = "battle-controls";
             controls.className = "controls-container";
@@ -302,8 +284,7 @@ window.ColiseumUI = {
                 <button id="btn-atk-1" class="battle-btn slot-1">BÁSICO</button>
                 <button id="btn-atk-2" class="battle-btn slot-2">VACÍO</button>
                 <button id="btn-atk-3" class="battle-btn slot-3">VACÍO</button>
-                <button id="btn-atk-4" class="battle-btn slot-4" disabled>🔒 NV.
-                25+</button>
+                <button id="btn-atk-4" class="battle-btn slot-4" disabled>🔒 NV. 25+</button>
             `;
             controls.style.setProperty("display", "none", "important");
         }
@@ -312,8 +293,7 @@ window.ColiseumUI = {
         if (btnStart) { btnStart.id = "btn-start-battle";
         btnStart.className = "btn-start"; area.appendChild(btnStart); btnStart.style.setProperty("display", "block", "important"); }
 
-        let btnLeave = document.getElementById("btn-leave-battle") ||
-        document.querySelector(".btn-secondary");
+        let btnLeave = document.getElementById("btn-leave-battle") || document.querySelector(".btn-secondary");
         if (btnLeave && currentScreen) { btnLeave.id = "btn-leave-battle"; btnLeave.className = "btn-leave"; currentScreen.appendChild(btnLeave);
         }
 
@@ -346,8 +326,7 @@ window.ColiseumUI = {
     },
 
     actualizarGraficos: function(p, e) {
-        let pNameEl = document.getElementById("battle-player-name") ||
-        document.querySelector(".fighter-left .fighter-name");
+        let pNameEl = document.getElementById("battle-player-name") || document.querySelector(".fighter-left .fighter-name");
         if (pNameEl) pNameEl.innerHTML = `<strong>${p.nombre}</strong><br><span style="color:#4dd0e1; font-size:10px; font-weight:normal;">(Nv. ${p.adn.level || 1})</span>`;
         let eNameEl = document.getElementById("battle-enemy-name") || document.querySelector(".fighter-right .fighter-name");
         if (eNameEl) eNameEl.innerHTML = `<strong>${e.nombre}</strong><br><span style="color:#ff6b6b; font-size:10px; font-weight:normal;">(${e.rareza} - ${e.element})</span>`;
@@ -366,8 +345,7 @@ window.ColiseumUI = {
         let eBar = document.getElementById("enemy-hp-bar") || document.querySelector(".fighter-right [class*='hp-bar-fill']");
         if(pBar) { pBar.className = "hp-bar-fill-green"; pBar.style.width = `${pctP}%`;
         } if(eBar) { eBar.className = "hp-bar-fill-red"; eBar.style.width = `${pctE}%`; }
-        let pTxt = document.getElementById("player-hp-text") ||
-        document.querySelector(".fighter-left .hp-text"); let eTxt = document.getElementById("enemy-hp-text") || document.querySelector(".fighter-right .hp-text");
+        let pTxt = document.getElementById("player-hp-text") || document.querySelector(".fighter-left .hp-text"); let eTxt = document.getElementById("enemy-hp-text") || document.querySelector(".fighter-right .hp-text");
         if(pTxt) pTxt.innerText = `${Math.floor(p.hp)} / ${p.maxHp}`;
         if(eTxt) eTxt.innerText = `${Math.floor(e.hp)} / ${e.maxHp}`;
         let pSide = document.getElementById("player-sprite-battle") || document.querySelector(".fighter-left"); let eSide = document.getElementById("enemy-sprite-battle") || document.querySelector(".fighter-right");
@@ -375,20 +353,31 @@ window.ColiseumUI = {
         "grayscale(1) brightness(0.3)" : "none";
     },
 
-    // ✨ NUEVO: MOTOR VISUAL DE ESTADOS Y BUFFS
+    // ✨ MOTOR VISUAL DE ESTADOS Y BUFFS (AHORA 100% SVG NATIVO)
     actualizarEstados: function(player, enemy) {
-        const diccEstados = {
-            "Veneno": "☠️", "Veneno Fuerte": "☠️",
-            "Quemadura": "🔥", "Quemadura Crítica": "🔥",
-            "Parálisis": "⚡", "Congelación": "❄️",
-            "Visión Nublada": "🌫️", "Enredado": "🌿",
-            "Corrosión": "⚗️", "Campo Radiactivo": "☢️",
-            "Irradiación": "💢", "Regeneración": "✨",
-            "Infección": "🦠", "Sobrecarga": "⚙️", "Sobrecarga del Sistema": "⚙️"
+        const svgIconos = {
+            "Veneno": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><path d="M8 20v2h8v-2"/><path d="m12.5 17-.5-1-.5 1h1z"/><path d="M16 20a2 2 0 0 0 1.56-3.25 8 8 0 1 0-11.12 0A2 2 0 0 0 8 20"/></svg>`,
+            "Quemadura": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>`,
+            "Parálisis": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+            "Congelación": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="2" y1="12" x2="22" y2="12"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="20" y1="16" x2="17" y2="12"/><line x1="20" y1="8" x2="17" y2="12"/><line x1="4" y1="8" x2="7" y2="12"/><line x1="4" y1="16" x2="7" y2="12"/><line x1="8" y1="4" x2="12" y2="7"/><line x1="16" y1="4" x2="12" y2="7"/><line x1="8" y1="20" x2="12" y2="17"/><line x1="16" y1="20" x2="12" y2="17"/></svg>`,
+            "Visión Nublada": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>`,
+            "Enredado": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>`,
+            "Corrosión": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 3h15"/><path d="M6 3v16a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V3"/><path d="M6 14h12"/></svg>`,
+            "Campo Radiactivo": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12v-9a9 9 0 0 1 7.79 13.5l-7.79-4.5z"/><path d="M12 12v9a9 9 0 0 1-7.79-4.5l7.79-4.5z"/><path d="M12 12L4.21 7.5A9 9 0 0 1 12 3v9z"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>`,
+            "Irradiación": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12v-9a9 9 0 0 1 7.79 13.5l-7.79-4.5z"/><path d="M12 12v9a9 9 0 0 1-7.79-4.5l7.79-4.5z"/><path d="M12 12L4.21 7.5A9 9 0 0 1 12 3v9z"/><circle cx="12" cy="12" r="2" fill="currentColor"/></svg>`,
+            "Regeneración": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>`,
+            "Infección": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 4v4M12 16v4M4 12h4M16 12h4M6.34 6.34l2.83 2.83M14.83 14.83l2.83 2.83M6.34 17.66l2.83-2.83M14.83 9.17l2.83-2.83"/></svg>`,
+            "Sobrecarga": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>`
+        };
+
+        const statIcons = {
+            "atk": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="14.5" y1="4.5" x2="19.5" y2="9.5"/><line x1="21" y1="3" x2="9" y2="15"/><line x1="3" y1="21" x2="9" y2="15"/><line x1="6" y1="18" x2="3" y2="15"/></svg>`,
+            "spd": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2"/></svg>`,
+            "def": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+            "luk": `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`
         };
 
         function renderizarTray(fighter, isPlayer) {
-            // Buscamos dinámicamente las tarjetas (izquierda o derecha)
             let container = isPlayer ? 
                 (document.getElementById("player-sprite-battle") || document.querySelector(".fighter-left")) : 
                 (document.getElementById("enemy-sprite-battle") || document.querySelector(".fighter-right"));
@@ -403,9 +392,10 @@ window.ColiseumUI = {
                 container.appendChild(tray);
             }
 
-            tray.innerHTML = ""; // Limpiar iconos del turno anterior
+            tray.innerHTML = ""; 
             let mostrados = new Set(); 
 
+            // Efectos de estado Alterado
             if (fighter.estados) {
                 fighter.estados.forEach(estado => {
                     if (!mostrados.has(estado)) {
@@ -413,7 +403,8 @@ window.ColiseumUI = {
                         iconDiv.className = "status-bubble debuff"; 
                         if (estado === "Regeneración") iconDiv.className = "status-bubble buff"; 
                         
-                        iconDiv.innerHTML = diccEstados[estado] || "⚠️";
+                        let baseKey = estado.replace(" Crítica", "").replace(" Fuerte", "").replace(" del Sistema", "");
+                        iconDiv.innerHTML = svgIconos[baseKey] || svgIconos["Infección"];
                         iconDiv.title = estado; 
                         tray.appendChild(iconDiv);
                         mostrados.add(estado);
@@ -421,17 +412,17 @@ window.ColiseumUI = {
                 });
             }
 
+            // Buffs / Debuffs numéricos (ATK, SPD, etc)
             if (fighter.efectosActivos) {
                 fighter.efectosActivos.forEach(efecto => {
                     if (efecto.stat && efecto.stat !== "estado") {
                         let isBuff = efecto.valor > 0;
-                        let statIcon = efecto.stat === "atk" ? "⚔️" : (efecto.stat === "spd" ? "💨" : (efecto.stat === "def" ? "🛡️" : "📈"));
                         let textId = efecto.stat + (isBuff ? "up" : "down");
 
                         if (!mostrados.has(textId)) {
                             let iconDiv = document.createElement("div");
                             iconDiv.className = "status-bubble " + (isBuff ? "buff" : "debuff");
-                            iconDiv.innerHTML = statIcon; 
+                            iconDiv.innerHTML = statIcons[efecto.stat] || statIcons["atk"]; 
                             iconDiv.title = `${isBuff ? 'Aumento' : 'Reducción'} de ${efecto.stat.toUpperCase()}`;
                             tray.appendChild(iconDiv);
                             mostrados.add(textId);
@@ -446,8 +437,7 @@ window.ColiseumUI = {
     },
 
     agregarLog: function(texto) {
-        const logBox = document.getElementById("battle-log") ||
-        document.querySelector(".battle-log-container");
+        const logBox = document.getElementById("battle-log") || document.querySelector(".battle-log-container");
         if (logBox) { logBox.innerHTML += `<div style="margin-top: 6px;">${texto}</div>`; logBox.scrollTop = logBox.scrollHeight;
         }
     },
