@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR V11.4 (SOPORTE DE BANDEJA DE ESTADOS)
+// ColiseumManager.js - CONTROLADOR V11.5 (FIX UI CURACIÓN Y ESTADOS)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -75,7 +75,9 @@ document.addEventListener("DOMContentLoaded", () => {
         ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
         
         // ✨ FIX: Inicializar la bandeja de estados vacía al empezar
-        ColiseumUI.actualizarEstados(ColiseumLogic.player, ColiseumLogic.enemy);
+        if (typeof ColiseumUI.actualizarEstados === 'function') {
+            ColiseumUI.actualizarEstados(ColiseumLogic.player, ColiseumLogic.enemy);
+        }
         
         actualizarBotones();
     }
@@ -149,17 +151,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
                     // ✨ FIX: Actualizar los estados inmediatamente al sufrir un impacto
-                    ColiseumUI.actualizarEstados(ColiseumLogic.player, ColiseumLogic.enemy);
+                    if (typeof ColiseumUI.actualizarEstados === 'function') {
+                        ColiseumUI.actualizarEstados(ColiseumLogic.player, ColiseumLogic.enemy);
+                    }
                 }, idx * 400);
             });
         } else if (ataqueUsado) {
             // No hizo ningún tipo de daño, debe ser solo Buffs, Debuffs o Curación
             ColiseumUI.animarSoporte(atacante.isPlayer, ataqueUsado);
+            // ✨ FIX: Forzar la actualización gráfica para tácticas sin daño
+            ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
+            if (typeof ColiseumUI.actualizarEstados === 'function') {
+                ColiseumUI.actualizarEstados(ColiseumLogic.player, ColiseumLogic.enemy);
+            }
         }
         
         if (resultado.anims.curacionAtacante > 0) {
             ColiseumUI.animarCuracion(atacante.isPlayer);
             ColiseumUI.mostrarTextoFlotante(atacante.isPlayer, `+${resultado.anims.curacionAtacante}`, "text-heal");
+            // ✨ FIX: Asegurar que la barra de HP crezca visualmente al curarse
+            ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
         }
     }
 
@@ -169,22 +180,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let resP = ColiseumLogic.procesarEfectosFinTurno(p);
         let resE = ColiseumLogic.procesarEfectosFinTurno(e);
-        let huboEfectos = resP.logs.length > 0 ||
-        resE.logs.length > 0;
+        let huboEfectos = resP.logs.length > 0 || resE.logs.length > 0;
 
         if (huboEfectos) {
             ColiseumUI.agregarLog(`<span style="color:#777; font-style:italic;">[Efectos y Condiciones]</span>`);
             resP.logs.forEach(l => ColiseumUI.agregarLog(l));
-            if(resP.anims.heal > 0) { ColiseumUI.animarCuracion(true); ColiseumUI.mostrarTextoFlotante(true, `+${resP.anims.heal}`, "text-heal");
-            }
-            if(resP.anims.dmg > 0) { ColiseumUI.animarDano(true); ColiseumUI.mostrarTextoFlotante(true, `-${resP.anims.dmg}`, "text-dmg");
-            }
+            if(resP.anims.heal > 0) { ColiseumUI.animarCuracion(true); ColiseumUI.mostrarTextoFlotante(true, `+${resP.anims.heal}`, "text-heal"); }
+            if(resP.anims.dmg > 0) { ColiseumUI.animarDano(true); ColiseumUI.mostrarTextoFlotante(true, `-${resP.anims.dmg}`, "text-dmg"); }
 
             resE.logs.forEach(l => ColiseumUI.agregarLog(l));
-            if(resE.anims.heal > 0) { ColiseumUI.animarCuracion(false);
-            ColiseumUI.mostrarTextoFlotante(false, `+${resE.anims.heal}`, "text-heal"); }
-            if(resE.anims.dmg > 0) { ColiseumUI.animarDano(false);
-            ColiseumUI.mostrarTextoFlotante(false, `-${resE.anims.dmg}`, "text-dmg"); }
+            if(resE.anims.heal > 0) { ColiseumUI.animarCuracion(false); ColiseumUI.mostrarTextoFlotante(false, `+${resE.anims.heal}`, "text-heal"); }
+            if(resE.anims.dmg > 0) { ColiseumUI.animarDano(false); ColiseumUI.mostrarTextoFlotante(false, `-${resE.anims.dmg}`, "text-dmg"); }
         }
 
         if (p.cooldowns.especial > 0) p.cooldowns.especial--;
@@ -198,7 +204,9 @@ document.addEventListener("DOMContentLoaded", () => {
         ColiseumUI.actualizarHP(p, e);
         
         // ✨ FIX: Refrescar la bandeja al limpiar los estados expirados
-        ColiseumUI.actualizarEstados(p, e);
+        if (typeof ColiseumUI.actualizarEstados === 'function') {
+            ColiseumUI.actualizarEstados(p, e);
+        }
         
         ColiseumLogic.turno++;
         
@@ -267,7 +275,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if(btn && btn.innerText !== "VACÍO" && !btn.innerText.includes("NV. 25")) {
                 btn.disabled = bloquear;
             }
-        
         });
     }
 });
