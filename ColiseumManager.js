@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR V11.6 (ANIMACIONES SECUENCIALES EXACTAS)
+// ColiseumManager.js - CONTROLADOR V11.7 (BARRAS DE VIDA SECUENCIALES)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -81,7 +81,6 @@ document.addEventListener("DOMContentLoaded", () => {
         actualizarBotones();
     }
 
-    // ✨ NUEVO: MOTOR DE TIEMPO DINÁMICO
     function procesarRonda(accionJugador) {
         ColiseumUI.agregarLog(`<br><span style="color:#4dd0e1; font-weight:bold; letter-spacing: 1px;">[ --- TURNO ${ColiseumLogic.turno} --- ]</span>`);
         bloquearBotones(true);
@@ -108,7 +107,6 @@ document.addEventListener("DOMContentLoaded", () => {
         let accion1 = playerGoesFirst ? accionJugador : accionEnemigo;
         let accion2 = playerGoesFirst ? accionEnemigo : accionJugador;
 
-        // Ejecutar Acción 1 y obtener cuánto tiempo tarda en dibujarse
         let tiempo1 = ejecutarAccionYAnimar(ejecutor1, ejecutor2, accion1);
         
         if (ejecutor2.hp > 0) {
@@ -116,23 +114,28 @@ document.addEventListener("DOMContentLoaded", () => {
                 ColiseumUI.agregarLog(`<span style="color:#555;">&nbsp;&nbsp;♦ ♦ ♦</span>`); 
                 let tiempo2 = ejecutarAccionYAnimar(ejecutor2, ejecutor1, accion2);
                 
-                setTimeout(() => { finalizarRonda(); }, tiempo2 + 400); // Esperar a que acabe el Acción 2
-            }, tiempo1 + 400); // Esperar a que acabe el Acción 1 para empezar la Acción 2
+                setTimeout(() => { finalizarRonda(); }, tiempo2 + 400); 
+            }, tiempo1 + 400); 
         } else {
             setTimeout(() => { finalizarRonda(); }, tiempo1 + 400);
         }
     }
 
     function ejecutarAccionYAnimar(atacante, defensor, accionElegida) {
-        if (atacante.hp <= 0 || defensor.hp <= 0) return 0; // No toma tiempo si están muertos
+        if (atacante.hp <= 0 || defensor.hp <= 0) return 0;
+        
+        // ✨ FIX VISUAL: Guardamos la vida actual antes de ejecutar las matemáticas
+        let hpVisualAtacante = atacante.hp;
+        let hpVisualDefensor = defensor.hp;
+
         const ataqueUsado = atacante.ataquesEquipados[accionElegida];
         const resultado = ColiseumLogic.ejecutarAtaqueCompleto(atacante, defensor, accionElegida);
         
         resultado.logs.forEach(log => ColiseumUI.agregarLog(log));
         let hayGolpesDirectos = resultado.anims.detalleGolpes && resultado.anims.detalleGolpes.length > 0;
         
-        let delayGolpes = 750; // ✨ NUEVO: Retraso amplio entre cada golpe de ataques múltiples (como "Descarga en cadena")
-        let tiempoAnimacion = 800; // Tiempo por defecto para buffs
+        let delayGolpes = 750; 
+        let tiempoAnimacion = 800; 
 
         if (hayGolpesDirectos) {
             tiempoAnimacion = resultado.anims.detalleGolpes.length * delayGolpes;
@@ -143,11 +146,19 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                     
                     if (golpe.dmg > 0) {
-                         ColiseumUI.animarDano(!atacante.isPlayer, ataqueUsado, accionElegida);
+                        ColiseumUI.animarDano(!atacante.isPlayer, ataqueUsado, accionElegida);
                         if (golpe.critico) ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "CRÍTICO!", "text-crit");
                         ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, `-${golpe.dmg}`, "text-dmg");
                         if(window.Sonidos) window.Sonidos.play("hit");
-            
+
+                        // ✨ FIX VISUAL: Restamos la vida golpe a golpe simulando el daño progresivo
+                        hpVisualDefensor = Math.max(0, hpVisualDefensor - golpe.dmg);
+                        
+                        // Si hay robo de vida progresivo, lo sumamos al visual
+                        if (atacante.genesId.includes("vampirismo_genetico")) {
+                            let robo = Math.max(1, Math.floor(golpe.dmg * 0.15));
+                            hpVisualAtacante = Math.min(atacante.maxHp, hpVisualAtacante + robo);
+                        }
                      } else if (golpe.bloqueado) {
                         ColiseumUI.animarSoporte(!atacante.isPlayer, {escudo: true});
                         ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "BLOCKED!", "text-block");
@@ -155,11 +166,15 @@ document.addEventListener("DOMContentLoaded", () => {
                         ColiseumUI.mostrarTextoFlotante(!atacante.isPlayer, "EVADED!", "text-evade");
                     }
 
-                    ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
+                    // ✨ FIX VISUAL: Creamos clones "falsos" con la vida transitoria solo para que la UI los dibuje
+                    let pFalso = atacante.isPlayer ? { ...atacante, hp: hpVisualAtacante } : { ...defensor, hp: hpVisualDefensor };
+                    let eFalso = defensor.isPlayer ? { ...defensor, hp: hpVisualDefensor } : { ...atacante, hp: hpVisualAtacante };
+                    ColiseumUI.actualizarHP(pFalso, eFalso);
+
                     if (typeof ColiseumUI.actualizarEstados === 'function') {
                         ColiseumUI.actualizarEstados(ColiseumLogic.player, ColiseumLogic.enemy);
                     }
-                }, idx * delayGolpes); // Se reproducen en intervalos de 750ms
+                }, idx * delayGolpes); 
             });
         } else if (ataqueUsado) {
             ColiseumUI.animarSoporte(atacante.isPlayer, ataqueUsado);
@@ -169,13 +184,16 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
         
-        if (resultado.anims.curacionAtacante > 0) {
-            ColiseumUI.animarCuracion(atacante.isPlayer);
-            ColiseumUI.mostrarTextoFlotante(atacante.isPlayer, `+${resultado.anims.curacionAtacante}`, "text-heal");
+        // Final catch-up para curaciones completas o desajustes menores al terminar la secuencia de ataque
+        setTimeout(() => {
+            if (resultado.anims.curacionAtacante > 0) {
+                ColiseumUI.animarCuracion(atacante.isPlayer);
+                ColiseumUI.mostrarTextoFlotante(atacante.isPlayer, `+${resultado.anims.curacionAtacante}`, "text-heal");
+            }
             ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
-        }
+        }, tiempoAnimacion + 100);
 
-        return tiempoAnimacion; // Devuelve el tiempo exacto que duró la animación a la función procesarRonda
+        return tiempoAnimacion; 
     }
 
     function finalizarRonda() {
