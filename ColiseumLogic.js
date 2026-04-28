@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V13.9 (VERSIÓN DEFINITIVA)
+// ColiseumLogic.js - MODELO MATEMÁTICO V13.10 (LOGS DE BUFFS Y ESCUDOS GARANTIZADOS)
 // =========================================
 
 window.ColiseumLogic = {
@@ -48,7 +48,6 @@ window.ColiseumLogic = {
         let eRareza = "Común"; 
         let pRareza = this.player ? (this.player.rareza || this.player.rarity || "Común") : "Común";
 
-        // Ligas por Rareza
         if (pRareza === "Común") {
             eRareza = roll < 0.85 ? "Común" : "Raro"; 
         } else if (pRareza === "Raro") {
@@ -74,7 +73,6 @@ window.ColiseumLogic = {
         const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry", "cibernetico", "alien", "ojeras"];
         const opcionesBocas = typeof dicBocas !== 'undefined' ? Object.keys(dicBocas) : ["estandar", "feliz", "colmillos", "abierta", "sorpresa", "lengua"];
         
-        // Motor de Accesorios (Doble Dado)
         const opcionesSombreros = typeof dicSombreros !== 'undefined' ? Object.keys(dicSombreros).filter(k => k !== "ninguno") : ["gorra", "corona", "casco", "cinta"];
         const opcionesAlas = typeof dicAlas !== 'undefined' ? Object.keys(dicAlas).filter(k => k !== "ninguno") : ["alas_angel", "alas_murcielago", "jetpack", "capa"];
         const opcionesGafas = typeof dicGafas !== 'undefined' ? Object.keys(dicGafas).filter(k => k !== "ninguno") : ["lentes", "parche", "visor", "monoculo"];
@@ -181,7 +179,6 @@ window.ColiseumLogic = {
             return { logs, anims };
         }
 
-        // Gen Oculto: Contra-Golpe Definitivo
         if (slotAccion === "definitivo" && defensor.genesId.includes("ults_counter")) {
             let buffAtk = Math.floor(defensor.baseAtk * 0.30);
             defensor.atk += buffAtk;
@@ -189,7 +186,6 @@ window.ColiseumLogic = {
             logs.push(`<span style="color:#ff3333">🔥 🧬 [Gen Oculto: Contra-Golpe] ¡${this.cName(defensor)} gana +30% ATK por la adrenalina del Definitivo!</span>`);
         }
 
-        // Logs de activación según Slot
         if (slotAccion === "especial") {
             atacante.cooldowns.especial = 3;
             logs.push(`<span style="color:#e040fb">> ¡${this.cName(atacante)} usa [${ataqueReal.nombre}]!</span>`);
@@ -206,7 +202,6 @@ window.ColiseumLogic = {
 
         let potenciaAtaque = ataqueReal.potencia || 0;
 
-        // Lógica de Sinergias (V10.1)
         if (ataqueReal.escalaConHP) {
             let pctHP = atacante.hp / atacante.maxHp;
             if (pctHP > 0.70) potenciaAtaque += Math.floor((pctHP - 0.70) * 100);
@@ -227,7 +222,6 @@ window.ColiseumLogic = {
             atacante.proxVenenoDoble = true;
         }
 
-        // Ataques Reactivos (Contrarrestar)
         if (ataqueReal.reactivo) {
             let danoPrevio = atacante.danoRecibidoEsteTurno > 0 ? atacante.danoRecibidoEsteTurno : (atacante.danoRecibidoTurnoAnterior || 0);
             let dmgDevuelto = Math.floor(danoPrevio * ataqueReal.reactivo);
@@ -249,10 +243,8 @@ window.ColiseumLogic = {
             }
         }
 
-        // Corrección de potencia para MTs
         if (potenciaAtaque > 0 && potenciaAtaque < 10) potenciaAtaque = potenciaAtaque * 100; 
 
-        // Lógica de Curación Directa
         if (ataqueReal.curacion) {
             let cura = Math.floor(atacante.maxHp * ataqueReal.curacion);
             atacante.hp = Math.min(atacante.maxHp, atacante.hp + Math.max(1, cura));
@@ -260,7 +252,6 @@ window.ColiseumLogic = {
             logs.push(`<span style="color:#4CAF50">* ${this.cName(atacante)} recupera ${cura} HP.</span>`);
         }
 
-        // Lógica de Ataque Principal
         if (potenciaAtaque > 0) {
             let numGolpes = ataqueReal.hits || 1;
             if (atacante.genesId.includes("velocidad_fantasma") && Math.random() <= 0.20 && numGolpes === 1) {
@@ -274,16 +265,12 @@ window.ColiseumLogic = {
                 let golpeActual = { dmg: 0, critico: false, bloqueado: false, evadido: false };
                 let atkBruto = atacante.atk * (potenciaAtaque / 75) * (0.85 + Math.random() * 0.3);
                 
-                // Ciclo Elemental Corregido
                 const ventajas = { 
                     "Biomutante": "Sintético", "Sintético": "Tóxico", "Tóxico": "Radiactivo", 
                     "Radiactivo": "Cibernético", "Cibernético": "Viral", "Viral": "Biomutante" 
                 };
                 
-                // Nuevos Multiplicadores V10.1 (x1.35 / x0.75)
                 let multElem = ventajas[ataqueReal.elemento] === defensor.element ? 1.35 : (ventajas[defensor.element] === ataqueReal.elemento ? 0.75 : 1.0);
-                
-                // ✨ FIX: Bonus STAB SOLO aplica a Especiales y Definitivos (Básicos excluidos)
                 let stab = (slotAccion !== "ataque" && atacante.element === ataqueReal.elemento) ? 1.20 : 1.0;
 
                 atkBruto = atkBruto * multElem * stab;
@@ -291,7 +278,6 @@ window.ColiseumLogic = {
 
                 let defRival = defensor.def;
 
-                // Perforación de armadura
                 if (ataqueReal.perforante || ataqueReal.rompeEscudos) {
                     if (defensor.genesId.includes("decoy") && !defensor.decoyUsado) {
                         defensor.decoyUsado = true;
@@ -306,12 +292,10 @@ window.ColiseumLogic = {
                     }
                 }
 
-                // Cálculo de daño final vs DEF
                 let minDmgMultiplier = atacante.genesId.includes("min_dmg") ? 0.35 : 0.25;
                 let dmgMinimo = Math.floor(atkBruto * minDmgMultiplier);
                 let dmg = Math.floor(Math.max(atkBruto - defRival, dmgMinimo));
 
-                // Gen Oculto: Armadura Adaptativa
                 if (defensor.genesId.includes("adapt_a") && atkBruto > 0) {
                     if (defensor.ultimoElementoRecibido === ataqueReal.elemento) {
                         defensor.adaptativaStacks = Math.min(5, defensor.adaptativaStacks + 1);
@@ -325,14 +309,12 @@ window.ColiseumLogic = {
                     }
                 }
 
-                // Probabilidad de Crítico
                 let probCrit = 0.05 + (atacante.luk * 0.002) + (atacante.element === "Sintético" ? 0.15 : 0) + (ataqueReal.bonusCrit || 0);
                 if (ataqueReal.criticoGarantizado) probCrit = 1.0;
 
                 let isCrit = Math.random() <= probCrit && atkBruto > 0;
                 if (isCrit) { dmg = Math.floor(dmg * 1.5); anims.critico = true; golpeActual.critico = true; }
 
-                // Escudos Pasivos
                 if (defensor.escudoCibernetico && !ataqueReal.perforante && atkBruto > 0) {
                     dmg = Math.floor(dmg * 0.60); defensor.escudoCibernetico = false;
                     logs.push(`<span style="color:#00d2ff">🛡️ [Pasivo: Escudo Cibernético] ${this.cName(defensor)} absorbe el impacto.</span>`);
@@ -349,9 +331,8 @@ window.ColiseumLogic = {
                     defensor.hp = Math.max(0, defensor.hp - dmg);
                     anims.danoDefensor += dmg;
                     golpeActual.dmg = dmg;
-                    defensor.danoRecibidoEsteTurno += dmg; // Memoria para Contrarrestar
+                    defensor.danoRecibidoEsteTurno += dmg; 
 
-                    // Ruptura Defensiva
                     if (atacante.genesId.includes("def_brk")) {
                         atacante.rachaGolpes++;
                         if (atacante.rachaGolpes >= 3) {
@@ -361,7 +342,6 @@ window.ColiseumLogic = {
                         }
                     }
 
-                    // Retroalimentación de Daño
                     if (dmg > (defensor.maxHp * 0.15) && defensor.genesId.includes("dmg_echo")) {
                         let buffAtk = Math.floor(defensor.baseAtk * 0.15);
                         defensor.atk += buffAtk;
@@ -386,7 +366,7 @@ window.ColiseumLogic = {
             }
         }
 
-        // Aplicación de Estados y Buffs
+        // ✨ NUEVO: SISTEMA EXPLÍCITO DE LOGS PARA BUFFS Y ESCUDOS
         let probAply = ataqueReal.probEstado !== undefined ? ataqueReal.probEstado : 1.0;
         if (Math.random() <= probAply) {
             let duracionBase = ataqueReal.duracion || 3;
@@ -394,11 +374,9 @@ window.ColiseumLogic = {
             let aplicarDebuffAtk = ataqueReal.debuffAtk;
             let aplicarDebuffSpd = ataqueReal.debuffSpd;
 
-            // Núcleo Coraza
             if ((aplicarDebuffAtk || aplicarDebuffSpd) && defensor.hp > 0 && defensor.genesId.includes("core_ar") && !defensor.coreArUsado) {
                 defensor.coreArUsado = true;
-                aplicarDebuffAtk = false; 
-                aplicarDebuffSpd = false;
+                aplicarDebuffAtk = false; aplicarDebuffSpd = false;
                 logs.push(`<span style="color:#80deea">🛡️ 🧬 [Gen Oculto: Núcleo Coraza] ¡${this.cName(defensor)} bloquea la reducción de stats!</span>`);
                 anims.detalleGolpes.push({dmg: 0, bloqueado: true}); 
             }
@@ -407,17 +385,36 @@ window.ColiseumLogic = {
                 let val = Math.floor(atacante.baseSpd * ataqueReal.buffSpd);
                 atacante.spd += val;
                 atacante.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "spd", valor: val, turnos: duracionBase, isNuevo: true });
+                logs.push(`<span style="color:#00e5ff">💨 ¡${this.cName(atacante)} aumenta su Velocidad en +${val}!</span>`);
             }
             if (ataqueReal.buffAtk) {
                 let val = Math.floor(atacante.baseAtk * ataqueReal.buffAtk);
                 atacante.atk += val;
                 atacante.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "atk", valor: val, turnos: duracionBase, isNuevo: true });
+                logs.push(`<span style="color:#ff3333">⚔️ ¡${this.cName(atacante)} aumenta su Ataque en +${val}!</span>`);
             }
             if (ataqueReal.escudo) {
                 let val = Math.floor(atacante.maxHp * ataqueReal.escudo);
+                if (val < 15) val = 15; // Garantiza un escudo útil
                 atacante.def += val;
                 atacante.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "def", valor: val, turnos: duracionBase, isNuevo: true });
+                logs.push(`<span style="color:#80deea">🛡️ ¡${this.cName(atacante)} levanta una barrera de +${val} DEF!</span>`);
             }
+            if (ataqueReal.buffDef) {
+                let val = Math.floor(atacante.baseDef * ataqueReal.buffDef);
+                if (val < 15) val = 15; // Garantiza un buff útil
+                atacante.def += val;
+                atacante.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "def", valor: val, turnos: duracionBase, isNuevo: true });
+                logs.push(`<span style="color:#80deea">🛡️ ¡${this.cName(atacante)} aumenta su Defensa en +${val}!</span>`);
+            }
+            // Salvavidas específico para Protocolo de Escudo si le faltaran datos en el catálogo
+            if (ataqueReal.nombre && ataqueReal.nombre.includes("Protocolo de Escudo") && !ataqueReal.escudo && !ataqueReal.buffDef) {
+                let val = Math.floor(defensor.baseAtk * 0.35) || 15;
+                atacante.def += val;
+                atacante.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "def", valor: val, turnos: 3, isNuevo: true });
+                logs.push(`<span style="color:#80deea">🛡️ ¡${this.cName(atacante)} activa un Escudo Adaptativo de +${val} DEF!</span>`);
+            }
+
             if (aplicarDebuffSpd && defensor.hp > 0) {
                 let val = Math.floor(defensor.baseSpd * ataqueReal.debuffSpd);
                 defensor.spd = Math.max(1, defensor.spd - val);
@@ -441,7 +438,6 @@ window.ColiseumLogic = {
                     let configEstado = window.AttackCatalog && window.AttackCatalog.estados ? window.AttackCatalog.estados[estadoAply] : null;
                     let durEstado = configEstado ? configEstado.duracionBase : 3;
 
-                    // Concentrar Veneno
                     if (atacante.proxVenenoDoble && (estadoAply === "Veneno" || estadoAply === "Veneno Fuerte")) {
                         estadoAply = "Veneno Fuerte";
                         durEstado *= 2;
@@ -526,7 +522,6 @@ window.ColiseumLogic = {
             }
         }
         
-        // Pasiva Biomutante
         if (fighter.element === "Biomutante" && fighter.hp < fighter.maxHp) {
             let regen = Math.floor(fighter.maxHp * 0.06) + 2;
             fighter.hp = Math.min(fighter.maxHp, fighter.hp + regen); anims.heal += regen;

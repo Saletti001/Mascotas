@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumManager.js - CONTROLADOR V11.5 (FIX UI CURACIÓN Y ESTADOS)
+// ColiseumManager.js - CONTROLADOR V11.6 (ANIMACIONES SECUENCIALES EXACTAS)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -74,7 +74,6 @@ document.addEventListener("DOMContentLoaded", () => {
         ColiseumUI.actualizarGraficos(ColiseumLogic.player, ColiseumLogic.enemy);
         ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
         
-        // ✨ FIX: Inicializar la bandeja de estados vacía al empezar
         if (typeof ColiseumUI.actualizarEstados === 'function') {
             ColiseumUI.actualizarEstados(ColiseumLogic.player, ColiseumLogic.enemy);
         }
@@ -82,6 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
         actualizarBotones();
     }
 
+    // ✨ NUEVO: MOTOR DE TIEMPO DINÁMICO
     function procesarRonda(accionJugador) {
         ColiseumUI.agregarLog(`<br><span style="color:#4dd0e1; font-weight:bold; letter-spacing: 1px;">[ --- TURNO ${ColiseumLogic.turno} --- ]</span>`);
         bloquearBotones(true);
@@ -108,30 +108,36 @@ document.addEventListener("DOMContentLoaded", () => {
         let accion1 = playerGoesFirst ? accionJugador : accionEnemigo;
         let accion2 = playerGoesFirst ? accionEnemigo : accionJugador;
 
-        ejecutarAccionYAnimar(ejecutor1, ejecutor2, accion1);
+        // Ejecutar Acción 1 y obtener cuánto tiempo tarda en dibujarse
+        let tiempo1 = ejecutarAccionYAnimar(ejecutor1, ejecutor2, accion1);
+        
         if (ejecutor2.hp > 0) {
             setTimeout(() => {
                 ColiseumUI.agregarLog(`<span style="color:#555;">&nbsp;&nbsp;♦ ♦ ♦</span>`); 
-                ejecutarAccionYAnimar(ejecutor2, ejecutor1, accion2);
-                setTimeout(() => { finalizarRonda(); }, 1500);
-            }, 1500);
+                let tiempo2 = ejecutarAccionYAnimar(ejecutor2, ejecutor1, accion2);
+                
+                setTimeout(() => { finalizarRonda(); }, tiempo2 + 400); // Esperar a que acabe el Acción 2
+            }, tiempo1 + 400); // Esperar a que acabe el Acción 1 para empezar la Acción 2
         } else {
-            setTimeout(() => { finalizarRonda(); }, 1500);
+            setTimeout(() => { finalizarRonda(); }, tiempo1 + 400);
         }
     }
 
     function ejecutarAccionYAnimar(atacante, defensor, accionElegida) {
-        if (atacante.hp <= 0 || defensor.hp <= 0) return;
+        if (atacante.hp <= 0 || defensor.hp <= 0) return 0; // No toma tiempo si están muertos
         const ataqueUsado = atacante.ataquesEquipados[accionElegida];
         const resultado = ColiseumLogic.ejecutarAtaqueCompleto(atacante, defensor, accionElegida);
         
         resultado.logs.forEach(log => ColiseumUI.agregarLog(log));
         let hayGolpesDirectos = resultado.anims.detalleGolpes && resultado.anims.detalleGolpes.length > 0;
         
+        let delayGolpes = 750; // ✨ NUEVO: Retraso amplio entre cada golpe de ataques múltiples (como "Descarga en cadena")
+        let tiempoAnimacion = 800; // Tiempo por defecto para buffs
+
         if (hayGolpesDirectos) {
+            tiempoAnimacion = resultado.anims.detalleGolpes.length * delayGolpes;
             resultado.anims.detalleGolpes.forEach((golpe, idx) => {
                 setTimeout(() => {
-                    // Si hizo daño puro/reactivo (o daño normal), forzamos la animación de ataque
                     if (resultado.anims.atacanteGrita || golpe.dmg > 0) {
                          ColiseumUI.animarAtaque(atacante.isPlayer, ataqueUsado, accionElegida);
                     }
@@ -150,16 +156,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
 
                     ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
-                    // ✨ FIX: Actualizar los estados inmediatamente al sufrir un impacto
                     if (typeof ColiseumUI.actualizarEstados === 'function') {
                         ColiseumUI.actualizarEstados(ColiseumLogic.player, ColiseumLogic.enemy);
                     }
-                }, idx * 400);
+                }, idx * delayGolpes); // Se reproducen en intervalos de 750ms
             });
         } else if (ataqueUsado) {
-            // No hizo ningún tipo de daño, debe ser solo Buffs, Debuffs o Curación
             ColiseumUI.animarSoporte(atacante.isPlayer, ataqueUsado);
-            // ✨ FIX: Forzar la actualización gráfica para tácticas sin daño
             ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
             if (typeof ColiseumUI.actualizarEstados === 'function') {
                 ColiseumUI.actualizarEstados(ColiseumLogic.player, ColiseumLogic.enemy);
@@ -169,9 +172,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (resultado.anims.curacionAtacante > 0) {
             ColiseumUI.animarCuracion(atacante.isPlayer);
             ColiseumUI.mostrarTextoFlotante(atacante.isPlayer, `+${resultado.anims.curacionAtacante}`, "text-heal");
-            // ✨ FIX: Asegurar que la barra de HP crezca visualmente al curarse
             ColiseumUI.actualizarHP(ColiseumLogic.player, ColiseumLogic.enemy);
         }
+
+        return tiempoAnimacion; // Devuelve el tiempo exacto que duró la animación a la función procesarRonda
     }
 
     function finalizarRonda() {
@@ -203,7 +207,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         ColiseumUI.actualizarHP(p, e);
         
-        // ✨ FIX: Refrescar la bandeja al limpiar los estados expirados
         if (typeof ColiseumUI.actualizarEstados === 'function') {
             ColiseumUI.actualizarEstados(p, e);
         }
