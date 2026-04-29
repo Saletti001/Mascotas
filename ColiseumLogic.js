@@ -522,8 +522,9 @@ window.ColiseumLogic = {
             }
         }
         
+        // ✨ FIX BALANCE V10.2: Nerf a pasiva Biomutante (de 6%+2 a 5%+1)
         if (fighter.element === "Biomutante" && fighter.hp < fighter.maxHp) {
-            let regen = Math.floor(fighter.maxHp * 0.06) + 2;
+            let regen = Math.floor(fighter.maxHp * 0.05) + 1;
             fighter.hp = Math.min(fighter.maxHp, fighter.hp + regen); anims.heal += regen;
             logs.push(`<span style="color:#4CAF50">🌿 [Pasivo: Biomutante] ${this.cName(fighter)} regenera ${regen} HP.</span>`);
         }
