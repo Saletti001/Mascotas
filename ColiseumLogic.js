@@ -339,6 +339,10 @@ window.ColiseumLogic = {
                 
                 // 3. Evasión del Defensor
                 let evasion = 0;
+                
+                // ✨ NUEVO: Bono natural de Evasión por Agilidad (0.1% por cada punto de SPD)
+                evasion += (defensor.spd * 0.001); 
+
                 if (defensor.genesId.includes("esquiva_genetica")) evasion += 0.15; // Gen pasivo
                 
                 let buffEvasion = defensor.efectosActivos.find(ef => ef.stat === "evasion");
