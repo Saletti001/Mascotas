@@ -150,11 +150,42 @@ window.ColiseumLogic = {
             hidden_genes: eHiddenGenes, level: nivelJugador
         };
 
+        // --- REEMPLAZA DESDE AQUÍ HASTA EL FINAL DE LA FUNCIÓN ---
         let pAtks = window.miMascota && window.miMascota.ataques ? window.miMascota.ataques : {};
+        
+        // 1. Diccionario de Counters (Quién destruye a tu Geno)
+        const counterDelJugador = {
+            "Biomutante": "Viral",       // Viral hace x1.35 a Biomutante
+            "Sintético": "Biomutante",   // Biomutante hace x1.35 a Sintético
+            "Tóxico": "Sintético",       // Sintético hace x1.35 a Tóxico
+            "Radiactivo": "Tóxico",      // Tóxico hace x1.35 a Radiactivo
+            "Cibernético": "Radiactivo", // Radiactivo hace x1.35 a Cibernético
+            "Viral": "Cibernético"       // Cibernético hace x1.35 a Viral
+        };
+        
+        let pElement = this.player ? this.player.element : "Normal";
+        let elementoCounter = counterDelJugador[pElement] || eElemento;
+
+        let atkEsp = pAtks.atk_2 ? this.obtenerAtaqueAleatorio(eElemento, "especiales") : null;
+        let atkTac = pAtks.atk_3 ? this.obtenerAtaqueAleatorio(eElemento, "soportes") : null;
+
+        // ✨ FIX INTELIGENCIA DE DRAFT: Equipar 1 habilidad de VENTAJA DIRECTA
+        // El enemigo sacrificará un ataque propio para equiparse el counter de tu Geno
+        if (pAtks.atk_2 && pAtks.atk_3) {
+            // 50% de probabilidad de esconder el counter en el Especial o en la Táctica
+            if (Math.random() < 0.5) {
+                atkEsp = this.obtenerAtaqueAleatorio(elementoCounter, "especiales");
+            } else {
+                atkTac = this.obtenerAtaqueAleatorio(elementoCounter, "soportes");
+            }
+        } else if (pAtks.atk_2) {
+            atkEsp = this.obtenerAtaqueAleatorio(elementoCounter, "especiales");
+        }
+
         let enemyAtaques = {
             "ataque": this.obtenerAtaqueAleatorio(eElemento, "basicos"),
-            "especial": pAtks.atk_2 ? this.obtenerAtaqueAleatorio(eElemento, "especiales") : null,
-            "tactica": pAtks.atk_3 ? this.obtenerAtaqueAleatorio(eElemento, "soportes") : null,
+            "especial": atkEsp,
+            "tactica": atkTac,
             "definitivo": (pAtks.atk_4 && nivelJugador >= 25) ? this.obtenerAtaqueAleatorio(eElemento, "definitivos") : null
         };
         
@@ -162,7 +193,7 @@ window.ColiseumLogic = {
             nombre: this.generarNombreAleatorio(), isPlayer: false, adn: adn,
             maxHp: eStats.hp, hp: eStats.hp, atk: eStats.atk, def: eStats.def || 5, spd: eStats.spd, luk: eStats.luk,
             baseAtk: eStats.atk, baseDef: eStats.def || 5, baseSpd: eStats.spd, baseLuk: eStats.luk,
-            element: eElemento, rareza: eRareza, genesId: genesEnemigo,
+            element: eElemento, rareza: eRareza, genesId: genesEnemigo, // Asumiendo que definiste genesEnemigo arriba
             estados: [], efectosActivos: [], cooldowns: { especial: 0, tactica: 0, definitivo: 0 },
             escudoCibernetico: eElemento === "Cibernético", 
             crystalSkin: gB === "piel_cristal" || gC === "piel_cristal",
