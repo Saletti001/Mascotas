@@ -59,15 +59,55 @@ window.ColiseumLogic = {
         }
         
         const eStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(eRareza) : {hp: 60, atk: 12, def: 8, spd: 10, luk: 5};
+        
+        // 1. Primero decidimos su Elemento y Genética (para saber qué build necesita)
+        const elementos = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
+        const eElemento = elementos[Math.floor(Math.random() * elementos.length)];
+        
+        let eHiddenGenes = {A: null, B: null, C: null};
+        if (typeof window.generarGenesV9 === 'function') eHiddenGenes = window.generarGenesV9(eRareza);
+        let gB = (eHiddenGenes.B?.id || "ninguno").toLowerCase();
+        let gC = (eHiddenGenes.C?.id || "ninguno").toLowerCase();
+        const genesEnemigo = [gB, gC];
+
+        // ✨ FIX V10.3: SISTEMA DE BUILDS INTELIGENTES (Pesos Biológicos)
+        // Base equitativa
+        let pesos = { hp: 20, atk: 20, def: 20, spd: 20, luk: 20 };
+
+        // Modificadores de Sentido Común por Elemento
+        if (eElemento === "Biomutante") { pesos.hp += 40; pesos.def += 20; pesos.spd -= 10; } // Tanque puro
+        else if (eElemento === "Sintético") { pesos.spd += 40; pesos.luk += 30; pesos.def -= 10; } // Asesino Crítico
+        else if (eElemento === "Cibernético") { pesos.def += 40; pesos.atk += 20; pesos.luk -= 10; } // Muralla de contraataque
+        else if (eElemento === "Viral") { pesos.spd += 25; pesos.atk += 25; pesos.hp += 10; } // Hostigador rápido
+        else if (eElemento === "Radiactivo") { pesos.atk += 40; pesos.hp += 20; pesos.def -= 10; } // Cañón de Cristal
+        else if (eElemento === "Tóxico") { pesos.hp += 30; pesos.def += 30; pesos.atk -= 10; } // Desgaste defensivo
+
+        // Modificadores Estratégicos por Genes Ocultos
+        if (genesEnemigo.includes("velocidad_fantasma") || genesEnemigo.includes("esquiva_genetica")) pesos.spd += 50;
+        if (genesEnemigo.includes("vampirismo_genetico") || genesEnemigo.includes("instinto_caza") || genesEnemigo.includes("ruptura_defensiva")) pesos.atk += 50;
+        if (genesEnemigo.includes("armadura_adaptativa") || genesEnemigo.includes("postura_inquebrantable") || genesEnemigo.includes("nucleo_coraza")) pesos.def += 50;
+        if (genesEnemigo.includes("resiliencia_ultima") || genesEnemigo.includes("frenesi") || genesEnemigo.includes("barrera_limite")) { pesos.hp += 40; pesos.atk += 20; }
+        if (genesEnemigo.includes("reflejo_genetico")) pesos.luk += 50;
+
+        // Limpiar pesos negativos por si acaso
+        for (let stat in pesos) if (pesos[stat] < 1) pesos[stat] = 1;
+
+        // Crear la "Bolsa de Entrenamiento"
+        let bolsaStats = [];
+        for (let stat in pesos) {
+            for (let i = 0; i < pesos[stat]; i++) {
+                bolsaStats.push(stat);
+            }
+        }
+
+        // 2. Repartir los puntos de Nivel usando la Bolsa Inteligente
         let puntosExtra = (nivelJugador > 1) ? (nivelJugador - 1) * 3 : 0;
         for(let i=0; i<puntosExtra; i++) {
-            const stats = ['hp', 'atk', 'def', 'spd', 'luk'];
-            const rStat = stats[Math.floor(Math.random() * stats.length)];
+            let rStat = bolsaStats[Math.floor(Math.random() * bolsaStats.length)];
             if(rStat === 'hp') eStats.hp += 5; else eStats[rStat] += 1;
         }
             
-        const elementos = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
-        const eElemento = elementos[Math.floor(Math.random() * elementos.length)];
+        // 3. Generación Visual Procedural (Formas, Colores y Accesorios)
         const formas = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
         const colores = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77", "#ff9800", "#ffb347", "#a8e6cf"];
         const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry", "cibernetico", "alien", "ojeras"];
@@ -102,9 +142,6 @@ window.ColiseumLogic = {
             if (slotsDisponibles.includes("extra") && opcionesExtras.length > 0) eExtra = opcionesExtras[Math.floor(Math.random() * opcionesExtras.length)];
         }
 
-        let eHiddenGenes = {A: null, B: null, C: null};
-        if (typeof window.generarGenesV9 === 'function') eHiddenGenes = window.generarGenesV9(eRareza);
-        
         const adn = { 
             id: 888, scanned: true, rarity: eRareza, stats: eStats, element: eElemento,
             body_shape: formas[Math.floor(Math.random() * formas.length)], color: colores[Math.floor(Math.random() * colores.length)],
@@ -121,14 +158,11 @@ window.ColiseumLogic = {
             "definitivo": (pAtks.atk_4 && nivelJugador >= 25) ? this.obtenerAtaqueAleatorio(eElemento, "definitivos") : null
         };
         
-        let gB = (eHiddenGenes.B?.id || "ninguno").toLowerCase();
-        let gC = (eHiddenGenes.C?.id || "ninguno").toLowerCase();
-
         this.enemy = {
             nombre: this.generarNombreAleatorio(), isPlayer: false, adn: adn,
             maxHp: eStats.hp, hp: eStats.hp, atk: eStats.atk, def: eStats.def || 5, spd: eStats.spd, luk: eStats.luk,
             baseAtk: eStats.atk, baseDef: eStats.def || 5, baseSpd: eStats.spd, baseLuk: eStats.luk,
-            element: eElemento, rareza: eRareza, genesId: [gB, gC],
+            element: eElemento, rareza: eRareza, genesId: genesEnemigo,
             estados: [], efectosActivos: [], cooldowns: { especial: 0, tactica: 0, definitivo: 0 },
             escudoCibernetico: eElemento === "Cibernético", 
             crystalSkin: gB === "piel_cristal" || gC === "piel_cristal",
