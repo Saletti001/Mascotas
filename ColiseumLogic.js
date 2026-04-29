@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V13.10 (LOGS DE BUFFS Y ESCUDOS GARANTIZADOS)
+// ColiseumLogic.js - MODELO MATEMÁTICO V13.11 (PRECISIÓN Y EVASIÓN REAL)
 // =========================================
 
 window.ColiseumLogic = {
@@ -48,7 +48,6 @@ window.ColiseumLogic = {
         let eRareza = "Común"; 
         let pRareza = this.player ? (this.player.rareza || this.player.rarity || "Común") : "Común";
 
-        // Los enemigos tienden a ser de igual o mayor rareza que tu Geno
         if (pRareza === "Común") {
             eRareza = roll < 0.60 ? "Raro" : "Común";
         } else if (pRareza === "Raro") {
@@ -61,18 +60,16 @@ window.ColiseumLogic = {
         
         const eStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(eRareza) : {hp: 60, atk: 12, def: 8, spd: 10, luk: 5};
         
-        // ✨ NUEVA DIFICULTAD: Priorizar Calidades Altas (S, A, B)
         let rollCalidad = Math.random();
-        let purezaEnemigo = 60; // Nivel B por defecto
+        let purezaEnemigo = 60; 
         
-        if (rollCalidad < 0.25) purezaEnemigo = 95; // 25% S
-        else if (rollCalidad < 0.65) purezaEnemigo = 85; // 40% A
-        else if (rollCalidad < 0.90) purezaEnemigo = 70; // 25% B
-        else purezaEnemigo = 40; // Solo un 10% de sacar C o D
+        if (rollCalidad < 0.25) purezaEnemigo = 95; 
+        else if (rollCalidad < 0.65) purezaEnemigo = 85; 
+        else if (rollCalidad < 0.90) purezaEnemigo = 70; 
+        else purezaEnemigo = 40; 
 
         eStats.pureza = purezaEnemigo;
         
-        // El bono de calidad aumenta sus stats reales antes de subir de nivel
         let bonoPureza = purezaEnemigo >= 90 ? 4 : (purezaEnemigo >= 80 ? 3 : (purezaEnemigo >= 60 ? 1 : 0));
         eStats.hp += bonoPureza * 3;
         eStats.atk += bonoPureza;
@@ -80,7 +77,6 @@ window.ColiseumLogic = {
         eStats.spd += bonoPureza;
         eStats.luk += bonoPureza;
 
-        // ✨ NUEVA DIFICULTAD: Enemigos +3 Niveles si superas el Nivel 10
         let nivelEnemigo = nivelJugador > 10 ? nivelJugador + 3 : nivelJugador;
 
         const elementos = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
@@ -92,7 +88,6 @@ window.ColiseumLogic = {
         let gC = (eHiddenGenes.C?.id || "ninguno").toLowerCase();
         const genesEnemigo = [gB, gC];
 
-        // Pesos Biológicos para Builds Inteligentes
         let pesos = { hp: 20, atk: 20, def: 20, spd: 20, luk: 20 };
         if (eElemento === "Biomutante") { pesos.hp += 40; pesos.def += 20; pesos.spd -= 10; }
         else if (eElemento === "Sintético") { pesos.spd += 40; pesos.luk += 30; pesos.def -= 10; }
@@ -116,7 +111,6 @@ window.ColiseumLogic = {
             }
         }
 
-        // Repartimos los puntos usando el nuevo "nivelEnemigo" en vez del tuyo
         let puntosExtra = (nivelEnemigo > 1) ? (nivelEnemigo - 1) * 3 : 0;
         for(let i=0; i<puntosExtra; i++) {
             let rStat = bolsaStats[Math.floor(Math.random() * bolsaStats.length)];
@@ -162,19 +156,14 @@ window.ColiseumLogic = {
             body_shape: formas[Math.floor(Math.random() * formas.length)], color: colores[Math.floor(Math.random() * colores.length)],
             eye_type: opcionesOjos[Math.floor(Math.random() * opcionesOjos.length)], mouth_type: opcionesBocas[Math.floor(Math.random() * opcionesBocas.length)], 
             wing_type: eWing, hat_type: eHat, glasses_type: eGlasses, extra_type: eExtra,
-            hidden_genes: eHiddenGenes, level: nivelEnemigo // Aquí le mostramos el Nivel superior al escáner
+            hidden_genes: eHiddenGenes, level: nivelEnemigo
         };
 
-        // Draft Inteligente y Counters
         let pAtks = window.miMascota && window.miMascota.ataques ? window.miMascota.ataques : {};
         
         const counterDelJugador = {
-            "Biomutante": "Viral",
-            "Sintético": "Biomutante",
-            "Tóxico": "Sintético",
-            "Radiactivo": "Tóxico",
-            "Cibernético": "Radiactivo",
-            "Viral": "Cibernético"
+            "Biomutante": "Viral", "Sintético": "Biomutante", "Tóxico": "Sintético",
+            "Radiactivo": "Tóxico", "Cibernético": "Radiactivo", "Viral": "Cibernético"
         };
         
         let pElement = this.player ? this.player.element : "Normal";
@@ -184,19 +173,15 @@ window.ColiseumLogic = {
         let atkTac = pAtks.atk_3 ? this.obtenerAtaqueAleatorio(eElemento, "soportes") : null;
 
         if (pAtks.atk_2 && pAtks.atk_3) {
-            if (Math.random() < 0.5) {
-                atkEsp = this.obtenerAtaqueAleatorio(elementoCounter, "especiales");
-            } else {
-                atkTac = this.obtenerAtaqueAleatorio(elementoCounter, "soportes");
-            }
+            if (Math.random() < 0.5) atkEsp = this.obtenerAtaqueAleatorio(elementoCounter, "especiales");
+            else atkTac = this.obtenerAtaqueAleatorio(elementoCounter, "soportes");
         } else if (pAtks.atk_2) {
             atkEsp = this.obtenerAtaqueAleatorio(elementoCounter, "especiales");
         }
 
         let enemyAtaques = {
             "ataque": this.obtenerAtaqueAleatorio(eElemento, "basicos"),
-            "especial": atkEsp,
-            "tactica": atkTac,
+            "especial": atkEsp, "tactica": atkTac,
             "definitivo": (pAtks.atk_4 && nivelEnemigo >= 25) ? this.obtenerAtaqueAleatorio(eElemento, "definitivos") : null
         };
         
@@ -282,21 +267,11 @@ window.ColiseumLogic = {
             let pctHP = atacante.hp / atacante.maxHp;
             if (pctHP > 0.70) potenciaAtaque += Math.floor((pctHP - 0.70) * 100);
         }
-        if (ataqueReal.bonusPorEstado) {
-            potenciaAtaque += (defensor.estados.length * ataqueReal.bonusPorEstado);
-        }
-        if (ataqueReal.requiereEstado && defensor.estados.includes(ataqueReal.requiereEstado)) {
-            potenciaAtaque *= (ataqueReal.bonusMultiplicador || 1);
-        }
-        if (ataqueReal.bonusContraEstado && defensor.estados.includes(ataqueReal.bonusContraEstado)) {
-            potenciaAtaque *= (ataqueReal.multiplier || 1);
-        }
-        if (ataqueReal.bonusSiPrimero && (atacante.spd >= defensor.spd)) {
-            potenciaAtaque = ataqueReal.bonusSiPrimero;
-        }
-        if (ataqueReal.duplicaSiguienteVeneno) {
-            atacante.proxVenenoDoble = true;
-        }
+        if (ataqueReal.bonusPorEstado) potenciaAtaque += (defensor.estados.length * ataqueReal.bonusPorEstado);
+        if (ataqueReal.requiereEstado && defensor.estados.includes(ataqueReal.requiereEstado)) potenciaAtaque *= (ataqueReal.bonusMultiplicador || 1);
+        if (ataqueReal.bonusContraEstado && defensor.estados.includes(ataqueReal.bonusContraEstado)) potenciaAtaque *= (ataqueReal.multiplier || 1);
+        if (ataqueReal.bonusSiPrimero && (atacante.spd >= defensor.spd)) potenciaAtaque = ataqueReal.bonusSiPrimero;
+        if (ataqueReal.duplicaSiguienteVeneno) atacante.proxVenenoDoble = true;
 
         if (ataqueReal.reactivo) {
             let danoPrevio = atacante.danoRecibidoEsteTurno > 0 ? atacante.danoRecibidoEsteTurno : (atacante.danoRecibidoTurnoAnterior || 0);
@@ -352,10 +327,45 @@ window.ColiseumLogic = {
                 atkBruto = atkBruto * multElem * stab;
                 anims.multElem = multElem;
 
+                // ✨ FIX V13.11: SISTEMA DE PRECISIÓN Y EVASIÓN
+                // 1. Precisión base del ataque (Ej: Cañón Orbital = 0.85)
+                let precision = (ataqueReal.precision !== undefined) ? ataqueReal.precision : 1.0;
+                if (ataqueReal.nombre === "Oleada Mutante" || ataqueReal.nombre === "Cañón Orbital") precision = 0.85;
+
+                // 2. Reducción por Visión Nublada
+                if (atacante.estados.includes("Visión Nublada") || atacante.estados.includes("Vision Nublada")) {
+                    precision -= 0.25;
+                }
+                
+                // 3. Evasión del Defensor
+                let evasion = 0;
+                if (defensor.genesId.includes("esquiva_genetica")) evasion += 0.15; // Gen pasivo
+                
+                let buffEvasion = defensor.efectosActivos.find(ef => ef.stat === "evasion");
+                if (buffEvasion) evasion += buffEvasion.valor; // Esquiva Calculada o Viral
+                
+                let probHit = precision - evasion;
+                if (ataqueReal.nombre && ataqueReal.nombre.includes("Láser de Precisión")) probHit = 2.0; // Nunca falla
+                
+                // Tirar los dados de evasión
+                if (Math.random() > probHit) {
+                    golpeActual.evadido = true;
+                    atkBruto = 0; // Se anula el daño
+                    logs.push(`> <span style="color:#e0e0e0; font-style:italic;">💨 ¡${this.cName(defensor)} logró evadir el ataque!</span>`);
+                    
+                    // Sinergia especial: Esquiva Calculada aumenta la SPD si tiene éxito
+                    if (buffEvasion && buffEvasion.nombre.includes("Esquiva Calculada")) {
+                        let spdBoost = Math.floor(defensor.baseSpd * 0.10) || 1;
+                        defensor.spd += spdBoost;
+                        defensor.efectosActivos.push({ nombre: "Reflejos", stat: "spd", valor: spdBoost, turnos: 2, isNuevo: true });
+                        logs.push(`<span style="color:#00e5ff">⚡ ¡Tras evadir, ${this.cName(defensor)} aumenta su Velocidad en +${spdBoost}!</span>`);
+                    }
+                }
+
                 let defRival = defensor.def;
 
                 if (ataqueReal.perforante || ataqueReal.rompeEscudos) {
-                    if (defensor.genesId.includes("decoy") && !defensor.decoyUsado) {
+                    if (defensor.genesId.includes("decoy") && !defensor.decoyUsado && atkBruto > 0) {
                         defensor.decoyUsado = true;
                         atkBruto = 0; 
                         golpeActual.evadido = true;
@@ -442,11 +452,9 @@ window.ColiseumLogic = {
             }
         }
 
-        // ✨ NUEVO: SISTEMA EXPLÍCITO DE LOGS PARA BUFFS Y ESCUDOS
         let probAply = ataqueReal.probEstado !== undefined ? ataqueReal.probEstado : 1.0;
         if (Math.random() <= probAply) {
             let duracionBase = ataqueReal.duracion || 3;
-
             let aplicarDebuffAtk = ataqueReal.debuffAtk;
             let aplicarDebuffSpd = ataqueReal.debuffSpd;
 
@@ -471,19 +479,28 @@ window.ColiseumLogic = {
             }
             if (ataqueReal.escudo) {
                 let val = Math.floor(atacante.maxHp * ataqueReal.escudo);
-                if (val < 15) val = 15; // Garantiza un escudo útil
+                if (val < 15) val = 15;
                 atacante.def += val;
                 atacante.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "def", valor: val, turnos: duracionBase, isNuevo: true });
                 logs.push(`<span style="color:#80deea">🛡️ ¡${this.cName(atacante)} levanta una barrera de +${val} DEF!</span>`);
             }
             if (ataqueReal.buffDef) {
                 let val = Math.floor(atacante.baseDef * ataqueReal.buffDef);
-                if (val < 15) val = 15; // Garantiza un buff útil
+                if (val < 15) val = 15;
                 atacante.def += val;
                 atacante.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "def", valor: val, turnos: duracionBase, isNuevo: true });
                 logs.push(`<span style="color:#80deea">🛡️ ¡${this.cName(atacante)} aumenta su Defensa en +${val}!</span>`);
             }
-            // Salvavidas específico para Protocolo de Escudo si le faltaran datos en el catálogo
+
+            // ✨ APLICACIÓN DE BUFFS DE EVASIÓN
+            if (ataqueReal.nombre && ataqueReal.nombre.includes("Esquiva Calculada") && !ataqueReal.buffEvasion) ataqueReal.buffEvasion = 0.75;
+            if (ataqueReal.nombre && ataqueReal.nombre.includes("Evasión Viral") && !ataqueReal.buffEvasion) ataqueReal.buffEvasion = 0.60;
+            
+            if (ataqueReal.buffEvasion) {
+                atacante.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "evasion", valor: ataqueReal.buffEvasion, turnos: 2, isNuevo: true });
+                logs.push(`<span style="color:#e0e0e0">💨 ¡${this.cName(atacante)} adopta una postura evasiva (+${Math.floor(ataqueReal.buffEvasion * 100)}% Evasión)!</span>`);
+            }
+
             if (ataqueReal.nombre && ataqueReal.nombre.includes("Protocolo de Escudo") && !ataqueReal.escudo && !ataqueReal.buffDef) {
                 let val = Math.floor(defensor.baseAtk * 0.35) || 15;
                 atacante.def += val;
@@ -589,18 +606,20 @@ window.ColiseumLogic = {
                         fighter.estados = fighter.estados.filter(e => e !== ef.valor);
                         logs.push(`<span style="color:#888;">> ⏳ El estado [${ef.nombre}] sobre ${this.cName(fighter)} se disipó.</span>`);
                     } else if (ef.stat) {
-                        fighter[ef.stat] -= ef.valor;
+                        if (ef.stat !== "evasion") { // La evasión no restaura stats, simplemente desaparece
+                            fighter[ef.stat] -= ef.valor;
+                        }
                         let accion = ef.valor > 0 ? "terminó" : "se recuperó";
-                        logs.push(`<span style="color:#888;">> ⏳ El efecto de [${ef.nombre}] ${accion} en ${this.cName(fighter)}. Sus stats vuelven a la normalidad.</span>`);
+                        logs.push(`<span style="color:#888;">> ⏳ El efecto de [${ef.nombre}] ${accion} en ${this.cName(fighter)}.</span>`);
                     }
                     fighter.efectosActivos.splice(i, 1);
                 }
             }
         }
         
-        // ✨ FIX BALANCE V10.2: Nerf a pasiva Biomutante (de 6%+2 a 5%+1)
+        // ✨ FIX BALANCE V10.2: Nerf a pasiva Biomutante (de 6%+2 a 3%)
         if (fighter.element === "Biomutante" && fighter.hp < fighter.maxHp) {
-            let regen = Math.floor(fighter.maxHp * 0.03);
+            let regen = Math.floor(fighter.maxHp * 0.03) || 1;
             fighter.hp = Math.min(fighter.maxHp, fighter.hp + regen); anims.heal += regen;
             logs.push(`<span style="color:#4CAF50">🌿 [Pasivo: Biomutante] ${this.cName(fighter)} regenera ${regen} HP.</span>`);
         }
