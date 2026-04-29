@@ -337,18 +337,26 @@ window.ColiseumLogic = {
                     precision -= 0.25;
                 }
                 
-                // 3. Evasión del Defensor
-                let evasion = 0;
+                // 3. Evasión del Defensor (SISTEMA DE DOBLE TECHO)
+                let evasionPasiva = 0;
                 
-                // ✨ NUEVO: Bono natural de Evasión por Agilidad (0.1% por cada punto de SPD)
-                evasion += (defensor.spd * 0.001); 
+                // Bono natural por Agilidad (0.4% por punto) y Gen Pasivo
+                evasionPasiva += (defensor.spd * 0.004); 
+                if (defensor.genesId.includes("esquiva_genetica")) evasionPasiva += 0.15; 
+                
+                // ✨ TECHO 1: Límite Pasivo (Máximo 40% permanente)
+                evasionPasiva = Math.min(evasionPasiva, 0.40);
 
-                if (defensor.genesId.includes("esquiva_genetica")) evasion += 0.15; // Gen pasivo
-                
+                let evasionTotal = evasionPasiva;
+
+                // Se suman los buffs tácticos (Esquiva Calculada, Evasión Viral) que cuestan un turno
                 let buffEvasion = defensor.efectosActivos.find(ef => ef.stat === "evasion");
-                if (buffEvasion) evasion += buffEvasion.valor; // Esquiva Calculada o Viral
+                if (buffEvasion) evasionTotal += buffEvasion.valor; 
                 
-                let probHit = precision - evasion;
+                // ✨ TECHO 2: Límite Absoluto (Máximo 85%, siempre hay un 15% de probabilidad de recibir el golpe)
+                evasionTotal = Math.min(evasionTotal, 0.85);
+
+                let probHit = precision - evasionTotal;
                 if (ataqueReal.nombre && ataqueReal.nombre.includes("Láser de Precisión")) probHit = 2.0; // Nunca falla
                 
                 // Tirar los dados de evasión
