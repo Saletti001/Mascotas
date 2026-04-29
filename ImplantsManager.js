@@ -209,73 +209,41 @@ window.ImplantsManager = {
     checkCompatibility: function(item, slot) {
         const geno = window.miMascota;
         if (!geno) return false;
+
+        // Slot 1: El ataque básico es innato, no se puede cambiar por inventario
         if (slot === 'atk_1') return false;
-        if (slot === 'atk_4') return item.subType === "Definitivo" && item.element === geno.element;
-        if (slot === 'atk_2') if (item.subType === "Soporte" || item.tier === "Soporte" || item.subType === "Definitivo") return false;
-        if (slot === 'atk_3') if (item.subType !== "Soporte" && item.tier !== "Soporte") return false;
-        
-        const contrarios = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
-        if (contrarios[item.element] === geno.element) return item.tier === "Básico" || item.subType === "Básico"; 
-        return true;
-    },
 
-    installModule: function(item, originalIndex, isCosmetic) {
-        if (!window.miInventario) return;
-        
-        const costo = isCosmetic ? (item.evCost || 0) : this.calculateCost(item);
-        let currentEV = window.miInventario.vitalEssence || 0;
-        
-        if (currentEV < costo) {
-            alert(`No tienes suficiente Esencia Vital (✨ EV). Necesitas ${costo}.`);
-            return;
+        // Slot 4: Definitivos. Regla estricta: Solo del mismo elemento y Geno Nivel 25+
+        if (slot === 'atk_4') {
+            return (item.subType === "Definitivo" && item.element === geno.element && geno.level >= 25);
         }
 
-        if (confirm(`¿Equipar ${item.name} ${costo > 0 ? 'por ' + costo + ' ✨ EV' : ''}?`)) {
+        // Slot 3: Soportes / Tácticas. Regla estricta: 100% Universales (Ignoran el elemento)
+        if (slot === 'atk_3') {
+            return (item.subType === "Soporte" || item.tier === "Soporte");
+        }
+
+        // Slot 2: Especiales. 
+        if (slot === 'atk_2') {
+            // No podemos equipar ni Soportes ni Definitivos en el slot de Especiales
+            if (item.subType === "Soporte" || item.tier === "Soporte" || item.subType === "Definitivo") return false;
+
+            // Regla del GDD: Los ataques Especiales del elemento CONTRARIO directo están prohibidos.
+            const contrarios = { 
+                "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", 
+                "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" 
+            };
             
-            if (costo > 0) {
-                window.miInventario.vitalEssence -= costo;
-                window.miInventario.updateUI(); 
-                const domEl = document.getElementById("vital-essence-amount");
-                if (domEl) domEl.innerText = `✨ ${window.miInventario.vitalEssence}`;
+            // Si el MT es la debilidad de tu Geno, o tu Geno es la debilidad del MT, es incompatible
+            if (contrarios[item.element] === geno.element || contrarios[geno.element] === item.element) {
+                return false; 
             }
 
-            // ✨ FIX V22: Intercambio seguro (Auto-Desequipar).
-            // Primero sacamos el nuevo equipo de la mochila, luego metemos el viejo, para que nunca falte espacio.
-            const itemToReturn = this.getItemToUnequip(this.targetSlot, isCosmetic);
-            window.miInventario.removeItem(originalIndex, 1);
-            if (itemToReturn) {
-                window.miInventario.addItem(itemToReturn);
-            }
-
-            // Guardamos una copia limpia del item en el Geno para poder devolverla luego
-            const itemCopy = { ...item };
-            delete itemCopy.originalIndex;
-
-            if (isCosmetic) {
-                if (!window.miMascota.cosmeticos) window.miMascota.cosmeticos = {};
-                window.miMascota.cosmeticos[this.targetSlot] = itemCopy;
-
-                if (this.targetSlot === 'head') window.miMascota.hat_type = item.id_cosmetico;
-                if (this.targetSlot === 'back') window.miMascota.wing_type = item.id_cosmetico;
-                if (this.targetSlot === 'skin') window.miMascota.skin_type = item.id_cosmetico;
-                if (this.targetSlot === 'aura') window.miMascota.aura_type = item.id_cosmetico;
-            } else {
-                if (!window.miMascota.ataques) window.miMascota.ataques = {};
-                window.miMascota.ataques[this.targetSlot] = {
-                    id: item.id_ataque || item.id,
-                    nombre: item.name,
-                    element: item.element,
-                    power: item.power || 0,
-                    itemData: itemCopy 
-                };
-            }
-
-            this.syncAndSave();
-            alert("¡Equipo instalado con éxito!");
-            this.closeSelector();
-            this.updateSlotLabels();
-            this.refreshPreview(); 
+            // Si es de su mismo elemento o de un elemento adyacente, sí es compatible
+            return true;
         }
+
+        return false;
     },
 
     calculateCost: function(item) {
