@@ -148,6 +148,26 @@ document.addEventListener("DOMContentLoaded", () => {
     function ejecutarAccionYAnimar(atacante, defensor, accionElegida) {
         if (atacante.hp <= 0 || defensor.hp <= 0) return 0;
         
+        // ✨ FIX V10.4: SISTEMA DE CONTROL DE MASAS (Parálisis y Congelación)
+        // Bloquean el turno ANTES de ejecutar el ataque
+        if (atacante.estados.includes("Congelación") || atacante.estados.includes("Congelacion")) {
+            ColiseumUI.agregarLog(`> ❄️ <span style="color:#80deea; font-weight:bold;">¡${ColiseumLogic.cName(atacante)} está completamente congelado y no puede moverse!</span>`);
+            ColiseumUI.mostrarTextoFlotante(atacante.isPlayer, "¡CONGELADO!", "text-block");
+            ColiseumUI.animarDano(atacante.isPlayer, null, "ataque"); // Hace un pequeño temblor
+            return 1000; // Tarda 1 segundo la animación y salta el turno
+        }
+
+        if (atacante.estados.includes("Parálisis") || atacante.estados.includes("Paralisis")) {
+            // 35% de probabilidad de que la parálisis le impida moverse ese turno
+            if (Math.random() <= 0.35) { 
+                ColiseumUI.agregarLog(`> ⚡ <span style="color:#ffcc00; font-weight:bold;">¡${ColiseumLogic.cName(atacante)} está paralizado! ¡Su cuerpo no responde!</span>`);
+                ColiseumUI.mostrarTextoFlotante(atacante.isPlayer, "¡PARALIZADO!", "text-crit");
+                ColiseumUI.animarDano(atacante.isPlayer, null, "ataque"); // Tiembla de la electricidad
+                if(window.Sonidos) window.Sonidos.play("hit");
+                return 1000;
+            }
+        }
+
         let hpVisualAtacante = atacante.hp;
         let hpVisualDefensor = defensor.hp;
 
@@ -200,7 +220,6 @@ document.addEventListener("DOMContentLoaded", () => {
         } else if (ataqueUsado) {
             ColiseumUI.animarSoporte(atacante.isPlayer, ataqueUsado);
             
-            // ✨ FIX VISUAL: Si la táctica aplica un estado o perjudica al rival, lo hacemos temblar
             if (ataqueUsado.aplicaEstado || ataqueUsado.debuffAtk || ataqueUsado.debuffSpd || ataqueUsado.nombre === "Campo Radioactivo") {
                 setTimeout(() => {
                     ColiseumUI.animarDano(!atacante.isPlayer, ataqueUsado, accionElegida);
