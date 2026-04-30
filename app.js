@@ -1,5 +1,5 @@
 // =========================================
-// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V10.1 - TAMAÑO RESTAURADO)
+// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V14.3 - RESTAURACIÓN EXACTA DE HP)
 // Requiere cargar 'genes.js' previamente en el HTML.
 // =========================================
 
@@ -23,7 +23,7 @@ window.generarStatsPorRareza = function(rareza) {
     return {
         hp: randStat(limites.hp[0], limites.hp[1]),
         atk: randStat(limites.atk[0], limites.atk[1]),
-        def: randStat(limites.def[0], limites.def[1]), // NUEVO STAT DEF
+        def: randStat(limites.def[0], limites.def[1]),
         spd: randStat(limites.spd[0], limites.spd[1]),
         luk: randStat(limites.luk[0], limites.luk[1])
     };
@@ -94,33 +94,65 @@ window.getMaxCrias = function(geno) { return window.tieneGenActivoV9(geno, "fert
 window.getMultiplicadorXP = function(geno) { return window.tieneGenActivoV9(geno, "aprendiz_acelerado") ? 1.25 : 1.0; };
 window.getMultiplicadorEsencia = function(geno) { return window.tieneGenActivoV9(geno, "esencia_concentrada") ? 2.0 : 1.0; };
 
-// ✨ MIGRACIÓN V14.0: Duplicar HP de los Genos antiguos
+// ✨ MIGRACIÓN DEFINITIVA V14.3: Restaura tus 110 puntos reales y solo duplica la base original
 window.migrarHPGenosExistentes = function() {
     if (!window.misGenos || window.misGenos.length === 0) return;
     
     let genosActualizados = 0;
 
     window.misGenos.forEach(geno => {
-        if (!geno.hp_migrado_v14) {
-            if (geno.stats && geno.stats.hp) geno.stats.hp = geno.stats.hp * 2;
-            if (geno.hp) geno.hp = geno.hp * 2;
-            if (geno.maxHp) geno.maxHp = geno.maxHp * 2;
+        // Solo ejecutar si no ha recibido la migración definitiva 14.3
+        if (!geno.hp_migrado_v14_3) {
+            
+            if (geno.stats && typeof geno.stats.hp === 'number') {
+                // 1. Recuperamos la base original (Ej. 50)
+                let baseOriginal = geno.stats.hp; 
+                
+                // Si el script anterior alcanzó a duplicar la base a 100, la regresamos a 50 temporalmente
+                // Sabemos que si es Común y su base es 100, probablemente fue duplicada de 50.
+                if ((geno.hp_migrado_v14 || geno.hp_migrado_v14_1 || geno.hp_migrado_v14_2) && baseOriginal >= 100 && geno.rarity === "Común") {
+                    baseOriginal = Math.round(baseOriginal / 2);
+                }
 
-            geno.hp_migrado_v14 = true;
+                // 2. Extraemos los puntos extra actuales (los 220 que se duplicaron por error)
+                let totalActual = geno.maxHp || baseOriginal;
+                let puntosExtra = totalActual - (geno.stats.hp);
+                if (puntosExtra < 0) puntosExtra = 0;
+
+                // 3. CORRECCIÓN VITAL: Devolvemos los puntos extra a su valor real legítimo (110)
+                if (puntosExtra > 0 && (geno.hp_migrado_v14 || geno.hp_migrado_v14_1 || geno.hp_migrado_v14_2)) {
+                    puntosExtra = Math.round(puntosExtra / 2); 
+                }
+
+                // 4. Ahora sí: Duplicamos SOLO la base con la que nació (50 * 2 = 100)
+                let nuevaBase = baseOriginal * 2; 
+
+                // 5. Sumamos la nueva base (100) + tus puntos reales (110) = 210 Total
+                let nuevoHpTotal = nuevaBase + puntosExtra; 
+
+                // Aplicamos al Geno
+                geno.stats.hp = nuevaBase;
+                geno.maxHp = nuevoHpTotal;
+                geno.hp = nuevoHpTotal; // Lo curamos al máximo
+            }
+
+            // Limpiamos las banderas de los parches anteriores para no ensuciar la base de datos
+            delete geno.hp_migrado_v14;
+            delete geno.hp_migrado_v14_1;
+            delete geno.hp_migrado_v14_2;
+
+            geno.hp_migrado_v14_3 = true;
             genosActualizados++;
         }
     });
 
-    if (window.miMascota && !window.miMascota.hp_migrado_v14) {
-        if (window.miMascota.stats && window.miMascota.stats.hp) window.miMascota.stats.hp = window.miMascota.stats.hp * 2;
-        if (window.miMascota.hp) window.miMascota.hp = window.miMascota.hp * 2;
-        if (window.miMascota.maxHp) window.miMascota.maxHp = window.miMascota.maxHp * 2;
-        window.miMascota.hp_migrado_v14 = true;
+    if (window.miMascota && !window.miMascota.hp_migrado_v14_3) {
+        window.miMascota.hp_migrado_v14_3 = true;
     }
 
     if (genosActualizados > 0) {
         if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
-        console.log(`🔧 Parche V14 aplicado: La vitalidad de Genos existentes ha sido duplicada.`);
+        console.log(`🔧 Parche V14.3 aplicado: Puntos extra restaurados a la normalidad y Base duplicada en ${genosActualizados} Genos.`);
     }
 };
 
@@ -148,8 +180,9 @@ document.addEventListener("DOMContentLoaded", () => {
             if (patched && typeof window.guardarProgreso === 'function') window.guardarProgreso();
         }
         
-        // ✨ EJECUTAR MIGRACIÓN V14 AQUÍ:
+        // ✨ EJECUTAR MIGRACIÓN DEFINITIVA V14.3 AQUÍ:
         window.migrarHPGenosExistentes();
+        if(typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
         
     }, 500);
 
@@ -334,7 +367,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const pColor = geno.color || geno.base_color || "#ccc";
             let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-            // ✨ CÁMARA RESTAURADA A SU ESTADO ORIGINAL AQUÍ (-20 0 200 160)
             svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             
             card.innerHTML = `
@@ -346,7 +378,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 window.miMascota = geno;
                 if (pedestal) {
                     const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-                    // ✨ CÁMARA RESTAURADA A SU ESTADO ORIGINAL AQUÍ (-20 0 200 160)
                     let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
                     pedestal.innerHTML = `<div class="geno-idle" style="color: ${pColor}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
                 }
@@ -499,7 +530,6 @@ function iniciarSecuenciaBienvenida() {
             else subtext.innerText = "Estable e integrado. Listo para la investigación.";
 
             let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
-            // ✨ CÁMARA RESTAURADA A SU ESTADO ORIGINAL AQUÍ (-20 0 200 160)
             svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             svgContainer.innerHTML = svg;
             resultDiv.style.display = "flex"; 
@@ -514,7 +544,6 @@ function iniciarSecuenciaBienvenida() {
         if (pedestal) {
             pedestal.style.display = "block";
             const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
-            // ✨ CÁMARA RESTAURADA A SU ESTADO ORIGINAL AQUÍ (-20 0 200 160)
             let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             pedestal.innerHTML = `<div class="geno-idle" style="color: ${miPrimerGeno.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
         }
