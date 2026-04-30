@@ -65,9 +65,23 @@ window.ImplantsManager = {
         const slot4 = document.getElementById(`slot-atk-4`);
         if (slot4 && window.miMascota.level >= 25) {
             slot4.innerText = def ? def.nombre.toUpperCase() : "VACÍO";
-            slot4.parentElement.style.opacity = "1";
-            slot4.parentElement.style.cursor = "pointer";
-            slot4.parentElement.onclick = () => this.openSelector('atk_4');
+            
+            // ✨ FIX V22.2: Forzar la iluminación visual del botón Definitivo
+            let btnWrapper = slot4.parentElement;
+            btnWrapper.style.opacity = "1";
+            btnWrapper.style.cursor = "pointer";
+            btnWrapper.style.borderColor = "#4dd0e1"; // Enciende el borde (Cyan)
+            
+            // Enciende los textos internos
+            Array.from(btnWrapper.children).forEach(child => {
+                if (child.id === 'slot-atk-4') {
+                    child.style.color = "#ffffff"; // Nombre del ataque en Blanco
+                } else {
+                    child.style.color = "#4dd0e1"; // Título "DEFINITIVO" en Cyan
+                }
+            });
+
+            btnWrapper.onclick = () => this.openSelector('atk_4');
         }
 
         const m = window.miMascota;
