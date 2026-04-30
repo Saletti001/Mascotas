@@ -322,7 +322,9 @@ window.ColiseumLogic = {
                 };
                 
                 let multElem = ventajas[ataqueReal.elemento] === defensor.element ? 1.35 : (ventajas[defensor.element] === ataqueReal.elemento ? 0.75 : 1.0);
-                let stab = (slotAccion !== "ataque" && atacante.element === ataqueReal.elemento) ? 1.20 : 1.0;
+
+                // ✨ NUEVA REGLA: STAB del 20% SOLO si el atacante y defensor son de elementos distintos
+                let stab = (slotAccion !== "ataque" && atacante.element === ataqueReal.elemento && atacante.element !== defensor.element) ? 1.20 : 1.0;
 
                 atkBruto = atkBruto * multElem * stab;
                 anims.multElem = multElem;
