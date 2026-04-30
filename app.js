@@ -7,14 +7,14 @@ window.misGenos = window.misGenos || [];
 window.maxGenoSlots = window.maxGenoSlots || 6; 
 
 // =========================================
-// ✨ TABLA DE IVs V10 (AHORA INCLUYE DEFENSA 'def')
+// ✨ TABLA DE IVs V14.0 (HP DUPLICADO PARA COMBATES MÁS LARGOS)
 // =========================================
 window.TABLA_IVS = {
-    "Común": { hp: [35, 55], atk: [10, 22], def: [5, 15], spd: [8, 25], luk: [5, 15] },
-    "Raro": { hp: [50, 75], atk: [18, 35], def: [10, 22], spd: [15, 40], luk: [10, 25] },
-    "Épico": { hp: [70, 100], atk: [28, 50], def: [18, 35], spd: [25, 55], luk: [20, 35] },
-    "Legendario": { hp: [95, 130], atk: [40, 70], def: [25, 50], spd: [35, 80], luk: [30, 50] },
-    "Mítico": { hp: [120, 160], atk: [60, 100], def: [40, 70], spd: [50, 110], luk: [45, 70] }
+    "Común": { hp: [70, 110], atk: [10, 22], def: [5, 15], spd: [8, 25], luk: [5, 15] },
+    "Raro": { hp: [100, 150], atk: [18, 35], def: [10, 22], spd: [15, 40], luk: [10, 25] },
+    "Épico": { hp: [140, 200], atk: [28, 50], def: [18, 35], spd: [25, 55], luk: [20, 35] },
+    "Legendario": { hp: [190, 260], atk: [40, 70], def: [25, 50], spd: [35, 80], luk: [30, 50] },
+    "Mítico": { hp: [240, 320], atk: [60, 100], def: [40, 70], spd: [50, 110], luk: [45, 70] }
 };
 
 window.generarStatsPorRareza = function(rareza) {
@@ -94,6 +94,36 @@ window.getMaxCrias = function(geno) { return window.tieneGenActivoV9(geno, "fert
 window.getMultiplicadorXP = function(geno) { return window.tieneGenActivoV9(geno, "aprendiz_acelerado") ? 1.25 : 1.0; };
 window.getMultiplicadorEsencia = function(geno) { return window.tieneGenActivoV9(geno, "esencia_concentrada") ? 2.0 : 1.0; };
 
+// ✨ MIGRACIÓN V14.0: Duplicar HP de los Genos antiguos
+window.migrarHPGenosExistentes = function() {
+    if (!window.misGenos || window.misGenos.length === 0) return;
+    
+    let genosActualizados = 0;
+
+    window.misGenos.forEach(geno => {
+        if (!geno.hp_migrado_v14) {
+            if (geno.stats && geno.stats.hp) geno.stats.hp = geno.stats.hp * 2;
+            if (geno.hp) geno.hp = geno.hp * 2;
+            if (geno.maxHp) geno.maxHp = geno.maxHp * 2;
+
+            geno.hp_migrado_v14 = true;
+            genosActualizados++;
+        }
+    });
+
+    if (window.miMascota && !window.miMascota.hp_migrado_v14) {
+        if (window.miMascota.stats && window.miMascota.stats.hp) window.miMascota.stats.hp = window.miMascota.stats.hp * 2;
+        if (window.miMascota.hp) window.miMascota.hp = window.miMascota.hp * 2;
+        if (window.miMascota.maxHp) window.miMascota.maxHp = window.miMascota.maxHp * 2;
+        window.miMascota.hp_migrado_v14 = true;
+    }
+
+    if (genosActualizados > 0) {
+        if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
+        console.log(`🔧 Parche V14 aplicado: La vitalidad de Genos existentes ha sido duplicada.`);
+    }
+};
+
 // =========================================
 // EVENTOS DE INTERFAZ DOM Y UI
 // =========================================
@@ -117,6 +147,10 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             if (patched && typeof window.guardarProgreso === 'function') window.guardarProgreso();
         }
+        
+        // ✨ EJECUTAR MIGRACIÓN V14 AQUÍ:
+        window.migrarHPGenosExistentes();
+        
     }, 500);
 
     setTimeout(() => {
