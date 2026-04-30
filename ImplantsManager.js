@@ -256,6 +256,49 @@ window.ImplantsManager = {
         return base;
     },
 
+    // ✨ FIX V22.1: FUNCIÓN RESTAURADA - Instala la MT y devuelve la vieja a la mochila
+    installModule: function(item, indexItem, isCosmetic) {
+        if (!window.miInventario || !window.miMascota) return;
+
+        // 1. Verificamos si ya hay algo en ese slot. Si hay, lo desequipamos y vuelve a la mochila.
+        const itemActual = this.getItemToUnequip(this.targetSlot, isCosmetic);
+        if (itemActual) {
+            this.unequipCurrent(this.targetSlot, isCosmetic);
+        }
+
+        // 2. Buscamos la nueva MT en la mochila y la borramos de ahí (porque ahora estará en el Geno)
+        let invArray = window.miInventario.slots || window.miInventario.items;
+        const realIndex = invArray.findIndex(i => i.id === item.id);
+        if (realIndex !== -1) {
+            invArray.splice(realIndex, 1);
+        }
+
+        // 3. Equipamos el ítem en el Geno
+        if (isCosmetic) {
+            const propMap = { head: 'hat_type', back: 'wing_type', skin: 'skin_type', aura: 'aura_type' };
+            window.miMascota[propMap[this.targetSlot]] = item.id_cosmetico || item.name.toLowerCase().replace(/\s+/g, '_');
+            if (!window.miMascota.cosmeticos) window.miMascota.cosmeticos = {};
+            window.miMascota.cosmeticos[this.targetSlot] = item;
+        } else {
+            if (!window.miMascota.ataques) window.miMascota.ataques = {};
+            
+            // Inyectamos la MT como un ataque activo
+            window.miMascota.ataques[this.targetSlot] = {
+                id: item.id_ataque || "atk_" + Math.floor(Math.random() * 10000),
+                nombre: item.name,
+                element: item.element,
+                power: item.power || 0,
+                itemData: item // Guardamos la ficha física para no perderla al desequipar
+            };
+        }
+
+        // 4. Guardamos partida y refrescamos los paneles
+        this.syncAndSave();
+        this.closeSelector();
+        this.updateSlotLabels();
+        this.refreshPreview();
+    },
+
     syncAndSave: function() {
         if (window.misGenos) {
             const index = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
