@@ -1,5 +1,5 @@
 // =========================================
-// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V14.3 - RESTAURACIÓN EXACTA DE HP)
+// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V14.4 - REPARACIÓN ABSOLUTA DE HP)
 // Requiere cargar 'genes.js' previamente en el HTML.
 // =========================================
 
@@ -94,65 +94,64 @@ window.getMaxCrias = function(geno) { return window.tieneGenActivoV9(geno, "fert
 window.getMultiplicadorXP = function(geno) { return window.tieneGenActivoV9(geno, "aprendiz_acelerado") ? 1.25 : 1.0; };
 window.getMultiplicadorEsencia = function(geno) { return window.tieneGenActivoV9(geno, "esencia_concentrada") ? 2.0 : 1.0; };
 
-// ✨ MIGRACIÓN DEFINITIVA V14.3: Restaura tus 110 puntos reales y solo duplica la base original
+// ✨ MIGRACIÓN ABSOLUTA V14.4: Fuerza la reparación matemática correcta
 window.migrarHPGenosExistentes = function() {
-    if (!window.misGenos || window.misGenos.length === 0) return;
-    
-    let genosActualizados = 0;
+    let huboCambios = false;
 
-    window.misGenos.forEach(geno => {
-        // Solo ejecutar si no ha recibido la migración definitiva 14.3
-        if (!geno.hp_migrado_v14_3) {
-            
-            if (geno.stats && typeof geno.stats.hp === 'number') {
-                // 1. Recuperamos la base original (Ej. 50)
-                let baseOriginal = geno.stats.hp; 
-                
-                // Si el script anterior alcanzó a duplicar la base a 100, la regresamos a 50 temporalmente
-                // Sabemos que si es Común y su base es 100, probablemente fue duplicada de 50.
-                if ((geno.hp_migrado_v14 || geno.hp_migrado_v14_1 || geno.hp_migrado_v14_2) && baseOriginal >= 100 && geno.rarity === "Común") {
-                    baseOriginal = Math.round(baseOriginal / 2);
-                }
+    const repararMatematicaGeno = (geno) => {
+        if (!geno || !geno.stats || typeof geno.stats.hp !== 'number') return;
+        
+        let modificado = false;
+        let baseVieja = geno.stats.hp;
+        let totalViejo = geno.maxHp || baseVieja;
+        let extraViejo = totalViejo - baseVieja;
+        
+        if (extraViejo < 0) extraViejo = 0;
 
-                // 2. Extraemos los puntos extra actuales (los 220 que se duplicaron por error)
-                let totalActual = geno.maxHp || baseOriginal;
-                let puntosExtra = totalActual - (geno.stats.hp);
-                if (puntosExtra < 0) puntosExtra = 0;
+        let baseNueva = baseVieja;
+        let extraNuevo = extraViejo;
 
-                // 3. CORRECCIÓN VITAL: Devolvemos los puntos extra a su valor real legítimo (110)
-                if (puntosExtra > 0 && (geno.hp_migrado_v14 || geno.hp_migrado_v14_1 || geno.hp_migrado_v14_2)) {
-                    puntosExtra = Math.round(puntosExtra / 2); 
-                }
-
-                // 4. Ahora sí: Duplicamos SOLO la base con la que nació (50 * 2 = 100)
-                let nuevaBase = baseOriginal * 2; 
-
-                // 5. Sumamos la nueva base (100) + tus puntos reales (110) = 210 Total
-                let nuevoHpTotal = nuevaBase + puntosExtra; 
-
-                // Aplicamos al Geno
-                geno.stats.hp = nuevaBase;
-                geno.maxHp = nuevoHpTotal;
-                geno.hp = nuevoHpTotal; // Lo curamos al máximo
-            }
-
-            // Limpiamos las banderas de los parches anteriores para no ensuciar la base de datos
-            delete geno.hp_migrado_v14;
-            delete geno.hp_migrado_v14_1;
-            delete geno.hp_migrado_v14_2;
-
-            geno.hp_migrado_v14_3 = true;
-            genosActualizados++;
+        // 1. Si la base es antigua (ej. 50 para Común, cuando el mínimo ahora es 70), la duplicamos.
+        let limitesNuevos = window.TABLA_IVS[geno.rarity || "Común"];
+        if (limitesNuevos && baseVieja < limitesNuevos.hp[0]) {
+            baseNueva = baseVieja * 2;
+            modificado = true;
         }
-    });
 
-    if (window.miMascota && !window.miMascota.hp_migrado_v14_3) {
-        window.miMascota.hp_migrado_v14_3 = true;
+        // 2. Si tiene puntos extra y no se le han arreglado, se cortan a la mitad (220 -> 110)
+        if (extraViejo > 0 && !geno.puntos_extra_reparados) {
+            extraNuevo = Math.round(extraViejo / 2);
+            geno.puntos_extra_reparados = true;
+            modificado = true;
+        }
+
+        // 3. Aplicamos la matemática limpia
+        if (modificado) {
+            geno.stats.hp = baseNueva;
+            geno.maxHp = baseNueva + extraNuevo;
+            geno.hp = geno.maxHp; // Curarlo al máximo
+            huboCambios = true;
+        }
+    };
+
+    // Reparar la mochila
+    if (window.misGenos && window.misGenos.length > 0) {
+        window.misGenos.forEach(g => repararMatematicaGeno(g));
     }
 
-    if (genosActualizados > 0) {
+    // Reparar el Geno activo en pantalla (¡EL PASO QUE FALTABA!)
+    if (window.miMascota) {
+        repararMatematicaGeno(window.miMascota);
+    }
+
+    if (huboCambios) {
         if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
-        console.log(`🔧 Parche V14.3 aplicado: Puntos extra restaurados a la normalidad y Base duplicada en ${genosActualizados} Genos.`);
+        console.log("🔧 Parche V14.4 Absoluto aplicado: HP Base duplicado y Puntos Extra reducidos a la mitad.");
+        
+        // Forzar actualización visual si el panel está abierto
+        setTimeout(() => {
+            if (typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
+        }, 100);
     }
 };
 
@@ -180,9 +179,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (patched && typeof window.guardarProgreso === 'function') window.guardarProgreso();
         }
         
-        // ✨ EJECUTAR MIGRACIÓN DEFINITIVA V14.3 AQUÍ:
+        // ✨ EJECUTAR MIGRACIÓN DEFINITIVA V14.4 AQUÍ:
         window.migrarHPGenosExistentes();
-        if(typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
         
     }, 500);
 
