@@ -385,7 +385,10 @@
 
         function inyectarSvgSeguro(adnData) {
             if (typeof generarSvgGeno !== 'function') return '';
-            let svgString = generarSvgGeno(adnData);
+            
+            // ✨ FIX: Agregamos 'true' como segundo parámetro para decirle al SVGEngine que omita la animación de entrada
+            let svgString = generarSvgGeno(adnData, true);
+            
             let tempDiv = document.createElement('div');
             tempDiv.innerHTML = svgString;
             let svgEl = tempDiv.querySelector('svg');
@@ -394,6 +397,11 @@
                 svgEl.setAttribute('height', '100%');
                 svgEl.setAttribute('viewBox', '-20 0 200 160');
                 svgEl.style.overflow = 'visible';
+                
+                // ✨ FIX DE RESPALDO: Inyectamos CSS directo al SVG para matar cualquier animación residual de nacimiento
+                let styleDef = document.createElement('style');
+                styleDef.innerHTML = "g[id*='spawn'], g[id*='nucleo'], .spawn-anim { animation: none !important; opacity: 1 !important; transform: scale(1) !important; }";
+                svgEl.appendChild(styleDef);
             }
             return tempDiv.innerHTML;
         }
