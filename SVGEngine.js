@@ -107,19 +107,28 @@ function generarSvgGeno(genesVisuales) {
             const tallo = "M 72 110 C 72 120 65 130 60 135 C 50 148 65 150 80 150 C 95 150 110 148 100 135 C 95 130 88 120 88 110 Z";
             pathD = "M 15 90 C 15 20, 145 20, 145 90 C 145 118, 122 122, 80 122 C 38 122, 15 118, 15 90 Z"; 
             shineD = "M 40 55 Q 50 40 70 40 Q 55 48 40 55 Z"; 
-            const seedStr = (safeData.id || "hongo") + color + shape;
+
+            // ✨ FIX: Generación aleatoria vinculada 100% al ID único del Geno.
+            // Nace aleatorio por su ID, pero se queda fijo para siempre.
+            let seedStr = String(safeData.id || "preview");
             let baseSeed = 0;
-            for (let i = 0; i < seedStr.length; i++) { baseSeed = seedStr.charCodeAt(i) + ((baseSeed << 5) - baseSeed); }
+            for (let i = 0; i < seedStr.length; i++) { 
+                baseSeed = seedStr.charCodeAt(i) + ((baseSeed << 5) - baseSeed); 
+            }
             baseSeed = Math.abs(baseSeed);
+
             const randomFijo = (s) => { let x = Math.sin(s) * 10000; return x - Math.floor(x); };
+            
             let generatedManchas = `<g fill="#ffffff" opacity="0.6">`;
             for (let i = 0; i < 8; i++) {
+                // Coordenadas calculadas en base a la semilla inmutable
                 const cx = 40 + randomFijo(baseSeed + i) * (120 - 40);
                 const cy = 48 + randomFijo(baseSeed + i + 10) * (105 - 48);
                 const r = 2 + randomFijo(baseSeed + i + 20) * (6.5 - 2);
                 generatedManchas += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}"/>`;
             }
             generatedManchas += `</g>`;
+
             extras = `<path d="${tallo}" fill="${color}" stroke="#1a2a36" stroke-width="5"/><path d="${tallo}" fill="url(#${gradId})"/>`;
             detallesFrente = `<defs><clipPath id="hongoMask-${rndId}"><path d="${pathD}"/></clipPath></defs><g clip-path="url(#hongoMask-${rndId})">${generatedManchas}</g>`;
             break;
