@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔬 Laboratorio Genético y de Implantes V15.3</title>
+    <title>🔬 Laboratorio Genético y de Implantes V15.4</title>
     
     <script src="AttackCatalog.js"></script> 
     <script src="genes.js"></script>
@@ -31,6 +31,7 @@
         .controls::-webkit-scrollbar { width: 6px; }
         .controls::-webkit-scrollbar-thumb { background: #4dd0e1; border-radius: 4px; }
         .control-group { display: flex; flex-direction: column; gap: 5px; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; border-left: 3px solid #4dd0e1; }
+        .control-group.special-a { border-left: 3px solid #ffcc00; background: rgba(255, 204, 0, 0.05); }
         label { font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
         select, input[type="color"], input[type="number"] { padding: 10px; background: #0d1a24; color: #fff; border: 1px solid #333; border-radius: 8px; font-size: 14px; outline: none; cursor: pointer; width: 100%; box-sizing: border-box; }
         select:focus, input:focus { border-color: #4dd0e1; }
@@ -124,7 +125,7 @@
 </head>
 <body>
 
-    <h1>🔬 Laboratorio Central V15.3</h1>
+    <h1>🔬 Laboratorio Central V15.4</h1>
     
     <div class="tabs-container">
         <button class="tab-btn active" onclick="switchTab('tab-adn', this)">🧬 ADN y Biología</button>
@@ -149,6 +150,12 @@
                     <option value="Común">Común</option><option value="Raro">Raro</option>
                     <option value="Épico">Épico</option><option value="Legendario">Legendario</option><option value="Mítico">Mítico</option>
                 </select>
+            </div>
+            
+            <!-- ✨ FIX V15.4: Gen A (Cosmético) regresa a Biología -->
+            <div class="control-group special-a">
+                <label style="color:#ffcc00">✨ Gen A (Cosmético)</label>
+                <select id="sel-gen-a"><option value="ninguno">Ninguno (Vacío)</option></select>
             </div>
             <div class="control-group"><label style="color:#80deea">⚙️ Gen B (Funcional 1)</label><select id="sel-gen-b"><option value="ninguno">Ninguno (Vacío)</option></select></div>
             <div class="control-group"><label style="color:#8A2BE2">⚙️ Gen C (Funcional 2)</label><select id="sel-gen-c"><option value="ninguno">Ninguno (Vacío)</option></select></div>
@@ -256,7 +263,6 @@
                 </div>
             </div>
 
-            <!-- UI ATAQUES / EQUIPO -->
             <div style="background: rgba(10, 17, 24, 0.9); border: 1px solid #1e3a5f; border-radius: 12px; padding: 15px;">
                 <div class="lab-subtabs">
                     <div class="lab-subtab active" id="st-atk" onclick="toggleSubTab('atk')">ATAQUES</div>
@@ -282,7 +288,6 @@
                     </div>
                 </div>
 
-                <!-- ✨ FIX V15.3: SELECTORES DE EQUIPO LEYENDO DICCIONARIOS REALES -->
                 <div id="grid-eq" class="slot-grid" style="margin-top:10px; display:none;">
                     <div class="implant-slot">
                         <label>Cabeza</label>
@@ -296,10 +301,10 @@
                         <label>Dron / Skin</label>
                         <select id="sel-skin" class="lab-select"></select>
                     </div>
+                    <!-- ✨ FIX V15.4: Selector de Aura independiente, solo lee accesorios.js -->
                     <div class="implant-slot">
                         <label>Aura Cosmética</label>
-                        <!-- Gen Cosmético y Auras unificados visualmente -->
-                        <select id="sel-gen-a" class="lab-select"></select>
+                        <select id="sel-aura" class="lab-select"></select>
                     </div>
                 </div>
             </div>
@@ -379,10 +384,9 @@
             document.getElementById('grid-eq').style.display = tab === 'eq' ? 'grid' : 'none';
         }
 
-        // ✨ EVITAR ANIMACIÓN DE SPAWN EN LABORATORIO
         function inyectarSvgSeguro(adnData) {
             if (typeof generarSvgGeno !== 'function') return '';
-            let svgString = generarSvgGeno(adnData, true); // <--- FLAG PARA ELIMINAR SPAWN ANIM
+            let svgString = generarSvgGeno(adnData, true);
             let tempDiv = document.createElement('div');
             tempDiv.innerHTML = svgString;
             let svgEl = tempDiv.querySelector('svg');
@@ -511,15 +515,15 @@
         let genesF = [];
 
         setTimeout(() => {
-            // Rellenar Selects Básicos
             const formasCuerpo = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
             const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry"];
             const opcionesBocas = typeof dicBocas !== 'undefined' ? Object.keys(dicBocas) : ["estandar", "feliz", "colmillos"];
             
-            // ✨ FIX V15.3: LEYENDO DICCIONARIOS REALES DE ACCESORIOS.JS
             const opcionesSombreros = typeof dicSombreros !== 'undefined' ? Object.keys(dicSombreros) : ["ninguno"];
             const opcionesAlas = typeof dicAlas !== 'undefined' ? Object.keys(dicAlas) : ["ninguno"];
             const opcionesDrones = typeof dicDrones !== 'undefined' ? Object.keys(dicDrones) : ["estandar"];
+            
+            // ✨ FIX V15.4: Separación estricta de Auras y Gen Cosmético
             const opcionesAuras = typeof dicAuras !== 'undefined' ? Object.keys(dicAuras) : ["ninguno"];
 
             function rellenar(id, arr) {
@@ -528,25 +532,19 @@
                 el.innerHTML = "";
                 arr.forEach(i => { let o = document.createElement("option"); o.value = i; o.innerText = i.toUpperCase().replace(/_/g," "); el.appendChild(o); });
             }
+            
             rellenar("sel-forma", formasCuerpo); rellenar("sel-ojos", opcionesOjos); rellenar("sel-boca", opcionesBocas);
             rellenar("sel-cabeza", opcionesSombreros); rellenar("sel-espalda", opcionesAlas); rellenar("sel-skin", opcionesDrones);
-            
-            // Rellenar Auras + Genes Cosméticos unificados
-            let elAura = document.getElementById("sel-gen-a");
-            elAura.innerHTML = '<option value="ninguno">VACÍO</option>';
-            opcionesAuras.filter(a => a !== "ninguno").forEach(a => {
-                let o = document.createElement("option"); o.value = a; o.innerText = `[Aura] ${a.toUpperCase().replace(/_/g," ")}`; elAura.appendChild(o);
-            });
-            // Agregamos los genes cosméticos quemados del juego (los que cambian el color/efecto de la piel)
-            let genesCosmeticos = [
-                {id: "cromatico_latente", name: "Cromático (Épico)"}, {id: "aura_linaje", name: "Linaje (Legendario)"},
-                {id: "patron_holografico", name: "Holográfico (Mítico)"}, {id: "brillo_bioluminiscente", name: "Bioluminiscente (Raro)"},
-                {id: "forma_invertida", name: "Invertida (Épico)"}, {id: "rastro_elemental", name: "Rastro (Raro)"},
-                {id: "sombra_genetica", name: "Sombra (Épico)"}
-            ];
-            genesCosmeticos.forEach(g => {
-                let o = document.createElement("option"); o.value = g.id; o.innerText = `[Gen] ${g.name}`; elAura.appendChild(o);
-            });
+            rellenar("sel-aura", opcionesAuras);
+
+            // ✨ FIX V15.4: Llenar Gen A (Cosmético) leyendo la BD de Genes Real
+            let selGenA = document.getElementById("sel-gen-a");
+            selGenA.innerHTML = '<option value="ninguno">Ninguno (Vacío)</option>';
+            if (window.BASE_DATOS_GENES_V9 && window.BASE_DATOS_GENES_V9["cosmetico"]) {
+                window.BASE_DATOS_GENES_V9["cosmetico"].forEach(g => {
+                    let o = document.createElement("option"); o.value = g.id; o.innerText = g.name; selGenA.appendChild(o);
+                });
+            }
 
             actualizarAtaquesDisponibles();
 
@@ -577,7 +575,7 @@
                 render();
             });
 
-            ['sel-forma','sel-color','sel-ojos','sel-boca','sel-espalda','sel-cabeza','sel-skin','sel-gen-a','sel-gen-b','sel-gen-c','chk-escaneado'].forEach(id => {
+            ['sel-forma','sel-color','sel-ojos','sel-boca','sel-espalda','sel-cabeza','sel-skin','sel-aura','sel-gen-a','sel-gen-b','sel-gen-c','chk-escaneado'].forEach(id => {
                 let el = document.getElementById(id);
                 if(el) el.addEventListener("change", render);
             });
@@ -595,7 +593,10 @@
             const rareza = document.getElementById("sel-rareza").value;
             const genBData = document.getElementById("sel-gen-b").value !== "ninguno" ? genesF.find(g => g.id === document.getElementById("sel-gen-b").value) : null;
             const genCData = document.getElementById("sel-gen-c").value !== "ninguno" ? genesF.find(g => g.id === document.getElementById("sel-gen-c").value) : null;
+            
+            // ✨ FIX V15.4: Lectura separada
             const genAVal = document.getElementById("sel-gen-a").value;
+            const auraVal = document.getElementById("sel-aura").value;
             
             const finalStats = {
                 hp: parseInt(document.getElementById("tot-hp").innerText),
@@ -607,28 +608,15 @@
 
             let color = document.getElementById("sel-color").value;
 
-            // Determinar si lo que seleccionó en "Aura/Gen" es un Aura física o un Gen Oculto
-            let isAura = genAVal !== "ninguno" && !genAVal.includes("_"); // Muy simple: los genes tienen guiones bajos en el ID, las auras (usualmente) no.
-            let auraType = "ninguno";
-            let hiddenGenA = null;
-
-            if (genAVal !== "ninguno") {
-                if (typeof dicAuras !== 'undefined' && dicAuras[genAVal]) {
-                    auraType = genAVal;
-                } else {
-                    hiddenGenA = { id: genAVal };
-                }
-            }
-
             return {
                 id: 999, rarity: rareza, rareza: rareza, stats: finalStats, element: document.getElementById("sel-elemento").value,
                 body_shape: document.getElementById("sel-forma").value, base_color: color, color: color,
                 eye_type: document.getElementById("sel-ojos").value, mouth_type: document.getElementById("sel-boca").value, 
                 wing_type: document.getElementById("sel-espalda").value, hat_type: document.getElementById("sel-cabeza").value,
-                skin_type: document.getElementById("sel-skin").value, aura_type: auraType,
+                skin_type: document.getElementById("sel-skin").value, aura_type: auraVal,
                 scanned: document.getElementById("chk-escaneado").checked, level: parseInt(document.getElementById("inp-nivel-player").value),
                 maxHp: finalStats.hp, hp: finalStats.hp,
-                hidden_genes: { A: hiddenGenA, B: genBData, C: genCData }
+                hidden_genes: { A: genAVal !== "ninguno" ? { id: genAVal } : null, B: genBData, C: genCData }
             };
         }
 
@@ -639,6 +627,25 @@
             document.getElementById("implants-geno-preview").innerHTML = svgStr;
             document.getElementById("geno-display-1").style.color = adn.color; 
             document.getElementById("implants-geno-preview").style.color = adn.color; 
+            
+            function actualizarTerminal() {
+                const term = document.getElementById("terminal-content");
+                if (!document.getElementById("chk-escaneado").checked) { term.innerHTML = `<div style="color:#ff6b6b">> ERROR: ADN BLOQUEADO. Active el escáner.</div>`; return; }
+
+                let log = `<div style="color:#4dd0e1; margin-bottom: 10px;">> GENERANDO REPORTE DE ESTRATEGIA Y ADN...</div>`;
+                
+                const evaluarSlot = (data, nombreSlot, colorRGB) => {
+                    if(!data) return;
+                    log += `<div style="color:${colorRGB}; margin-top:8px;">>>> ${nombreSlot}: [${data.name ? data.name.toUpperCase() : data.id.toUpperCase()}] <<<</div>`;
+                    if(data.desc) log += `&nbsp;&nbsp;<span style="color:#aaa">Efecto:</span> ${data.desc}<br>`;
+                };
+
+                evaluarSlot(adn.hidden_genes.A ? window.BASE_DATOS_GENES_V9.cosmetico.find(g => g.id === adn.hidden_genes.A.id) : null, "SLOT A (COSMÉTICO)", "#ffcc00");
+                evaluarSlot(adn.hidden_genes.B, "SLOT B (FUNCIONAL 1)", "#80deea");
+                evaluarSlot(adn.hidden_genes.C, "SLOT C (FUNCIONAL 2)", "#8A2BE2");
+                term.innerHTML = log;
+            }
+            actualizarTerminal();
         }
 
         // ==========================================
