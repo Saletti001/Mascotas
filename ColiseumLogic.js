@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V14.8 (MECÁNICAS EXÓTICAS ACTIVADAS)
+// ColiseumLogic.js - MODELO MATEMÁTICO V14.9 (NERF AL PERFORANTE - BALANCE)
 // =========================================
 
 window.ColiseumLogic = {
@@ -233,7 +233,6 @@ window.ColiseumLogic = {
             return { logs, anims };
         }
 
-        // ✨ FIX 3: Costos y Autosacrificios ANTES del ataque
         if (ataqueReal.costoHp) {
             let selfDmg = Math.floor(atacante.maxHp * ataqueReal.costoHp);
             atacante.hp = Math.max(0, atacante.hp - selfDmg);
@@ -261,10 +260,8 @@ window.ColiseumLogic = {
             if(ataqueReal.descripcion) logs.push(`<span style="color:#80cbc4; font-style:italic;">* Efecto: ${ataqueReal.descripcion}</span>`);
         }
 
-        // ✨ FIX 1: Lectura de Potencia o PotenciaBase
         let potenciaAtaque = ataqueReal.potencia || ataqueReal.potenciaBase || 0;
 
-        // ✨ FIX 3: Aplicación del buff acumulado en el turno anterior
         let buffDanoActivo = atacante.efectosActivos.find(ef => ef.stat === "buffDanoExtra");
         if (buffDanoActivo) {
             potenciaAtaque = Math.floor(potenciaAtaque * (1 + buffDanoActivo.valor));
@@ -312,7 +309,6 @@ window.ColiseumLogic = {
             logs.push(`<span style="color:#4CAF50">* ${this.cName(atacante)} recupera ${cura} HP.</span>`);
         }
 
-        // ✨ FIX 6: Consumir el Hit Garantizado
         let buffHitGarantizado = atacante.efectosActivos.find(ef => ef.stat === "hit_garantizado");
         if (buffHitGarantizado) {
             ataqueReal.noFalla = true;
@@ -350,7 +346,6 @@ window.ColiseumLogic = {
                     precision -= 0.25;
                 }
                 
-                // ✨ FIX 5: Debuffs exóticos (La precisión reducida por Lluvia de Cenizas)
                 let penaltyAcc = atacante.efectosActivos.find(ef => ef.stat === "acc_penalty");
                 if (penaltyAcc) precision -= penaltyAcc.valor;
 
@@ -389,13 +384,15 @@ window.ColiseumLogic = {
                         golpeActual.evadido = true;
                         logs.push(`<span style="color:#e0e0e0; font-style:italic;">💨 🧬 [Gen Oculto: Maestro del Engaño] ¡${this.cName(defensor)} evadió el golpe perforante!</span>`);
                     } else if (ataqueReal.perforante && defensor.genesId.includes("steadfast")) {
-                        defRival = Math.floor(defensor.def * 0.20); 
+                        // ✨ FIX: Postura inquebrantable ahora retiene el 80% de su defensa ante perforantes
+                        defRival = Math.floor(defensor.def * 0.80); 
                         logs.push(`<span style="color:#80deea;">🛡️ 🧬 [Gen Oculto: Postura Inquebrantable] Absorbe parcialmente la perforación.</span>`);
                     } else {
+                        // ✨ FIX V14.9: NERF AL PERFORANTE (Ignora 50%, ya no el 100%)
                         if (ataqueReal.perforante) {
-                            defRival = 0; 
+                            defRival = Math.floor(defRival * 0.50); 
                         } else if (ataqueReal.rompeEscudos) {
-                            let penetracion = (typeof ataqueReal.rompeEscudos === "number") ? ataqueReal.rompeEscudos : 1.0;
+                            let penetracion = (typeof ataqueReal.rompeEscudos === "number") ? ataqueReal.rompeEscudos : 0.50;
                             defRival = Math.floor(defRival * (1 - penetracion));
                         }
                     }
@@ -464,7 +461,6 @@ window.ColiseumLogic = {
                     if (isCrit) logs.push(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${this.cName(atacante)} causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} de daño</span>.${tipoGolpe}${textoStab}`);
                     else logs.push(`> ${this.cName(atacante)} causa <span style="color:#ff6b6b">${dmg} de daño</span>.${tipoGolpe}${textoStab}`);
 
-                    // ✨ FIX 2: Combinación de Robos de Vida
                     let roboGen = atacante.genesId.includes("vampirismo_genetico") ? 0.15 : 0;
                     let roboSkill = ataqueReal.roboVida || 0;
                     let roboTotal = Math.max(0, Math.floor(dmg * (roboGen + roboSkill)));
@@ -480,26 +476,23 @@ window.ColiseumLogic = {
             }
         }
 
-        // ✨ FIX 4: La Purga de Interferencia Electromagnética
         if (ataqueReal.limpiaBuffsRival) {
             let purgoAlgo = false;
             defensor.efectosActivos = defensor.efectosActivos.filter(ef => {
                 if (ef.valor > 0 && ef.stat !== "estado") {
                     if (["atk", "def", "spd", "luk"].includes(ef.stat)) defensor[ef.stat] -= ef.valor;
                     purgoAlgo = true;
-                    return false; // Se elimina el buff positivo
+                    return false; 
                 }
                 return true;
             });
             if (purgoAlgo) logs.push(`<span style="color:#ffcc00">🚫 ¡Los incrementos de stats de ${this.cName(defensor)} fueron purgados!</span>`);
         }
 
-        // ✨ FIX 6: Seteo del Hit Garantizado
         if (ataqueReal.proximoHitGarantizado) {
             atacante.efectosActivos.push({ nombre: "Hit Garantizado", stat: "hit_garantizado", valor: 1, turnos: 99, isNuevo: true });
         }
 
-        // ✨ FIX 3: Buff Latente de Autoirradiación
         if (ataqueReal.buffProxAtaque) {
             atacante.efectosActivos.push({ nombre: "Daño Potenciado", stat: "buffDanoExtra", valor: ataqueReal.buffProxAtaque, turnos: 99, isNuevo: true });
         }
@@ -544,7 +537,6 @@ window.ColiseumLogic = {
                 logs.push(`<span style="color:#80deea">🛡️ ¡${this.cName(atacante)} aumenta su Defensa en +${val}!</span>`);
             }
 
-            // ✨ FIX 5: Potenciador de Crítico (Sintético)
             if (ataqueReal.buffLukEfectiva) {
                 let val = Math.floor(atacante.baseLuk * ataqueReal.buffLukEfectiva);
                 atacante.luk += val;
@@ -578,7 +570,6 @@ window.ColiseumLogic = {
                 defensor.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "atk", valor: -val, turnos: duracionBase, isNuevo: true });
             }
 
-            // ✨ FIX 5: Debuffs exóticos aplicados al rival (Lluvia de Cenizas / Pulso de Decaimiento)
             if (ataqueReal.debuffLuk && defensor.hp > 0) {
                 let val = Math.floor(defensor.baseLuk * ataqueReal.debuffLuk);
                 defensor.luk = Math.max(1, defensor.luk - val);
@@ -590,7 +581,6 @@ window.ColiseumLogic = {
                 logs.push(`<span style="color:#888">🌫️ ¡La precisión de ${this.cName(defensor)} fue reducida a ciegas!</span>`);
             }
 
-            // ✨ FIX 3: Autoinyección de estado (Sobrecarga)
             let estadoAply = ataqueReal.aplicaEstado || ataqueReal.aplicaEstadoPropio || (ataqueReal.costoHpTurno ? "Sobrecarga" : null);
             let target = (ataqueReal.aplicaEstado) ? defensor : atacante;
             
