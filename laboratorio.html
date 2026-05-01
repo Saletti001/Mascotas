@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔬 Laboratorio Genético y de Implantes V15.2</title>
+    <title>🔬 Laboratorio Genético y de Implantes V15.3</title>
     
     <script src="AttackCatalog.js"></script> 
     <script src="genes.js"></script>
@@ -124,7 +124,7 @@
 </head>
 <body>
 
-    <h1>🔬 Laboratorio Central V15.2</h1>
+    <h1>🔬 Laboratorio Central V15.3</h1>
     
     <div class="tabs-container">
         <button class="tab-btn active" onclick="switchTab('tab-adn', this)">🧬 ADN y Biología</button>
@@ -266,7 +266,6 @@
                 <div id="grid-atk" class="slot-grid" style="margin-top:10px;">
                     <div class="implant-slot" style="background: rgba(0, 172, 193, 0.15); border: 1px solid #00acc1;">
                         <label>Básico (Genético)</label>
-                        <!-- ✨ FIX V15.2: Nombre Dinámico -->
                         <span id="lbl-atk-basico" style="color:#aaa; font-size:11px; font-weight:bold;">PULSO VITAL</span>
                     </div>
                     <div class="implant-slot">
@@ -283,6 +282,7 @@
                     </div>
                 </div>
 
+                <!-- ✨ FIX V15.3: SELECTORES DE EQUIPO LEYENDO DICCIONARIOS REALES -->
                 <div id="grid-eq" class="slot-grid" style="margin-top:10px; display:none;">
                     <div class="implant-slot">
                         <label>Cabeza</label>
@@ -294,16 +294,12 @@
                     </div>
                     <div class="implant-slot">
                         <label>Dron / Skin</label>
-                        <!-- ✨ FIX V15.2: Selector de Skin Activo -->
                         <select id="sel-skin" class="lab-select"></select>
                     </div>
                     <div class="implant-slot">
                         <label>Aura Cosmética</label>
-                        <select id="sel-gen-a" class="lab-select">
-                            <option value="ninguno">VACÍO</option><option value="cromatico_latente">Cromático (Épico)</option>
-                            <option value="aura_linaje">Linaje (Legendario)</option><option value="patron_holografico">Holográfico (Mítico)</option>
-                            <option value="brillo_bioluminiscente">Bioluminiscente (Raro)</option><option value="forma_invertida">Invertida (Épico)</option>
-                        </select>
+                        <!-- Gen Cosmético y Auras unificados visualmente -->
+                        <select id="sel-gen-a" class="lab-select"></select>
                     </div>
                 </div>
             </div>
@@ -383,12 +379,10 @@
             document.getElementById('grid-eq').style.display = tab === 'eq' ? 'grid' : 'none';
         }
 
+        // ✨ EVITAR ANIMACIÓN DE SPAWN EN LABORATORIO
         function inyectarSvgSeguro(adnData) {
             if (typeof generarSvgGeno !== 'function') return '';
-            
-            // ✨ FIX: Agregamos 'true' como segundo parámetro para decirle al SVGEngine que omita la animación de entrada
-            let svgString = generarSvgGeno(adnData, true);
-            
+            let svgString = generarSvgGeno(adnData, true); // <--- FLAG PARA ELIMINAR SPAWN ANIM
             let tempDiv = document.createElement('div');
             tempDiv.innerHTML = svgString;
             let svgEl = tempDiv.querySelector('svg');
@@ -398,7 +392,6 @@
                 svgEl.setAttribute('viewBox', '-20 0 200 160');
                 svgEl.style.overflow = 'visible';
                 
-                // ✨ FIX DE RESPALDO: Inyectamos CSS directo al SVG para matar cualquier animación residual de nacimiento
                 let styleDef = document.createElement('style');
                 styleDef.innerHTML = "g[id*='spawn'], g[id*='nucleo'], .spawn-anim { animation: none !important; opacity: 1 !important; transform: scale(1) !important; }";
                 svgEl.appendChild(styleDef);
@@ -464,7 +457,6 @@
             });
         }
 
-        // ✨ FIX V15.2: LOGICA FIEL DE COMPATIBILIDAD DE ATAQUES
         function actualizarAtaquesDisponibles() {
             const selEsp = document.getElementById("sel-mt-especial");
             const selTac = document.getElementById("sel-mt-tactica");
@@ -485,22 +477,18 @@
 
             const contrarios = { "Biomutante": "Viral", "Viral": "Cibernético", "Cibernético": "Radiactivo", "Radiactivo": "Tóxico", "Tóxico": "Sintético", "Sintético": "Biomutante" };
 
-            // Ataque Básico Dinámico
             const ataquesBasicos = { "Biomutante": "PULSO VITAL", "Viral": "DESCARGA VIRAL", "Cibernético": "LÁSER DE PRECISIÓN", "Radiactivo": "PROYECTIL RADIACTIVO", "Tóxico": "COLMILLO VENENOSO", "Sintético": "RÁFAGA SINTÉTICA", "Normal": "GOLPE BÁSICO" };
             document.getElementById("lbl-atk-basico").innerText = ataquesBasicos[genoElem] || "GOLPE BÁSICO";
 
             let esp=[], tac=[], def=[];
 
             for (let el in cat) {
-                // Especiales (Slot 2): No contrarios
                 if (cat[el].especiales && contrarios[el] !== genoElem && contrarios[genoElem] !== el) {
                     cat[el].especiales.forEach(a => esp.push(`[${el}] ${a.nombre}`));
                 }
-                // Tácticas (Slot 3): 100% Universales
                 if (cat[el].soportes) {
                     cat[el].soportes.forEach(a => tac.push(`[${el}] ${a.nombre}`));
                 }
-                // Definitivos (Slot 4): Solo mismo elemento
                 if (cat[el].definitivos && el === genoElem) {
                     cat[el].definitivos.forEach(a => def.push(`[${el}] ${a.nombre}`));
                 }
@@ -515,7 +503,6 @@
                 let o = document.createElement("option"); o.value = "ninguno"; o.innerText = "🔒 REQUIERE NV. 25"; selDef.appendChild(o);
             }
 
-            // Restaurar selección si aún es válida
             if (Array.from(selEsp.options).some(o => o.value === valEsp)) selEsp.value = valEsp;
             if (Array.from(selTac.options).some(o => o.value === valTac)) selTac.value = valTac;
             if (Array.from(selDef.options).some(o => o.value === valDef)) selDef.value = valDef;
@@ -528,9 +515,12 @@
             const formasCuerpo = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
             const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry"];
             const opcionesBocas = typeof dicBocas !== 'undefined' ? Object.keys(dicBocas) : ["estandar", "feliz", "colmillos"];
-            const opcionesEspaldas = typeof dicAlas !== 'undefined' ? Object.keys(dicAlas) : ["ninguno"];
-            const opcionesCabezas = typeof dicSombreros !== 'undefined' ? Object.keys(dicSombreros) : ["ninguno"];
-            const opcionesSkins = typeof dicSkins !== 'undefined' ? Object.keys(dicSkins) : ["estandar", "armadura", "cibernetico", "mutante", "dorado", "oscuro", "holografico"];
+            
+            // ✨ FIX V15.3: LEYENDO DICCIONARIOS REALES DE ACCESORIOS.JS
+            const opcionesSombreros = typeof dicSombreros !== 'undefined' ? Object.keys(dicSombreros) : ["ninguno"];
+            const opcionesAlas = typeof dicAlas !== 'undefined' ? Object.keys(dicAlas) : ["ninguno"];
+            const opcionesDrones = typeof dicDrones !== 'undefined' ? Object.keys(dicDrones) : ["estandar"];
+            const opcionesAuras = typeof dicAuras !== 'undefined' ? Object.keys(dicAuras) : ["ninguno"];
 
             function rellenar(id, arr) {
                 let el = document.getElementById(id);
@@ -539,7 +529,24 @@
                 arr.forEach(i => { let o = document.createElement("option"); o.value = i; o.innerText = i.toUpperCase().replace(/_/g," "); el.appendChild(o); });
             }
             rellenar("sel-forma", formasCuerpo); rellenar("sel-ojos", opcionesOjos); rellenar("sel-boca", opcionesBocas);
-            rellenar("sel-espalda", opcionesEspaldas); rellenar("sel-cabeza", opcionesCabezas); rellenar("sel-skin", opcionesSkins);
+            rellenar("sel-cabeza", opcionesSombreros); rellenar("sel-espalda", opcionesAlas); rellenar("sel-skin", opcionesDrones);
+            
+            // Rellenar Auras + Genes Cosméticos unificados
+            let elAura = document.getElementById("sel-gen-a");
+            elAura.innerHTML = '<option value="ninguno">VACÍO</option>';
+            opcionesAuras.filter(a => a !== "ninguno").forEach(a => {
+                let o = document.createElement("option"); o.value = a; o.innerText = `[Aura] ${a.toUpperCase().replace(/_/g," ")}`; elAura.appendChild(o);
+            });
+            // Agregamos los genes cosméticos quemados del juego (los que cambian el color/efecto de la piel)
+            let genesCosmeticos = [
+                {id: "cromatico_latente", name: "Cromático (Épico)"}, {id: "aura_linaje", name: "Linaje (Legendario)"},
+                {id: "patron_holografico", name: "Holográfico (Mítico)"}, {id: "brillo_bioluminiscente", name: "Bioluminiscente (Raro)"},
+                {id: "forma_invertida", name: "Invertida (Épico)"}, {id: "rastro_elemental", name: "Rastro (Raro)"},
+                {id: "sombra_genetica", name: "Sombra (Épico)"}
+            ];
+            genesCosmeticos.forEach(g => {
+                let o = document.createElement("option"); o.value = g.id; o.innerText = `[Gen] ${g.name}`; elAura.appendChild(o);
+            });
 
             actualizarAtaquesDisponibles();
 
@@ -600,15 +607,28 @@
 
             let color = document.getElementById("sel-color").value;
 
+            // Determinar si lo que seleccionó en "Aura/Gen" es un Aura física o un Gen Oculto
+            let isAura = genAVal !== "ninguno" && !genAVal.includes("_"); // Muy simple: los genes tienen guiones bajos en el ID, las auras (usualmente) no.
+            let auraType = "ninguno";
+            let hiddenGenA = null;
+
+            if (genAVal !== "ninguno") {
+                if (typeof dicAuras !== 'undefined' && dicAuras[genAVal]) {
+                    auraType = genAVal;
+                } else {
+                    hiddenGenA = { id: genAVal };
+                }
+            }
+
             return {
                 id: 999, rarity: rareza, rareza: rareza, stats: finalStats, element: document.getElementById("sel-elemento").value,
                 body_shape: document.getElementById("sel-forma").value, base_color: color, color: color,
                 eye_type: document.getElementById("sel-ojos").value, mouth_type: document.getElementById("sel-boca").value, 
                 wing_type: document.getElementById("sel-espalda").value, hat_type: document.getElementById("sel-cabeza").value,
-                skin_type: document.getElementById("sel-skin").value, // ✨ FIX: Añadida la skin al ADN
+                skin_type: document.getElementById("sel-skin").value, aura_type: auraType,
                 scanned: document.getElementById("chk-escaneado").checked, level: parseInt(document.getElementById("inp-nivel-player").value),
                 maxHp: finalStats.hp, hp: finalStats.hp,
-                hidden_genes: { A: genAVal !== "ninguno" ? { id: genAVal } : null, B: genBData, C: genCData }
+                hidden_genes: { A: hiddenGenA, B: genBData, C: genCData }
             };
         }
 
