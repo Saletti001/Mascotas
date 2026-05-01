@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔬 Laboratorio de Pruebas Genos V14.6</title>
+    <title>🔬 Laboratorio de Pruebas Genos V14.8 (CATÁLOGO REAL)</title>
     
-    <!-- Asegúrate de tener estos archivos en la misma carpeta -->
+    <!-- ⚠️ CAMBIA "ataques.js" POR EL NOMBRE EXACTO DE TU ARCHIVO DE ATAQUES -->
+    <script src="ataques.js"></script> 
+    
     <script src="genes.js"></script>
     <script src="genoma.js"></script>
     <script src="caras.js"></script> 
     <script src="accesorios.js"></script> 
     <script src="SVGEngine.js"></script>
     <script src="app.js"></script>
-    <script src="ColiseumLogic.js"></script> <!-- ✨ AHORA USA EL MOTOR REAL DE COMBATE -->
+    <script src="ColiseumLogic.js"></script>
 
     <style>
         body { background-color: #0a1118; color: #fff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
@@ -112,19 +114,24 @@
 </head>
 <body>
 
-    <h1>🔬 Laboratorio Genético V14.6</h1>
+    <h1>🔬 Laboratorio Genético V14.8</h1>
     
     <div class="tabs-container">
-        <button id="btn-tab-adn" class="tab-btn active">🔬 ADN y Morfología</button>
+        <button id="btn-tab-adn" class="tab-btn active">🔬 ADN y Equipo</button>
         <button id="btn-tab-combat" class="tab-btn">⚔️ Simulación de Combate</button>
     </div>
 
     <!-- PESTAÑA: CONFIGURACIÓN ADN -->
     <div id="tab-adn" class="tab-content lab-container active">
         <div class="controls">
-            <div class="switch-container">
-                <span style="font-size: 12px; color: #fff; font-weight: bold;">ADN Escaneado (Revelar Genes)</span>
-                <label class="switch"><input type="checkbox" id="chk-escaneado" checked><span class="slider"></span></label>
+            
+            <div class="control-group">
+                <label style="color:#4CAF50">Elemento Base</label>
+                <select id="sel-elemento">
+                    <option value="Biomutante">🧬 Biomutante</option><option value="Viral">🦠 Viral</option>
+                    <option value="Cibernético">⚙️ Cibernético</option><option value="Radiactivo">☢️ Radiactivo</option>
+                    <option value="Tóxico">🧪 Tóxico</option><option value="Sintético">🤖 Sintético</option>
+                </select>
             </div>
             
             <div class="control-group">
@@ -135,13 +142,18 @@
                 </select>
             </div>
 
-            <div class="control-group">
-                <label style="color:#4CAF50">Elemento Base</label>
-                <select id="sel-elemento">
-                    <option value="Biomutante">🧬 Biomutante</option><option value="Viral">🦠 Viral</option>
-                    <option value="Cibernético">⚙️ Cibernético</option><option value="Radiactivo">☢️ Radiactivo</option>
-                    <option value="Tóxico">🧪 Tóxico</option><option value="Sintético">🤖 Sintético</option>
-                </select>
+            <!-- ✨ NUEVO: SELECTORES DE MT REALES -->
+            <div class="control-group" style="border-left: 3px solid #ffcc00; background: rgba(255, 204, 0, 0.05);">
+                <label style="color:#ffcc00">💿 MT Especial (Slot 2)</label>
+                <select id="sel-mt-especial"><option value="ninguno">Aleatorio / Ninguno</option></select>
+            </div>
+            <div class="control-group" style="border-left: 3px solid #80deea; background: rgba(128, 222, 234, 0.05);">
+                <label style="color:#80deea">💿 MT Táctica (Slot 3)</label>
+                <select id="sel-mt-tactica"><option value="ninguno">Aleatorio / Ninguno</option></select>
+            </div>
+            <div class="control-group" style="border-left: 3px solid #ff5722; background: rgba(255, 87, 34, 0.05);">
+                <label style="color:#ff5722">💿 MT Definitivo (Slot 4 - Requiere Nv.25+)</label>
+                <select id="sel-mt-definitivo"><option value="ninguno">Aleatorio / Ninguno</option></select>
             </div>
             
             <div class="control-group special-combo">
@@ -151,6 +163,15 @@
                 </select>
             </div>
 
+            <div class="control-group special-b"><label style="color:#80deea">⚙️ Gen B (Funcional 1)</label><select id="sel-gen-b"><option value="ninguno">Ninguno (Vacío)</option></select></div>
+            <div class="control-group special-c"><label style="color:#8A2BE2">⚙️ Gen C (Funcional 2)</label><select id="sel-gen-c"><option value="ninguno">Ninguno (Vacío)</option></select></div>
+
+            <div class="switch-container">
+                <span style="font-size: 12px; color: #fff; font-weight: bold;">ADN Escaneado (Revelar Genes)</span>
+                <label class="switch"><input type="checkbox" id="chk-escaneado" checked><span class="slider"></span></label>
+            </div>
+
+            <!-- Cosméticos movidos abajo para priorizar combate -->
             <div class="control-group"><label>Forma Base</label><select id="sel-forma"></select></div>
             <div class="control-group"><label>Color Base</label><input type="color" id="sel-color" value="#ff6b6b"></div>
             <div class="control-group"><label>Ojos</label><select id="sel-ojos"></select></div>
@@ -168,8 +189,6 @@
                     <option value="metamorfosis_estacional">Metamorfosis Estacional (Épico)</option>
                 </select>
             </div>
-            <div class="control-group special-b"><label style="color:#80deea">⚙️ Gen B (Funcional 1)</label><select id="sel-gen-b"><option value="ninguno">Ninguno (Vacío)</option></select></div>
-            <div class="control-group special-c"><label style="color:#8A2BE2">⚙️ Gen C (Funcional 2)</label><select id="sel-gen-c"><option value="ninguno">Ninguno (Vacío)</option></select></div>
         </div>
 
         <div class="viewer-container">
@@ -188,7 +207,7 @@
     <div id="tab-combat" class="tab-content combat-arena lab-container">
         
         <div class="action-bar">
-            <!-- ✨ NUEVO: Selector de Nivel -->
+            <!-- Selector de Nivel -->
             <select id="sel-nivel-combate" style="flex: 0.2; padding: 15px; background: #0d1a24; color: #4CAF50; border: 1px solid #4CAF50; border-radius: 8px; font-weight: bold; outline: none; cursor: pointer; text-transform: uppercase;">
                 <option value="1">Nivel 1</option><option value="5">Nivel 5</option>
                 <option value="15">Nivel 15</option><option value="25" selected>Nivel 25 (Meta)</option>
@@ -251,7 +270,6 @@
             </div>
         </div>
 
-        <!-- ✨ NUEVO: Panel de control de turnos estilo RPG -->
         <div id="action-panel" style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 1px solid #4dd0e1; display: none;">
             <div style="text-align: center; color: #aaa; font-size: 12px; margin-bottom: 10px;">SELECCIONA UNA ACCIÓN:</div>
             <div class="ataques-container">
@@ -293,10 +311,8 @@
         function inyectarSvgSeguro(adnData) {
             if (typeof generarSvgGeno !== 'function') return '';
             let svgString = generarSvgGeno(adnData);
-            
             let tempDiv = document.createElement('div');
             tempDiv.innerHTML = svgString;
-            
             let svgEl = tempDiv.querySelector('svg');
             if (svgEl) {
                 svgEl.setAttribute('width', '100%');
@@ -311,24 +327,48 @@
             const sideId = esJugador ? "side-player" : "side-enemy";
             const sideEl = document.getElementById(sideId);
             if(!sideEl) return;
-            
             setTimeout(() => {
                 const floater = document.createElement("div");
                 floater.className = `floating-text ${claseAdicional}`;
                 floater.innerText = texto;
-                
                 const offsetX = (Math.random() - 0.5) * 140; 
                 const offsetY = (Math.random() - 0.5) * 80;
-                
                 floater.style.top = `calc(35% + ${offsetY}px)`;
                 floater.style.left = `calc(50% + ${offsetX}px)`;
-                
                 sideEl.appendChild(floater);
                 setTimeout(() => floater.remove(), 1300);
             }, delayMs);
         }
 
+        // ✨ CARGAR CATÁLOGO REAL EN LOS SELECTORES
+        function rellenarAtaques() {
+            const selEsp = document.getElementById("sel-mt-especial");
+            const selTac = document.getElementById("sel-mt-tactica");
+            const selDef = document.getElementById("sel-mt-definitivo");
+            
+            if (!window.AttackCatalog) {
+                console.error("No se encontró el Catálogo de Ataques.");
+                return;
+            }
+
+            let catalogoAUsar = window.AttackCatalog.ataquesPorElemento || window.AttackCatalog.movimientos;
+            if (!catalogoAUsar) return;
+
+            let esp = []; let tac = []; let def = [];
+            for (let el in catalogoAUsar) {
+                if (catalogoAUsar[el].especiales) catalogoAUsar[el].especiales.forEach(a => esp.push(`[${el}] ${a.nombre}`));
+                if (catalogoAUsar[el].soportes) catalogoAUsar[el].soportes.forEach(a => tac.push(`[${el}] ${a.nombre}`));
+                if (catalogoAUsar[el].definitivos) catalogoAUsar[el].definitivos.forEach(a => def.push(`[${el}] ${a.nombre}`));
+            }
+
+            esp.sort().forEach(name => { let opt = document.createElement("option"); opt.value = name.split("] ")[1]; opt.innerText = name; selEsp.appendChild(opt); });
+            tac.sort().forEach(name => { let opt = document.createElement("option"); opt.value = name.split("] ")[1]; opt.innerText = name; selTac.appendChild(opt); });
+            def.sort().forEach(name => { let opt = document.createElement("option"); opt.value = name.split("] ")[1]; opt.innerText = name; selDef.appendChild(opt); });
+        }
+
         setTimeout(() => {
+            rellenarAtaques();
+
             const btnAdn = document.getElementById("btn-tab-adn");
             const btnCombat = document.getElementById("btn-tab-combat");
             const tabAdn = document.getElementById("tab-adn");
@@ -349,7 +389,6 @@
             const selGenB = document.getElementById("sel-gen-b");
             const selGenC = document.getElementById("sel-gen-c");
             const chkEscaneado = document.getElementById("chk-escaneado");
-            
             const selPlayerCombo = document.getElementById("sel-player-combo");
             const selEnemyCombo = document.getElementById("sel-enemy-combo");
 
@@ -456,7 +495,7 @@
             renderizarGenoPlayer();
 
             // ==========================================
-            // CONEXIÓN CON EL MOTOR COLISEUMLOGIC (V14.6)
+            // CONEXIÓN CON EL MOTOR COLISEUMLOGIC (V14.8)
             // ==========================================
             const btnGenerarRival = document.getElementById("btn-generar-combate");
             const logCombate = document.getElementById("combat-log-content");
@@ -514,7 +553,7 @@
                         btn.innerText = `⏳ [CD: ${cd}]`;
                         btn.disabled = true;
                     } else {
-                        btn.innerText = ataque.nombre;
+                        btn.innerText = ataque.nombre.toUpperCase();
                         btn.disabled = false;
                         btn.onclick = () => resolverTurno(slot);
                     }
@@ -523,28 +562,29 @@
 
             btnGenerarRival.onclick = () => {
                 logCombate.innerHTML = "";
-                addLog(`<span style="color:#4dd0e1">> CONECTANDO CON COLISEUM LOGIC V14.6...</span>`);
+                addLog(`<span style="color:#4dd0e1">> CONECTANDO CON TUS ATAQUES REALES...</span>`);
                 
                 document.getElementById("side-player").style.filter = "none";
                 document.getElementById("side-enemy").style.filter = "none";
 
-                // Preparar jugador usando el motor real
                 const pAdn = obtenerAdnPlayer();
                 
-                // Le forzamos ataques aleatorios para la prueba si no tiene
+                // ✨ AHORA LEE LOS SELECTORES QUE ELEGISTE EN EL PANEL
+                const espVal = document.getElementById("sel-mt-especial").value;
+                const tacVal = document.getElementById("sel-mt-tactica").value;
+                const defVal = document.getElementById("sel-mt-definitivo").value;
+
                 pAdn.ataques = {
-                    atk_2: window.ColiseumLogic.obtenerAtaqueAleatorio(pAdn.element, "especiales"),
-                    atk_3: window.ColiseumLogic.obtenerAtaqueAleatorio("Sintético", "soportes"), // Soporte universal
-                    atk_4: pAdn.level >= 25 ? window.ColiseumLogic.obtenerAtaqueAleatorio(pAdn.element, "definitivos") : null
+                    atk_2: espVal !== "ninguno" ? { nombre: espVal } : window.ColiseumLogic.obtenerAtaqueAleatorio(pAdn.element, "especiales"),
+                    atk_3: tacVal !== "ninguno" ? { nombre: tacVal } : window.ColiseumLogic.obtenerAtaqueAleatorio(pAdn.element, "soportes"),
+                    atk_4: pAdn.level >= 25 ? (defVal !== "ninguno" ? { nombre: defVal } : window.ColiseumLogic.obtenerAtaqueAleatorio(pAdn.element, "definitivos")) : null
                 };
 
                 window.ColiseumLogic.prepararJugador(pAdn);
 
-                // Generar enemigo procedural respetando el nivel
                 const nivelElegido = parseInt(document.getElementById("sel-nivel-combate").value);
                 window.ColiseumLogic.generarRivalProcedural(nivelElegido);
 
-                // Sobreescribir rareza o combo del enemigo si el lab lo exige
                 const enemyRareza = document.getElementById("sel-enemy-rareza").value;
                 const enemyComboSelection = document.getElementById("sel-enemy-combo").value;
 
@@ -569,10 +609,10 @@
                 document.getElementById("c-p-calidad").innerText = `[${calP.rango}]`;
                 document.getElementById("c-p-calidad").style.color = calP.color;
 
-                document.getElementById("c-p-genb").innerText = playerC.genesId[0];
-                document.getElementById("c-p-genc").innerText = playerC.genesId[1];
-                document.getElementById("c-e-genb").innerText = enemyC.genesId[0];
-                document.getElementById("c-e-genc").innerText = enemyC.genesId[1];
+                document.getElementById("c-p-genb").innerText = playerC.genesId[0] !== "ninguno" ? playerC.genesId[0] : "Vacío";
+                document.getElementById("c-p-genc").innerText = playerC.genesId[1] !== "ninguno" ? playerC.genesId[1] : "Vacío";
+                document.getElementById("c-e-genb").innerText = enemyC.genesId[0] !== "ninguno" ? enemyC.genesId[0] : "Vacío";
+                document.getElementById("c-e-genc").innerText = enemyC.genesId[1] !== "ninguno" ? enemyC.genesId[1] : "Vacío";
 
                 actualizarUICombate(playerC, true);
                 actualizarUICombate(enemyC, false);
@@ -593,7 +633,6 @@
                 for (let k in p.cooldowns) if (p.cooldowns[k] > 0) p.cooldowns[k]--;
                 for (let k in e.cooldowns) if (e.cooldowns[k] > 0) e.cooldowns[k]--;
 
-                // IA Enemiga (Aleatoria simple para el laboratorio)
                 let slotsEnemigos = ["ataque"];
                 if (e.ataquesEquipados.especial && e.cooldowns.especial === 0) slotsEnemigos.push("especial");
                 if (e.ataquesEquipados.tactica && e.cooldowns.tactica === 0) slotsEnemigos.push("tactica");
@@ -603,14 +642,12 @@
 
                 addLog(`<br><span style="color:#fff; border-bottom:1px solid #333;">--- TURNO ${engine.turno} ---</span>`);
 
-                // Determinar quién ataca primero
                 let velP = p.spd + (Math.random() * 5);
                 let velE = e.spd + (Math.random() * 5);
                 
                 let primero = velP >= velE ? {ata: p, def: e, accion: slotElegidoPorJugador, isP: true} : {ata: e, def: p, accion: IA_Action, isP: false};
                 let segundo = velP < velE ? {ata: p, def: e, accion: slotElegidoPorJugador, isP: true} : {ata: e, def: p, accion: IA_Action, isP: false};
 
-                // Ejecutar Primero
                 let res1 = engine.ejecutarAtaqueCompleto(primero.ata, primero.def, primero.accion);
                 res1.logs.forEach(l => addLog(l));
                 if (res1.anims.danoDefensor > 0) { flashDamage(!primero.isP); mostrarTextoFlotante(!primero.isP, `-${res1.anims.danoDefensor}`, "text-dmg"); }
@@ -619,7 +656,6 @@
 
                 actualizarUICombate(p, true); actualizarUICombate(e, false);
 
-                // Ejecutar Segundo (Si sigue vivo)
                 if (segundo.ata.hp > 0 && segundo.def.hp > 0) {
                     let res2 = engine.ejecutarAtaqueCompleto(segundo.ata, segundo.def, segundo.accion);
                     res2.logs.forEach(l => addLog(l));
@@ -628,7 +664,6 @@
                     if (res2.anims.critico) mostrarTextoFlotante(!segundo.isP, "CRIT", "text-crit", 200);
                 }
 
-                // Efectos de Fin de Turno
                 let finP = engine.procesarEfectosFinTurno(p);
                 finP.logs.forEach(l => addLog(l));
                 if(finP.anims.heal > 0) mostrarTextoFlotante(true, `+${finP.anims.heal}`, "text-heal");
