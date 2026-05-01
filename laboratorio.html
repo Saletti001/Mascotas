@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔬 Laboratorio de Pruebas Genos V14.8 (UI REPARADA)</title>
+    <title>🔬 Laboratorio de Pruebas Genos V14.9 (CONTROL TOTAL)</title>
     
     <!-- CONECTADO A TU CATÁLOGO REAL -->
     <script src="AttackCatalog.js"></script> 
@@ -38,7 +38,7 @@
         .control-group.special-c { border-left: 3px solid #8A2BE2; background: rgba(138, 43, 226, 0.05); }
         .control-group.special-combo { border-left: 3px solid #ff5722; background: rgba(255, 87, 34, 0.05); }
         label { font-size: 11px; color: #aaa; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
-        select, input[type="color"] { padding: 10px; background: #0d1a24; color: #fff; border: 1px solid #333; border-radius: 8px; font-size: 14px; outline: none; cursor: pointer; width: 100%; box-sizing: border-box; }
+        select, input[type="color"], input[type="number"] { padding: 10px; background: #0d1a24; color: #fff; border: 1px solid #333; border-radius: 8px; font-size: 14px; outline: none; cursor: pointer; width: 100%; box-sizing: border-box; }
         select:focus, input:focus { border-color: #4dd0e1; }
         
         .viewer-container { flex: 1.5; display: flex; flex-direction: column; gap: 15px; }
@@ -56,7 +56,6 @@
         .terminal::-webkit-scrollbar-thumb { background: #00ffcc; }
         .term-title { color: #fff; font-weight: bold; margin-bottom: 10px; text-align: center; border-bottom: 1px dashed #1e3a5f; padding-bottom: 5px; }
 
-        /* ✨ FIX V14.8: Eliminado el display: flex rebelde para que obedezca a las pestañas */
         .combat-arena { width: 100%; flex-direction: column; gap: 20px; }
         
         .action-bar { display: flex; gap: 15px; align-items: center; }
@@ -116,7 +115,7 @@
 </head>
 <body>
 
-    <h1>🔬 Laboratorio Genético V14.8</h1>
+    <h1>🔬 Laboratorio Genético V14.9</h1>
     
     <div class="tabs-container">
         <button id="btn-tab-adn" class="tab-btn active">🔬 ADN y Equipo</button>
@@ -137,14 +136,26 @@
             </div>
             
             <div class="control-group">
-                <label style="color:#ff6b6b">Rareza (Afecta Stats Base)</label>
+                <label style="color:#ff6b6b">Rareza Base</label>
                 <select id="sel-rareza">
                     <option value="Común">Común</option><option value="Raro">Raro</option>
                     <option value="Épico">Épico</option><option value="Legendario">Legendario</option><option value="Mítico">Mítico</option>
                 </select>
             </div>
 
-            <!-- SELECTORES DE MT REALES -->
+            <!-- ✨ NUEVO: CONTROL MANUAL DE STATS DEL JUGADOR -->
+            <div class="control-group" style="background: rgba(76, 175, 80, 0.1); border-left: 3px solid #4CAF50;">
+                <label style="color:#4CAF50">📊 ESTADÍSTICAS DEL GENO (MANUALES)</label>
+                <div style="font-size: 10px; color: #aaa; text-align: center;">Simula tu Nivel 25 agregando puntos tú mismo.</div>
+                <div style="display: flex; gap: 5px; text-align: center; margin-top: 5px;">
+                    <div style="flex: 1;"><label style="color:#4CAF50; font-size:9px;">HP</label><input type="number" id="inp-hp" value="100" style="padding: 5px; font-size:12px;"></div>
+                    <div style="flex: 1;"><label style="color:#ff6b6b; font-size:9px;">ATK</label><input type="number" id="inp-atk" value="25" style="padding: 5px; font-size:12px;"></div>
+                    <div style="flex: 1;"><label style="color:#80deea; font-size:9px;">DEF</label><input type="number" id="inp-def" value="15" style="padding: 5px; font-size:12px;"></div>
+                    <div style="flex: 1;"><label style="color:#b19cd9; font-size:9px;">SPD</label><input type="number" id="inp-spd" value="20" style="padding: 5px; font-size:12px;"></div>
+                    <div style="flex: 1;"><label style="color:#ffcc00; font-size:9px;">LUK</label><input type="number" id="inp-luk" value="15" style="padding: 5px; font-size:12px;"></div>
+                </div>
+            </div>
+
             <div class="control-group" style="border-left: 3px solid #ffcc00; background: rgba(255, 204, 0, 0.05);">
                 <label style="color:#ffcc00">💿 MT Especial (Slot 2)</label>
                 <select id="sel-mt-especial"><option value="ninguno">Aleatorio / Ninguno</option></select>
@@ -211,13 +222,14 @@
             <!-- Selector de Nivel -->
             <select id="sel-nivel-combate" style="flex: 0.2; padding: 15px; background: #0d1a24; color: #4CAF50; border: 1px solid #4CAF50; border-radius: 8px; font-weight: bold; outline: none; cursor: pointer; text-transform: uppercase;">
                 <option value="1">Nivel 1</option><option value="5">Nivel 5</option>
-                <option value="15">Nivel 15</option><option value="25" selected>Nivel 25 (Meta)</option>
+                <option value="15">Nivel 15</option><option value="25" selected>Nivel 25 (Enemigo Meta)</option>
             </select>
             
             <select id="sel-enemy-rareza" style="flex: 0.3; padding: 15px; background: #0d1a24; color: #ff6b6b; border: 1px solid #ff6b6b; border-radius: 8px; font-weight: bold; outline: none; cursor: pointer; text-transform: uppercase;">
-                <option value="Común">Rival: Común</option><option value="Raro">Rival: Raro</option>
-                <option value="Épico">Rival: Épico</option><option value="Legendario">Rival: Legendario</option>
-                <option value="Mítico">Rival: Mítico</option>
+                <option value="auto">Rival: Auto (Juego Real)</option>
+                <option value="Común">Rival Forzado: Común</option><option value="Raro">Rival Forzado: Raro</option>
+                <option value="Épico">Rival Forzado: Épico</option><option value="Legendario">Rival Forzado: Legendario</option>
+                <option value="Mítico">Rival Forzado: Mítico</option>
             </select>
 
             <select id="sel-enemy-combo" style="flex: 0.3; padding: 15px; background: #0d1a24; color: #ff9800; border: 1px solid #ff9800; border-radius: 8px; font-weight: bold; outline: none; cursor: pointer; text-transform: uppercase;">
@@ -346,10 +358,7 @@
             const selTac = document.getElementById("sel-mt-tactica");
             const selDef = document.getElementById("sel-mt-definitivo");
             
-            if (!window.AttackCatalog) {
-                console.error("No se encontró el Catálogo de Ataques.");
-                return;
-            }
+            if (!window.AttackCatalog) return;
 
             let catalogoAUsar = window.AttackCatalog.ataquesPorElemento || window.AttackCatalog.movimientos;
             if (!catalogoAUsar) return;
@@ -364,6 +373,52 @@
             esp.sort().forEach(name => { let opt = document.createElement("option"); opt.value = name.split("] ")[1]; opt.innerText = name; selEsp.appendChild(opt); });
             tac.sort().forEach(name => { let opt = document.createElement("option"); opt.value = name.split("] ")[1]; opt.innerText = name; selTac.appendChild(opt); });
             def.sort().forEach(name => { let opt = document.createElement("option"); opt.value = name.split("] ")[1]; opt.innerText = name; selDef.appendChild(opt); });
+        }
+
+        // ✨ NUEVA FUNCIÓN: Simula las matemáticas exactas del enemigo del juego real
+        function recrearStatsEnemigoFiel(rareza, nivel, elemento, genesEnemigo) {
+            const eStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(rareza) : {hp: 120, atk: 12, def: 8, spd: 10, luk: 5};
+            
+            let rollCalidad = Math.random();
+            let purezaEnemigo = 60; 
+            if (rollCalidad < 0.25) purezaEnemigo = 95; 
+            else if (rollCalidad < 0.65) purezaEnemigo = 85; 
+            else if (rollCalidad < 0.90) purezaEnemigo = 70; 
+            else purezaEnemigo = 40; 
+            
+            let bonoPureza = purezaEnemigo >= 90 ? 4 : (purezaEnemigo >= 80 ? 3 : (purezaEnemigo >= 60 ? 1 : 0));
+            if (nivel <= 8) bonoPureza = Math.floor(bonoPureza / 2);
+
+            eStats.hp += bonoPureza * 3; eStats.atk += bonoPureza; eStats.def += bonoPureza; eStats.spd += bonoPureza; eStats.luk += bonoPureza;
+
+            let pesos = { hp: 20, atk: 20, def: 20, spd: 20, luk: 20 };
+            if (elemento === "Biomutante") { pesos.hp += 40; pesos.def += 20; pesos.spd -= 10; }
+            else if (elemento === "Sintético") { pesos.spd += 40; pesos.luk += 30; pesos.def -= 10; }
+            else if (elemento === "Cibernético") { pesos.def += 40; pesos.atk += 20; pesos.luk -= 10; }
+            else if (elemento === "Viral") { pesos.spd += 25; pesos.atk += 25; pesos.hp += 10; }
+            else if (elemento === "Radiactivo") { pesos.atk += 40; pesos.hp += 20; pesos.def -= 10; }
+            else if (elemento === "Tóxico") { pesos.hp += 30; pesos.def += 30; pesos.atk -= 10; }
+
+            if (genesEnemigo.includes("velocidad_fantasma") || genesEnemigo.includes("esquiva_genetica")) pesos.spd += 50;
+            if (genesEnemigo.includes("vampirismo_genetico") || genesEnemigo.includes("instinto_caza") || genesEnemigo.includes("ruptura_defensiva")) pesos.atk += 50;
+            if (genesEnemigo.includes("armadura_adaptativa") || genesEnemigo.includes("postura_inquebrantable") || genesEnemigo.includes("nucleo_coraza")) pesos.def += 50;
+            if (genesEnemigo.includes("resiliencia_ultima") || genesEnemigo.includes("frenesi") || genesEnemigo.includes("barrera_limite")) { pesos.hp += 40; pesos.atk += 20; }
+            if (genesEnemigo.includes("reflejo_genetico")) pesos.luk += 50;
+
+            for (let stat in pesos) if (pesos[stat] < 1) pesos[stat] = 1;
+
+            let bolsaStats = [];
+            for (let stat in pesos) {
+                for (let i = 0; i < pesos[stat]; i++) bolsaStats.push(stat);
+            }
+
+            let puntosExtra = (nivel > 1) ? (nivel - 1) * 3 : 0;
+            for(let i=0; i<puntosExtra; i++) {
+                let rStat = bolsaStats[Math.floor(Math.random() * bolsaStats.length)];
+                if(rStat === 'hp') eStats.hp += 5; else eStats[rStat] += 1;
+            }
+
+            return eStats;
         }
 
         setTimeout(() => {
@@ -391,6 +446,12 @@
             const chkEscaneado = document.getElementById("chk-escaneado");
             const selPlayerCombo = document.getElementById("sel-player-combo");
             const selEnemyCombo = document.getElementById("sel-enemy-combo");
+
+            const inpHp = document.getElementById("inp-hp");
+            const inpAtk = document.getElementById("inp-atk");
+            const inpDef = document.getElementById("inp-def");
+            const inpSpd = document.getElementById("inp-spd");
+            const inpLuk = document.getElementById("inp-luk");
 
             if (window.COMBOS_OFICIALES) {
                 window.COMBOS_OFICIALES.forEach(combo => {
@@ -467,27 +528,27 @@
                 term.innerHTML = log;
             }
 
+            // ✨ AHORA LEE DIRECTAMENTE TUS CASILLAS MANUALES
             function obtenerAdnPlayer() {
                 const rareza = selRareza.value;
-                const stats = window.generarStatsPorRareza ? window.generarStatsPorRareza(rareza) : {hp: 100, atk: 25, def: 15, spd: 20, luk: 15};
                 const genBData = selGenB.value !== "ninguno" ? genesFuncionales.find(g => g.id === selGenB.value) : null;
                 const genCData = selGenC.value !== "ninguno" ? genesFuncionales.find(g => g.id === selGenC.value) : null;
                 const nivelElegido = parseInt(document.getElementById("sel-nivel-combate").value);
 
-                // ✨ FIX: Simular subida de nivel (3 puntos por nivel)
-                let puntosExtra = (nivelElegido > 1) ? (nivelElegido - 1) * 3 : 0;
-                let bolsaStats = ['hp', 'atk', 'def', 'spd', 'luk'];
-                for(let i=0; i<puntosExtra; i++) {
-                    let rStat = bolsaStats[Math.floor(Math.random() * bolsaStats.length)];
-                    if(rStat === 'hp') stats.hp += 5; else stats[rStat] += 1;
-                }
+                const statsManuales = {
+                    hp: parseInt(inpHp.value) || 100,
+                    atk: parseInt(inpAtk.value) || 25,
+                    def: parseInt(inpDef.value) || 15,
+                    spd: parseInt(inpSpd.value) || 20,
+                    luk: parseInt(inpLuk.value) || 15
+                };
 
                 return {
-                    id: 999, rarity: rareza, rareza: rareza, stats: stats, element: selElemento.value,
+                    id: 999, rarity: rareza, rareza: rareza, stats: statsManuales, element: selElemento.value,
                     body_shape: selForma.value, base_color: selColor.value, color: selColor.value,
                     eye_type: selOjos.value, mouth_type: selBoca.value, wing_type: selEspalda.value, hat_type: selCabeza.value,
                     scanned: chkEscaneado.checked, level: nivelElegido,
-                    maxHp: stats.hp, hp: stats.hp,
+                    maxHp: statsManuales.hp, hp: statsManuales.hp,
                     hidden_genes: { A: selGenA.value !== "ninguno" ? { id: selGenA.value } : null, B: genBData, C: genCData }
                 };
             }
@@ -499,12 +560,23 @@
                 actualizarTerminal();
             }
 
-            [selRareza, selElemento, selForma, selColor, selOjos, selBoca, selEspalda, selCabeza, selGenA, selGenB, selGenC, chkEscaneado].forEach(c => c.addEventListener("change", renderizarGenoPlayer));
+            // ✨ AUTO-RELLENADO DE RAREZA
+            selRareza.addEventListener("change", (e) => {
+                let baseStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(e.target.value) : {hp: 100, atk: 25, def: 15, spd: 20, luk: 15};
+                inpHp.value = baseStats.hp; inpAtk.value = baseStats.atk; inpDef.value = baseStats.def; inpSpd.value = baseStats.spd; inpLuk.value = baseStats.luk;
+                renderizarGenoPlayer();
+            });
+
+            [selElemento, selForma, selColor, selOjos, selBoca, selEspalda, selCabeza, selGenA, selGenB, selGenC, chkEscaneado, inpHp, inpAtk, inpDef, inpSpd, inpLuk].forEach(c => c.addEventListener("change", renderizarGenoPlayer));
             if (selColor) selColor.addEventListener("input", renderizarGenoPlayer);
+            
+            // Inicializar las cajas en modo Común al cargar
+            let inicialStats = window.generarStatsPorRareza ? window.generarStatsPorRareza("Común") : {hp: 100, atk: 25, def: 15, spd: 20, luk: 15};
+            inpHp.value = inicialStats.hp; inpAtk.value = inicialStats.atk; inpDef.value = inicialStats.def; inpSpd.value = inicialStats.spd; inpLuk.value = inicialStats.luk;
             renderizarGenoPlayer();
 
             // ==========================================
-            // CONEXIÓN CON EL MOTOR COLISEUMLOGIC (V14.8)
+            // MOTOR DE COMBATE
             // ==========================================
             const btnGenerarRival = document.getElementById("btn-generar-combate");
             const logCombate = document.getElementById("combat-log-content");
@@ -571,7 +643,7 @@
 
             btnGenerarRival.onclick = () => {
                 logCombate.innerHTML = "";
-                addLog(`<span style="color:#4dd0e1">> CONECTANDO CON TUS ATAQUES REALES...</span>`);
+                addLog(`<span style="color:#4dd0e1">> GENERANDO ESCENARIO (Cargando stats...)</span>`);
                 
                 document.getElementById("side-player").style.filter = "none";
                 document.getElementById("side-enemy").style.filter = "none";
@@ -591,23 +663,39 @@
                 window.ColiseumLogic.prepararJugador(pAdn);
 
                 const nivelElegido = parseInt(document.getElementById("sel-nivel-combate").value);
+                
+                // 1. Generamos un enemigo normal con la lógica del juego
                 window.ColiseumLogic.generarRivalProcedural(nivelElegido);
 
                 const enemyRareza = document.getElementById("sel-enemy-rareza").value;
                 const enemyComboSelection = document.getElementById("sel-enemy-combo").value;
 
-                if (enemyRareza !== window.ColiseumLogic.enemy.rareza) {
-                    window.ColiseumLogic.enemy.rareza = enemyRareza;
-                    let nStats = window.generarStatsPorRareza(enemyRareza);
+                let eRarezaReal = window.ColiseumLogic.enemy.rareza;
+                let eGenesReales = window.ColiseumLogic.enemy.genesId;
+                let forzarRecalculo = false;
 
-                    // ✨ FIX: Aplicar la misma subida de nivel al enemigo si le forzamos la rareza
-                    let ePuntosExtra = (nivelElegido > 1) ? (nivelElegido - 1) * 3 : 0;
-                    let bolsaStats = ['hp', 'atk', 'def', 'spd', 'luk'];
-                    for(let i=0; i<ePuntosExtra; i++) {
-                        let rStat = bolsaStats[Math.floor(Math.random() * bolsaStats.length)];
-                        if(rStat === 'hp') nStats.hp += 5; else nStats[rStat] += 1;
-                    }
+                // 2. Si el laboratorio fuerza la rareza, la sobreescribimos
+                if (enemyRareza !== "auto") {
+                    eRarezaReal = enemyRareza;
+                    window.ColiseumLogic.enemy.rareza = eRarezaReal;
+                    forzarRecalculo = true;
+                }
 
+                // 3. Si el laboratorio fuerza un combo, lo sobreescribimos
+                if (enemyComboSelection !== "aleatorio" && window.COMBOS_OFICIALES) {
+                    const comboElegido = window.COMBOS_OFICIALES.find(c => c.nombre === enemyComboSelection);
+                    eGenesReales = [comboElegido.ids[0], comboElegido.ids[1]];
+                    window.ColiseumLogic.enemy.genesId = eGenesReales;
+                    
+                    let gB_data = genesFuncionales.find(g => g.id === eGenesReales[0]);
+                    let gC_data = genesFuncionales.find(g => g.id === eGenesReales[1]);
+                    window.ColiseumLogic.enemy.adn.hidden_genes = { A: null, B: gB_data, C: gC_data };
+                    forzarRecalculo = true;
+                }
+
+                // ✨ 4. RECALCULO FIEL A LA LÓGICA DEL JUEGO CON LOS DATOS FORZADOS
+                if (forzarRecalculo) {
+                    let nStats = recrearStatsEnemigoFiel(eRarezaReal, nivelElegido, window.ColiseumLogic.enemy.element, eGenesReales);
                     window.ColiseumLogic.enemy.maxHp = nStats.hp; window.ColiseumLogic.enemy.hp = nStats.hp;
                     window.ColiseumLogic.enemy.atk = nStats.atk; window.ColiseumLogic.enemy.baseAtk = nStats.atk;
                     window.ColiseumLogic.enemy.def = nStats.def; window.ColiseumLogic.enemy.baseDef = nStats.def;
@@ -626,9 +714,13 @@
                 document.getElementById("c-e-rareza").innerText = enemyC.rareza;
                 document.getElementById("c-e-elem").innerText = enemyC.element;
 
-                let calP = obtenerCalidad(playerC.baseAtk ? {hp: playerC.maxHp, atk: playerC.baseAtk, def: playerC.baseDef, spd: playerC.baseSpd, luk: playerC.baseLuk} : pAdn.stats, playerC.rareza);
+                let calP = obtenerCalidad({hp: playerC.maxHp, atk: playerC.baseAtk, def: playerC.baseDef, spd: playerC.baseSpd, luk: playerC.baseLuk}, playerC.rareza);
                 document.getElementById("c-p-calidad").innerText = `[${calP.rango}]`;
                 document.getElementById("c-p-calidad").style.color = calP.color;
+
+                let calE = obtenerCalidad({hp: enemyC.maxHp, atk: enemyC.baseAtk, def: enemyC.baseDef, spd: enemyC.baseSpd, luk: enemyC.baseLuk}, enemyC.rareza);
+                document.getElementById("c-e-calidad").innerText = `[${calE.rango}]`;
+                document.getElementById("c-e-calidad").style.color = calE.color;
 
                 document.getElementById("c-p-genb").innerText = playerC.genesId[0] !== "ninguno" ? playerC.genesId[0] : "Vacío";
                 document.getElementById("c-p-genc").innerText = playerC.genesId[1] !== "ninguno" ? playerC.genesId[1] : "Vacío";
