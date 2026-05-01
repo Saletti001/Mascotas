@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V14.6 (ZONA NOVATOS HASTA LV 8)
+// ColiseumLogic.js - MODELO MATEMÁTICO V14.7 (FIX: PENETRACIÓN DE ARMADURA)
 // =========================================
 
 window.ColiseumLogic = {
@@ -48,11 +48,9 @@ window.ColiseumLogic = {
         let eRareza = "Común"; 
         let pRareza = this.player ? (this.player.rareza || this.player.rarity || "Común") : "Común";
 
-        // ✨ ZONA DE NOVATOS AMPLIADA (Niveles 1 al 8)
         if (nivelJugador <= 8) {
-            eRareza = "Común"; // Bloqueamos la rareza a Común estrictamente
+            eRareza = "Común"; 
         } else {
-            // Lógica normal de emparejamiento para niveles 9 en adelante
             if (pRareza === "Común") {
                 eRareza = roll < 0.60 ? "Raro" : "Común";
             } else if (pRareza === "Raro") {
@@ -64,7 +62,6 @@ window.ColiseumLogic = {
             }
         }
         
-        // Fallback de seguridad (HP base adaptado al meta)
         const eStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(eRareza) : {hp: 120, atk: 12, def: 8, spd: 10, luk: 5};
         
         let rollCalidad = Math.random();
@@ -77,7 +74,6 @@ window.ColiseumLogic = {
 
         eStats.pureza = purezaEnemigo;
         
-        // ✨ Reducimos el bono de pureza si estamos en la zona de novatos para que no peguen tan duro
         let bonoPureza = purezaEnemigo >= 90 ? 4 : (purezaEnemigo >= 80 ? 3 : (purezaEnemigo >= 60 ? 1 : 0));
         if (nivelJugador <= 8) bonoPureza = Math.floor(bonoPureza / 2);
 
@@ -87,10 +83,9 @@ window.ColiseumLogic = {
         eStats.spd += bonoPureza;
         eStats.luk += bonoPureza;
 
-        // ✨ Aseguramos que el nivel sea exactamente el mismo en la zona de novatos
         let nivelEnemigo = nivelJugador;
         if (nivelJugador > 10) {
-            nivelEnemigo = nivelJugador + 3; // El pico de dificultad vuelve al nivel 11
+            nivelEnemigo = nivelJugador + 3; 
         }
 
         const elementos = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
@@ -337,34 +332,26 @@ window.ColiseumLogic = {
                 
                 let multElem = ventajas[ataqueReal.elemento] === defensor.element ? 1.35 : (ventajas[defensor.element] === ataqueReal.elemento ? 0.75 : 1.0);
 
-                // ✨ REGLA DE STAB BALANCEADO
                 let stab = (slotAccion !== "ataque" && atacante.element === ataqueReal.elemento && atacante.element !== defensor.element) ? 1.20 : 1.0;
 
                 atkBruto = atkBruto * multElem * stab;
                 anims.multElem = multElem;
 
-                // 1. Precisión base del ataque
                 let precision = (ataqueReal.precision !== undefined) ? ataqueReal.precision : 1.0;
                 if (ataqueReal.nombre === "Oleada Mutante" || ataqueReal.nombre === "Cañón Orbital") precision = 0.85;
 
-                // 2. Reducción por Visión Nublada
                 if (atacante.estados.includes("Visión Nublada") || atacante.estados.includes("Vision Nublada")) {
                     precision -= 0.25;
                 }
                 
-                // 3. Evasión del Defensor (SISTEMA DE DOBLE TECHO)
                 let evasionPasiva = 0;
-                
                 evasionPasiva += (defensor.spd * 0.004); 
                 if (defensor.genesId.includes("esquiva_genetica")) evasionPasiva += 0.15; 
-                
                 evasionPasiva = Math.min(evasionPasiva, 0.40);
 
                 let evasionTotal = evasionPasiva;
-
                 let buffEvasion = defensor.efectosActivos.find(ef => ef.stat === "evasion");
                 if (buffEvasion) evasionTotal += buffEvasion.valor; 
-                
                 evasionTotal = Math.min(evasionTotal, 0.85);
 
                 let probHit = precision - evasionTotal;
@@ -385,17 +372,26 @@ window.ColiseumLogic = {
 
                 let defRival = defensor.def;
 
+                // ✨ FIX V14.7: CÁLCULO SEPARADO DE PERFORANTE Y ROMPE ESCUDOS
                 if (ataqueReal.perforante || ataqueReal.rompeEscudos) {
-                    if (defensor.genesId.includes("decoy") && !defensor.decoyUsado && atkBruto > 0) {
+                    // Primero comprobamos los Genes defensivos EXCLUSIVAMENTE contra Perforantes
+                    if (ataqueReal.perforante && defensor.genesId.includes("decoy") && !defensor.decoyUsado && atkBruto > 0) {
                         defensor.decoyUsado = true;
                         atkBruto = 0; 
                         golpeActual.evadido = true;
                         logs.push(`<span style="color:#e0e0e0; font-style:italic;">💨 🧬 [Gen Oculto: Maestro del Engaño] ¡${this.cName(defensor)} evadió el golpe perforante!</span>`);
-                    } else if (defensor.genesId.includes("steadfast")) {
+                    } else if (ataqueReal.perforante && defensor.genesId.includes("steadfast")) {
                         defRival = Math.floor(defensor.def * 0.20); 
                         logs.push(`<span style="color:#80deea;">🛡️ 🧬 [Gen Oculto: Postura Inquebrantable] Absorbe parcialmente la perforación.</span>`);
                     } else {
-                        defRival = 0;
+                        // Aquí procesamos matemáticamente el daño puro o el rompimiento de escudos
+                        if (ataqueReal.perforante) {
+                            defRival = 0; // Perforante ignora 100% de la armadura
+                        } else if (ataqueReal.rompeEscudos) {
+                            // RompeEscudos reduce un porcentaje específico de la armadura (Ej: 0.30 = 30%)
+                            let penetracion = (typeof ataqueReal.rompeEscudos === "number") ? ataqueReal.rompeEscudos : 1.0;
+                            defRival = Math.floor(defRival * (1 - penetracion));
+                        }
                     }
                 }
 
