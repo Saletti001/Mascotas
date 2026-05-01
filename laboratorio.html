@@ -472,12 +472,21 @@
                 const stats = window.generarStatsPorRareza ? window.generarStatsPorRareza(rareza) : {hp: 100, atk: 25, def: 15, spd: 20, luk: 15};
                 const genBData = selGenB.value !== "ninguno" ? genesFuncionales.find(g => g.id === selGenB.value) : null;
                 const genCData = selGenC.value !== "ninguno" ? genesFuncionales.find(g => g.id === selGenC.value) : null;
+                const nivelElegido = parseInt(document.getElementById("sel-nivel-combate").value);
+
+                // ✨ FIX: Simular subida de nivel (3 puntos por nivel)
+                let puntosExtra = (nivelElegido > 1) ? (nivelElegido - 1) * 3 : 0;
+                let bolsaStats = ['hp', 'atk', 'def', 'spd', 'luk'];
+                for(let i=0; i<puntosExtra; i++) {
+                    let rStat = bolsaStats[Math.floor(Math.random() * bolsaStats.length)];
+                    if(rStat === 'hp') stats.hp += 5; else stats[rStat] += 1;
+                }
 
                 return {
                     id: 999, rarity: rareza, rareza: rareza, stats: stats, element: selElemento.value,
                     body_shape: selForma.value, base_color: selColor.value, color: selColor.value,
                     eye_type: selOjos.value, mouth_type: selBoca.value, wing_type: selEspalda.value, hat_type: selCabeza.value,
-                    scanned: chkEscaneado.checked, level: parseInt(document.getElementById("sel-nivel-combate").value),
+                    scanned: chkEscaneado.checked, level: nivelElegido,
                     maxHp: stats.hp, hp: stats.hp,
                     hidden_genes: { A: selGenA.value !== "ninguno" ? { id: selGenA.value } : null, B: genBData, C: genCData }
                 };
@@ -590,7 +599,20 @@
                 if (enemyRareza !== window.ColiseumLogic.enemy.rareza) {
                     window.ColiseumLogic.enemy.rareza = enemyRareza;
                     let nStats = window.generarStatsPorRareza(enemyRareza);
+
+                    // ✨ FIX: Aplicar la misma subida de nivel al enemigo si le forzamos la rareza
+                    let ePuntosExtra = (nivelElegido > 1) ? (nivelElegido - 1) * 3 : 0;
+                    let bolsaStats = ['hp', 'atk', 'def', 'spd', 'luk'];
+                    for(let i=0; i<ePuntosExtra; i++) {
+                        let rStat = bolsaStats[Math.floor(Math.random() * bolsaStats.length)];
+                        if(rStat === 'hp') nStats.hp += 5; else nStats[rStat] += 1;
+                    }
+
                     window.ColiseumLogic.enemy.maxHp = nStats.hp; window.ColiseumLogic.enemy.hp = nStats.hp;
+                    window.ColiseumLogic.enemy.atk = nStats.atk; window.ColiseumLogic.enemy.baseAtk = nStats.atk;
+                    window.ColiseumLogic.enemy.def = nStats.def; window.ColiseumLogic.enemy.baseDef = nStats.def;
+                    window.ColiseumLogic.enemy.spd = nStats.spd; window.ColiseumLogic.enemy.baseSpd = nStats.spd;
+                    window.ColiseumLogic.enemy.luk = nStats.luk; window.ColiseumLogic.enemy.baseLuk = nStats.luk;
                 }
 
                 const playerC = window.ColiseumLogic.player;
