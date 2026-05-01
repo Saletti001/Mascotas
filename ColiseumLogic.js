@@ -1,5 +1,5 @@
 // =========================================
-// ColiseumLogic.js - MODELO MATEMÁTICO V14.7 (FIX: PENETRACIÓN DE ARMADURA)
+// ColiseumLogic.js - MODELO MATEMÁTICO V14.8 (MECÁNICAS EXÓTICAS ACTIVADAS)
 // =========================================
 
 window.ColiseumLogic = {
@@ -77,16 +77,10 @@ window.ColiseumLogic = {
         let bonoPureza = purezaEnemigo >= 90 ? 4 : (purezaEnemigo >= 80 ? 3 : (purezaEnemigo >= 60 ? 1 : 0));
         if (nivelJugador <= 8) bonoPureza = Math.floor(bonoPureza / 2);
 
-        eStats.hp += bonoPureza * 3;
-        eStats.atk += bonoPureza;
-        eStats.def += bonoPureza;
-        eStats.spd += bonoPureza;
-        eStats.luk += bonoPureza;
+        eStats.hp += bonoPureza * 3; eStats.atk += bonoPureza; eStats.def += bonoPureza; eStats.spd += bonoPureza; eStats.luk += bonoPureza;
 
         let nivelEnemigo = nivelJugador;
-        if (nivelJugador > 10) {
-            nivelEnemigo = nivelJugador + 3; 
-        }
+        if (nivelJugador > 10) { nivelEnemigo = nivelJugador + 3; }
 
         const elementos = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
         const eElemento = elementos[Math.floor(Math.random() * elementos.length)];
@@ -114,11 +108,7 @@ window.ColiseumLogic = {
         for (let stat in pesos) if (pesos[stat] < 1) pesos[stat] = 1;
 
         let bolsaStats = [];
-        for (let stat in pesos) {
-            for (let i = 0; i < pesos[stat]; i++) {
-                bolsaStats.push(stat);
-            }
-        }
+        for (let stat in pesos) for (let i = 0; i < pesos[stat]; i++) bolsaStats.push(stat);
 
         let puntosExtra = (nivelEnemigo > 1) ? (nivelEnemigo - 1) * 3 : 0;
         for(let i=0; i<puntosExtra; i++) {
@@ -170,11 +160,7 @@ window.ColiseumLogic = {
 
         let pAtks = window.miMascota && window.miMascota.ataques ? window.miMascota.ataques : {};
         
-        const counterDelJugador = {
-            "Biomutante": "Viral", "Sintético": "Biomutante", "Tóxico": "Sintético",
-            "Radiactivo": "Tóxico", "Cibernético": "Radiactivo", "Viral": "Cibernético"
-        };
-        
+        const counterDelJugador = { "Biomutante": "Viral", "Sintético": "Biomutante", "Tóxico": "Sintético", "Radiactivo": "Tóxico", "Cibernético": "Radiactivo", "Viral": "Cibernético" };
         let pElement = this.player ? this.player.element : "Normal";
         let elementoCounter = counterDelJugador[pElement] || eElemento;
 
@@ -184,9 +170,7 @@ window.ColiseumLogic = {
         if (pAtks.atk_2 && pAtks.atk_3) {
             if (Math.random() < 0.5) atkEsp = this.obtenerAtaqueAleatorio(elementoCounter, "especiales");
             else atkTac = this.obtenerAtaqueAleatorio(elementoCounter, "soportes");
-        } else if (pAtks.atk_2) {
-            atkEsp = this.obtenerAtaqueAleatorio(elementoCounter, "especiales");
-        }
+        } else if (pAtks.atk_2) atkEsp = this.obtenerAtaqueAleatorio(elementoCounter, "especiales");
 
         let enemyAtaques = {
             "ataque": this.obtenerAtaqueAleatorio(eElemento, "basicos"),
@@ -249,6 +233,13 @@ window.ColiseumLogic = {
             return { logs, anims };
         }
 
+        // ✨ FIX 3: Costos y Autosacrificios ANTES del ataque
+        if (ataqueReal.costoHp) {
+            let selfDmg = Math.floor(atacante.maxHp * ataqueReal.costoHp);
+            atacante.hp = Math.max(0, atacante.hp - selfDmg);
+            logs.push(`<span style="color:#ff3333">🩸 ${this.cName(atacante)} sacrifica ${selfDmg} HP para potenciar su cuerpo.</span>`);
+        }
+
         if (slotAccion === "definitivo" && defensor.genesId.includes("ults_counter")) {
             let buffAtk = Math.floor(defensor.baseAtk * 0.30);
             defensor.atk += buffAtk;
@@ -270,7 +261,16 @@ window.ColiseumLogic = {
             if(ataqueReal.descripcion) logs.push(`<span style="color:#80cbc4; font-style:italic;">* Efecto: ${ataqueReal.descripcion}</span>`);
         }
 
-        let potenciaAtaque = ataqueReal.potencia || 0;
+        // ✨ FIX 1: Lectura de Potencia o PotenciaBase
+        let potenciaAtaque = ataqueReal.potencia || ataqueReal.potenciaBase || 0;
+
+        // ✨ FIX 3: Aplicación del buff acumulado en el turno anterior
+        let buffDanoActivo = atacante.efectosActivos.find(ef => ef.stat === "buffDanoExtra");
+        if (buffDanoActivo) {
+            potenciaAtaque = Math.floor(potenciaAtaque * (1 + buffDanoActivo.valor));
+            atacante.efectosActivos = atacante.efectosActivos.filter(ef => ef !== buffDanoActivo); 
+            logs.push(`<span style="color:#ce93d8;">💥 ¡El ataque fue potenciado masivamente!</span>`);
+        }
 
         if (ataqueReal.escalaConHP) {
             let pctHP = atacante.hp / atacante.maxHp;
@@ -312,6 +312,13 @@ window.ColiseumLogic = {
             logs.push(`<span style="color:#4CAF50">* ${this.cName(atacante)} recupera ${cura} HP.</span>`);
         }
 
+        // ✨ FIX 6: Consumir el Hit Garantizado
+        let buffHitGarantizado = atacante.efectosActivos.find(ef => ef.stat === "hit_garantizado");
+        if (buffHitGarantizado) {
+            ataqueReal.noFalla = true;
+            atacante.efectosActivos = atacante.efectosActivos.filter(ef => ef !== buffHitGarantizado);
+        }
+
         if (potenciaAtaque > 0) {
             let numGolpes = ataqueReal.hits || 1;
             if (atacante.genesId.includes("velocidad_fantasma") && Math.random() <= 0.20 && numGolpes === 1) {
@@ -331,7 +338,6 @@ window.ColiseumLogic = {
                 };
                 
                 let multElem = ventajas[ataqueReal.elemento] === defensor.element ? 1.35 : (ventajas[defensor.element] === ataqueReal.elemento ? 0.75 : 1.0);
-
                 let stab = (slotAccion !== "ataque" && atacante.element === ataqueReal.elemento && atacante.element !== defensor.element) ? 1.20 : 1.0;
 
                 atkBruto = atkBruto * multElem * stab;
@@ -344,6 +350,10 @@ window.ColiseumLogic = {
                     precision -= 0.25;
                 }
                 
+                // ✨ FIX 5: Debuffs exóticos (La precisión reducida por Lluvia de Cenizas)
+                let penaltyAcc = atacante.efectosActivos.find(ef => ef.stat === "acc_penalty");
+                if (penaltyAcc) precision -= penaltyAcc.valor;
+
                 let evasionPasiva = 0;
                 evasionPasiva += (defensor.spd * 0.004); 
                 if (defensor.genesId.includes("esquiva_genetica")) evasionPasiva += 0.15; 
@@ -355,7 +365,7 @@ window.ColiseumLogic = {
                 evasionTotal = Math.min(evasionTotal, 0.85);
 
                 let probHit = precision - evasionTotal;
-                if (ataqueReal.nombre && ataqueReal.nombre.includes("Láser de Precisión")) probHit = 2.0; 
+                if (ataqueReal.noFalla || ataqueReal.nombre.includes("Láser de Precisión")) probHit = 2.0; 
                 
                 if (Math.random() > probHit) {
                     golpeActual.evadido = true;
@@ -372,9 +382,7 @@ window.ColiseumLogic = {
 
                 let defRival = defensor.def;
 
-                // ✨ FIX V14.7: CÁLCULO SEPARADO DE PERFORANTE Y ROMPE ESCUDOS
                 if (ataqueReal.perforante || ataqueReal.rompeEscudos) {
-                    // Primero comprobamos los Genes defensivos EXCLUSIVAMENTE contra Perforantes
                     if (ataqueReal.perforante && defensor.genesId.includes("decoy") && !defensor.decoyUsado && atkBruto > 0) {
                         defensor.decoyUsado = true;
                         atkBruto = 0; 
@@ -384,11 +392,9 @@ window.ColiseumLogic = {
                         defRival = Math.floor(defensor.def * 0.20); 
                         logs.push(`<span style="color:#80deea;">🛡️ 🧬 [Gen Oculto: Postura Inquebrantable] Absorbe parcialmente la perforación.</span>`);
                     } else {
-                        // Aquí procesamos matemáticamente el daño puro o el rompimiento de escudos
                         if (ataqueReal.perforante) {
-                            defRival = 0; // Perforante ignora 100% de la armadura
+                            defRival = 0; 
                         } else if (ataqueReal.rompeEscudos) {
-                            // RompeEscudos reduce un porcentaje específico de la armadura (Ej: 0.30 = 30%)
                             let penetracion = (typeof ataqueReal.rompeEscudos === "number") ? ataqueReal.rompeEscudos : 1.0;
                             defRival = Math.floor(defRival * (1 - penetracion));
                         }
@@ -458,15 +464,44 @@ window.ColiseumLogic = {
                     if (isCrit) logs.push(`> 💥 <span style="color:#ff0000; font-weight:bold;">¡CRÍTICO!</span> ${this.cName(atacante)} causa <span style="color:#ff6b6b; font-weight:bold;">${dmg} de daño</span>.${tipoGolpe}${textoStab}`);
                     else logs.push(`> ${this.cName(atacante)} causa <span style="color:#ff6b6b">${dmg} de daño</span>.${tipoGolpe}${textoStab}`);
 
-                    if (atacante.genesId.includes("vampirismo_genetico") && dmg > 0) {
-                        let roboVida = Math.max(1, Math.floor(dmg * 0.15));
-                        atacante.hp = Math.min(atacante.maxHp, atacante.hp + roboVida);
-                        anims.curacionAtacante += roboVida;
-                        logs.push(`<span style="color:#e0b0ff">🦇 🧬 [Gen Oculto: Vampirismo] ${this.cName(atacante)} recupera ${roboVida} HP.</span>`);
+                    // ✨ FIX 2: Combinación de Robos de Vida
+                    let roboGen = atacante.genesId.includes("vampirismo_genetico") ? 0.15 : 0;
+                    let roboSkill = ataqueReal.roboVida || 0;
+                    let roboTotal = Math.max(0, Math.floor(dmg * (roboGen + roboSkill)));
+                    
+                    if (roboTotal > 0) {
+                        atacante.hp = Math.min(atacante.maxHp, atacante.hp + roboTotal);
+                        anims.curacionAtacante += roboTotal;
+                        if (roboSkill > 0) logs.push(`<span style="color:#e0b0ff">🦇 [Absorción] ${this.cName(atacante)} drena ${roboTotal} HP.</span>`);
+                        else logs.push(`<span style="color:#e0b0ff">🦇 🧬 [Gen Oculto: Vampirismo] ${this.cName(atacante)} recupera ${roboTotal} HP.</span>`);
                     }
                 }
                 anims.detalleGolpes.push(golpeActual);
             }
+        }
+
+        // ✨ FIX 4: La Purga de Interferencia Electromagnética
+        if (ataqueReal.limpiaBuffsRival) {
+            let purgoAlgo = false;
+            defensor.efectosActivos = defensor.efectosActivos.filter(ef => {
+                if (ef.valor > 0 && ef.stat !== "estado") {
+                    if (["atk", "def", "spd", "luk"].includes(ef.stat)) defensor[ef.stat] -= ef.valor;
+                    purgoAlgo = true;
+                    return false; // Se elimina el buff positivo
+                }
+                return true;
+            });
+            if (purgoAlgo) logs.push(`<span style="color:#ffcc00">🚫 ¡Los incrementos de stats de ${this.cName(defensor)} fueron purgados!</span>`);
+        }
+
+        // ✨ FIX 6: Seteo del Hit Garantizado
+        if (ataqueReal.proximoHitGarantizado) {
+            atacante.efectosActivos.push({ nombre: "Hit Garantizado", stat: "hit_garantizado", valor: 1, turnos: 99, isNuevo: true });
+        }
+
+        // ✨ FIX 3: Buff Latente de Autoirradiación
+        if (ataqueReal.buffProxAtaque) {
+            atacante.efectosActivos.push({ nombre: "Daño Potenciado", stat: "buffDanoExtra", valor: ataqueReal.buffProxAtaque, turnos: 99, isNuevo: true });
         }
 
         let probAply = ataqueReal.probEstado !== undefined ? ataqueReal.probEstado : 1.0;
@@ -509,6 +544,14 @@ window.ColiseumLogic = {
                 logs.push(`<span style="color:#80deea">🛡️ ¡${this.cName(atacante)} aumenta su Defensa en +${val}!</span>`);
             }
 
+            // ✨ FIX 5: Potenciador de Crítico (Sintético)
+            if (ataqueReal.buffLukEfectiva) {
+                let val = Math.floor(atacante.baseLuk * ataqueReal.buffLukEfectiva);
+                atacante.luk += val;
+                atacante.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "luk", valor: val, turnos: duracionBase, isNuevo: true });
+                logs.push(`<span style="color:#4CAF50">🍀 ¡${this.cName(atacante)} aumenta su Suerte en +${val}!</span>`);
+            }
+
             if (ataqueReal.nombre && ataqueReal.nombre.includes("Esquiva Calculada") && !ataqueReal.buffEvasion) ataqueReal.buffEvasion = 0.75;
             if (ataqueReal.nombre && ataqueReal.nombre.includes("Evasión Viral") && !ataqueReal.buffEvasion) ataqueReal.buffEvasion = 0.60;
             
@@ -535,8 +578,21 @@ window.ColiseumLogic = {
                 defensor.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "atk", valor: -val, turnos: duracionBase, isNuevo: true });
             }
 
-            let estadoAply = ataqueReal.aplicaEstado || ataqueReal.aplicaEstadoPropio;
-            let target = ataqueReal.aplicaEstado ? defensor : atacante;
+            // ✨ FIX 5: Debuffs exóticos aplicados al rival (Lluvia de Cenizas / Pulso de Decaimiento)
+            if (ataqueReal.debuffLuk && defensor.hp > 0) {
+                let val = Math.floor(defensor.baseLuk * ataqueReal.debuffLuk);
+                defensor.luk = Math.max(1, defensor.luk - val);
+                defensor.efectosActivos.push({ nombre: ataqueReal.nombre, stat: "luk", valor: -val, turnos: duracionBase, isNuevo: true });
+                logs.push(`<span style="color:#b19cd9">📉 ¡${this.cName(defensor)} pierde Suerte y probabilidad de crítico!</span>`);
+            }
+            if (ataqueReal.debuffAcc && defensor.hp > 0) {
+                defensor.efectosActivos.push({ nombre: "Precisión Reducida", stat: "acc_penalty", valor: ataqueReal.debuffAcc, turnos: duracionBase, isNuevo: true });
+                logs.push(`<span style="color:#888">🌫️ ¡La precisión de ${this.cName(defensor)} fue reducida a ciegas!</span>`);
+            }
+
+            // ✨ FIX 3: Autoinyección de estado (Sobrecarga)
+            let estadoAply = ataqueReal.aplicaEstado || ataqueReal.aplicaEstadoPropio || (ataqueReal.costoHpTurno ? "Sobrecarga" : null);
+            let target = (ataqueReal.aplicaEstado) ? defensor : atacante;
             
             if (estadoAply && target.hp > 0) {
                 if (target.genesId.includes("sangre_fria") && !target.sangreFriaUsada) {
@@ -545,7 +601,7 @@ window.ColiseumLogic = {
                     anims.detalleGolpes.push({dmg: 0, bloqueado: true});
                 } else if (!target.estados.includes(estadoAply)) {
                     let configEstado = window.AttackCatalog && window.AttackCatalog.estados ? window.AttackCatalog.estados[estadoAply] : null;
-                    let durEstado = configEstado ? configEstado.duracionBase : 3;
+                    let durEstado = configEstado ? configEstado.duracionBase : (ataqueReal.duracion || 3);
 
                     if (atacante.proxVenenoDoble && (estadoAply === "Veneno" || estadoAply === "Veneno Fuerte")) {
                         estadoAply = "Veneno Fuerte";
@@ -580,7 +636,7 @@ window.ColiseumLogic = {
                         "Quemadura Critica": "Pierde mucho HP cada turno", "Veneno": "Pierde HP (Acumulable)", "Veneno Fuerte": "Pierde mucho HP cada turno",
                         "Paralisis": "SPD -35% y puede fallar turno", "Congelacion": "Pierde su próximo turno", "Vision Nublada": "Precisión -25%",
                         "Enredado": "SPD -40% y bloquea soporte", "Corrosion": "ATK -15% permanente", "Campo Radiactivo": "Pierde 5% HP cada turno",
-                        "Irradiacion": "ATK -25%", "Debilitacion SPD": "SPD -20%"
+                        "Irradiacion": "ATK -25%", "Debilitacion SPD": "SPD -20%", "Sobrecarga": "Daño masivo residual por desgaste"
                     };
                     let textoEfecto = descEstados[estadoAply] ? ` <span style="font-size: 11px; color:#aaa; font-style:italic;">(${descEstados[estadoAply]})</span>` : "";
                     
@@ -621,7 +677,7 @@ window.ColiseumLogic = {
                     if (ef.stat === "estado") {
                         fighter.estados = fighter.estados.filter(e => e !== ef.valor);
                         logs.push(`<span style="color:#888;">> ⏳ El estado [${ef.nombre}] sobre ${this.cName(fighter)} se disipó.</span>`);
-                    } else if (ef.stat) {
+                    } else if (ef.stat && ef.stat !== "hit_garantizado" && ef.stat !== "buffDanoExtra" && ef.stat !== "acc_penalty") {
                         if (ef.stat !== "evasion") { 
                             fighter[ef.stat] -= ef.valor;
                         }
