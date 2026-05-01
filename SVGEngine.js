@@ -1,8 +1,8 @@
 // =========================================
-// SVGEngine.js - V20 (HONGO RESTAURADO Y SIMETRÍA DRON/EMBLEMA)
+// SVGEngine.js - V21 (100% PURO, SIN SALTOS DE ANIMACIÓN, HONGO Y SIMETRÍA CONSERVADOS)
 // =========================================
 
-function generarSvgGeno(genesVisuales, omitirAnimacion = false) {
+function generarSvgGeno(genesVisuales) {
     const safeData = genesVisuales || {};
     
     // =========================================
@@ -37,9 +37,9 @@ function generarSvgGeno(genesVisuales, omitirAnimacion = false) {
                 @keyframes bionucleoFlota { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
                 @keyframes adnPulse { 0%, 100% { opacity: 0.8; transform: scaleX(1); } 50% { opacity: 1; transform: scaleX(1.03); } }
                 @keyframes burbujas { 0% { transform: translateY(10px); opacity: 0; } 50% { opacity: 0.9; } 100% { transform: translateY(-35px); opacity: 0; } }
-                .capsula-anim { ${omitirAnimacion ? '' : 'animation: bionucleoFlota 3.5s ease-in-out infinite;'} transform-origin: center; }
-                .adn-glow { ${omitirAnimacion ? '' : 'animation: adnPulse 2.5s ease-in-out infinite;'} transform-origin: center; filter: url(#glow-adn-${rndId}); }
-                .burbuja { ${omitirAnimacion ? 'display:none;' : 'animation: burbujas 2s ease-in infinite;'} fill: #ffffff; }
+                .capsula-anim { animation: bionucleoFlota 3.5s ease-in-out infinite; transform-origin: center; }
+                .adn-glow { animation: adnPulse 2.5s ease-in-out infinite; transform-origin: center; filter: url(#glow-adn-${rndId}); }
+                .burbuja { animation: burbujas 2s ease-in infinite; fill: #ffffff; }
             </style>
             <g class="capsula-anim">
                 <rect x="32" y="25" width="36" height="70" rx="12" fill="none" stroke="#4dd0e1" stroke-width="1.5" stroke-opacity="0.7"/>
@@ -107,27 +107,19 @@ function generarSvgGeno(genesVisuales, omitirAnimacion = false) {
             const tallo = "M 72 110 C 72 120 65 130 60 135 C 50 148 65 150 80 150 C 95 150 110 148 100 135 C 95 130 88 120 88 110 Z";
             pathD = "M 15 90 C 15 20, 145 20, 145 90 C 145 118, 122 122, 80 122 C 38 122, 15 118, 15 90 Z"; 
             shineD = "M 40 55 Q 50 40 70 40 Q 55 48 40 55 Z"; 
-
             const seedStr = (safeData.id || "hongo") + color + shape;
             let baseSeed = 0;
             for (let i = 0; i < seedStr.length; i++) { baseSeed = seedStr.charCodeAt(i) + ((baseSeed << 5) - baseSeed); }
             baseSeed = Math.abs(baseSeed);
             const randomFijo = (s) => { let x = Math.sin(s) * 10000; return x - Math.floor(x); };
-            
             let generatedManchas = `<g fill="#ffffff" opacity="0.6">`;
             for (let i = 0; i < 8; i++) {
-                // ✨ FIX: Área de generación reducida para no tocar los bordes negros
-                // Se alejaron de los costados (de 40 a 120)
                 const cx = 40 + randomFijo(baseSeed + i) * (120 - 40);
-                // Se bajaron un poco del techo y se subieron del piso (de 48 a 105)
                 const cy = 48 + randomFijo(baseSeed + i + 10) * (105 - 48);
-                // Se redujo un pelín el radio máximo para que no desborden (2 a 6.5)
                 const r = 2 + randomFijo(baseSeed + i + 20) * (6.5 - 2);
-                
                 generatedManchas += `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}"/>`;
             }
             generatedManchas += `</g>`;
-
             extras = `<path d="${tallo}" fill="${color}" stroke="#1a2a36" stroke-width="5"/><path d="${tallo}" fill="url(#${gradId})"/>`;
             detallesFrente = `<defs><clipPath id="hongoMask-${rndId}"><path d="${pathD}"/></clipPath></defs><g clip-path="url(#hongoMask-${rndId})">${generatedManchas}</g>`;
             break;
@@ -151,7 +143,6 @@ function generarSvgGeno(genesVisuales, omitirAnimacion = false) {
     let cssExtra = "";
     let estiloCuerpoEnLinea = "";
 
-    // Compatibilidad tanto con la estructura vieja (hidden_gene) como con la nueva (hidden_genes.A)
     const oculto = safeData.hidden_genes ? safeData.hidden_genes.A : safeData.hidden_gene;
 
     if (safeData.scanned && oculto) {
@@ -217,7 +208,6 @@ function generarSvgGeno(genesVisuales, omitirAnimacion = false) {
                 }
             `;
 
-            // ✨ FIX V20: Emblema posicionado exactamente al opuesto del Dron para simetría perfecta
             capaCosmeticaFrente += `
                 <g transform="translate(165, 15)">
                     <g class="anim-emblema-${rndId}">
@@ -280,13 +270,13 @@ function generarSvgGeno(genesVisuales, omitirAnimacion = false) {
             @keyframes deslizarHolograma { 0% { transform: translateY(-20px); opacity: 0.3; } 50% { opacity: 0.8; } 100% { transform: translateY(20px); opacity: 0.3; } }
             @keyframes flotarDron { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
             
-            .g-cuerpo { transform-origin: 80px 136px; ${omitirAnimacion ? '' : 'animation: respirar 3.5s ease-in-out infinite;'} }
-            .g-ojos { transform-origin: 80px 85px; ${omitirAnimacion ? '' : 'animation: parpadear 5s infinite;'} }
-            .anim-flotar { ${omitirAnimacion ? '' : 'animation: respirar 3s ease-in-out infinite;'} }
-            .anim-fuego { ${omitirAnimacion ? '' : 'animation: propulsor 0.1s infinite alternate ease-in-out;'} }
-            .anim-aura { transform-origin: 80px 85px; ${omitirAnimacion ? '' : 'animation: rotarAura 15s linear infinite;'} }
-            .anim-holograma { ${omitirAnimacion ? '' : 'animation: deslizarHolograma 4s ease-in-out infinite alternate;'} }
-            .anim-flotar-dron { ${omitirAnimacion ? '' : 'animation: flotarDron 4s ease-in-out infinite;'} }
+            .g-cuerpo { transform-origin: 80px 136px; animation: respirar 3.5s ease-in-out infinite; }
+            .g-ojos { transform-origin: 80px 85px; animation: parpadear 5s infinite; }
+            .anim-flotar { animation: respirar 3s ease-in-out infinite; }
+            .anim-fuego { animation: propulsor 0.1s infinite alternate ease-in-out; }
+            .anim-aura { transform-origin: 80px 85px; animation: rotarAura 15s linear infinite; }
+            .anim-holograma { animation: deslizarHolograma 4s ease-in-out infinite alternate; }
+            .anim-flotar-dron { animation: flotarDron 4s ease-in-out infinite; }
             
             ${cssExtra}
         </style>
