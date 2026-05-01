@@ -455,7 +455,8 @@
                 <div style="color:#4dd0e1; font-weight:900; font-size:12px; margin-bottom:5px;">[${info.nombre.toUpperCase()}]</div>
                 <div style="display:flex; justify-content:space-between; margin-bottom:5px; border-bottom: 1px dashed #334; padding-bottom:5px;">
                     <span style="color:${colorEl}; font-weight:bold; text-transform:uppercase;">${info.elemento}</span>
-                    <span style="color:#ffcc00;">PWR: ${info.power || 0}</span>
+                    <!-- ✨ FIX: Cambiamos 'power' por 'potencia' para que lea la base de datos real -->
+                <span style="color:#ffcc00;">PWR: ${info.potencia || 0}</span>
                 </div>
                 <div style="color:#aaa; margin-bottom:8px; line-height:1.4;">${info.descripcion || "Sin descripción disponible."}</div>
                 <div style="display:flex; gap:10px; font-size:10px; color:#888;">
