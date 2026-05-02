@@ -384,13 +384,17 @@ window.ColiseumLogic = {
                         golpeActual.evadido = true;
                         logs.push(`<span style="color:#e0e0e0; font-style:italic;">💨 🧬 [Gen Oculto: Maestro del Engaño] ¡${this.cName(defensor)} evadió el golpe perforante!</span>`);
                     } else if (ataqueReal.perforante && defensor.genesId.includes("steadfast")) {
-                        // ✨ FIX: Postura inquebrantable ahora retiene el 80% de su defensa ante perforantes
+                        // Postura inquebrantable retiene el 80% de su defensa
                         defRival = Math.floor(defensor.def * 0.80); 
                         logs.push(`<span style="color:#80deea;">🛡️ 🧬 [Gen Oculto: Postura Inquebrantable] Absorbe parcialmente la perforación.</span>`);
                     } else {
-                        // ✨ FIX V14.9: NERF AL PERFORANTE (Ignora 50%, ya no el 100%)
+                        // ✨ BALANCE V14.10: Escalado Inteligente de Penetración
                         if (ataqueReal.perforante) {
-                            defRival = Math.floor(defRival * 0.50); 
+                            if (slotAccion === "definitivo") {
+                                defRival = Math.floor(defRival * 0.35); // Retiene 35% -> IGNORA EL 65%
+                            } else {
+                                defRival = Math.floor(defRival * 0.50); // Retiene 50% -> IGNORA EL 50%
+                            }
                         } else if (ataqueReal.rompeEscudos) {
                             let penetracion = (typeof ataqueReal.rompeEscudos === "number") ? ataqueReal.rompeEscudos : 0.50;
                             defRival = Math.floor(defRival * (1 - penetracion));

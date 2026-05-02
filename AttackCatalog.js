@@ -39,7 +39,7 @@ window.AttackCatalog = {
             ],
             definitivos: [
                 { id: "gran_regeneracion", nombre: "Gran Regeneración", slot: 4, potencia: 60, curacion: 0.50, precision: 100, usos: 1, descripcion: "Causa daño y cura el 50% de tu HP Máximo." },
-                { id: "ira_naturaleza", nombre: "Ira de la Naturaleza", slot: 4, potencia: 130, perforante: true, precision: 90, usos: 1, descripcion: "Golpe brutal que ignora el 100% de la DEF rival." },
+                { id: "ira_naturaleza", nombre: "Ira de la Naturaleza", slot: 4, potencia: 130, perforante: true, precision: 90, usos: 1, descripcion: "Golpe brutal que ignora el 65% de la DEF rival." },
                 { id: "esporas_drenantes", nombre: "Esporas Drenantes", slot: 4, potencia: 80, aplicaEstado: "Enredado", probEstado: 1.0, curacion: 0.20, usos: 1, descripcion: "Causa daño, cura 20% HP y atrapa al rival (Enredado)." }
             ]
         },
@@ -74,7 +74,7 @@ window.AttackCatalog = {
             ],
             especiales: [
                 { id: "descarga_cadena", nombre: "Descarga en Cadena", slot: 2, potencia: 35, hits: 3, precision: 95, usos: 99, descripcion: "Golpea 3 veces. Excelente contra escudos." }, // [cite: 245, 249]
-                { id: "disparo_perforante", nombre: "Disparo Perforante", slot: 2, potencia: 110, perforante: true, precision: 90, usos: 3, descripcion: "Ignora el 100% de la DEF rival." }, // [cite: 250, 253]
+                { id: "disparo_perforante", nombre: "Disparo Perforante", slot: 2, potencia: 110, perforante: true, precision: 90, usos: 3, descripcion: "Ignora el 50% de la DEF rival." }, // [cite: 250, 253]
                 { id: "contrarrestar", nombre: "Contrarrestar", slot: 2, potencia: 0, reactivo: 0.40, precision: 100, usos: 99, descripcion: "Devuelve el 40% del daño recibido el último turno." } // [cite: 254, 257]
             ],
             soportes: [
@@ -109,7 +109,7 @@ window.AttackCatalog = {
             definitivos: [
                 { id: "critico_nuclear", nombre: "Crítico Nuclear", slot: 4, potencia: 120, aplicaEstado: "Campo Radiactivo", probEstado: 1.0, precision: 90, usos: 1, descripcion: "Gran daño. Envuelve al rival en un Campo Radiactivo." },
                 { id: "fision_inestable", nombre: "Fisión Inestable", slot: 4, potencia: 160, aplicaEstadoPropio: "Quemadura", probEstado: 1.0, precision: 100, usos: 1, descripcion: "Daño masivo, pero el usuario sufre Quemadura." },
-                { id: "desintegracion_atomica", nombre: "Desintegración Atómica", slot: 4, potencia: 95, perforante: true, aplicaEstado: "Irradiacion", probEstado: 1.0, usos: 1, descripcion: "Ignora DEF y aplica Irradiación (ATK rival -25%)." }
+                { id: "desintegracion_atomica", nombre: "Desintegración Atómica", slot: 4, potencia: 95, perforante: true, aplicaEstado: "Irradiacion", probEstado: 1.0, usos: 1, descripcion: "Ignora el 65% de la DEF y aplica Irradiación (ATK rival -25%)." }
             ]
         },
 
