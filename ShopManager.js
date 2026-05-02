@@ -97,7 +97,8 @@ window.ShopManager = {
                 <h2 class="screen-title" style="color: #00d2ff; text-align: center; text-shadow: 0 0 15px rgba(0,210,255,0.4); margin-bottom: 20px; font-weight: 900; letter-spacing: 2px;">TERMINAL COMERCIAL</h2>
                 
                 <div style="display: flex; justify-content: center; margin-bottom: 20px; padding: 0 10px; border-bottom: 1px solid #384a5e;">
-                    <button id="tab-shop-bazar" class="shop-tab-neon" style="--tab-color: #69F0AE;">Bazar (EV)</button>
+                    <!-- Se cambió el nombre y se quitó el (EV) -->
+                    <button id="tab-shop-bazar" class="shop-tab-neon" style="--tab-color: #69F0AE;">Suministros</button>
                     <button id="tab-shop-dojo" class="shop-tab-neon" style="--tab-color: #00E5FF;">Matriz Táctica</button>
                     <button id="tab-shop-premium" class="shop-tab-neon" style="--tab-color: #E040FB;">Premium</button>
                 </div>
