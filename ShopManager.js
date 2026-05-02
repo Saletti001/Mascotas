@@ -1,12 +1,39 @@
 // =========================================
-// ShopManager.js - BAZAR, DOJO Y PREMIUM
+// ShopManager.js - BAZAR, MATRIZ TÁCTICA Y PREMIUM
 // =========================================
 
 window.ShopManager = {
     inicializado: false,
     
-    // Iconos para los elementos
-    iconosElemento: { "Biomutante": "🌿", "Viral": "🦠", "Cibernético": "🤖", "Radiactivo": "☢️", "Tóxico": "☣️", "Sintético": "⚙️" },
+    // GALERÍA DE ARTE VECTORIAL (SVGs Escalares en EM)
+    iconosSVG: {
+        // --- 1. ELEMENTOS DE COMBATE (MTs) ---
+        "Biomutante": `<svg viewBox="0 0 100 100" width="1em" height="1em"><defs><linearGradient id="gBio" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#4CAF50" /><stop offset="100%" stop-color="#1B5E20" /></linearGradient></defs><path d="M50 10 C20 10 10 40 10 65 C10 85 30 90 50 85 C70 90 90 85 90 65 C90 40 80 10 50 10 Z" fill="url(#gBio)"/><path d="M50 85 L50 30 M25 60 L50 45 M75 60 L50 45" stroke="#121822" stroke-width="6" stroke-linecap="round"/><circle cx="50" cy="20" r="5" fill="#C8E6C9"/></svg>`,
+        
+        "Viral": `<svg viewBox="0 0 100 100" width="1em" height="1em"><defs><linearGradient id="gVir" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#E040FB" /><stop offset="100%" stop-color="#7B1FA2" /></linearGradient></defs><circle cx="50" cy="50" r="28" fill="url(#gVir)"/><path d="M50 5 L50 22 M50 95 L50 78 M5 50 L22 50 M95 50 L78 50 M18 18 L30 30 M82 82 L70 70 M18 82 L30 70 M82 18 L70 30" stroke="url(#gVir)" stroke-width="8" stroke-linecap="round"/><circle cx="50" cy="5" r="5" fill="#EA80FC"/><circle cx="50" cy="95" r="5" fill="#EA80FC"/><circle cx="5" cy="50" r="5" fill="#EA80FC"/><circle cx="95" cy="50" r="5" fill="#EA80FC"/><circle cx="40" cy="45" r="5" fill="#121822"/><circle cx="60" cy="55" r="5" fill="#121822"/></svg>`,
+        
+        "Cibernético": `<svg viewBox="0 0 100 100" width="1em" height="1em"><defs><linearGradient id="gCib" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00E5FF" /><stop offset="100%" stop-color="#006064" /></linearGradient></defs><path d="M20 30 L80 30 L90 55 L75 80 L25 80 L10 55 Z" fill="url(#gCib)"/><rect x="30" y="45" width="12" height="12" fill="#121822"/><rect x="58" y="45" width="12" height="12" fill="#121822"/><path d="M36 30 L36 15 L64 15 L64 30" stroke="url(#gCib)" stroke-width="6" fill="none"/><circle cx="36" cy="15" r="5" fill="#84FFFF"/><circle cx="64" cy="15" r="5" fill="#84FFFF"/><path d="M40 70 L60 70" stroke="#121822" stroke-width="4" stroke-linecap="round"/></svg>`,
+        
+        "Radiactivo": `<svg viewBox="0 0 100 100" width="1em" height="1em"><defs><linearGradient id="gRad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFB300" /><stop offset="100%" stop-color="#E65100" /></linearGradient></defs><circle cx="50" cy="50" r="42" fill="#121822" stroke="url(#gRad)" stroke-width="6"/><circle cx="50" cy="50" r="9" fill="url(#gRad)"/><path d="M50 35 A15 15 0 0 0 35 50 L12 50 A38 38 0 0 1 50 12 Z" fill="url(#gRad)"/><path d="M50 35 A15 15 0 0 1 65 50 L88 50 A38 38 0 0 0 50 12 Z" fill="url(#gRad)" transform="rotate(120 50 50)"/><path d="M50 35 A15 15 0 0 1 65 50 L88 50 A38 38 0 0 0 50 12 Z" fill="url(#gRad)" transform="rotate(240 50 50)"/></svg>`,
+        
+        "Tóxico": `<svg viewBox="0 0 100 100" width="1em" height="1em"><defs><linearGradient id="gTox" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#C6FF00" /><stop offset="100%" stop-color="#558B2F" /></linearGradient></defs><path d="M50 10 C50 10 15 40 15 65 A35 35 0 0 0 85 65 C85 40 50 10 50 10 Z" fill="url(#gTox)"/><circle cx="35" cy="55" r="7" fill="#121822"/><circle cx="65" cy="55" r="7" fill="#121822"/><path d="M40 75 L60 75 M45 70 L45 80 M55 70 L55 80" stroke="#121822" stroke-width="4" stroke-linecap="round"/><circle cx="50" cy="35" r="8" fill="#F4FF81" opacity="0.9"/></svg>`,
+        
+        "Sintético": `<svg viewBox="0 0 100 100" width="1em" height="1em"><defs><linearGradient id="gSin" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#B388FF" /><stop offset="100%" stop-color="#6200EA" /></linearGradient></defs><path d="M50 5 L90 28 L90 72 L50 95 L10 72 L10 28 Z" fill="#1a202c" stroke="url(#gSin)" stroke-width="6"/><path d="M50 18 L75 32 L75 68 L50 82 L25 68 L25 32 Z" fill="url(#gSin)"/><path d="M50 18 L50 50 L25 32 M50 50 L75 68 M50 50 L50 82" stroke="#121822" stroke-width="5"/><circle cx="50" cy="50" r="10" fill="#EA80FC"/><circle cx="50" cy="50" r="4" fill="#121822"/></svg>`,
+        
+        // --- 2. HERRAMIENTAS Y BAZAR ---
+        "escaner_basico": `<svg viewBox="0 0 100 100" width="1em" height="1em"><path d="M45 20 A25 25 0 1 1 20 45 A25 25 0 0 1 45 20" fill="none" stroke="#00E5FF" stroke-width="8"/><path d="M62 62 L90 90" stroke="#00E5FF" stroke-width="12" stroke-linecap="round"/><circle cx="45" cy="45" r="12" fill="#00B0FF" opacity="0.5"/><path d="M25 45 L65 45 M45 25 L45 65" stroke="#00E5FF" stroke-width="4" opacity="0.8"/></svg>`,
+        
+        "escaner_completo": `<svg viewBox="0 0 100 100" width="1em" height="1em"><path d="M25 20 Q50 50 75 80 M75 20 Q50 50 25 80" fill="none" stroke="#D500F9" stroke-width="8"/><line x1="33" y1="50" x2="67" y2="50" stroke="#D500F9" stroke-width="5"/><line x1="42" y1="30" x2="58" y2="70" stroke="#D500F9" stroke-width="5"/><line x1="58" y1="30" x2="42" y2="70" stroke="#D500F9" stroke-width="5"/><circle cx="25" cy="20" r="7" fill="#AA00FF"/><circle cx="75" cy="80" r="7" fill="#AA00FF"/><circle cx="75" cy="20" r="7" fill="#AA00FF"/><circle cx="25" cy="80" r="7" fill="#AA00FF"/></svg>`,
+        
+        "antidoto_uni": `<svg viewBox="0 0 100 100" width="1em" height="1em"><path d="M40 10 L60 10 L60 30 L85 80 A10 10 0 0 1 75 95 L25 95 A10 10 0 0 1 15 80 L40 30 Z" fill="none" stroke="#C6FF00" stroke-width="6"/><path d="M25 75 L75 75 L65 50 L35 50 Z" fill="#C6FF00"/><circle cx="45" cy="65" r="5" fill="#fff" opacity="0.9"/><circle cx="58" cy="58" r="3" fill="#fff" opacity="0.7"/></svg>`,
+        
+        // --- 3. EXPANSIÓN PREMIUM ---
+        "exp_20": `<svg viewBox="0 0 100 100" width="1em" height="1em"><rect x="20" y="30" width="60" height="60" rx="10" fill="#8A2BE2"/><path d="M35 30 L35 15 A15 15 0 0 1 65 15 L65 30" fill="none" stroke="#8A2BE2" stroke-width="8"/><rect x="28" y="50" width="44" height="25" rx="5" fill="#5E35B1"/><circle cx="50" cy="62" r="5" fill="#D1C4E9"/><path d="M20 40 L80 40" stroke="#5E35B1" stroke-width="4"/></svg>`,
+        
+        "exp_30": `<svg viewBox="0 0 100 100" width="1em" height="1em"><rect x="15" y="25" width="70" height="65" rx="12" fill="#D500F9"/><path d="M30 25 L30 10 A20 20 0 0 1 70 10 L70 25" fill="none" stroke="#D500F9" stroke-width="10"/><rect x="22" y="45" width="56" height="30" rx="8" fill="#AA00FF"/><circle cx="38" cy="60" r="6" fill="#EA80FC"/><circle cx="62" cy="60" r="6" fill="#EA80FC"/><path d="M15 35 L85 35" stroke="#AA00FF" stroke-width="5"/></svg>`,
+        
+        "exp_40": `<svg viewBox="0 0 100 100" width="1em" height="1em"><rect x="10" y="20" width="80" height="70" rx="6" fill="#FFD700"/><rect x="18" y="28" width="64" height="54" rx="4" fill="#F57F17"/><circle cx="50" cy="55" r="16" fill="#FFF59D"/><circle cx="50" cy="55" r="6" fill="#F57F17"/><line x1="50" y1="39" x2="50" y2="45" stroke="#F57F17" stroke-width="4"/><line x1="30" y1="20" x2="30" y2="28" stroke="#F57F17" stroke-width="4"/><line x1="70" y1="20" x2="70" y2="28" stroke="#F57F17" stroke-width="4"/></svg>`
+    },
 
     init: function() {
         if (!this.inicializado) {
@@ -21,7 +48,6 @@ window.ShopManager = {
         const contenedor = document.getElementById("shop-screen");
         if (!contenedor) return;
 
-        // Inyectamos un estilo rápido para ocultar la barra de scroll específicamente aquí
         const style = document.createElement('style');
         style.innerHTML = `
             .tienda-scroll-area::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
@@ -29,7 +55,6 @@ window.ShopManager = {
         `;
         document.head.appendChild(style);
 
-        // Envolvemos todo en un div con scroll y padding abajo (tienda-scroll-area)
         contenedor.innerHTML = `
             <div class="tienda-scroll-area" style="width: 100%; height: 100%; overflow-y: auto; padding-bottom: 100px; padding-top: 20px;">
                 
@@ -37,8 +62,7 @@ window.ShopManager = {
                 
                 <div style="display: flex; justify-content: center; margin-bottom: 15px; border-radius: 8px; overflow: hidden; padding: 0 15px;">
                     <button id="tab-shop-bazar" class="btn-shop-tab" style="background: #4CAF50; color: white; border: 1px solid #4CAF50; padding: 8px 10px; font-weight: bold; cursor: pointer; border-right: none; flex: 1; font-size: 12px;">Bazar (EV)</button>
-                    <!-- ¡NOMBRE CAMBIADO AQUÍ! -->
-                    <button id="tab-shop-dojo" class="btn-shop-tab" style="background: #eee; color: #333; border: 1px solid #ccc; padding: 8px 10px; font-weight: bold; cursor: pointer; border-right: none; flex: 1; font-size: 12px;">Matriz Táctica (EV)</button>
+                    <button id="tab-shop-dojo" class="btn-shop-tab" style="background: #eee; color: #333; border: 1px solid #ccc; padding: 8px 10px; font-weight: bold; cursor: pointer; border-right: none; flex: 1; font-size: 12px;">Matriz Táctica</button>
                     <button id="tab-shop-premium" class="btn-shop-tab" style="background: #eee; color: #333; border: 1px solid #ccc; padding: 8px 10px; font-weight: bold; cursor: pointer; flex: 1; font-size: 12px;">Premium ($POL)</button>
                 </div>
                 
@@ -59,20 +83,17 @@ window.ShopManager = {
                 
             </div>
             
-            <!-- Botón Flotante para salir (fijo en la parte inferior) -->
             <div class="fab-btn btn-go-home" onclick="navegarA('room-area')" style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 70%; max-width: 300px; z-index: 100;">
                 <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0; text-align: center;">VOLVER AL LABORATORIO</div>
             </div>
         `;
 
-        // Lógica de pestañas
         document.getElementById("tab-shop-bazar").addEventListener("click", () => this.cambiarPestana('bazar'));
         document.getElementById("tab-shop-dojo").addEventListener("click", () => this.cambiarPestana('dojo'));
         document.getElementById("tab-shop-premium").addEventListener("click", () => this.cambiarPestana('premium'));
     },
 
     cambiarPestana: function(pestana) {
-        // Reiniciar estilos de botones
         const coloresActivos = { 'bazar': '#4CAF50', 'dojo': '#00d2ff', 'premium': '#8A2BE2' };
         
         ['bazar', 'dojo', 'premium'].forEach(tab => {
@@ -85,7 +106,6 @@ window.ShopManager = {
                 btn.style.borderColor = coloresActivos[tab];
                 view.classList.remove("hidden");
                 
-                // Renderizar vista actual
                 if(tab === 'bazar') this.renderBazar();
                 if(tab === 'dojo') this.renderDojo();
                 if(tab === 'premium') this.renderPremium();
@@ -106,7 +126,7 @@ window.ShopManager = {
         let precioTag = tipoMoneda === "EV" ? `<div style="font-weight: bold; color: ${colorBoton}; margin: 5px 0;">✨ ${item.price.toFixed(2)} EV</div>` : `<div style="font-weight: bold; color: ${colorBoton}; margin: 5px 0;">🔷 ${item.price.toFixed(2)} POL</div>`;
 
         div.innerHTML = `
-            <div style="font-size: 3rem; margin-bottom: 5px;">${item.icon}</div>
+            <div style="font-size: 3.5rem; margin-bottom: 5px; filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.4));">${item.icon}</div>
             <h4 style="margin: 5px 0; font-size: 13px;">${item.name}</h4>
             <p style="font-size: 10px; color: #888; margin: 0 0 5px 0; height: 30px;">${item.desc}</p>
             ${precioTag}
@@ -118,17 +138,14 @@ window.ShopManager = {
     },
 
     procesarCompra: function(item) {
-        // Validar economía EV
         if (item.currency === "EV") {
             if (window.miInventario.vitalEssence < item.price) {
                 alert(`❌ No tienes suficiente Esencia Vital. Necesitas ${item.price.toFixed(2)} ✨`);
                 return;
             }
             
-            // Intentar añadir el ítem (El InventoryManager gestiona los límites automáticamente)
             let itemParaInventario = { id: item.id, name: item.name, icon: item.icon, type: item.type, desc: item.desc, maxStack: window.miInventario.stackLimits[item.type] };
             
-            // Atributos extra para MTs
             if(item.type === "MT") {
                 itemParaInventario.subType = item.subType;
                 itemParaInventario.element = item.element;
@@ -145,7 +162,6 @@ window.ShopManager = {
                 if(window.guardarJuego) window.guardarJuego();
             }
 
-        // Validar economía POL
         } else if (item.currency === "POL") {
             if (!window.miWallet) window.miWallet = { pol: 0 };
             if (window.miWallet.pol < item.price) {
@@ -165,7 +181,7 @@ window.ShopManager = {
                 window.miInventario.updateUI();
                 
                 alert(`🎒 ¡Mochila expandida permanentemente a ${item.value} ranuras!`);
-                this.renderPremium(); // Refrescar para deshabilitar botón
+                this.renderPremium(); 
                 if(window.guardarJuego) window.guardarJuego();
             }
         }
@@ -176,9 +192,9 @@ window.ShopManager = {
         grid.innerHTML = "";
         
         const items = [
-            { id: "escaner_basico", name: "Escáner Básico", icon: "🔍", type: "basic", price: 0.15, currency: "EV", desc: "Revela slots activos." },
-            { id: "escaner_completo", name: "Escáner Completo", icon: "🧬", type: "basic", price: 0.50, currency: "EV", desc: "Revela genética exacta." },
-            { id: "antidoto_uni", name: "Antídoto Universal", icon: "🧪", type: "consumable", price: 0.10, currency: "EV", desc: "Limpia estados alterados." }
+            { id: "escaner_basico", name: "Escáner Básico", icon: this.iconosSVG["escaner_basico"], type: "basic", price: 0.15, currency: "EV", desc: "Revela slots activos." },
+            { id: "escaner_completo", name: "Escáner Completo", icon: this.iconosSVG["escaner_completo"], type: "basic", price: 0.50, currency: "EV", desc: "Revela genética exacta." },
+            { id: "antidoto_uni", name: "Antídoto Universal", icon: this.iconosSVG["antidoto_uni"], type: "consumable", price: 0.10, currency: "EV", desc: "Limpia estados alterados." }
         ];
 
         items.forEach(item => grid.appendChild(this.crearTarjeta(item, "#4CAF50", "#4CAF50", "EV")));
@@ -192,7 +208,7 @@ window.ShopManager = {
 
         let dojoItems = [];
         for (const [elemento, ramas] of Object.entries(window.AttackCatalog.ataquesPorElemento)) {
-            const icono = this.iconosElemento[elemento] || "💿";
+            const icono = this.iconosSVG[elemento] || "💿";
             
             const agregarRama = (rama, subType, price) => {
                 if(rama) {
@@ -205,7 +221,6 @@ window.ShopManager = {
                 }
             };
 
-            // Precios según la categoría del Documento Maestro
             agregarRama(ramas.especiales, "Especial", 2.50);
             agregarRama(ramas.soportes, "Soporte", 2.00);
             agregarRama(ramas.definitivos, "Definitivo", 5.00);
@@ -219,15 +234,13 @@ window.ShopManager = {
         grid.innerHTML = "";
 
         const items = [
-            { id: "exp_20", name: "Bolsillos Nv. 2", icon: "🎒", type: "expansion", value: 20, price: 2.00, currency: "POL", desc: "Expande el inventario a 20 ranuras." },
-            { id: "exp_30", name: "Bolsillos Nv. 3", icon: "🧳", type: "expansion", value: 30, price: 5.00, currency: "POL", desc: "Expande el inventario a 30 ranuras." },
-            { id: "exp_40", name: "Caja Fuerte Nv. 4", icon: "🗄️", type: "expansion", value: 40, price: 10.00, currency: "POL", desc: "Expande el inventario a 40 ranuras." }
+            { id: "exp_20", name: "Bolsillos Nv. 2", icon: this.iconosSVG["exp_20"], type: "expansion", value: 20, price: 2.00, currency: "POL", desc: "Expande el inventario a 20 ranuras." },
+            { id: "exp_30", name: "Bolsillos Nv. 3", icon: this.iconosSVG["exp_30"], type: "expansion", value: 30, price: 5.00, currency: "POL", desc: "Expande el inventario a 30 ranuras." },
+            { id: "exp_40", name: "Caja Fuerte Nv. 4", icon: this.iconosSVG["exp_40"], type: "expansion", value: 40, price: 10.00, currency: "POL", desc: "Expande el inventario a 40 ranuras." }
         ];
 
         items.forEach(item => {
             let tarjeta = this.crearTarjeta(item, "#8A2BE2", "#8A2BE2", "POL");
-            
-            // Si el jugador ya tiene una mochila de este tamaño o mayor, marcarla como comprada
             if (window.miInventario && window.miInventario.maxSlots >= item.value) {
                 let btn = tarjeta.querySelector("button");
                 btn.innerText = "Adquirido";
