@@ -1,5 +1,5 @@
 // =========================================
-// ShopManager.js - BAZAR, MATRIZ TÁCTICA Y PREMIUM (NEÓN V3 - ILUMINADO)
+// ShopManager.js - BAZAR, MATRIZ TÁCTICA Y PREMIUM (VERSIÓN DEFINITIVA)
 // =========================================
 
 window.ShopManager = {
@@ -92,7 +92,7 @@ window.ShopManager = {
         document.head.appendChild(style);
 
         contenedor.innerHTML = `
-            <div class="tienda-scroll-area" style="width: 100%; height: 100%; overflow-y: auto; padding-bottom: 110px; padding-top: 15px;">
+            <div class="tienda-scroll-area" style="width: 100%; height: 100%; overflow-y: auto; padding-bottom: 20px; padding-top: 15px;">
                 
                 <h2 class="screen-title" style="color: #00d2ff; text-align: center; text-shadow: 0 0 15px rgba(0,210,255,0.4); margin-bottom: 20px; font-weight: 900; letter-spacing: 2px;">TERMINAL COMERCIAL</h2>
                 
@@ -116,6 +116,9 @@ window.ShopManager = {
                     <p style="text-align: center; color: #cbd5e1; font-size: 11px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Mejoras de infraestructura permanentes</p>
                     <div id="shop-premium-grid" class="sanctuary-grid"></div>
                 </div>
+                
+                <!-- ESPACIADOR FANTASMA: Obliga al scroll a bajar más allá del botón flotante -->
+                <div style="height: 130px; width: 100%; flex-shrink: 0; display: block;"></div>
                 
             </div>
             
@@ -230,7 +233,6 @@ window.ShopManager = {
             { id: "antidoto_uni", name: "Antídoto Universal", icon: this.iconosSVG["antidoto_uni"], type: "consumable", price: 0.10, currency: "EV", desc: "Limpia cualquier estado alterado." }
         ];
 
-        // Colores base más brillantes para el bazar
         items.forEach(item => grid.appendChild(this.crearTarjeta(item, "#69F0AE", "#2E7D32", "EV")));
     },
 
@@ -260,7 +262,6 @@ window.ShopManager = {
             agregarRama(ramas.definitivos, "Definitivo", 5.00);
         }
 
-        // Degradados ajustados para que los botones sean brillantes y legibles
         const coloresMT = {
             "Biomutante": ["#69F0AE", "#2E7D32"],
             "Viral": ["#E040FB", "#7B1FA2"],
