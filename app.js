@@ -1,5 +1,5 @@
 // =========================================
-// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V14.7 - FIX TAMAÑO Y ANIMACIÓN)
+// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V14.8 - RESTAURACIÓN DE ANIMACIÓN Y CENTRADO ORIGINAL)
 // Requiere cargar 'genes.js' previamente en el HTML.
 // =========================================
 
@@ -375,19 +375,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span style="color: white; font-weight: bold; font-size: 12px; margin-top: 10px; text-align: center;">${geno.name || 'Sujeto'}</span>
             `;
             
-            // ✨ FIX V14.7: Separación de la caja de centrado (márgenes) y la caja de animación (transform)
+            // ✨ RESTAURACIÓN EXACTA DE TU CÓDIGO ORIGINAL (Alineación y tamaño perfectos)
             card.onclick = () => {
                 window.miMascota = geno;
                 if (pedestal) {
                     const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-                    let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
-                    
-                    pedestal.innerHTML = `
-                        <div style="position: absolute; top: 35%; left: 50%; margin-left: -90px; margin-top: -90px; width: 180px; height: 180px; display: flex; justify-content: center; align-items: center;">
-                            <div class="geno-idle" style="width: 100%; height: 100%; color: ${pColor};">
-                                ${pSvg}
-                            </div>
-                        </div>`;
+                    let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+                    pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; width: 250px; height: 250px; color: ${pColor}; top: 35%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
                 }
                 const nameEl = document.getElementById('geno-name');
                 if (nameEl) nameEl.innerText = `${geno.name} #${geno.id}`;
@@ -544,6 +538,7 @@ function iniciarSecuenciaBienvenida() {
         }, 2500);
     };
 
+    // ✨ RESTAURACIÓN EXACTA DE TU CÓDIGO ORIGINAL
     btnClaim.onclick = () => {
         window.miMascota = miPrimerGeno;
         if(!window.misGenos) window.misGenos = []; window.misGenos.push(miPrimerGeno);
@@ -552,15 +547,8 @@ function iniciarSecuenciaBienvenida() {
         if (pedestal) {
             pedestal.style.display = "block";
             const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
-            let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
-            
-            // ✨ FIX V14.7: Separación de la caja de centrado y la caja de animación
-            pedestal.innerHTML = `
-                <div style="position: absolute; top: 35%; left: 50%; margin-left: -90px; margin-top: -90px; width: 180px; height: 180px; display: flex; justify-content: center; align-items: center;">
-                    <div class="geno-idle" style="width: 100%; height: 100%; color: ${miPrimerGeno.color};">
-                        ${pSvg}
-                    </div>
-                </div>`;
+            let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+            pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; width: 250px; height: 250px; color: ${miPrimerGeno.color}; top: 35%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
         }
         
         const nameEl = document.getElementById('geno-name');
