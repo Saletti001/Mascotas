@@ -160,4 +160,3 @@ window.AttackCatalog = {
         }
     }
 };
-};
