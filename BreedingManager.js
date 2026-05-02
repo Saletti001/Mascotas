@@ -1,5 +1,5 @@
 // =========================================
-// BreedingManager.js - UI DEL CENTRO DE CRIANZA Y BIO-NÚCLEOS (V9.4)
+// BreedingManager.js - UI DEL CENTRO DE CRIANZA Y BIO-NÚCLEOS (V9.5 - FIX CENTRADO)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -9,28 +9,31 @@ document.addEventListener("DOMContentLoaded", () => {
         #incubator-grid::-webkit-scrollbar { display: none; }
         #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; }
         
-        /* ✨ FIX ABSOLUTO: Centrado sin oscurecer la pantalla extra */
+        /* ✨ FIX ABSOLUTO: Centrado perfecto al 100% sin padding destructivo */
         #geno-id-card-modal:not(.hidden) {
             position: absolute !important;
-            top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+            top: 0 !important; 
+            left: 0 !important; 
+            width: 100% !important; 
+            height: 100% !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-            padding: 15px !important;
-            overflow: hidden !important;
             z-index: 9999 !important;
-            /* Se eliminó el background oscuro extra */
+            background: transparent !important; /* Sin oscurecer el fondo */
+            box-sizing: border-box !important;
         }
         
         #geno-id-card-modal > div {
-            width: 100% !important;
+            width: 90% !important; /* Deja un 5% de margen natural a cada lado */
             max-width: 400px !important; 
             max-height: 85vh !important;
-            margin: auto !important;
             overflow-y: auto !important; 
             -ms-overflow-style: none; 
             scrollbar-width: none;
             box-sizing: border-box !important;
+            margin: 0 !important; /* Evita que márgenes heredados lo desvíen */
+            position: relative;
         }
         
         /* Oculta la barra de scroll para mantener el estilo limpio */
@@ -176,13 +179,11 @@ document.addEventListener("DOMContentLoaded", () => {
             g.id = window.generarNuevoID();
         }
 
-        // Limpiar elementos viejos si existían
         let oldIdEl = document.getElementById("id-card-serial");
         if (oldIdEl) oldIdEl.remove();
         let oldLvlEl = document.getElementById("id-card-level");
         if (oldLvlEl) oldLvlEl.style.display = "none";
 
-        // ✨ 1. Nivel centrado justo bajo el nombre
         let lvlBadge = document.getElementById("id-card-lvl-badge");
         if (!lvlBadge) {
             lvlBadge = document.createElement("div");
@@ -192,7 +193,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         lvlBadge.innerText = `NV. ${g.level || 1}`;
 
-        // ✨ 2. Emblema más grande y con menos espacio hacia arriba
         let containerElementoID = document.getElementById("id-card-emblema-container");
         if (!containerElementoID) {
             containerElementoID = document.createElement("div");
@@ -227,7 +227,6 @@ document.addEventListener("DOMContentLoaded", () => {
             };
         }
 
-        // PANEL DE STATS (1 COLUMNA)
         let hpEl = document.getElementById("id-card-hp");
         if(hpEl) {
             let statsContainer = hpEl.closest('div[style*="grid"]') || hpEl.parentElement.parentElement;
