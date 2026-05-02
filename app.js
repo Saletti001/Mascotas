@@ -1,5 +1,5 @@
 // =========================================
-// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V14.5 - NAVEGACIÓN ROBUSTA Y ESCALADO)
+// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V14.6 - FIX CENTRADO)
 // Requiere cargar 'genes.js' previamente en el HTML.
 // =========================================
 
@@ -114,7 +114,6 @@ window.getMaxCrias = function(geno) { return window.tieneGenActivoV9(geno, "fert
 window.getMultiplicadorXP = function(geno) { return window.tieneGenActivoV9(geno, "aprendiz_acelerado") ? 1.25 : 1.0; };
 window.getMultiplicadorEsencia = function(geno) { return window.tieneGenActivoV9(geno, "esencia_concentrada") ? 2.0 : 1.0; };
 
-// ✨ MIGRACIÓN ABSOLUTA V14.4: Fuerza la reparación matemática correcta
 window.migrarHPGenosExistentes = function() {
     let huboCambios = false;
 
@@ -131,35 +130,30 @@ window.migrarHPGenosExistentes = function() {
         let baseNueva = baseVieja;
         let extraNuevo = extraViejo;
 
-        // 1. Si la base es antigua (ej. 50 para Común, cuando el mínimo ahora es 70), la duplicamos.
         let limitesNuevos = window.TABLA_IVS[geno.rarity || "Común"];
         if (limitesNuevos && baseVieja < limitesNuevos.hp[0]) {
             baseNueva = baseVieja * 2;
             modificado = true;
         }
 
-        // 2. Si tiene puntos extra y no se le han arreglado, se cortan a la mitad (220 -> 110)
         if (extraViejo > 0 && !geno.puntos_extra_reparados) {
             extraNuevo = Math.round(extraViejo / 2);
             geno.puntos_extra_reparados = true;
             modificado = true;
         }
 
-        // 3. Aplicamos la matemática limpia
         if (modificado) {
             geno.stats.hp = baseNueva;
             geno.maxHp = baseNueva + extraNuevo;
-            geno.hp = geno.maxHp; // Curarlo al máximo
+            geno.hp = geno.maxHp; 
             huboCambios = true;
         }
     };
 
-    // Reparar la mochila
     if (window.misGenos && window.misGenos.length > 0) {
         window.misGenos.forEach(g => repararMatematicaGeno(g));
     }
 
-    // Reparar el Geno activo en pantalla
     if (window.miMascota) {
         repararMatematicaGeno(window.miMascota);
     }
@@ -168,7 +162,6 @@ window.migrarHPGenosExistentes = function() {
         if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
         console.log("🔧 Parche V14.4 Absoluto aplicado: HP Base duplicado y Puntos Extra reducidos a la mitad.");
         
-        // Forzar actualización visual si el panel está abierto
         setTimeout(() => {
             if (typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
         }, 100);
@@ -180,7 +173,6 @@ window.migrarHPGenosExistentes = function() {
 // =========================================
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ✨ PARCHE V10: AUTO-INYECCIÓN DE DEFENSA PARA GENOS ANTIGUOS
     setTimeout(() => {
         if (window.misGenos && window.misGenos.length > 0) {
             let patched = false;
@@ -219,7 +211,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if(fabMenu) fabMenu.addEventListener("click", () => drawerMenu.classList.remove("hidden"));
     if(closeDrawer) closeDrawer.addEventListener("click", () => drawerMenu.classList.add("hidden"));
 
-    // ✨ NAVEGACIÓN ROBUSTA (Oculta todas las pantallas automáticamente)
     window.navegarA = function(idPantalla) {
         document.querySelectorAll('.app-screen').forEach(s => s.classList.add("hidden"));
         
@@ -384,12 +375,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span style="color: white; font-weight: bold; font-size: 12px; margin-top: 10px; text-align: center;">${geno.name || 'Sujeto'}</span>
             `;
             
-            // ✨ CAMBIO AQUÍ: Tamaño grande para el pedestal (250px) y sin alterar el viewBox.
             card.onclick = () => {
                 window.miMascota = geno;
                 if (pedestal) {
                     const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-                    let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+                    // ✨ FIX CENTRADO: Mantiene el viewBox original intacto
+                    let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
                     pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; width: 250px; height: 250px; color: ${pColor}; top: 35%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
                 }
                 const nameEl = document.getElementById('geno-name');
@@ -547,7 +538,6 @@ function iniciarSecuenciaBienvenida() {
         }, 2500);
     };
 
-    // ✨ CAMBIO AQUÍ: Tamaño grande para el pedestal (250px) y sin alterar el viewBox.
     btnClaim.onclick = () => {
         window.miMascota = miPrimerGeno;
         if(!window.misGenos) window.misGenos = []; window.misGenos.push(miPrimerGeno);
@@ -556,7 +546,8 @@ function iniciarSecuenciaBienvenida() {
         if (pedestal) {
             pedestal.style.display = "block";
             const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
-            let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+            // ✨ FIX CENTRADO: Mantiene el viewBox original intacto
+            let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; width: 250px; height: 250px; color: ${miPrimerGeno.color}; top: 35%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
         }
         
