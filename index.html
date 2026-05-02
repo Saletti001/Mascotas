@@ -344,7 +344,10 @@
             <button id="btn-start-battle" class="btn-fuse" style="background: #d9534f;">Entrar a la Arena</button>
             <button id="btn-leave-battle" class="back-btn btn-go-home">Retirarse</button>
         </div>
-
+        <!-- Pega esto justo encima del div id="market-screen" -->
+        <div id="shop-screen" class="app-screen hidden">
+            <!-- El ShopManager.js inyectará la tienda aquí -->
+        </div>
         <div id="market-screen" class="app-screen hidden">
             <h2 class="screen-title" style="color: #8A2BE2;">Mercado Web3</h2>
             <div style="display: flex; justify-content: center; margin-bottom: 15px;">
@@ -381,6 +384,9 @@
                     <div class="drawer-item" id="btn-arcade"><div class="drawer-icon">🕹️</div><span>Arcade</span></div>
                     <div class="drawer-item" id="btn-coliseum"><div class="drawer-icon">⚔️</div><span>Coliseo</span></div>
                     <div class="drawer-item" id="btn-market"><div class="drawer-icon">🛒</div><span>Mercado</span></div>
+                    <div class="drawer-item" id="btn-shop" onclick="document.getElementById('drawer-menu').classList.add('hidden'); if(window.ShopManager) window.ShopManager.init(); navegarA('shop-screen');">
+                    <div class="drawer-icon">🏪</div><span>Tienda Nexo</span>
+                    </div>
                     
                     <div class="drawer-item" id="btn-implants" onclick="document.getElementById('drawer-menu').classList.add('hidden'); ImplantsManager.init(); navegarA('implants-area');">
                         <div class="drawer-icon">💾</div><span>Implantes</span>
@@ -404,6 +410,7 @@
     <script src="InventoryManager.js"></script>
     <script src="BreedingManager.js"></script>
     <script src="MarketManager.js"></script>
+    <script src="ShopManager.js"></script>
     <script src="AttackCatalog.js"></script>
     <script src="ColiseumLogic.js"></script>
     <script src="ColiseumUI.js"></script>
