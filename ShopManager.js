@@ -21,31 +21,48 @@ window.ShopManager = {
         const contenedor = document.getElementById("shop-screen");
         if (!contenedor) return;
 
+        // Inyectamos un estilo rápido para ocultar la barra de scroll específicamente aquí
+        const style = document.createElement('style');
+        style.innerHTML = `
+            .tienda-scroll-area::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+            .tienda-scroll-area { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+        `;
+        document.head.appendChild(style);
+
+        // Envolvemos todo en un div con scroll y padding abajo (tienda-scroll-area)
         contenedor.innerHTML = `
-            <h2 class="screen-title" style="color: #4dd0e1;">Tienda Nexo</h2>
-            
-            <div style="display: flex; justify-content: center; margin-bottom: 15px; border-radius: 8px; overflow: hidden;">
-                <button id="tab-shop-bazar" class="btn-shop-tab" style="background: #4CAF50; color: white; border: 1px solid #4CAF50; padding: 8px 15px; font-weight: bold; cursor: pointer; border-right: none;">Bazar (EV)</button>
-                <button id="tab-shop-dojo" class="btn-shop-tab" style="background: #eee; color: #333; border: 1px solid #ccc; padding: 8px 15px; font-weight: bold; cursor: pointer; border-right: none;">Dojo MTs (EV)</button>
-                <button id="tab-shop-premium" class="btn-shop-tab" style="background: #eee; color: #333; border: 1px solid #ccc; padding: 8px 15px; font-weight: bold; cursor: pointer;">Premium ($POL)</button>
+            <div class="tienda-scroll-area" style="width: 100%; height: 100%; overflow-y: auto; padding-bottom: 100px; padding-top: 20px;">
+                
+                <h2 class="screen-title" style="color: #4dd0e1; text-align: center;">Tienda Nexo</h2>
+                
+                <div style="display: flex; justify-content: center; margin-bottom: 15px; border-radius: 8px; overflow: hidden; padding: 0 15px;">
+                    <button id="tab-shop-bazar" class="btn-shop-tab" style="background: #4CAF50; color: white; border: 1px solid #4CAF50; padding: 8px 10px; font-weight: bold; cursor: pointer; border-right: none; flex: 1; font-size: 12px;">Bazar (EV)</button>
+                    <!-- ¡NOMBRE CAMBIADO AQUÍ! -->
+                    <button id="tab-shop-dojo" class="btn-shop-tab" style="background: #eee; color: #333; border: 1px solid #ccc; padding: 8px 10px; font-weight: bold; cursor: pointer; border-right: none; flex: 1; font-size: 12px;">Matriz Táctica (EV)</button>
+                    <button id="tab-shop-premium" class="btn-shop-tab" style="background: #eee; color: #333; border: 1px solid #ccc; padding: 8px 10px; font-weight: bold; cursor: pointer; flex: 1; font-size: 12px;">Premium ($POL)</button>
+                </div>
+                
+                <div id="shop-bazar-view" class="shop-view">
+                    <p style="text-align: center; color: #666; font-size: 12px; margin-bottom: 15px;">Consumibles y herramientas de supervivencia.</p>
+                    <div id="shop-bazar-grid" class="sanctuary-grid"></div>
+                </div>
+                
+                <div id="shop-dojo-view" class="shop-view hidden">
+                    <p style="text-align: center; color: #666; font-size: 12px; margin-bottom: 15px;">Módulos de Técnica. Límite: 1 por MT en la mochila.</p>
+                    <div id="shop-dojo-grid" class="sanctuary-grid"></div>
+                </div>
+                
+                <div id="shop-premium-view" class="shop-view hidden">
+                    <p style="text-align: center; color: #666; font-size: 12px; margin-bottom: 15px;">Mejoras de infraestructura permanentes.</p>
+                    <div id="shop-premium-grid" class="sanctuary-grid"></div>
+                </div>
+                
             </div>
             
-            <div id="shop-bazar-view" class="shop-view">
-                <p style="text-align: center; color: #666; font-size: 12px; margin-bottom: 15px;">Consumibles y herramientas de supervivencia.</p>
-                <div id="shop-bazar-grid" class="sanctuary-grid"></div>
+            <!-- Botón Flotante para salir (fijo en la parte inferior) -->
+            <div class="fab-btn btn-go-home" onclick="navegarA('room-area')" style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 70%; max-width: 300px; z-index: 100;">
+                <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0; text-align: center;">VOLVER AL LABORATORIO</div>
             </div>
-            
-            <div id="shop-dojo-view" class="shop-view hidden">
-                <p style="text-align: center; color: #666; font-size: 12px; margin-bottom: 15px;">Módulos de Técnica. Límite: 1 por MT en la mochila.</p>
-                <div id="shop-dojo-grid" class="sanctuary-grid"></div>
-            </div>
-            
-            <div id="shop-premium-view" class="shop-view hidden">
-                <p style="text-align: center; color: #666; font-size: 12px; margin-bottom: 15px;">Mejoras de infraestructura permanentes.</p>
-                <div id="shop-premium-grid" class="sanctuary-grid"></div>
-            </div>
-            
-            <button class="back-btn btn-go-home" onclick="navegarA('room-area')">Volver al Laboratorio</button>
         `;
 
         // Lógica de pestañas
