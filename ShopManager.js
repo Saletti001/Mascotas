@@ -128,7 +128,7 @@ window.ShopManager = {
             </div>
 
             <!-- MODAL DE DETALLES DEL ÍTEM (OCULTO POR DEFECTO) -->
-            <div id="shop-detail-modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 20, 30, 0.90); z-index: 9999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+            <div id="shop-detail-modal" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 20, 30, 0.90); z-index: 9999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
                 <div id="shop-detail-content" style="background: linear-gradient(180deg, #1A2A36 0%, #0F172A 100%); border: 2px solid #00d2ff; border-radius: 16px; padding: 30px 20px; width: 85%; max-width: 350px; position: relative; text-align: center;">
                     <button id="close-shop-detail" style="position: absolute; top: 10px; right: 15px; background: transparent; border: none; color: #aaa; font-size: 24px; font-weight: bold; cursor: pointer;">&times;</button>
                     <div id="shop-detail-icon" style="font-size: 5rem; margin-bottom: 15px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));"></div>
