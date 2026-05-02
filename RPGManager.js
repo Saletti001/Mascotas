@@ -104,17 +104,29 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!serialRow) {
                 serialRow = document.createElement("div");
                 serialRow.id = "row-serial-id";
-                serialRow.style = "text-align: center; margin-top: 8px; margin-bottom: 12px; font-weight: bold; color: #00d2ff; font-family: monospace; letter-spacing: 2px; font-size: 15px;";
+                serialRow.style = "text-align: center; margin-top: 15px; margin-bottom: 15px; font-weight: bold; color: #00d2ff; font-family: monospace; letter-spacing: 2px; font-size: 15px;";
                 rarityEl.parentNode.parentNode.insertBefore(serialRow, rarityEl.parentNode);
             }
-            serialRow.innerText = g.id ? `#${g.id}` : "#000000";
+            
+            const elementoActual = (g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal");
+            // Obtenemos el icono y le quitamos el margen derecho para que quede perfectamente centrado
+            let iconoElemento = window.getIconoElemento(elementoActual).replace('margin-right: 6px;', 'margin-right: 0;');
+            
+            // Inyectamos el icono gigante (45px) justo encima del ID
+            serialRow.innerHTML = `
+                <div style="font-size: 45px; margin-bottom: 8px; display: flex; justify-content: center; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8));">
+                    ${iconoElemento}
+                </div>
+                <div>${g.id ? `#${g.id}` : "#000000"}</div>
+            `;
         }
 
         const elementEl = document.getElementById("geno-element");
         if(elementEl) {
             const elementoActual = (g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal");
             const nombreElementoLimpio = elementoActual.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, '').trim();
-            elementEl.innerHTML = `${window.getIconoElemento(elementoActual)} <span style="vertical-align: middle;">${nombreElementoLimpio}</span>`;
+            // Dejamos la lista de texto limpia, sin el icono minúsculo
+            elementEl.innerHTML = `<span style="font-weight: bold; color: #fff;">${nombreElementoLimpio}</span>`;
         }
 
         const qualityBadge = document.getElementById("geno-quality-badge");
