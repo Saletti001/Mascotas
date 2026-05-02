@@ -1,5 +1,5 @@
 // =========================================
-// BreedingManager.js - UI DEL CENTRO DE CRIANZA Y BIO-NÚCLEOS (V9.1)
+// BreedingManager.js - UI DEL CENTRO DE CRIANZA Y BIO-NÚCLEOS (V9.2)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -9,27 +9,28 @@ document.addEventListener("DOMContentLoaded", () => {
         #incubator-grid::-webkit-scrollbar { display: none; }
         #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; }
         
-        /* ✨ FIX DEFINITIVO: Scroll interno como en la ventana de Stats */
+        /* ✨ FIX DEFINITIVO: Centrado absoluto, expansión lateral al 95% y scroll interno */
         #geno-id-card-modal:not(.hidden) {
             display: flex !important;
-            align-items: center !important; /* Mantiene la tarjeta centrada verticalmente */
+            align-items: center !important;
             justify-content: center !important;
-            padding: 20px !important; /* Margen para que no toque los bordes del celular */
-            overflow: hidden !important; /* Bloquea el scroll en el fondo oscuro */
+            padding: 10px !important; /* Menos padding para que expanda más a los lados */
+            overflow: hidden !important;
         }
         
-        /* Apunta directamente a la tarjeta física dentro del modal */
         #geno-id-card-modal > div {
-            max-height: 85vh !important; /* Limita la altura de la tarjeta al 85% de la pantalla */
-            overflow-y: auto !important; /* El scroll ocurre DENTRO de la tarjeta */
+            width: 95% !important; /* Expansión lateral casi pegada a los bordes */
+            max-width: 450px !important; /* Límite para que no se deforme en PC */
+            max-height: 85vh !important;
+            margin: auto !important; /* Fuerza el centrado absoluto vertical y horizontal */
+            overflow-y: auto !important; 
             -ms-overflow-style: none; 
             scrollbar-width: none;
+            box-sizing: border-box !important;
         }
         
         /* Oculta la barra de scroll para mantener el estilo limpio */
-        #geno-id-card-modal > div::-webkit-scrollbar { 
-            display: none; 
-        }
+        #geno-id-card-modal > div::-webkit-scrollbar { display: none; }
         
         #breeding-selector h3, 
         #geno-id-card-modal h2, 
@@ -170,24 +171,21 @@ document.addEventListener("DOMContentLoaded", () => {
             g.id = window.generarNuevoID();
         }
 
-        // ✨ SE ELIMINA LA INYECCIÓN VIEJA DEL ID PARA USAR LA NUEVA VERSIÓN CENTRADA
         let oldIdEl = document.getElementById("id-card-serial");
         if (oldIdEl) oldIdEl.remove();
 
-        // ✨ INYECCIÓN DEL EMBLEMA (LOGO GIGANTE) Y EL ID CENTRADO
         let containerElementoID = document.getElementById("id-card-emblema-container");
         if (!containerElementoID) {
             containerElementoID = document.createElement("div");
             containerElementoID.id = "id-card-emblema-container";
             containerElementoID.style = "display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 10px; margin-bottom: 10px;";
-            // Lo insertamos justo debajo del nombre
             const nameNode = document.getElementById("id-card-name");
             nameNode.parentNode.insertBefore(containerElementoID, nameNode.nextSibling);
         }
 
         const elementoActual = (g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal");
         let iconoElemento = typeof window.getIconoElemento === 'function' ? window.getIconoElemento(elementoActual) : '';
-        iconoElemento = iconoElemento.replace('margin-right: 6px;', 'margin-right: 0;'); // Centramos el icono
+        iconoElemento = iconoElemento.replace('margin-right: 6px;', 'margin-right: 0;'); 
 
         containerElementoID.innerHTML = `
             <div style="font-size: 45px; margin-bottom: 5px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8));">
@@ -201,7 +199,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.getElementById("id-card-rarity").innerText = g.rarity || "Común";
         
-        // El texto del elemento ahora se muestra limpio (sin icono pequeño)
         const nombreElementoLimpio = elementoActual.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, '').trim();
         document.getElementById("id-card-element").innerHTML = `<span style="font-weight: bold; color: #fff;">${nombreElementoLimpio}</span>`;
         
@@ -213,6 +210,22 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("id-card-atk").innerText = Math.floor(g.stats?.atk || 15);
         document.getElementById("id-card-spd").innerText = Math.floor(g.stats?.spd || 15);
         document.getElementById("id-card-luk").innerText = Math.floor(g.stats?.luk || 15);
+
+        // ✨ NUEVO FIX: DOMADOR DE LA DEFENSA (Redimensiona, renombra a "Def:" y asigna el valor real)
+        let defEl = document.getElementById("id-card-def");
+        if(defEl) {
+            defEl.innerText = Math.floor(g.stats?.def || 10); // Asigna el valor numérico
+            let defBox = defEl.parentElement;
+            if(defBox) {
+                defBox.style.gridColumn = "auto"; // Le quita el ancho doble para que se alinee con los demás
+                // Busca la palabra "Defensa:" y la cambia por "Def:"
+                defBox.childNodes.forEach(n => {
+                    if(n.nodeType === 3 && n.nodeValue.includes("Defensa:")) {
+                        n.nodeValue = n.nodeValue.replace("Defensa:", "Def:");
+                    }
+                });
+            }
+        }
 
         const qualityEl = document.getElementById("id-card-quality");
         if(qualityEl && window.calcularCalidad && window.obtenerColorRango) {
@@ -259,7 +272,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     ${buildSlot("Gen C (Funcional)", hg.C, "#8A2BE2")}
                 `;
 
-                // ✨ INYECCIÓN DEL GENOMA BASE (D-R) EN EL MODAL DE ANÁLISIS DE CRIANZA
                 if (g.scanned_full && g.genes) {
                     const buildDRSlotCompact = (label, geneObj) => {
                          if(!geneObj) return "";
@@ -296,7 +308,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 const newBtn = document.getElementById("btn-id-scan");
                 if (newBtn) {
                     newBtn.addEventListener("click", () => {
-                        // ✨ AQUÍ PERMITIMOS QUE USE EL ESCÁNER BÁSICO O EL COMPLETO (o el viejo) DESDE LA CRIANZA
                         let tipoEscanerConsumido = null;
                         
                         if (window.miInventario && window.miInventario.consumeItem("escaner_completo", 1)) {
