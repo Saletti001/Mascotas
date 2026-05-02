@@ -1,5 +1,5 @@
 // =========================================
-// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V14.4 - REPARACIÓN ABSOLUTA DE HP)
+// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V14.5 - NAVEGACIÓN ROBUSTA Y ESCALADO)
 // Requiere cargar 'genes.js' previamente en el HTML.
 // =========================================
 
@@ -159,7 +159,7 @@ window.migrarHPGenosExistentes = function() {
         window.misGenos.forEach(g => repararMatematicaGeno(g));
     }
 
-    // Reparar el Geno activo en pantalla (¡EL PASO QUE FALTABA!)
+    // Reparar el Geno activo en pantalla
     if (window.miMascota) {
         repararMatematicaGeno(window.miMascota);
     }
@@ -199,7 +199,6 @@ document.addEventListener("DOMContentLoaded", () => {
             if (patched && typeof window.guardarProgreso === 'function') window.guardarProgreso();
         }
         
-        // ✨ EJECUTAR MIGRACIÓN DEFINITIVA V14.4 AQUÍ:
         window.migrarHPGenosExistentes();
         
     }, 500);
@@ -217,21 +216,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const drawerMenu = document.getElementById("drawer-menu");
     const closeDrawer = document.getElementById("close-drawer");
 
-    const screenRoom = document.getElementById("room-area");
-    const screenArcade = document.getElementById("arcade-menu");
-    const screenSanctuary = document.getElementById("sanctuary-screen");
-    const screenAlchemy = document.getElementById("alchemy-screen");
-    const screenBreeding = document.getElementById("breeding-screen");
-    const screenColiseum = document.getElementById("coliseum-screen");
-    const screenMarket = document.getElementById("market-screen"); 
-    
-    const screens = [screenRoom, screenArcade, screenSanctuary, screenAlchemy, screenBreeding, screenColiseum, screenMarket]; 
-
     if(fabMenu) fabMenu.addEventListener("click", () => drawerMenu.classList.remove("hidden"));
     if(closeDrawer) closeDrawer.addEventListener("click", () => drawerMenu.classList.add("hidden"));
 
+    // ✨ NAVEGACIÓN ROBUSTA (Oculta todas las pantallas automáticamente)
     window.navegarA = function(idPantalla) {
-        screens.forEach(s => { if(s) s.classList.add("hidden"); });
+        document.querySelectorAll('.app-screen').forEach(s => s.classList.add("hidden"));
+        
         const destino = document.getElementById(idPantalla);
         if(destino) destino.classList.remove("hidden");
         
@@ -240,8 +231,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const panelStats = document.getElementById("geno-stats-panel");
         if(panelStats) panelStats.classList.add("hidden");
         
+        const screenRoom = document.getElementById("room-area");
         if(fabMenu) fabMenu.classList.toggle("hidden", destino !== screenRoom); 
-    }
+    };
 
     document.querySelectorAll(".btn-go-home").forEach(btn => {
         btn.addEventListener("click", () => window.navegarA("room-area"));
@@ -392,13 +384,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span style="color: white; font-weight: bold; font-size: 12px; margin-top: 10px; text-align: center;">${geno.name || 'Sujeto'}</span>
             `;
             
+            // ✨ CAMBIO AQUÍ: Tamaño grande para el pedestal (250px) y sin alterar el viewBox.
             card.onclick = () => {
                 window.miMascota = geno;
                 if (pedestal) {
                     const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-                    // Quitamos el viewBox forzado para no alejar la cámara
                     let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
-                    // Le damos tamaño fijo (250px) y centrado absoluto
                     pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; width: 250px; height: 250px; color: ${pColor}; top: 35%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
                 }
                 const nameEl = document.getElementById('geno-name');
@@ -556,6 +547,7 @@ function iniciarSecuenciaBienvenida() {
         }, 2500);
     };
 
+    // ✨ CAMBIO AQUÍ: Tamaño grande para el pedestal (250px) y sin alterar el viewBox.
     btnClaim.onclick = () => {
         window.miMascota = miPrimerGeno;
         if(!window.misGenos) window.misGenos = []; window.misGenos.push(miPrimerGeno);
@@ -564,9 +556,7 @@ function iniciarSecuenciaBienvenida() {
         if (pedestal) {
             pedestal.style.display = "block";
             const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
-            // Quitamos el viewBox forzado
             let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
-            // Mismas medidas (250px) para que mantenga la coherencia
             pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; width: 250px; height: 250px; color: ${miPrimerGeno.color}; top: 35%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
         }
         
