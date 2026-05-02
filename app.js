@@ -7,6 +7,26 @@ window.misGenos = window.misGenos || [];
 window.maxGenoSlots = window.maxGenoSlots || 6; 
 
 // =========================================
+// HELPER: ICONOS DE ELEMENTOS GLOBALES
+// =========================================
+window.getIconoElemento = function(elementoStr) {
+    if (!elementoStr) return "";
+    
+    // Limpiamos el string por si viene con emojis antiguos de versiones previas (ej: "🤖 Cibernético" -> "Cibernético")
+    const nombreLimpio = elementoStr.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, '').trim();
+    
+    // Buscamos el SVG en la galería de la tienda
+    let svg = window.ShopManager && window.ShopManager.iconosSVG ? window.ShopManager.iconosSVG[nombreLimpio] : null;
+    
+    if (svg) {
+        // Le inyectamos un estilo para alinearlo con el texto y darle un poco de sombra
+        return svg.replace('<svg ', '<svg style="vertical-align: text-bottom; margin-right: 6px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.6));" ');
+    }
+    
+    return ""; // Fallback por si no encuentra el elemento
+};
+
+// =========================================
 // ✨ TABLA DE IVs V14.0 (HP DUPLICADO PARA COMBATES MÁS LARGOS)
 // =========================================
 window.TABLA_IVS = {

@@ -73,7 +73,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const elementEl = document.getElementById("geno-element");
-        if(elementEl) elementEl.innerText = (g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal");
+        if(elementEl) {
+            // 1. Obtenemos el elemento (ya sea de los genes ocultos o el base)
+            const elementoActual = (g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal");
+            // 2. Lo limpiamos por si tiene emojis viejos guardados en la partida
+            const nombreElementoLimpio = elementoActual.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, '').trim();
+            // 3. Inyectamos el SVG mágico junto al texto limpio
+            elementEl.innerHTML = `${window.getIconoElemento(elementoActual)} <span style="vertical-align: middle;">${nombreElementoLimpio}</span>`;
+        }
 
         const qualityBadge = document.getElementById("geno-quality-badge");
         if (qualityBadge) {
