@@ -9,6 +9,19 @@ document.addEventListener("DOMContentLoaded", () => {
         #incubator-grid::-webkit-scrollbar { display: none; }
         #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; }
         
+        /* ✨ FIX: Desplazamiento seguro para tarjetas muy altas */
+        #geno-id-card-modal:not(.hidden) {
+            display: flex !important;
+            align-items: flex-start !important; /* Fuerza a que inicie desde arriba */
+            justify-content: center !important;
+            overflow-y: auto !important; /* Activa el scroll vertical */
+            padding-top: 80px !important; /* Espacio para que el avatar no choque con el techo */
+            padding-bottom: 50px !important;
+        }
+        
+        /* Oculta la barra de scroll para mantener el estilo limpio */
+        #geno-id-card-modal::-webkit-scrollbar { display: none; }
+        
         #breeding-selector h3, 
         #geno-id-card-modal h2, 
         #geno-id-card-modal h3 {
