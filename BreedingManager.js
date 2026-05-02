@@ -1,5 +1,5 @@
 // =========================================
-// BreedingManager.js - UI DEL CENTRO DE CRIANZA Y BIO-NÚCLEOS (V9.0)
+// BreedingManager.js - UI DEL CENTRO DE CRIANZA Y BIO-NÚCLEOS (V9.1)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -148,20 +148,40 @@ document.addEventListener("DOMContentLoaded", () => {
             g.id = window.generarNuevoID();
         }
 
-        let idEl = document.getElementById("id-card-serial");
-        if (!idEl) {
-            idEl = document.createElement("div");
-            idEl.id = "id-card-serial";
-            idEl.style = "font-size: 10px; color: #888; font-family: monospace; margin-top: 2px; letter-spacing: 1px;";
-            document.getElementById("id-card-name").parentNode.insertBefore(idEl, document.getElementById("id-card-name").nextSibling);
+        // ✨ SE ELIMINA LA INYECCIÓN VIEJA DEL ID PARA USAR LA NUEVA VERSIÓN CENTRADA
+        let oldIdEl = document.getElementById("id-card-serial");
+        if (oldIdEl) oldIdEl.remove();
+
+        // ✨ INYECCIÓN DEL EMBLEMA (LOGO GIGANTE) Y EL ID CENTRADO
+        let containerElementoID = document.getElementById("id-card-emblema-container");
+        if (!containerElementoID) {
+            containerElementoID = document.createElement("div");
+            containerElementoID.id = "id-card-emblema-container";
+            containerElementoID.style = "display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 10px; margin-bottom: 10px;";
+            // Lo insertamos justo debajo del nombre
+            const nameNode = document.getElementById("id-card-name");
+            nameNode.parentNode.insertBefore(containerElementoID, nameNode.nextSibling);
         }
-        idEl.innerText = `ID: #${g.id}`;
+
+        const elementoActual = (g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal");
+        let iconoElemento = typeof window.getIconoElemento === 'function' ? window.getIconoElemento(elementoActual) : '';
+        iconoElemento = iconoElemento.replace('margin-right: 6px;', 'margin-right: 0;'); // Centramos el icono
+
+        containerElementoID.innerHTML = `
+            <div style="font-size: 45px; margin-bottom: 5px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8));">
+                ${iconoElemento}
+            </div>
+            <div style="font-size: 10px; color: #888; font-family: monospace; letter-spacing: 1px;">ID: #${g.id}</div>
+        `;
 
         const lvlEl = document.getElementById("id-card-level");
         if(lvlEl) lvlEl.innerText = `Nv. ${g.level || 1}`;
 
         document.getElementById("id-card-rarity").innerText = g.rarity || "Común";
-        document.getElementById("id-card-element").innerText = (g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal");
+        
+        // El texto del elemento ahora se muestra limpio (sin icono pequeño)
+        const nombreElementoLimpio = elementoActual.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, '').trim();
+        document.getElementById("id-card-element").innerHTML = `<span style="font-weight: bold; color: #fff;">${nombreElementoLimpio}</span>`;
         
         const maxCrias = typeof window.getMaxCrias === 'function' ? window.getMaxCrias(g) : 7;
         const criasEl = document.getElementById("id-card-breeds");
@@ -210,12 +230,40 @@ document.addEventListener("DOMContentLoaded", () => {
                     `;
                 };
 
-                secretGeneContainer.innerHTML = `
+                let htmlEstructura = `
                     <div style="font-size: 11px; color: #e0b0ff; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; letter-spacing: 1px; text-align: center;">Estructura Genética</div>
                     ${buildSlot("Gen A (Cosmético)", hg.A, "#ffcc00")}
                     ${buildSlot("Gen B (Funcional)", hg.B, "#80deea")}
                     ${buildSlot("Gen C (Funcional)", hg.C, "#8A2BE2")}
                 `;
+
+                // ✨ INYECCIÓN DEL GENOMA BASE (D-R) EN EL MODAL DE ANÁLISIS DE CRIANZA
+                if (g.scanned_full && g.genes) {
+                    const buildDRSlotCompact = (label, geneObj) => {
+                         if(!geneObj) return "";
+                         return `
+                            <div style="display: flex; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px; font-size: 10px; margin-top: 4px; border-left: 2px solid #D500F9;">
+                                <span style="color: #ea80fc; font-weight: bold; width: 65px;">${label}</span>
+                                <span style="flex: 1; text-align: left; color: #fff;"><span style="color:#4CAF50; font-weight:bold;">D:</span> ${geneObj.dom}</span>
+                                <span style="flex: 1; text-align: left; color: #aaa;"><span style="color:#f44336; font-weight:bold;">R:</span> ${geneObj.rec}</span>
+                            </div>
+                         `;
+                    };
+
+                    htmlEstructura += `
+                        <div style="font-size: 12px; color: #D500F9; text-transform: uppercase; margin-top: 20px; margin-bottom: 2px; font-weight: bold; letter-spacing: 1px; text-align: center;">Genoma Base</div>
+                        <div style="font-size: 9px; color: #888; text-transform: uppercase; letter-spacing: 1px; text-align: center; margin-bottom: 8px;">
+                            <span style="color:#4CAF50; font-weight:bold;">D:</span> Dominante &nbsp;&nbsp;|&nbsp;&nbsp; <span style="color:#f44336; font-weight:bold;">R:</span> Recesivos
+                        </div>
+                        ${buildDRSlotCompact("FORMA", g.genes.cuerpo)}
+                        ${buildDRSlotCompact("AFINIDAD", g.genes.afinidad)}
+                        ${buildDRSlotCompact("OJOS", g.genes.ojos)}
+                        ${buildDRSlotCompact("BOCA", g.genes.boca)}
+                    `;
+                }
+
+                secretGeneContainer.innerHTML = htmlEstructura;
+
             } else {
                 secretGeneContainer.innerHTML = `
                     <div style="font-size: 11px; color: #e0b0ff; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; letter-spacing: 1px; text-align: center;">Estructura Genética</div>
@@ -226,13 +274,25 @@ document.addEventListener("DOMContentLoaded", () => {
                 const newBtn = document.getElementById("btn-id-scan");
                 if (newBtn) {
                     newBtn.addEventListener("click", () => {
-                        if (window.miInventario && window.miInventario.consumeItem("dna_scanner", 1)) {
+                        // ✨ AQUÍ PERMITIMOS QUE USE EL ESCÁNER BÁSICO O EL COMPLETO (o el viejo) DESDE LA CRIANZA
+                        let tipoEscanerConsumido = null;
+                        
+                        if (window.miInventario && window.miInventario.consumeItem("escaner_completo", 1)) {
+                            tipoEscanerConsumido = "completo";
+                        } else if (window.miInventario && (window.miInventario.consumeItem("escaner_basico", 1) || window.miInventario.consumeItem("dna_scanner", 1))) {
+                            tipoEscanerConsumido = "basico";
+                        }
+
+                        if (tipoEscanerConsumido) {
                             
                             if (!g.hidden_genes || !g.hidden_genes.hasOwnProperty('A')) {
                                 g.hidden_genes = window.generarGenesV9(g.rarity);
                             }
 
                             g.scanned = true; 
+                            if (tipoEscanerConsumido === "completo") {
+                                g.scanned_full = true;
+                            }
                             
                             if (window.miMascota && String(window.miMascota.id) === String(g.id)) {
                                 if (typeof window.verificarUmbralDespertar === 'function') window.verificarUmbralDespertar(g);
@@ -246,7 +306,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             newBtn.style.color = "#000";
                             setTimeout(() => mostrarTarjetaGeno(g), 800);
                         } else { 
-                            alert("No tienes un Escáner de ADN en tu mochila."); 
+                            alert("No tienes ningún escáner en tu mochila. Consíguelos en Suministros."); 
                         }
                     });
                 }
@@ -434,7 +494,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     else if (totalStats >= reqRaro) rarezaHijo = "Raro";
                 }
 
-                // ✨ SISTEMA DE HERENCIA DE GENES OCULTOS (Combos)
                 const tieneDominanciaP1 = window.tieneGenActivoV9 && window.tieneGenActivoV9(padre1, "dominancia_genetica");
                 const tieneDominanciaP2 = window.tieneGenActivoV9 && window.tieneGenActivoV9(padre2, "dominancia_genetica");
 
@@ -445,11 +504,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     let probP1 = tieneDominanciaP1 ? 0.70 : 0.30;
                     let probP2 = tieneDominanciaP2 ? 0.70 : 0.30;
 
-                    // 1. Alelos idénticos (Genética Pura)
                     if (g1 && g2 && g1.id === g2.id) {
                         if (Math.random() <= 0.75) return g1;
                     }
-                    // 2. Choque de genes distintos
                     else if (g1 && g2) {
                         let rnd = Math.random();
                         let totalProb = probP1 + probP2; 
@@ -459,11 +516,9 @@ document.addEventListener("DOMContentLoaded", () => {
                             return (rnd <= chance1) ? g1 : g2;
                         }
                     }
-                    // 3. Solo uno lo tiene
                     else if (g1) { if (Math.random() <= probP1) return g1; }
                     else if (g2) { if (Math.random() <= probP2) return g2; }
 
-                    // 4. Si falla la herencia, tira los dados universales
                     const genesMutacion = typeof window.generarGenesV9 === 'function' ? window.generarGenesV9(rarezaHijo) : {A:null, B:null, C:null};
                     return genesMutacion[slotKey];
                 };
@@ -474,7 +529,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     C: intentarHeredarSlot('C')
                 };
 
-                // Regla de Exclusión V9: B no puede ser igual a C (ni en ID ni en categoría)
                 if (hiddenGenesHeredados.B && hiddenGenesHeredados.C && hiddenGenesHeredados.B.id === hiddenGenesHeredados.C.id) {
                     hiddenGenesHeredados.C = null; 
                 }
