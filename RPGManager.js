@@ -1,5 +1,5 @@
 // =========================================
-// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (CALIDAD FIJA + TOTAL AMARILLO)
+// RPGManager.js - SISTEMA DE STATS Y PROGRESIÓN (INCLUYE DOBLE ESCÁNER D-R)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -19,6 +19,44 @@ document.addEventListener("DOMContentLoaded", () => {
             g.umbralAplicado = true;
             if(window.Sonidos) window.Sonidos.play("heal");
             alert("✨ ¡Gen Activado: Umbral del Despertar!\nLas estadísticas base de tu Geno han aumentado +5 de forma permanente.");
+        }
+    };
+
+    // ✨ NUEVO CONTROLADOR GLOBAL DE ESCÁNERES
+    window.usarEscanerMascota = function(tipo) {
+        const g = window.miMascota;
+        if (!g || g.id === "temp") return;
+
+        if (tipo === 'basico') {
+            if (g.scanned && !g.scanned_full) { alert("Este Geno ya tiene sus slots básicos revelados. Necesitas un Escáner Completo."); return; }
+            if (g.scanned_full) { alert("Este Geno ya ha sido escaneado por completo."); return; }
+            
+            // Acepta el nuevo "escaner_basico" o los viejos "dna_scanner" de versiones anteriores
+            if (window.miInventario && (window.miInventario.consumeItem("escaner_basico", 1) || window.miInventario.consumeItem("dna_scanner", 1))) {
+                if (!g.hidden_genes || !g.hidden_genes.hasOwnProperty('A')) g.hidden_genes = window.generarGenesV9(g.rarity);
+                g.scanned = true;
+                window.verificarUmbralDespertar(g);
+                if(window.Sonidos) window.Sonidos.play("heal");
+                window.actualizarPanelRPG();
+                if(window.guardarProgreso) window.guardarProgreso();
+            } else {
+                alert("No tienes un Escáner Básico en tu inventario. ¡Consíguelo en Suministros!");
+            }
+            
+        } else if (tipo === 'completo') {
+            if (g.scanned_full) { alert("Este Geno ya tiene su genoma decodificado al 100%."); return; }
+            
+            if (window.miInventario && window.miInventario.consumeItem("escaner_completo", 1)) {
+                if (!g.hidden_genes || !g.hidden_genes.hasOwnProperty('A')) g.hidden_genes = window.generarGenesV9(g.rarity);
+                g.scanned = true;      // El completo también revela los slots básicos automáticamente
+                g.scanned_full = true; // Y desbloquea el panel Dominante/Recesivo
+                window.verificarUmbralDespertar(g);
+                if(window.Sonidos) window.Sonidos.play("heal");
+                window.actualizarPanelRPG();
+                if(window.guardarProgreso) window.guardarProgreso();
+            } else {
+                alert("No tienes un Escáner Completo en tu inventario. ¡Consíguelo en Suministros!");
+            }
         }
     };
 
@@ -74,11 +112,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const elementEl = document.getElementById("geno-element");
         if(elementEl) {
-            // 1. Obtenemos el elemento (ya sea de los genes ocultos o el base)
             const elementoActual = (g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal");
-            // 2. Lo limpiamos por si tiene emojis viejos guardados en la partida
             const nombreElementoLimpio = elementoActual.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, '').trim();
-            // 3. Inyectamos el SVG mágico junto al texto limpio
             elementEl.innerHTML = `${window.getIconoElemento(elementoActual)} <span style="vertical-align: middle;">${nombreElementoLimpio}</span>`;
         }
 
@@ -157,15 +192,14 @@ document.addEventListener("DOMContentLoaded", () => {
             structureContainer.style.gap = "6px";
             structureContainer.style.marginTop = "15px";
             structureContainer.style.paddingTop = "15px";
-            // ✨ SE HA ELIMINADO LA LÍNEA AZUL PUNTIAGUDA (borderTop) AQUÍ
             structureContainer.style.width = "100%";
             
-            if (!g.scanned) {
+            if (!g.scanned && !g.scanned_full) {
                 structureContainer.innerHTML = `
                     <div style="font-size: 12px; color: #4dd0e1; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; letter-spacing: 1px; text-align: center;">Estructura Genética</div>
                     <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 1px dashed #555; text-align: center; color: #666; font-size: 12px;">
                         🔒 ADN Bloqueado<br>
-                        <span style="font-size: 10px; color: #444; margin-top: 6px; display: inline-block;">Usa el escáner para revelar los genes.</span>
+                        <span style="font-size: 10px; color: #444; margin-top: 6px; display: inline-block;">Usa un escáner para revelar la secuencia.</span>
                     </div>
                 `;
             } else {
@@ -185,23 +219,73 @@ document.addEventListener("DOMContentLoaded", () => {
                     `;
                 };
 
-                structureContainer.innerHTML = `
+                let htmlADN = `
                     <div style="font-size: 12px; color: #4dd0e1; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; letter-spacing: 1px; text-align: center;">Estructura Genética</div>
                     ${buildSlot("Gen A (Cosmético)", hg.A, "#ffcc00")}
                     ${buildSlot("Gen B (Funcional)", hg.B, "#80deea")}
                     ${buildSlot("Gen C (Funcional)", hg.C, "#8A2BE2")}
                 `;
+
+                // ✨ AQUÍ SE INYECTA LA TABLA DE DOMINANTE Y RECESIVO SI TIENE ESCANER COMPLETO
+                if (g.scanned_full && g.genes) {
+                    const buildDRSlotCompact = (label, geneObj) => {
+                         if(!geneObj) return "";
+                         return `
+                            <div style="display: flex; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px; font-size: 10px; margin-top: 4px; border-left: 2px solid #D500F9;">
+                                <span style="color: #ea80fc; font-weight: bold; width: 65px;">${label}</span>
+                                <span style="flex: 1; text-align: left; color: #fff;"><span style="color:#4CAF50; font-weight:bold;">D:</span> ${geneObj.dom}</span>
+                                <span style="flex: 1; text-align: left; color: #aaa;"><span style="color:#f44336; font-weight:bold;">R:</span> ${geneObj.rec}</span>
+                            </div>
+                         `;
+                    };
+
+                    htmlADN += `
+                        <div style="font-size: 12px; color: #D500F9; text-transform: uppercase; margin-top: 20px; margin-bottom: 5px; font-weight: bold; letter-spacing: 1px; text-align: center;">Genoma Base (S-D)</div>
+                        ${buildDRSlotCompact("FORMA", g.genes.cuerpo)}
+                        ${buildDRSlotCompact("AFINIDAD", g.genes.afinidad)}
+                        ${buildDRSlotCompact("OJOS", g.genes.ojos)}
+                        ${buildDRSlotCompact("BOCA", g.genes.boca)}
+                    `;
+                }
+                
+                structureContainer.innerHTML = htmlADN;
             }
         }
 
+        // ✨ SISTEMA DINÁMICO DE BOTONES DE ESCÁNER
         const btnScannerUI = document.getElementById("btn-use-scanner");
-        if (btnScannerUI) {
-            if (g.scanned) {
-                btnScannerUI.style.display = "none";
-            } else {
-                btnScannerUI.style.display = "block";
-                btnScannerUI.innerText = "Usar Escáner 🧬";
-                btnScannerUI.style.background = ""; 
+        let scannerActionContainer = document.getElementById("scanner-action-container");
+
+        // Si existe el botón viejo pero no nuestro contenedor, lo creamos y escondemos el viejo
+        if (btnScannerUI && !scannerActionContainer) {
+            scannerActionContainer = document.createElement("div");
+            scannerActionContainer.id = "scanner-action-container";
+            scannerActionContainer.style = "display: flex; gap: 10px; justify-content: center; margin-top: 15px; width: 100%;";
+            btnScannerUI.parentNode.insertBefore(scannerActionContainer, btnScannerUI);
+            btnScannerUI.style.display = "none";
+        }
+
+        if (scannerActionContainer) {
+            scannerActionContainer.innerHTML = ""; // Limpiar botones
+            
+            if (!g.scanned && !g.scanned_full) {
+                const btnBasico = document.createElement("button");
+                btnBasico.innerHTML = "🔍 Escáner Básico";
+                btnBasico.style = "flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; background: linear-gradient(90deg, #005c8a, #00E5FF); box-shadow: 0 4px 10px rgba(0,229,255,0.3); font-size: 11px; text-transform: uppercase; transition: filter 0.2s;";
+                btnBasico.onmouseover = () => btnBasico.style.filter = "brightness(1.2)";
+                btnBasico.onmouseout = () => btnBasico.style.filter = "brightness(1)";
+                btnBasico.onclick = () => window.usarEscanerMascota('basico');
+                scannerActionContainer.appendChild(btnBasico);
+            }
+
+            if (!g.scanned_full) {
+                const btnCompleto = document.createElement("button");
+                btnCompleto.innerHTML = "🧬 Escáner Completo";
+                btnCompleto.style = "flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; background: linear-gradient(90deg, #7B1FA2, #D500F9); box-shadow: 0 4px 10px rgba(213,0,249,0.3); font-size: 11px; text-transform: uppercase; transition: filter 0.2s;";
+                btnCompleto.onmouseover = () => btnCompleto.style.filter = "brightness(1.2)";
+                btnCompleto.onmouseout = () => btnCompleto.style.filter = "brightness(1)";
+                btnCompleto.onclick = () => window.usarEscanerMascota('completo');
+                scannerActionContainer.appendChild(btnCompleto);
             }
         }
 
@@ -260,7 +344,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const btnStats = document.getElementById("btn-show-stats");
     const btnCloseStats = document.getElementById("close-stats-btn");
-    const btnScanner = document.getElementById("btn-use-scanner");
     const btnRename = document.getElementById("btn-rename-geno");
 
     const statsOverlay = document.getElementById("stats-modal-overlay");
@@ -328,31 +411,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnInv = document.getElementById("backpack-icon");
     if(btnGenos) btnGenos.addEventListener("click", blurFab);
     if(btnInv) btnInv.addEventListener("click", blurFab);
-
-    if (btnScanner) {
-        btnScanner.addEventListener("click", () => {
-            if (!window.miMascota) return;
-            if (window.miMascota.scanned) { alert("El ADN ya ha sido decodificado."); return; }
-            if (window.miInventario && window.miInventario.consumeItem("dna_scanner", 1)) {
-                
-                if (!window.miMascota.hidden_genes || !window.miMascota.hidden_genes.hasOwnProperty('A')) {
-                    window.miMascota.hidden_genes = window.generarGenesV9(window.miMascota.rarity);
-                }
-
-                window.miMascota.scanned = true;
-                window.verificarUmbralDespertar(window.miMascota);
-
-                btnScanner.innerText = "ADN Revelado ✅";
-                btnScanner.style.background = "#4CAF50";
-                
-                setTimeout(() => {
-                    window.actualizarPanelRPG();
-                    if(window.guardarProgreso) window.guardarProgreso();
-                }, 800);
-
-            } else { alert("No tienes un Escáner de ADN en el inventario."); }
-        });
-    }
 
     if (btnRename) {
         btnRename.addEventListener("click", () => {
