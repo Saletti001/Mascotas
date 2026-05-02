@@ -396,8 +396,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 window.miMascota = geno;
                 if (pedestal) {
                     const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-                    let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
-                    pedestal.innerHTML = `<div class="geno-idle" style="color: ${pColor}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
+                    // Quitamos el viewBox forzado para no alejar la cámara
+                    let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+                    // Le damos tamaño fijo (250px) y centrado absoluto
+                    pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; width: 250px; height: 250px; color: ${pColor}; top: 35%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
                 }
                 const nameEl = document.getElementById('geno-name');
                 if (nameEl) nameEl.innerText = `${geno.name} #${geno.id}`;
@@ -562,8 +564,10 @@ function iniciarSecuenciaBienvenida() {
         if (pedestal) {
             pedestal.style.display = "block";
             const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
-            let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
-            pedestal.innerHTML = `<div class="geno-idle" style="color: ${miPrimerGeno.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
+            // Quitamos el viewBox forzado
+            let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+            // Mismas medidas (250px) para que mantenga la coherencia
+            pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; width: 250px; height: 250px; color: ${miPrimerGeno.color}; top: 35%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
         }
         
         const nameEl = document.getElementById('geno-name');
