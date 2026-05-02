@@ -1,5 +1,5 @@
 // =========================================
-// BreedingManager.js - UI DEL CENTRO DE CRIANZA Y BIO-NÚCLEOS (V9.2)
+// BreedingManager.js - UI DEL CENTRO DE CRIANZA Y BIO-NÚCLEOS (V9.3 - UI PULIDA)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -9,20 +9,23 @@ document.addEventListener("DOMContentLoaded", () => {
         #incubator-grid::-webkit-scrollbar { display: none; }
         #incubator-grid { -ms-overflow-style: none; scrollbar-width: none; overflow-x: auto; }
         
-        /* ✨ FIX DEFINITIVO: Centrado absoluto, expansión lateral al 95% y scroll interno */
+        /* ✨ FIX ABSOLUTO: Centrado forzado y diseño responsivo */
         #geno-id-card-modal:not(.hidden) {
+            position: fixed !important;
+            top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-            padding: 10px !important; /* Menos padding para que expanda más a los lados */
-            overflow: hidden !important;
+            padding: 15px !important;
+            background: rgba(10, 20, 30, 0.95) !important;
+            z-index: 9999 !important;
         }
         
         #geno-id-card-modal > div {
-            width: 95% !important; /* Expansión lateral casi pegada a los bordes */
-            max-width: 450px !important; /* Límite para que no se deforme en PC */
+            width: 100% !important;
+            max-width: 400px !important; /* Ancho similar al panel de Stats */
             max-height: 85vh !important;
-            margin: auto !important; /* Fuerza el centrado absoluto vertical y horizontal */
+            margin: 0 !important;
             overflow-y: auto !important; 
             -ms-overflow-style: none; 
             scrollbar-width: none;
@@ -165,22 +168,36 @@ document.addEventListener("DOMContentLoaded", () => {
             if(svg) { svg.style.width = "90px"; svg.style.height = "90px"; svg.style.color = pColor; }
         }
 
-        document.getElementById("id-card-name").innerText = g.name || `Sujeto`;
+        const nameNode = document.getElementById("id-card-name");
+        if(nameNode) nameNode.innerText = g.name || `Sujeto`;
         
         if (g.id && String(g.id).length > 10 && typeof window.generarNuevoID === 'function') {
             g.id = window.generarNuevoID();
         }
 
+        // Limpiar elementos viejos si existían
         let oldIdEl = document.getElementById("id-card-serial");
         if (oldIdEl) oldIdEl.remove();
+        let oldLvlEl = document.getElementById("id-card-level");
+        if (oldLvlEl) oldLvlEl.style.display = "none"; // Ocultamos el viejo nivel de la barra
 
+        // ✨ INYECCIÓN ORDENADA: 1. Nivel justo bajo el nombre
+        let lvlBadge = document.getElementById("id-card-lvl-badge");
+        if (!lvlBadge) {
+            lvlBadge = document.createElement("div");
+            lvlBadge.id = "id-card-lvl-badge";
+            lvlBadge.style = "color: #00d2ff; font-weight: bold; font-size: 16px; margin-top: 5px; text-transform: uppercase; letter-spacing: 2px;";
+            nameNode.parentNode.insertBefore(lvlBadge, nameNode.nextSibling);
+        }
+        lvlBadge.innerText = `NV. ${g.level || 1}`;
+
+        // ✨ INYECCIÓN ORDENADA: 2. Emblema y luego el ID (debajo del Nivel)
         let containerElementoID = document.getElementById("id-card-emblema-container");
         if (!containerElementoID) {
             containerElementoID = document.createElement("div");
             containerElementoID.id = "id-card-emblema-container";
-            containerElementoID.style = "display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 10px; margin-bottom: 10px;";
-            const nameNode = document.getElementById("id-card-name");
-            nameNode.parentNode.insertBefore(containerElementoID, nameNode.nextSibling);
+            containerElementoID.style = "display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 15px; margin-bottom: 10px;";
+            lvlBadge.parentNode.insertBefore(containerElementoID, lvlBadge.nextSibling);
         }
 
         const elementoActual = (g.genes && g.genes.afinidad) ? g.genes.afinidad.dom : (g.element || "Normal");
@@ -194,9 +211,6 @@ document.addEventListener("DOMContentLoaded", () => {
             <div style="font-size: 10px; color: #888; font-family: monospace; letter-spacing: 1px;">ID: #${g.id}</div>
         `;
 
-        const lvlEl = document.getElementById("id-card-level");
-        if(lvlEl) lvlEl.innerText = `Nv. ${g.level || 1}`;
-
         document.getElementById("id-card-rarity").innerText = g.rarity || "Común";
         
         const nombreElementoLimpio = elementoActual.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, '').trim();
@@ -206,24 +220,60 @@ document.addEventListener("DOMContentLoaded", () => {
         const criasEl = document.getElementById("id-card-breeds");
         if(criasEl) criasEl.innerText = `${maxCrias - (g.breedCount || 0)} de ${maxCrias}`;
 
-        document.getElementById("id-card-hp").innerText = Math.floor(g.stats?.hp || 50);
-        document.getElementById("id-card-atk").innerText = Math.floor(g.stats?.atk || 15);
-        document.getElementById("id-card-spd").innerText = Math.floor(g.stats?.spd || 15);
-        document.getElementById("id-card-luk").innerText = Math.floor(g.stats?.luk || 15);
+        // Asegurar que g.baseStats existe (Parche para Genos viejos)
+        if (!g.baseStats) {
+            g.baseStats = {
+                hp: g.stats?.hp || 50, atk: g.stats?.atk || 15, def: g.stats?.def || 10, spd: g.stats?.spd || 15, luk: g.stats?.luk || 15
+            };
+        }
 
-        // ✨ NUEVO FIX: DOMADOR DE LA DEFENSA (Redimensiona, renombra a "Def:" y asigna el valor real)
-        let defEl = document.getElementById("id-card-def");
-        if(defEl) {
-            defEl.innerText = Math.floor(g.stats?.def || 10); // Asigna el valor numérico
-            let defBox = defEl.parentElement;
-            if(defBox) {
-                defBox.style.gridColumn = "auto"; // Le quita el ancho doble para que se alinee con los demás
-                // Busca la palabra "Defensa:" y la cambia por "Def:"
-                defBox.childNodes.forEach(n => {
-                    if(n.nodeType === 3 && n.nodeValue.includes("Defensa:")) {
-                        n.nodeValue = n.nodeValue.replace("Defensa:", "Def:");
+        // ✨ NUEVO FIX: RECONSTRUCCIÓN TOTAL DEL PANEL DE STATS (1 COLUMNA)
+        let hpEl = document.getElementById("id-card-hp");
+        if(hpEl) {
+            let statsContainer = hpEl.closest('div[style*="grid"]') || hpEl.parentElement.parentElement;
+            if(statsContainer) {
+                // Forzamos la caja original de 2 columnas a ser Flex vertical de 1 columna
+                statsContainer.style.display = "flex";
+                statsContainer.style.flexDirection = "column";
+                statsContainer.style.gap = "0";
+                statsContainer.style.gridTemplateColumns = "none";
+
+                const buildStatRow = (icon, label, key) => {
+                    const baseVal = Math.floor(g.baseStats[key] !== undefined ? g.baseStats[key] : (g.stats?.[key] || 0));
+                    const totalVal = Math.floor(g.stats?.[key] || 0);
+                    const diff = totalVal - baseVal;
+                    
+                    let diffHtml = '';
+                    let totalHtml = '';
+                    
+                    if (diff > 0) {
+                        diffHtml = `<span style="color: #4CAF50; font-size: 11px; margin: 0 8px;">(+${diff})</span>`;
+                        totalHtml = `<span style="color: #ffcc00; font-weight: bold;">${totalVal}</span>`;
                     }
-                });
+                    
+                    return `
+                        <div style="background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; border-left: 2px solid #333; margin-bottom: 6px;">
+                            <div style="display: flex; align-items: center; gap: 8px; width: 70px;">
+                                <span>${icon}</span>
+                                <span style="color: #cbd5e1; font-size: 12px;">${label}:</span>
+                            </div>
+                            <div style="flex: 1; text-align: right; font-size: 14px;">
+                                <span style="color: #fff; font-weight: bold;">${baseVal}</span>
+                                ${diffHtml}
+                                ${totalHtml}
+                            </div>
+                        </div>
+                    `;
+                };
+
+                // Reescribimos todo el HTML interior con el formato limpio
+                statsContainer.innerHTML = `
+                    ${buildStatRow("❤️", "Vit", "hp")}
+                    ${buildStatRow("⚔️", "Fue", "atk")}
+                    ${buildStatRow("🛡️", "Def", "def")}
+                    ${buildStatRow("⚡", "Agi", "spd")}
+                    ${buildStatRow("🍀", "Sue", "luk")}
+                `;
             }
         }
 
