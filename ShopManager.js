@@ -1,5 +1,5 @@
 // =========================================
-// ShopManager.js - BAZAR, MATRIZ TÁCTICA Y PREMIUM (NEÓN V2)
+// ShopManager.js - BAZAR, MATRIZ TÁCTICA Y PREMIUM (NEÓN V3 - ILUMINADO)
 // =========================================
 
 window.ShopManager = {
@@ -8,11 +8,11 @@ window.ShopManager = {
     // GALERÍA DE ARTE VECTORIAL (Medallas estilo Medabots - Colores sólidos)
     iconosSVG: {
         // --- 1. ELEMENTOS DE COMBATE (MTs) ---
-        "Biomutante": `<svg viewBox="0 0 100 100" width="1em" height="1em"><path d="M15 20 L50 5 L85 20 L85 50 C85 75 65 90 50 95 C35 90 15 75 15 50 Z" fill="#121822" stroke="#4CAF50" stroke-width="6" stroke-linejoin="round"/><path d="M50 25 C65 35 65 50 50 65 C35 50 35 35 50 25 Z" fill="#4CAF50"/><path d="M50 65 L50 82" stroke="#4CAF50" stroke-width="6" stroke-linecap="round"/><path d="M50 52 C65 47 72 52 72 62 C65 65 55 60 50 52 Z" fill="#4CAF50"/><path d="M50 52 C35 47 28 52 28 62 C35 65 45 60 50 52 Z" fill="#4CAF50"/></svg>`,
-        "Viral": `<svg viewBox="0 0 100 100" width="1em" height="1em"><polygon points="50,5 95,50 50,95 5,50" fill="#121822" stroke="#D500F9" stroke-width="6" stroke-linejoin="round"/><circle cx="50" cy="50" r="14" fill="#D500F9"/><circle cx="50" cy="50" r="5" fill="#121822"/><path d="M50 22 L50 36 M50 78 L50 64 M22 50 L36 50 M78 50 L64 50" stroke="#D500F9" stroke-width="6" stroke-linecap="round"/><circle cx="50" cy="22" r="4" fill="#D500F9"/><circle cx="50" cy="78" r="4" fill="#D500F9"/><circle cx="22" cy="50" r="4" fill="#D500F9"/><circle cx="78" cy="50" r="4" fill="#D500F9"/></svg>`,
-        "Cibernético": `<svg viewBox="0 0 100 100" width="1em" height="1em"><polygon points="30,10 70,10 90,30 90,70 70,90 30,90 10,70 10,30" fill="#121822" stroke="#00B0FF" stroke-width="6" stroke-linejoin="round"/><rect x="35" y="35" width="30" height="30" fill="none" stroke="#00B0FF" stroke-width="6" rx="4"/><circle cx="50" cy="50" r="6" fill="#00B0FF"/><path d="M50 10 L50 35 M50 90 L50 65 M10 50 L35 50 M90 50 L65 50" stroke="#00B0FF" stroke-width="6"/></svg>`,
-        "Radiactivo": `<svg viewBox="0 0 100 100" width="1em" height="1em"><circle cx="50" cy="50" r="42" fill="#121822" stroke="#FF9800" stroke-width="6"/><circle cx="50" cy="50" r="9" fill="#FF9800"/><path d="M50 35 A15 15 0 0 0 35 50 L12 50 A38 38 0 0 1 50 12 Z" fill="#FF9800"/><path d="M50 35 A15 15 0 0 1 65 50 L88 50 A38 38 0 0 0 50 12 Z" fill="#FF9800" transform="rotate(120 50 50)"/><path d="M50 35 A15 15 0 0 1 65 50 L88 50 A38 38 0 0 0 50 12 Z" fill="#FF9800" transform="rotate(240 50 50)"/></svg>`,
-        "Tóxico": `<svg viewBox="0 0 100 100" width="1em" height="1em"><polygon points="12,18 88,18 50,90" fill="#121822" stroke="#AEEA00" stroke-width="6" stroke-linejoin="round"/><rect x="35" y="32" width="30" height="25" rx="10" fill="#AEEA00"/><rect x="42" y="47" width="16" height="20" rx="3" fill="#AEEA00"/><circle cx="43" cy="42" r="4" fill="#121822"/><circle cx="57" cy="42" r="4" fill="#121822"/><path d="M46 59 L46 67 M50 59 L50 67 M54 59 L54 67" stroke="#121822" stroke-width="2"/></svg>`,
+        "Biomutante": `<svg viewBox="0 0 100 100" width="1em" height="1em"><path d="M15 20 L50 5 L85 20 L85 50 C85 75 65 90 50 95 C35 90 15 75 15 50 Z" fill="#121822" stroke="#69F0AE" stroke-width="6" stroke-linejoin="round"/><path d="M50 25 C65 35 65 50 50 65 C35 50 35 35 50 25 Z" fill="#69F0AE"/><path d="M50 65 L50 82" stroke="#69F0AE" stroke-width="6" stroke-linecap="round"/><path d="M50 52 C65 47 72 52 72 62 C65 65 55 60 50 52 Z" fill="#69F0AE"/><path d="M50 52 C35 47 28 52 28 62 C35 65 45 60 50 52 Z" fill="#69F0AE"/></svg>`,
+        "Viral": `<svg viewBox="0 0 100 100" width="1em" height="1em"><polygon points="50,5 95,50 50,95 5,50" fill="#121822" stroke="#E040FB" stroke-width="6" stroke-linejoin="round"/><circle cx="50" cy="50" r="14" fill="#E040FB"/><circle cx="50" cy="50" r="5" fill="#121822"/><path d="M50 22 L50 36 M50 78 L50 64 M22 50 L36 50 M78 50 L64 50" stroke="#E040FB" stroke-width="6" stroke-linecap="round"/><circle cx="50" cy="22" r="4" fill="#E040FB"/><circle cx="50" cy="78" r="4" fill="#E040FB"/><circle cx="22" cy="50" r="4" fill="#E040FB"/><circle cx="78" cy="50" r="4" fill="#E040FB"/></svg>`,
+        "Cibernético": `<svg viewBox="0 0 100 100" width="1em" height="1em"><polygon points="30,10 70,10 90,30 90,70 70,90 30,90 10,70 10,30" fill="#121822" stroke="#00E5FF" stroke-width="6" stroke-linejoin="round"/><rect x="35" y="35" width="30" height="30" fill="none" stroke="#00E5FF" stroke-width="6" rx="4"/><circle cx="50" cy="50" r="6" fill="#00E5FF"/><path d="M50 10 L50 35 M50 90 L50 65 M10 50 L35 50 M90 50 L65 50" stroke="#00E5FF" stroke-width="6"/></svg>`,
+        "Radiactivo": `<svg viewBox="0 0 100 100" width="1em" height="1em"><circle cx="50" cy="50" r="42" fill="#121822" stroke="#FFB300" stroke-width="6"/><circle cx="50" cy="50" r="9" fill="#FFB300"/><path d="M50 35 A15 15 0 0 0 35 50 L12 50 A38 38 0 0 1 50 12 Z" fill="#FFB300"/><path d="M50 35 A15 15 0 0 1 65 50 L88 50 A38 38 0 0 0 50 12 Z" fill="#FFB300" transform="rotate(120 50 50)"/><path d="M50 35 A15 15 0 0 1 65 50 L88 50 A38 38 0 0 0 50 12 Z" fill="#FFB300" transform="rotate(240 50 50)"/></svg>`,
+        "Tóxico": `<svg viewBox="0 0 100 100" width="1em" height="1em"><polygon points="12,18 88,18 50,90" fill="#121822" stroke="#C6FF00" stroke-width="6" stroke-linejoin="round"/><rect x="35" y="32" width="30" height="25" rx="10" fill="#C6FF00"/><rect x="42" y="47" width="16" height="20" rx="3" fill="#C6FF00"/><circle cx="43" cy="42" r="4" fill="#121822"/><circle cx="57" cy="42" r="4" fill="#121822"/><path d="M46 59 L46 67 M50 59 L50 67 M54 59 L54 67" stroke="#121822" stroke-width="2"/></svg>`,
         "Sintético": `<svg viewBox="0 0 100 100" width="1em" height="1em"><path d="M50 5 L90 28 L90 72 L50 95 L10 72 L10 28 Z" fill="#121822" stroke="#B388FF" stroke-width="6" stroke-linejoin="round"/><path d="M50 18 L75 32 L75 68 L50 82 L25 68 L25 32 Z" fill="#B388FF"/><path d="M50 18 L50 50 L25 32 M50 50 L75 68 M50 50 L50 82" stroke="#121822" stroke-width="5"/><circle cx="50" cy="50" r="10" fill="#EA80FC"/><circle cx="50" cy="50" r="4" fill="#121822"/></svg>`,
         
         // --- 2. HERRAMIENTAS Y BAZAR ---
@@ -39,7 +39,7 @@ window.ShopManager = {
         const contenedor = document.getElementById("shop-screen");
         if (!contenedor) return;
 
-        // INYECCIÓN DE CSS NEÓN DIRECTO
+        // INYECCIÓN DE CSS: FONDOS MÁS CLAROS Y TEXTOS MÁS LEGIBLES
         const style = document.createElement('style');
         style.innerHTML = `
             .tienda-scroll-area::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
@@ -48,31 +48,32 @@ window.ShopManager = {
             /* Pestañas Neón */
             .shop-tab-neon {
                 flex: 1; padding: 12px 5px; font-weight: 900; cursor: pointer; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
-                background: rgba(15, 23, 42, 0.6); border: 1px solid #2a3441; color: #666; transition: all 0.3s ease;
+                background: rgba(30, 41, 59, 0.8); border: 1px solid #384a5e; color: #a0aec0; transition: all 0.3s ease;
                 border-bottom: 2px solid #222; margin: 0 2px; border-radius: 8px 8px 0 0;
             }
-            .shop-tab-neon:hover { background: rgba(30, 41, 59, 0.8); color: #aaa; }
+            .shop-tab-neon:hover { background: rgba(45, 60, 80, 0.9); color: #fff; }
             .shop-tab-neon.active {
-                color: #fff; background: rgba(20, 30, 48, 0.9);
+                color: #fff; background: rgba(36, 52, 71, 0.9);
                 border: 1px solid var(--tab-color); border-bottom: 2px solid transparent;
                 box-shadow: inset 0 15px 20px -15px var(--tab-color), 0 -5px 15px -10px var(--tab-color);
             }
 
-            /* Tarjetas Neón */
+            /* Tarjetas Neón (Más Iluminadas) */
             .shop-card-neon {
-                background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-                border: 1px solid #2a3441; border-radius: 12px; padding: 18px 12px;
+                background: linear-gradient(180deg, #243447 0%, #151f2e 100%);
+                border: 1px solid #384a5e; border-radius: 12px; padding: 18px 12px;
                 transition: all 0.3s ease; position: relative; overflow: hidden;
                 display: flex; flex-direction: column; align-items: center; text-align: center;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+                box-shadow: 0 4px 10px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.15);
             }
             .shop-card-neon::before {
                 content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
                 background: var(--card-color); transition: 0.3s;
             }
             .shop-card-neon:hover {
-                transform: translateY(-4px); border-color: #4a5568;
-                box-shadow: 0 10px 25px rgba(0,0,0,0.8), 0 0 15px var(--card-color-glow);
+                transform: translateY(-4px); border-color: var(--card-color);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.6), 0 0 15px var(--card-color-glow);
+                background: linear-gradient(180deg, #2a3d54 0%, #1a2638 100%);
             }
             .shop-card-neon:hover::before { height: 6px; box-shadow: 0 0 15px var(--card-color); }
             
@@ -83,6 +84,7 @@ window.ShopManager = {
                 background: linear-gradient(90deg, var(--card-color-dark), var(--card-color));
                 box-shadow: 0 4px 10px rgba(0,0,0,0.4), inset 0 2px 5px rgba(255,255,255,0.2);
                 transition: filter 0.2s, transform 0.1s;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.8);
             }
             .shop-btn-neon:hover { filter: brightness(1.2) contrast(1.1); }
             .shop-btn-neon:active { transform: scale(0.97); }
@@ -94,24 +96,24 @@ window.ShopManager = {
                 
                 <h2 class="screen-title" style="color: #00d2ff; text-align: center; text-shadow: 0 0 15px rgba(0,210,255,0.4); margin-bottom: 20px; font-weight: 900; letter-spacing: 2px;">TERMINAL COMERCIAL</h2>
                 
-                <div style="display: flex; justify-content: center; margin-bottom: 20px; padding: 0 10px; border-bottom: 1px solid #222;">
-                    <button id="tab-shop-bazar" class="shop-tab-neon" style="--tab-color: #4CAF50;">Bazar (EV)</button>
+                <div style="display: flex; justify-content: center; margin-bottom: 20px; padding: 0 10px; border-bottom: 1px solid #384a5e;">
+                    <button id="tab-shop-bazar" class="shop-tab-neon" style="--tab-color: #69F0AE;">Bazar (EV)</button>
                     <button id="tab-shop-dojo" class="shop-tab-neon" style="--tab-color: #00E5FF;">Matriz Táctica</button>
-                    <button id="tab-shop-premium" class="shop-tab-neon" style="--tab-color: #D500F9;">Premium</button>
+                    <button id="tab-shop-premium" class="shop-tab-neon" style="--tab-color: #E040FB;">Premium</button>
                 </div>
                 
                 <div id="shop-bazar-view" class="shop-view">
-                    <p style="text-align: center; color: #888; font-size: 11px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Consumibles y herramientas de supervivencia</p>
+                    <p style="text-align: center; color: #cbd5e1; font-size: 11px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Consumibles y herramientas de supervivencia</p>
                     <div id="shop-bazar-grid" class="sanctuary-grid"></div>
                 </div>
                 
                 <div id="shop-dojo-view" class="shop-view hidden">
-                    <p style="text-align: center; color: #888; font-size: 11px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Módulos de Técnica. Límite: 1 en mochila.</p>
+                    <p style="text-align: center; color: #cbd5e1; font-size: 11px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Módulos de Técnica. Límite: 1 en mochila.</p>
                     <div id="shop-dojo-grid" class="sanctuary-grid"></div>
                 </div>
                 
                 <div id="shop-premium-view" class="shop-view hidden">
-                    <p style="text-align: center; color: #888; font-size: 11px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Mejoras de infraestructura permanentes</p>
+                    <p style="text-align: center; color: #cbd5e1; font-size: 11px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Mejoras de infraestructura permanentes</p>
                     <div id="shop-premium-grid" class="sanctuary-grid"></div>
                 </div>
                 
@@ -150,7 +152,6 @@ window.ShopManager = {
         const div = document.createElement("div");
         div.className = "shop-card-neon";
         
-        // Pasamos variables CSS dinámicas para que cada tarjeta brille de su propio color
         div.style.cssText = `--card-color: ${colorLuz}; --card-color-dark: ${colorOscuro}; --card-color-glow: ${colorLuz}60;`;
         
         let precioTag = tipoMoneda === "EV" 
@@ -159,8 +160,8 @@ window.ShopManager = {
 
         div.innerHTML = `
             <div style="font-size: 3.5rem; margin-bottom: 10px; filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.8));">${item.icon}</div>
-            <h4 style="margin: 5px 0 8px 0; font-size: 14px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">${item.name}</h4>
-            <p style="font-size: 10px; color: #a0aec0; margin: 0; line-height: 1.4; height: 35px; overflow: hidden;">${item.desc}</p>
+            <h4 style="margin: 5px 0 8px 0; font-size: 14px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">${item.name}</h4>
+            <p style="font-size: 11px; color: #cbd5e1; margin: 0; line-height: 1.4; height: 35px; overflow: hidden;">${item.desc}</p>
             ${precioTag}
             <button class="shop-btn-neon">Comprar</button>
         `;
@@ -229,8 +230,8 @@ window.ShopManager = {
             { id: "antidoto_uni", name: "Antídoto Universal", icon: this.iconosSVG["antidoto_uni"], type: "consumable", price: 0.10, currency: "EV", desc: "Limpia cualquier estado alterado." }
         ];
 
-        // Tonos verdes para el bazar
-        items.forEach(item => grid.appendChild(this.crearTarjeta(item, "#4CAF50", "#1B5E20", "EV")));
+        // Colores base más brillantes para el bazar
+        items.forEach(item => grid.appendChild(this.crearTarjeta(item, "#69F0AE", "#2E7D32", "EV")));
     },
 
     renderDojo: function() {
@@ -259,14 +260,14 @@ window.ShopManager = {
             agregarRama(ramas.definitivos, "Definitivo", 5.00);
         }
 
-        // Determinar colores basados en el elemento para cada tarjeta MT
+        // Degradados ajustados para que los botones sean brillantes y legibles
         const coloresMT = {
-            "Biomutante": ["#4CAF50", "#1B5E20"],
-            "Viral": ["#D500F9", "#4A148C"],
-            "Cibernético": ["#00E5FF", "#006064"],
-            "Radiactivo": ["#FF9800", "#E65100"],
-            "Tóxico": ["#AEEA00", "#558B2F"],
-            "Sintético": ["#B388FF", "#311B92"]
+            "Biomutante": ["#69F0AE", "#2E7D32"],
+            "Viral": ["#E040FB", "#7B1FA2"],
+            "Cibernético": ["#00E5FF", "#00838F"],
+            "Radiactivo": ["#FFB300", "#E65100"],
+            "Tóxico": ["#C6FF00", "#558B2F"],
+            "Sintético": ["#B388FF", "#512DA8"]
         };
 
         dojoItems.forEach(item => {
@@ -285,18 +286,16 @@ window.ShopManager = {
             { id: "exp_40", name: "Caja Fuerte Nv. 4", icon: this.iconosSVG["exp_40"], type: "expansion", value: 40, price: 10.00, currency: "POL", desc: "Expande el inventario a 40 ranuras." }
         ];
 
-        // Tonos púrpuras neón para el área Premium web3
         items.forEach(item => {
-            let tarjeta = this.crearTarjeta(item, "#D500F9", "#4A148C", "POL");
+            let tarjeta = this.crearTarjeta(item, "#E040FB", "#7B1FA2", "POL");
             if (window.miInventario && window.miInventario.maxSlots >= item.value) {
                 let btn = tarjeta.querySelector("button");
                 btn.innerText = "Adquirido";
-                btn.style.background = "#333";
+                btn.style.background = "#384a5e";
                 btn.style.boxShadow = "none";
-                btn.style.color = "#777";
+                btn.style.color = "#888";
                 btn.style.cursor = "not-allowed";
-                tarjeta.style.opacity = "0.5";
-                tarjeta.style.filter = "grayscale(100%)";
+                tarjeta.style.opacity = "0.6";
             }
             grid.appendChild(tarjeta);
         });
