@@ -19,7 +19,9 @@ window.ShopManager = {
         "escaner_basico": `<svg viewBox="0 0 100 100" width="1em" height="1em"><path d="M45 20 A25 25 0 1 1 20 45 A25 25 0 0 1 45 20" fill="none" stroke="#00E5FF" stroke-width="8"/><path d="M62 62 L90 90" stroke="#00E5FF" stroke-width="12" stroke-linecap="round"/><circle cx="45" cy="45" r="12" fill="#00B0FF" opacity="0.5"/><path d="M25 45 L65 45 M45 25 L45 65" stroke="#00E5FF" stroke-width="4" opacity="0.8"/></svg>`,
         "escaner_completo": `<svg viewBox="0 0 100 100" width="1em" height="1em"><path d="M25 20 Q50 50 75 80 M75 20 Q50 50 25 80" fill="none" stroke="#D500F9" stroke-width="8"/><line x1="33" y1="50" x2="67" y2="50" stroke="#D500F9" stroke-width="5"/><line x1="42" y1="30" x2="58" y2="70" stroke="#D500F9" stroke-width="5"/><line x1="58" y1="30" x2="42" y2="70" stroke="#D500F9" stroke-width="5"/><circle cx="25" cy="20" r="7" fill="#AA00FF"/><circle cx="75" cy="80" r="7" fill="#AA00FF"/><circle cx="75" cy="20" r="7" fill="#AA00FF"/><circle cx="25" cy="80" r="7" fill="#AA00FF"/></svg>`,
         "antidoto_uni": `<svg viewBox="0 0 100 100" width="1em" height="1em"><path d="M40 10 L60 10 L60 30 L85 80 A10 10 0 0 1 75 95 L25 95 A10 10 0 0 1 15 80 L40 30 Z" fill="none" stroke="#C6FF00" stroke-width="6"/><path d="M25 75 L75 75 L65 50 L35 50 Z" fill="#C6FF00"/><circle cx="45" cy="65" r="5" fill="#fff" opacity="0.9"/><circle cx="58" cy="58" r="3" fill="#fff" opacity="0.7"/></svg>`,
-        "bio_nucleo_basico": `<svg viewBox="0 0 100 100" width="1em" height="1em"><rect x="25" y="15" width="50" height="70" rx="25" fill="#121822" stroke="#4dd0e1" stroke-width="6"/><path d="M25 35 Q50 45 75 35 M25 65 Q50 75 75 65" fill="none" stroke="#4dd0e1" stroke-width="4"/><circle cx="50" cy="50" r="10" fill="#00d2ff"/></svg>`,
+        
+        // Icono de respaldo (Fallback) en caso de que el motor genético no responda a tiempo
+        "bio_nucleo_basico": `<svg viewBox="0 0 100 100" width="1em" height="1em"><rect x="25" y="10" width="50" height="80" rx="20" fill="#002233" stroke="#00d2ff" stroke-width="3"/><path d="M 40 25 Q 50 35 60 25 T 40 45 Q 50 55 60 45 T 40 65 Q 50 75 60 65" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/><path d="M 60 25 Q 50 35 40 25 T 60 45 Q 50 55 40 45 T 60 65 Q 50 75 40 65" fill="none" stroke="#00d2ff" stroke-width="3" stroke-linecap="round"/><path d="M 30 15 L 70 15 L 65 5 L 35 5 Z" fill="#4dd0e1"/><path d="M 30 85 L 70 85 L 65 95 L 35 95 Z" fill="#4dd0e1"/><rect x="30" y="15" width="5" height="70" rx="2" fill="#fff" opacity="0.3"/></svg>`,
         
         // --- 3. EXPANSIÓN PREMIUM ---
         "exp_20": `<svg viewBox="0 0 100 100" width="1em" height="1em"><rect x="20" y="30" width="60" height="60" rx="10" fill="#8A2BE2"/><path d="M35 30 L35 15 A15 15 0 0 1 65 15 L65 30" fill="none" stroke="#8A2BE2" stroke-width="8"/><rect x="28" y="50" width="44" height="25" rx="5" fill="#5E35B1"/><circle cx="50" cy="62" r="5" fill="#D1C4E9"/><path d="M20 40 L80 40" stroke="#5E35B1" stroke-width="4"/></svg>`,
@@ -255,7 +257,6 @@ window.ShopManager = {
                 return;
             }
             
-            // ✨ LÓGICA ESPECIAL PARA EL BIO-NÚCLEO BÁSICO
             if (item.id === "bio_nucleo_basico") {
                 const maxSlots = window.miInventario.maxSlots || 10;
                 const slotsCount = window.miInventario.slots ? window.miInventario.slots.length : 0;
@@ -283,7 +284,7 @@ window.ShopManager = {
                     name: nombreHijo, 
                     isEgg: true, 
                     incubating: false, 
-                    hatchDuration: 60000, // 1 Minuto de incubación para Genos básicos
+                    hatchDuration: 60000, 
                     hatchTime: 0, 
                     generation: 1, breedCount: 0, level: 1, xp: 0, xpNeeded: 100,
                     rarity: rarezaInicial, 
@@ -323,7 +324,7 @@ window.ShopManager = {
                 window.miInventario.updateUI();
                 alert("✅ ¡Has comprado un Bio-Núcleo Básico!\nRevisa tu Cámara de Bio-Núcleos en el Centro de Crianza para incubarlo.");
                 if(window.guardarJuego) window.guardarJuego();
-                return; // Cortamos aquí para que no lo procese como un ítem normal
+                return; 
             }
 
             let itemParaInventario = { id: item.id, name: item.name, icon: item.icon, type: item.type, desc: item.desc, maxStack: window.miInventario.stackLimits[item.type] };
@@ -373,15 +374,24 @@ window.ShopManager = {
         const grid = document.getElementById("shop-bazar-grid");
         grid.innerHTML = "";
         
+        // ✨ LÓGICA DE CLONACIÓN: Extraer dinámicamente la cápsula de ADN desde tu propio motor del juego
+        let iconoBioNucleo = this.iconosSVG["bio_nucleo_basico"];
+        if (typeof window.generarSvgGeno === 'function') {
+            let svgGenerado = window.generarSvgGeno({ isEgg: true, color: '#00d2ff', base_color: '#00d2ff' });
+            if (svgGenerado && svgGenerado.includes('<svg')) {
+                // Reemplazamos sus dimensiones fijas para que fluya con el CSS y ocupe todo el espacio de la tienda
+                iconoBioNucleo = svgGenerado.replace(/width="[^"]+"/, 'width="1em"').replace(/height="[^"]+"/, 'height="1em"');
+            }
+        }
+        
         const items = [
-            { id: "bio_nucleo_basico", name: "Bio-Núcleo Básico", icon: this.iconosSVG["bio_nucleo_basico"], type: "egg", price: 200, currency: "EV", desc: "Espécimen base (Común) inyectado aleatoriamente. Ideal para iniciar nuevas líneas de sangre." },
+            { id: "bio_nucleo_basico", name: "Bio-Núcleo Básico", icon: iconoBioNucleo, type: "egg", price: 200, currency: "EV", desc: "Espécimen base (Común) inyectado aleatoriamente. Ideal para iniciar nuevas líneas de sangre." },
             { id: "escaner_basico", name: "Escáner Básico", icon: this.iconosSVG["escaner_basico"], type: "basic", price: 0.15, currency: "EV", desc: "Revela slots activos del Geno." },
             { id: "escaner_completo", name: "Escáner Completo", icon: this.iconosSVG["escaner_completo"], type: "basic", price: 0.50, currency: "EV", desc: "Revela la genética exacta S-D." },
             { id: "antidoto_uni", name: "Antídoto Universal", icon: this.iconosSVG["antidoto_uni"], type: "consumable", price: 0.10, currency: "EV", desc: "Limpia cualquier estado alterado." }
         ];
 
         items.forEach(item => {
-            // Le damos colores turquesa especiales al Bio-núcleo para que resalte
             if(item.id === "bio_nucleo_basico") grid.appendChild(this.crearTarjeta(item, "#00d2ff", "#005c8a", "EV"));
             else grid.appendChild(this.crearTarjeta(item, "#69F0AE", "#2E7D32", "EV"));
         });
