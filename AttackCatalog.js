@@ -93,13 +93,15 @@ window.AttackCatalog = {
         // --- ☢️ RADIACTIVO (Daño continuo y presión) ---
         "Radiactivo": {
             basicos: [
-                { id: "proyectil_radiactivo", nombre: "Proyectil Radiactivo", slot: 1, potencia: 85, aplicaEstado: "Quemadura", probEstado: 0.30, precision: 100, usos: 99, descripcion: "30% prob. de aplicar Quemadura." } // [cite: 282, 285]
+                { id: "proyectil_radiactivo", nombre: "Proyectil Radiactivo", slot: 1, potencia: 85, aplicaEstado: "Quemadura", probEstado: 0.30, precision: 100, usos: 99, descripcion: "30% prob. de aplicar Quemadura." } 
             ],
             especiales: [
-                { id: "explosion_nuclear", nombre: "Explosión Nuclear", slot: 2, potencia: 140, bonusContraEstado: "Quemadura", multiplier: 1.25, precision: 80, usos: 3, descripcion: "Daño masivo. Más letal si el rival arde." }, // [cite: 286, 289]
-                { id: "lluvia_cenizas", nombre: "Lluvia de Cenizas", slot: 2, potencia: 70, debuffAcc: 0.20, duracion: 2, precision: 100, usos: 99, descripcion: "Daña y reduce 20% la Precisión rival." }, // [cite: 290, 293]
-                { id: "pulso_decaimiento", nombre: "Pulso de Decaimiento", slot: 2, potencia: 60, debuffLuk: 0.40, duracion: 3, precision: 95, usos: 4, descripcion: "Daña y arruina la Suerte (LUK) rival." } // [cite: 294, 297]
+                // ✨ APLICADO TU BALANCE DE DAÑO Y MULTIPLICADOR
+                { id: "explosion_nuclear", nombre: "Explosión Nuclear", slot: 2, potencia: 100, bonusContraEstado: "Quemadura", multiplier: 1.35, precision: 80, usos: 3, descripcion: "Daño masivo. Más letal si el rival arde." }, 
+                { id: "lluvia_cenizas", nombre: "Lluvia de Cenizas", slot: 2, potencia: 70, debuffAcc: 0.20, duracion: 2, precision: 100, usos: 99, descripcion: "Daña y reduce 20% la Precisión rival." }, 
+                { id: "pulso_decaimiento", nombre: "Pulso de Decaimiento", slot: 2, potencia: 60, debuffLuk: 0.40, duracion: 3, precision: 95, usos: 4, descripcion: "Daña y arruina la Suerte (LUK) rival." } 
             ],
+            // ... (el resto queda igual)[cite: 4]
             soportes: [
                 { id: "campo_radioactivo", nombre: "Campo Radioactivo", slot: 3, potencia: 0, aplicaEstado: "Campo Radiactivo", precision: 100, usos: 2, descripcion: "Crea un campo que daña 5% HP x3 turnos." }, // [cite: 298, 301]
                 { id: "irradiacion", nombre: "Irradiación", slot: 3, potencia: 25, aplicaEstado: "Irradiacion", precision: 100, usos: 3, descripcion: "Golpe leve que baja ATK rival 25% x3 turnos." }, // [cite: 302, 305]
