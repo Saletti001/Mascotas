@@ -39,7 +39,7 @@ window.ShopManager = {
         const contenedor = document.getElementById("shop-screen");
         if (!contenedor) return;
 
-        // INYECCIÓN DE CSS: FONDOS MÁS CLAROS Y TEXTOS MÁS LEGIBLES
+        // INYECCIÓN DE CSS: FONDOS IGUALADOS AL RESTO DE LA INTERFAZ (#1A2A36)
         const style = document.createElement('style');
         style.innerHTML = `
             .tienda-scroll-area::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
@@ -48,23 +48,23 @@ window.ShopManager = {
             /* Pestañas Neón */
             .shop-tab-neon {
                 flex: 1; padding: 12px 5px; font-weight: 900; cursor: pointer; font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
-                background: rgba(30, 41, 59, 0.8); border: 1px solid #384a5e; color: #a0aec0; transition: all 0.3s ease;
+                background: rgba(26, 42, 54, 0.6); border: 1px solid #384a5e; color: #a0aec0; transition: all 0.3s ease;
                 border-bottom: 2px solid #222; margin: 0 2px; border-radius: 8px 8px 0 0;
             }
-            .shop-tab-neon:hover { background: rgba(45, 60, 80, 0.9); color: #fff; }
+            .shop-tab-neon:hover { background: rgba(42, 59, 76, 0.9); color: #fff; }
             .shop-tab-neon.active {
-                color: #fff; background: rgba(36, 52, 71, 0.9);
+                color: #fff; background: rgba(34, 54, 73, 0.9);
                 border: 1px solid var(--tab-color); border-bottom: 2px solid transparent;
                 box-shadow: inset 0 15px 20px -15px var(--tab-color), 0 -5px 15px -10px var(--tab-color);
             }
 
-            /* Tarjetas Neón (Más Iluminadas) */
+            /* Tarjetas Neón (Integradas con el tono base #1a2a36) */
             .shop-card-neon {
-                background: linear-gradient(180deg, #243447 0%, #151f2e 100%);
+                background: linear-gradient(180deg, #2A3B4C 0%, #1A2A36 100%);
                 border: 1px solid #384a5e; border-radius: 12px; padding: 18px 12px;
                 transition: all 0.3s ease; position: relative; overflow: hidden;
                 display: flex; flex-direction: column; align-items: center; text-align: center;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.15);
+                box-shadow: 0 4px 10px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.05);
             }
             .shop-card-neon::before {
                 content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
@@ -72,8 +72,8 @@ window.ShopManager = {
             }
             .shop-card-neon:hover {
                 transform: translateY(-4px); border-color: var(--card-color);
-                box-shadow: 0 10px 25px rgba(0,0,0,0.6), 0 0 15px var(--card-color-glow);
-                background: linear-gradient(180deg, #2a3d54 0%, #1a2638 100%);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.4), 0 0 15px var(--card-color-glow);
+                background: linear-gradient(180deg, #32465A 0%, #203342 100%);
             }
             .shop-card-neon:hover::before { height: 6px; box-shadow: 0 0 15px var(--card-color); }
             
