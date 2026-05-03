@@ -1,18 +1,28 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V15.8 - FIX ELEMENTOS OFICIALES)
+// ReactorManager.js - FUSIONES Y MUTACIONES (V15.9 - FIX BALANCE CALIDAD "+")
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ✨ PARCHE GLOBAL: Calculadora
+    // ✨ PARCHE GLOBAL MEJORADO: Calculadora inteligente
     if (typeof window.calcularCalidad === "function" && !window.calcularCalidadParcheada) {
         const calcOriginal = window.calcularCalidad;
         window.calcularCalidad = function(stats, rareza, nivel) {
             let rLimpia = rareza || "Común";
+            let statsParaCalcular = { ...stats }; // Clonamos para no borrar los stats reales
+
+            // Si es un mutante "+", le quitamos el 15% de bono temporalmente SOLO para calcular la pureza
             if (typeof rLimpia === "string" && rLimpia.includes("+")) {
                 rLimpia = rLimpia.replace("+", ""); 
+                if (statsParaCalcular.hp) {
+                    statsParaCalcular.hp = Math.round(statsParaCalcular.hp / 1.15);
+                    statsParaCalcular.atk = Math.round(statsParaCalcular.atk / 1.15);
+                    statsParaCalcular.def = Math.round(statsParaCalcular.def / 1.15);
+                    statsParaCalcular.spd = Math.round(statsParaCalcular.spd / 1.15);
+                    statsParaCalcular.luk = Math.round(statsParaCalcular.luk / 1.15);
+                }
             }
-            return calcOriginal(stats, rLimpia, nivel);
+            return calcOriginal(statsParaCalcular, rLimpia, nivel);
         };
         window.calcularCalidadParcheada = true; 
     }
@@ -394,8 +404,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
 
                         const formasMutantes = ["gota", "frijol", "estrella"]; 
-                        
-                        // ✨ FIX: Solo los 6 elementos oficiales de tu juego (Temática Sci-Fi/Genética)
                         const elementosMutantes = ["Cibernético", "Biomutante", "Sintético", "Radiactivo", "Viral", "Tóxico"];
                         
                         const formaElegida = formasMutantes[Math.floor(Math.random() * formasMutantes.length)];
