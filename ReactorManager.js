@@ -1,16 +1,16 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V14.6 - FIX ABSOLUTO DE FONDO CIAN Y BOTÓN)
+// ReactorManager.js - FUSIONES Y MUTACIONES (V14.7 - FIX LÍNEAS DE FONDO Y UI CIAN)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ✨ INYECCIÓN DE ESTILOS: Forzamos el aspecto visual del Centro de Crianza
+    // ✨ INYECCIÓN DE ESTILOS: Forzamos el aspecto visual exacto de la pantalla principal
     const style = document.createElement('style');
     style.innerHTML = `
-        /* 1. Fondo Cian con líneas horizontales (Idéntico a Crianza) */
+        /* 1. Fondo Cian con líneas horizontales (Separación y opacidad corregidas) */
         #alchemy-screen {
             background-color: #4dd0e1 !important;
-            background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px) !important;
+            background-image: repeating-linear-gradient(0deg, transparent, transparent 4px, rgba(0,0,0,0.03) 4px, rgba(0,0,0,0.03) 8px) !important;
             height: 100vh !important;
             overflow-y: auto !important;
             padding: 20px !important;
@@ -139,9 +139,9 @@ document.addEventListener("DOMContentLoaded", () => {
         
         /* ✨ FIX MAESTRO: Botón Volver al Laboratorio Sólido y Sin Bordes */
         #alchemy-screen .btn-go-home {
-            background: #0f172a !important; /* Azul muy oscuro / casi negro */
+            background: #0f172a !important; 
             color: #4dd0e1 !important;
-            border: none !important; /* Sin bordes cian */
+            border: none !important; 
             border-radius: 12px !important;
             font-weight: bold !important;
             text-transform: uppercase !important;
@@ -180,7 +180,9 @@ document.addEventListener("DOMContentLoaded", () => {
             alchemyScreen.insertBefore(wrapper, alchemyScreen.firstChild);
             
             const titleEl = wrapper.querySelector("h2");
-            if (titleEl) titleEl.innerText = "REACTOR GENÉTICO";
+            if (titleEl) {
+                titleEl.innerText = "REACTOR GENÉTICO";
+            }
         }
     }, 50);
 
