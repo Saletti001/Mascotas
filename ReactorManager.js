@@ -1,12 +1,12 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V14.15 - FIX TAMAÑO Y BORDES DE MUESTRAS)
+// ReactorManager.js - FUSIONES Y MUTACIONES (V15.0 - FIX MUTANTES Y STATS "+")
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
     
+    // ✨ ESTILOS (Intactos de la versión perfecta)
     const style = document.createElement('style');
     style.innerHTML = `
-        /* Fondo Cian con líneas horizontales finas */
         #alchemy-screen:not(.hidden) {
             background-color: #4dd0e1 !important;
             background-image: repeating-linear-gradient(to bottom, rgba(0,0,0,0.04) 0px, rgba(0,0,0,0.04) 1px, transparent 1px, transparent 6px) !important;
@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
             flex-direction: column !important;
         }
 
-        /* Caja Negra Central */
         #alchemy-screen .reactor-panel-wrapper {
             background: #1a2a36 !important;
             border: none !important;
@@ -28,7 +27,6 @@ document.addEventListener("DOMContentLoaded", () => {
             margin-bottom: auto !important;
         }
 
-        /* Limpieza de contenedores internos */
         #alchemy-screen .reactor-panel-wrapper > div {
             border: none !important;
             box-shadow: none !important;
@@ -36,7 +34,6 @@ document.addEventListener("DOMContentLoaded", () => {
             padding: 0 !important;
         }
         
-        /* Título Principal */
         #alchemy-screen h2 {
             color: #4dd0e1 !important;
             text-shadow: none !important;
@@ -50,7 +47,6 @@ document.addEventListener("DOMContentLoaded", () => {
             padding-bottom: 15px !important;
         }
         
-        /* Descripción */
         #reactor-description {
             color: #888 !important;
             font-size: 10px !important;
@@ -62,7 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
             line-height: 1.4 !important;
         }
 
-        /* Selector de Nivel */
         select#reactor-level-select {
             background: #0d1a24 !important;
             color: #4dd0e1 !important;
@@ -82,7 +77,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         select#reactor-level-select option { background: #0d1a24; color: #4dd0e1; }
 
-        /* Textos de Costo y Disponibles */
         #alchemy-screen p:has(span#alchemy-common-count),
         #alchemy-screen p:has(span#reactor-cost-display) {
             display: flex !important;
@@ -95,7 +89,6 @@ document.addEventListener("DOMContentLoaded", () => {
             font-weight: normal !important;
         }
 
-        /* Caja de genos para cargar */
         #reactor-available-genos {
             background: #0d1a24 !important; 
             border: none !important;
@@ -120,7 +113,6 @@ document.addEventListener("DOMContentLoaded", () => {
             font-weight: normal !important;
         }
 
-        /* Botón de Acción Principal */
         #btn-fuse-genos {
             border-radius: 10px !important;
             font-weight: 900 !important;
@@ -178,24 +170,25 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }, 50);
 
+    // ✨ REGLAS: Devolvemos el símbolo "+" a los resultados de estancamiento (Stag)
     const reactorRules = {
         "1": { 
             reqRarity: "Común", cost: 100, probCrit: 3, probNorm: 35, probStag: 35, 
             resCrit: { rarity: "Épico", name: "Mutante Primordial", color: "#8A2BE2", shape: "estrella", element: "Sintético" },
             resNorm: { rarity: "Raro", name: "Geno Evolucionado", color: "#4169E1", shape: "frijol", element: "Cibernético" },
-            resStag: { rarity: "Común", name: "Superviviente", color: "#32CD32", shape: "gota", element: "Biomutante" }
+            resStag: { rarity: "Común+", name: "Superviviente", color: "#32CD32", shape: "gota", element: "Biomutante" }
         },
         "2": { 
             reqRarity: "Raro", cost: 500, probCrit: 0.5, probNorm: 25, probStag: 35, 
             resCrit: { rarity: "Legendario", name: "Anomalía Leyenda", color: "#FFD700", shape: "estrella", element: "Radiactivo" },
             resNorm: { rarity: "Épico", name: "Geno Superior", color: "#8A2BE2", shape: "estrella", element: "Sintético" },
-            resStag: { rarity: "Raro", name: "Veterano Raro", color: "#4169E1", shape: "frijol", element: "Cibernético" }
+            resStag: { rarity: "Raro+", name: "Veterano Raro", color: "#4169E1", shape: "frijol", element: "Cibernético" }
         },
         "3": { 
             reqRarity: "Épico", cost: 2500, probCrit: 0.1, probNorm: 5, probStag: 40, 
             resCrit: { rarity: "Mítico", name: "Dios Primigenio", color: "#ff4d4d", shape: "estrella", element: "Viral" },
             resNorm: { rarity: "Legendario", name: "Mito Viviente", color: "#FFD700", shape: "estrella", element: "Radiactivo" },
-            resStag: { rarity: "Épico", name: "Titán Épico", color: "#8A2BE2", shape: "estrella", element: "Sintético" }
+            resStag: { rarity: "Épico+", name: "Titán Épico", color: "#8A2BE2", shape: "estrella", element: "Sintético" }
         }
     };
 
@@ -209,24 +202,8 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    const possibleInstructionTexts = document.querySelectorAll("#alchemy-screen p");
-    possibleInstructionTexts.forEach(p => {
-        if(p.innerText.toLowerCase().includes("toca un geno")) p.classList.add("instruction-text");
-    });
-
     window.renderizarAlquimia = function() {
         if(!selectNivel) return;
-        
-        if (window.misGenos && window.misGenos.length > 0) {
-            let modificado = false;
-            window.misGenos.forEach(g => {
-                if (g.rarity && g.rarity.includes("+")) {
-                    g.rarity = g.rarity.replace("+", "");
-                    modificado = true;
-                }
-            });
-            if (modificado && typeof window.guardarProgreso === 'function') window.guardarProgreso();
-        }
 
         const nivel = selectNivel.value;
         const reglas = reactorRules[nivel];
@@ -240,7 +217,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const costEl = document.getElementById("reactor-cost-display");
         if(costEl) costEl.innerText = reglas.cost + " ✨";
 
-        const genosDisponibles = window.misGenos.filter(g => g.rarity === reglas.reqRarity && !g.isEgg && (!window.miMascota || window.miMascota.id !== g.id));
+        // ✨ FIX: Permitimos que los Genos con "+" sean usados como ingredientes (ej. Común y Común+)
+        const genosDisponibles = window.misGenos.filter(g => 
+            (g.rarity === reglas.reqRarity || g.rarity === reglas.reqRarity + "+") && 
+            !g.isEgg && 
+            (!window.miMascota || window.miMascota.id !== g.id)
+        );
         
         const countEl = document.getElementById("alchemy-common-count");
         if(countEl) countEl.innerText = genosDisponibles.length;
@@ -292,14 +274,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 genosLibres.forEach(geno => {
                     const card = document.createElement("div");
                     
-                    // ✨ FIX APLICADO: Fondo transparente, sin bordes, con sombra sutil para flotar libremente
                     card.style = "min-width: 55px; height: 55px; background: transparent; border: none; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; transition: transform 0.1s; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.4));";
                     
                     const pColor = geno.color || geno.base_color || "#ccc";
                     let svg = typeof window.generarSvgGeno === 'function' ? window.generarSvgGeno(geno) : '';
                     svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
                     
-                    // Aumentado el tamaño del contenedor del SVG para aprovechar el espacio extra sin bordes
                     card.innerHTML = `<div style="width: 55px; height: 55px; color: ${pColor}; display: flex; justify-content: center; align-items: center;">${svg}</div>`;
                     
                     card.addEventListener("mousedown", () => card.style.transform = "scale(0.9)");
@@ -386,29 +366,53 @@ document.addEventListener("DOMContentLoaded", () => {
                     const limiteEstancada = limiteNormal + reglas.probStag;
 
                     const inyectarNuevoMutante = (resultado) => {
-                        const statsBase = window.generarStatsPorRareza ? window.generarStatsPorRareza(resultado.rarity) : { hp: 50, atk: 15, def: 10, spd: 15, luk: 15 };
+                        // 1. Calcular stats base según la rareza "limpia" (Sin el +)
+                        const baseRarity = resultado.rarity.replace("+", "");
+                        let statsBase = window.generarStatsPorRareza ? window.generarStatsPorRareza(baseRarity) : { hp: 50, atk: 15, def: 10, spd: 15, luk: 15 };
                         
+                        // ✨ FIX: Si es un mutante "+", le aplicamos un bono de radiación del 15% a TODAS sus estadísticas.
+                        if (resultado.rarity.includes("+")) {
+                            statsBase.hp = Math.floor(statsBase.hp * 1.15);
+                            statsBase.atk = Math.floor(statsBase.atk * 1.15);
+                            statsBase.def = Math.floor(statsBase.def * 1.15);
+                            statsBase.spd = Math.floor(statsBase.spd * 1.15);
+                            statsBase.luk = Math.floor(statsBase.luk * 1.15);
+                        }
+
+                        // ✨ FIX: Mutaciones visuales aleatorias. ¡Ya no más caritas felices y estandar aburridas!
+                        const ojosMutantes = ["estandar", "furioso", "tierno", "bizco", "alien", "ciclope", "robot", "vacio"];
+                        const bocasMutantes = ["feliz", "triste", "colmillos", "babeando", "cremallera", "pico", "cosida"];
+                        
+                        // Si tiene el "+", forzamos que use rasgos aleatorios locos
+                        const ojoElegido = resultado.rarity.includes("+") ? ojosMutantes[Math.floor(Math.random() * ojosMutantes.length)] : "estandar";
+                        const bocaElegida = resultado.rarity.includes("+") ? bocasMutantes[Math.floor(Math.random() * bocasMutantes.length)] : "feliz";
+
                         const nuevoId = typeof window.generarNuevoID === 'function' ? window.generarNuevoID() : Date.now();
                         const prefijos = ["Neo", "Bio", "Geno", "Cyto", "Viro", "Rad", "Syn", "Evo", "Nexo", "Mut"];
                         const sufijos = ["-X", "-Prime", "morph", "cyte", "tron", "plasm", "-7", "core", "gen", "-Z"];
                         const nombreAleatorio = prefijos[Math.floor(Math.random() * prefijos.length)] + sufijos[Math.floor(Math.random() * sufijos.length)];
                         
+                        // Nombre especial para los "Supervivientes" o aleatorio
+                        const finalName = (resultado.name === "Superviviente" || resultado.name === "Veterano Raro" || resultado.name === "Titán Épico") ? resultado.name : nombreAleatorio;
+
                         const mutante = {
                             id: nuevoId,
-                            name: resultado.name !== "Titán Épico" && resultado.name !== "Veterano Raro" ? resultado.name : nombreAleatorio,
+                            name: finalName,
                             rarity: resultado.rarity,
                             element: resultado.element,
                             base_color: resultado.color, color: resultado.color,
-                            body_shape: resultado.shape, eye_type: "estandar", mouth_type: "feliz",
+                            body_shape: resultado.shape, 
+                            eye_type: ojoElegido, 
+                            mouth_type: bocaElegida,
                             wing_type: "ninguno", hat_type: "ninguno",
                             level: 1, xp: 0, xpNeeded: 100, breedCount: 0, generation: 0,
                             stats: statsBase,
-                            hidden_genes: window.generarGenesV9 ? window.generarGenesV9(resultado.rarity) : {A:null, B:null, C:null},
+                            hidden_genes: window.generarGenesV9 ? window.generarGenesV9(baseRarity) : {A:null, B:null, C:null},
                             scanned: false,
                             genes: {
                                 cuerpo: { dom: resultado.shape, rec: resultado.shape },
-                                ojos: { dom: "estandar", rec: "estandar" },
-                                boca: { dom: "feliz", rec: "feliz" },
+                                ojos: { dom: ojoElegido, rec: ojoElegido },
+                                boca: { dom: bocaElegida, rec: bocaElegida },
                                 espalda: { dom: "ninguno", rec: "ninguno" },
                                 cabeza: { dom: "ninguno", rec: "ninguno" },
                                 afinidad: { dom: resultado.element, rec: resultado.element }
@@ -425,7 +429,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         mensaje = `¡FUSIÓN ESTABLE! ✨\nHas obtenido un [Geno ${reglas.resNorm.rarity}].`;
                     } else if (tirada < limiteEstancada) { 
                         inyectarNuevoMutante(reglas.resStag);
-                        mensaje = `MUTACIÓN ESTANCADA ⚠️\nLa inestabilidad destruyó a 4, pero lograste recuperar 1 [Geno ${reglas.resStag.rarity}].`;
+                        mensaje = `MUTACIÓN ESTANCADA ⚠️\nLa inestabilidad destruyó a 4, pero lograste recuperar 1 [Geno ${reglas.resStag.rarity}]. ¡Sus genes han mutado!`;
                     } else {
                         const compensacion = reglas.cost * 1.5; 
                         if(typeof window.miInventario.addEssence === 'function') {
