@@ -1,10 +1,23 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V15.0 - FIX MUTANTES Y STATS "+")
+// ReactorManager.js - FUSIONES Y MUTACIONES (V15.1 - FIX CALCULADORA Y MUTACIONES SEGURAS)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ✨ ESTILOS (Intactos de la versión perfecta)
+    // ✨ PARCHE GLOBAL: Enseñamos a la Calculadora a entender el símbolo "+"
+    if (typeof window.calcularCalidad === "function" && !window.calcularCalidadParcheada) {
+        const calcOriginal = window.calcularCalidad;
+        window.calcularCalidad = function(stats, rareza, nivel) {
+            let rLimpia = rareza || "Común";
+            if (typeof rLimpia === "string" && rLimpia.includes("+")) {
+                rLimpia = rLimpia.replace("+", ""); // Lo evalúa como la clase base
+            }
+            return calcOriginal(stats, rLimpia, nivel);
+        };
+        window.calcularCalidadParcheada = true; // Evita que se inyecte dos veces
+    }
+
+    // ✨ ESTILOS
     const style = document.createElement('style');
     style.innerHTML = `
         #alchemy-screen:not(.hidden) {
@@ -170,7 +183,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }, 50);
 
-    // ✨ REGLAS: Devolvemos el símbolo "+" a los resultados de estancamiento (Stag)
     const reactorRules = {
         "1": { 
             reqRarity: "Común", cost: 100, probCrit: 3, probNorm: 35, probStag: 35, 
@@ -202,6 +214,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    const possibleInstructionTexts = document.querySelectorAll("#alchemy-screen p");
+    possibleInstructionTexts.forEach(p => {
+        if(p.innerText.toLowerCase().includes("toca un geno")) p.classList.add("instruction-text");
+    });
+
     window.renderizarAlquimia = function() {
         if(!selectNivel) return;
 
@@ -217,7 +234,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const costEl = document.getElementById("reactor-cost-display");
         if(costEl) costEl.innerText = reglas.cost + " ✨";
 
-        // ✨ FIX: Permitimos que los Genos con "+" sean usados como ingredientes (ej. Común y Común+)
         const genosDisponibles = window.misGenos.filter(g => 
             (g.rarity === reglas.reqRarity || g.rarity === reglas.reqRarity + "+") && 
             !g.isEgg && 
@@ -363,14 +379,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     
                     const limiteCritico = reglas.probCrit;
                     const limiteNormal = limiteCritico + reglas.probNorm;
-                    const limiteEstancada = limiteNormal + reglas.probStag;
+                    const limiteEstancada = limiteNormal + probStag;
 
                     const inyectarNuevoMutante = (resultado) => {
-                        // 1. Calcular stats base según la rareza "limpia" (Sin el +)
                         const baseRarity = resultado.rarity.replace("+", "");
                         let statsBase = window.generarStatsPorRareza ? window.generarStatsPorRareza(baseRarity) : { hp: 50, atk: 15, def: 10, spd: 15, luk: 15 };
                         
-                        // ✨ FIX: Si es un mutante "+", le aplicamos un bono de radiación del 15% a TODAS sus estadísticas.
                         if (resultado.rarity.includes("+")) {
                             statsBase.hp = Math.floor(statsBase.hp * 1.15);
                             statsBase.atk = Math.floor(statsBase.atk * 1.15);
@@ -379,11 +393,10 @@ document.addEventListener("DOMContentLoaded", () => {
                             statsBase.luk = Math.floor(statsBase.luk * 1.15);
                         }
 
-                        // ✨ FIX: Mutaciones visuales aleatorias. ¡Ya no más caritas felices y estandar aburridas!
-                        const ojosMutantes = ["estandar", "furioso", "tierno", "bizco", "alien", "ciclope", "robot", "vacio"];
-                        const bocasMutantes = ["feliz", "triste", "colmillos", "babeando", "cremallera", "pico", "cosida"];
+                        // ✨ FIX MAESTRO: Nombres de SVG seguros y exclusión de caras "normales".
+                        const ojosMutantes = ["alien", "ciclope", "furioso", "bizco"];
+                        const bocasMutantes = ["colmillos", "babeando", "cremallera", "triste"];
                         
-                        // Si tiene el "+", forzamos que use rasgos aleatorios locos
                         const ojoElegido = resultado.rarity.includes("+") ? ojosMutantes[Math.floor(Math.random() * ojosMutantes.length)] : "estandar";
                         const bocaElegida = resultado.rarity.includes("+") ? bocasMutantes[Math.floor(Math.random() * bocasMutantes.length)] : "feliz";
 
@@ -392,7 +405,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         const sufijos = ["-X", "-Prime", "morph", "cyte", "tron", "plasm", "-7", "core", "gen", "-Z"];
                         const nombreAleatorio = prefijos[Math.floor(Math.random() * prefijos.length)] + sufijos[Math.floor(Math.random() * sufijos.length)];
                         
-                        // Nombre especial para los "Supervivientes" o aleatorio
                         const finalName = (resultado.name === "Superviviente" || resultado.name === "Veterano Raro" || resultado.name === "Titán Épico") ? resultado.name : nombreAleatorio;
 
                         const mutante = {
