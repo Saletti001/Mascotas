@@ -1,5 +1,5 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V15.7 - ALEATORIEDAD DE CUERPO, COLOR Y ELEMENTO)
+// ReactorManager.js - FUSIONES Y MUTACIONES (V15.8 - FIX ELEMENTOS OFICIALES)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -393,17 +393,16 @@ document.addEventListener("DOMContentLoaded", () => {
                             statsBase.luk = Math.floor(statsBase.luk * 1.15);
                         }
 
-                        // ✨ FIX MAESTRO: Cuerpos, Colores y Elementos Aleatorios
                         const formasMutantes = ["gota", "frijol", "estrella"]; 
-                        const elementosMutantes = ["Cibernético", "Biomutante", "Sintético", "Radiactivo", "Viral", "Tóxico", "Fuego", "Agua", "Planta", "Eléctrico"];
+                        
+                        // ✨ FIX: Solo los 6 elementos oficiales de tu juego (Temática Sci-Fi/Genética)
+                        const elementosMutantes = ["Cibernético", "Biomutante", "Sintético", "Radiactivo", "Viral", "Tóxico"];
                         
                         const formaElegida = formasMutantes[Math.floor(Math.random() * formasMutantes.length)];
                         const elementoElegido = elementosMutantes[Math.floor(Math.random() * elementosMutantes.length)];
                         
-                        // Generador de Color HEX aleatorio
                         const randomColorHex = "#" + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
 
-                        // Caras Aleatorias
                         const todosLosOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : [
                             "mutacion_asimetrica", "ojos_cosidos", "vacio_oscuro", 
                             "agujeros_negros", "mosca_mutante", "error_fatal", 
@@ -418,7 +417,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         const ojoElegido = todosLosOjos[Math.floor(Math.random() * todosLosOjos.length)];
                         const bocaElegida = todasLasBocas[Math.floor(Math.random() * todasLasBocas.length)];
 
-                        // Nombres Aleatorios
                         const nuevoId = typeof window.generarNuevoID === 'function' ? window.generarNuevoID() : Date.now();
                         const prefijos = ["Neo", "Bio", "Geno", "Cyto", "Viro", "Rad", "Syn", "Evo", "Nexo", "Mut"];
                         const sufijos = ["-X", "-Prime", "morph", "cyte", "tron", "plasm", "-7", "core", "gen", "-Z"];
