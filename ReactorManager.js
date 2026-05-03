@@ -1,65 +1,12 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V14.4 - CLON VISUAL EXACTO DEL CENTRO DE CRIANZA)
+// ReactorManager.js - FUSIONES Y MUTACIONES (V14.5 - RESPETA ESTILOS GLOBALES Y FONDO ORIGINAL)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ✨ INYECCIÓN DE ESTILOS: Clonación milimétrica del Centro de Crianza
+    // ✨ INYECCIÓN DE ESTILOS: Solo estilizamos lo de ADENTRO de la caja, sin tocar fondos ni botones globales
     const style = document.createElement('style');
     style.innerHTML = `
-        /* 1. Fondo Cian Principal */
-        #alchemy-screen {
-            background-color: #4dd0e1 !important;
-            background-image: repeating-linear-gradient(rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 1px, transparent 1px, transparent 4px) !important;
-            height: 100vh;
-            overflow-y: auto;
-            padding: 20px !important;
-            box-sizing: border-box;
-        }
-
-        /* 2. Caja Negra Central (Igual a la de Crianza) */
-        #alchemy-screen .panel, 
-        #alchemy-screen > div:not(.btn-go-home) {
-            background: #1a2a36 !important;
-            border: none !important;
-            border-radius: 16px !important;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3) !important;
-            padding: 25px 20px !important;
-            margin-bottom: 20px !important;
-        }
-
-        /* Limpieza de divs internos */
-        #alchemy-screen .panel > div {
-            border: none !important;
-            box-shadow: none !important;
-        }
-        
-        /* 3. Título Principal */
-        #alchemy-screen h2 {
-            color: #4dd0e1 !important;
-            text-shadow: none !important;
-            text-transform: uppercase !important;
-            letter-spacing: 2px !important;
-            margin: 0 0 15px 0 !important;
-            font-weight: bold !important;
-            text-align: center !important;
-            font-size: 16px !important;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            padding-bottom: 15px;
-        }
-        
-        /* 4. Descripción */
-        #reactor-description {
-            color: #888 !important;
-            font-size: 10px !important;
-            text-transform: uppercase !important;
-            letter-spacing: 1px !important;
-            font-weight: bold !important;
-            margin-bottom: 20px !important;
-            text-align: center !important;
-            line-height: 1.4 !important;
-        }
-
         /* Selector de Nivel */
         select#reactor-level-select {
             background: #0d1a24 !important;
@@ -122,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
             font-weight: normal !important;
         }
 
-        /* Botón de Acción Principal */
+        /* Botón de Acción Principal (El de adentro) */
         #btn-fuse-genos {
             border-radius: 10px !important;
             font-weight: 900 !important;
@@ -131,52 +78,48 @@ document.addEventListener("DOMContentLoaded", () => {
             padding: 15px !important;
             transition: all 0.3s ease !important;
             border: none !important;
-            color: #fff !important;
             width: 100%;
             margin-top: 20px !important;
-        }
-        
-        /* 5. Botón Volver al Laboratorio (Clon exacto de Crianza) */
-        #alchemy-screen .btn-go-home {
-            background: #0d1a24 !important;
-            color: #4dd0e1 !important;
-            border: none !important;
-            border-radius: 12px !important;
-            font-weight: bold !important;
-            text-transform: uppercase !important;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.4) !important;
-            padding: 18px !important;
-            width: 100% !important;
-            letter-spacing: 1px !important;
-            text-align: center !important;
-            display: block !important;
-            margin-top: 0 !important;
         }
     `;
     document.head.appendChild(style);
 
-    // ✨ DOM SCRIPT: Metemos el Título y la Descripción DENTRO de la caja negra
+    // ✨ DOM SCRIPT: Empaquetamos todo en una caja negra (panel) y dejamos el botón original afuera
     setTimeout(() => {
         const alchemyScreen = document.getElementById("alchemy-screen");
-        if(alchemyScreen) {
-            let mainPanels = Array.from(alchemyScreen.children).filter(el => el.tagName === 'DIV' && !el.classList.contains('btn-go-home'));
-            let mainPanel = mainPanels[0];
+        if (alchemyScreen && !alchemyScreen.querySelector('.reactor-panel-wrapper')) {
             
-            if (mainPanel) {
-                mainPanel.classList.add("panel"); 
-                const title = alchemyScreen.querySelector("h2");
-                const desc = document.getElementById("reactor-description");
-                
-                if (title && title.parentElement === alchemyScreen) {
-                    mainPanel.insertBefore(title, mainPanel.firstChild);
+            // Creamos la caja negra idéntica a la del centro de crianza
+            const wrapper = document.createElement("div");
+            wrapper.className = "panel reactor-panel-wrapper";
+            wrapper.style = "background: #1a2a36; border-radius: 16px; padding: 25px 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); margin-bottom: 30px; border: none;";
+            
+            // Metemos todo adentro EXCEPTO el botón de volver al laboratorio
+            Array.from(alchemyScreen.children).forEach(child => {
+                if (!child.classList.contains('btn-go-home') && child !== wrapper) {
+                    // Limpiamos bordes de divs viejos que pudieran haber
+                    if(child.tagName === 'DIV') {
+                        child.style.border = "none";
+                        child.style.boxShadow = "none";
+                        child.style.background = "transparent";
+                    }
+                    wrapper.appendChild(child);
                 }
-                if (desc && desc.parentElement === alchemyScreen) {
-                    mainPanel.insertBefore(desc, title ? title.nextSibling : mainPanel.firstChild);
-                }
+            });
+            
+            alchemyScreen.insertBefore(wrapper, alchemyScreen.firstChild);
+            
+            // Estilizamos el título y la descripción
+            const titleEl = wrapper.querySelector("h2");
+            if (titleEl) {
+                titleEl.innerText = "REACTOR GENÉTICO";
+                titleEl.style = "color: #4dd0e1; text-shadow: none; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 15px 0; font-weight: bold; text-align: center; font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;";
             }
 
-            const titleEl = alchemyScreen.querySelector("h2");
-            if (titleEl) titleEl.innerText = "REACTOR GENÉTICO";
+            const descEl = document.getElementById("reactor-description");
+            if (descEl) {
+                descEl.style = "color: #888; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-bottom: 20px; text-align: center; line-height: 1.4;";
+            }
         }
     }, 50);
 
@@ -320,17 +263,17 @@ document.addEventListener("DOMContentLoaded", () => {
             if(!btnFuse.disabled) {
                 btnFuse.innerText = "INICIAR FUSIÓN";
                 btnFuse.style.background = "linear-gradient(90deg, #4dd0e1, #8A2BE2)";
+                btnFuse.style.color = "#1a2a36";
                 btnFuse.style.opacity = "1";
                 btnFuse.style.cursor = "pointer";
                 btnFuse.style.boxShadow = "0 4px 15px rgba(138, 43, 226, 0.4)";
-                btnFuse.style.color = "#1a2a36 !important";
             } else {
                 btnFuse.innerText = "INSERTA 5 MUESTRAS";
-                btnFuse.style.background = "#2a323d"; // Fondo apagado como en crianza
-                btnFuse.style.opacity = "0.7";
+                btnFuse.style.background = "#2a323d"; 
+                btnFuse.style.color = "#888";
+                btnFuse.style.opacity = "0.8";
                 btnFuse.style.cursor = "not-allowed";
                 btnFuse.style.boxShadow = "none";
-                btnFuse.style.color = "#888 !important";
             }
         }
     }
@@ -358,7 +301,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 btnFuse.disabled = true;
                 btnFuse.innerText = "SINTETIZANDO ADN...";
                 btnFuse.style.background = "#8A2BE2";
-                btnFuse.style.color = "#fff !important";
+                btnFuse.style.color = "#fff";
                 btnFuse.style.cursor = "wait";
                 
                 let toggle = false;
