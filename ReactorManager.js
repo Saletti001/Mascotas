@@ -1,109 +1,130 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V14.3 - ESTILO IDÉNTICO AL CENTRO DE CRIANZA)
+// ReactorManager.js - FUSIONES Y MUTACIONES (V14.4 - CLON VISUAL EXACTO DEL CENTRO DE CRIANZA)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ✨ INYECCIÓN DE ESTILOS: Clonamos la estética exacta del Centro de Crianza
+    // ✨ INYECCIÓN DE ESTILOS: Clonación milimétrica del Centro de Crianza
     const style = document.createElement('style');
     style.innerHTML = `
-        /* 1. Fondo Cian para la pantalla completa con líneas de escaneo suaves */
+        /* 1. Fondo Cian Principal */
         #alchemy-screen {
             background-color: #4dd0e1 !important;
             background-image: repeating-linear-gradient(rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 1px, transparent 1px, transparent 4px) !important;
             height: 100vh;
             overflow-y: auto;
+            padding: 20px !important;
+            box-sizing: border-box;
         }
 
-        /* 2. Panel central estilo Centro de Crianza (Sin bordes morados) */
+        /* 2. Caja Negra Central (Igual a la de Crianza) */
         #alchemy-screen .panel, 
-        #alchemy-screen > div.container > div {
+        #alchemy-screen > div:not(.btn-go-home) {
             background: #1a2a36 !important;
             border: none !important;
             border-radius: 16px !important;
             box-shadow: 0 10px 20px rgba(0,0,0,0.3) !important;
-            padding: 20px !important;
+            padding: 25px 20px !important;
+            margin-bottom: 20px !important;
         }
 
-        /* 3. Limpieza absoluta de contenedores internos rebeldes */
-        #alchemy-screen > div > div > div, 
-        #alchemy-screen > div.container > div > div {
+        /* Limpieza de divs internos */
+        #alchemy-screen .panel > div {
             border: none !important;
             box-shadow: none !important;
         }
         
-        /* 4. Título Principal */
+        /* 3. Título Principal */
         #alchemy-screen h2 {
             color: #4dd0e1 !important;
             text-shadow: none !important;
             text-transform: uppercase !important;
             letter-spacing: 2px !important;
-            margin-bottom: 20px !important;
+            margin: 0 0 15px 0 !important;
             font-weight: bold !important;
             text-align: center !important;
+            font-size: 16px !important;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 15px;
         }
         
-        /* Contenedor de la lista de Genos disponibles */
-        #reactor-available-genos {
-            background: #0d1a24 !important; 
-            border: none !important; /* Quitamos el borde para igualar la UI */
-            border-radius: 12px !important;
-            padding: 15px !important;
-            min-height: 80px;
-            display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            -ms-overflow-style: none; 
-            scrollbar-width: none;
-        }
-        #reactor-available-genos::-webkit-scrollbar { display: none; }
-        
-        /* El texto arriba de los genos disponibles */
-        #reactor-available-genos-container > p, p.instruction-text, #reactor-description {
+        /* 4. Descripción */
+        #reactor-description {
             color: #888 !important;
             font-size: 10px !important;
             text-transform: uppercase !important;
             letter-spacing: 1px !important;
             font-weight: bold !important;
-            margin-bottom: 8px !important;
+            margin-bottom: 20px !important;
             text-align: center !important;
+            line-height: 1.4 !important;
         }
 
-        /* Selector de nivel */
+        /* Selector de Nivel */
         select#reactor-level-select {
-            background: transparent !important;
+            background: #0d1a24 !important;
             color: #4dd0e1 !important;
-            border: 1px dashed #4dd0e1 !important;
+            border: 1px solid #111c24 !important;
             padding: 12px !important;
-            border-radius: 12px !important;
+            border-radius: 8px !important;
             font-weight: bold !important;
             text-transform: uppercase !important;
-            font-size: 12px !important;
+            font-size: 11px !important;
             letter-spacing: 1px !important;
             outline: none;
             cursor: pointer;
-            box-shadow: none !important;
             width: 100%;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             text-align: center;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
         }
         
         select#reactor-level-select option {
-            background: #1a2a36;
+            background: #0d1a24;
             color: #4dd0e1;
         }
 
-        /* Textos de coste y disponibles */
+        /* Textos de Costo y Disponibles */
         #alchemy-screen p:has(span#alchemy-common-count),
         #alchemy-screen p:has(span#reactor-cost-display) {
+            display: flex !important;
+            justify-content: space-between !important;
             color: #fff !important;
-            font-size: 12px !important;
-            text-align: center !important;
+            font-size: 11px !important;
+            border-bottom: 1px dashed rgba(255,255,255,0.1) !important;
+            padding-bottom: 10px !important;
+            margin-bottom: 20px !important;
+            font-weight: normal !important;
         }
 
-        /* Botón de activación principal */
+        /* Caja de genos para cargar */
+        #reactor-available-genos {
+            background: #0d1a24 !important; 
+            border: none !important;
+            border-radius: 12px !important;
+            padding: 15px !important;
+            min-height: 70px;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            -ms-overflow-style: none; 
+            scrollbar-width: none;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+        }
+        #reactor-available-genos::-webkit-scrollbar { display: none; }
+        
+        #reactor-available-genos-container > p, p.instruction-text {
+            color: #64748b !important;
+            font-size: 10px !important;
+            margin-bottom: 8px !important;
+            text-align: left !important;
+            text-transform: none !important;
+            font-weight: normal !important;
+        }
+
+        /* Botón de Acción Principal */
         #btn-fuse-genos {
-            border-radius: 8px !important;
+            border-radius: 10px !important;
             font-weight: 900 !important;
             text-transform: uppercase !important;
             letter-spacing: 1px !important;
@@ -112,27 +133,53 @@ document.addEventListener("DOMContentLoaded", () => {
             border: none !important;
             color: #fff !important;
             width: 100%;
-            margin-top: 15px !important;
+            margin-top: 20px !important;
         }
         
-        /* Botón Volver al Laboratorio (Idéntico a todas las pantallas V14) */
+        /* 5. Botón Volver al Laboratorio (Clon exacto de Crianza) */
         #alchemy-screen .btn-go-home {
-            background: #1a2a36 !important;
+            background: #0d1a24 !important;
             color: #4dd0e1 !important;
-            border: 1px solid #1a2a36 !important;
+            border: none !important;
             border-radius: 12px !important;
             font-weight: bold !important;
             text-transform: uppercase !important;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
-            margin-top: 20px !important;
-            padding: 15px !important;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4) !important;
+            padding: 18px !important;
             width: 100% !important;
             letter-spacing: 1px !important;
+            text-align: center !important;
+            display: block !important;
+            margin-top: 0 !important;
         }
     `;
     document.head.appendChild(style);
 
-    // Reglas actualizadas con Elementos compatibles con la base de datos moderna
+    // ✨ DOM SCRIPT: Metemos el Título y la Descripción DENTRO de la caja negra
+    setTimeout(() => {
+        const alchemyScreen = document.getElementById("alchemy-screen");
+        if(alchemyScreen) {
+            let mainPanels = Array.from(alchemyScreen.children).filter(el => el.tagName === 'DIV' && !el.classList.contains('btn-go-home'));
+            let mainPanel = mainPanels[0];
+            
+            if (mainPanel) {
+                mainPanel.classList.add("panel"); 
+                const title = alchemyScreen.querySelector("h2");
+                const desc = document.getElementById("reactor-description");
+                
+                if (title && title.parentElement === alchemyScreen) {
+                    mainPanel.insertBefore(title, mainPanel.firstChild);
+                }
+                if (desc && desc.parentElement === alchemyScreen) {
+                    mainPanel.insertBefore(desc, title ? title.nextSibling : mainPanel.firstChild);
+                }
+            }
+
+            const titleEl = alchemyScreen.querySelector("h2");
+            if (titleEl) titleEl.innerText = "REACTOR GENÉTICO";
+        }
+    }, 50);
+
     const reactorRules = {
         "1": { 
             reqRarity: "Común", cost: 100, probCrit: 3, probNorm: 35, probStag: 35, 
@@ -164,7 +211,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Buscamos el texto de instrucción para inyectarle una clase y que lo tome el CSS
     const possibleInstructionTexts = document.querySelectorAll("#alchemy-screen p");
     possibleInstructionTexts.forEach(p => {
         if(p.innerText.toLowerCase().includes("toca un geno")) {
@@ -180,7 +226,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const descEl = document.getElementById("reactor-description");
         if(descEl) {
             descEl.innerText = `COMBINA 5 ESPECÍMENES (${reglas.reqRarity.toUpperCase()}S) PARA INICIAR LA SECUENCIA DE FUSIÓN. COSTE: ${reglas.cost} ✨`;
-            descEl.style.color = "#888";
         }
         
         const reqNameEl = document.getElementById("reactor-req-name");
@@ -200,12 +245,11 @@ document.addEventListener("DOMContentLoaded", () => {
             containerSlots.style.display = "flex";
             containerSlots.style.justifyContent = "center";
             containerSlots.style.gap = "15px";
-            containerSlots.style.margin = "20px 0";
+            containerSlots.style.margin = "0 0 25px 0";
             
             for(let i=0; i<5; i++) {
                 const slot = document.createElement("div");
                 
-                // ✨ UI IDÉNTICA AL CENTRO DE CRIANZA (Borde punteado cian)
                 slot.style = "width: 55px; height: 55px; border-radius: 12px; display: flex; justify-content: center; align-items: center; cursor: pointer; position: relative; transition: all 0.2s;";
                 
                 if (window.genosEnReactor[i]) {
@@ -216,17 +260,19 @@ document.addEventListener("DOMContentLoaded", () => {
                     svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
                     
                     slot.innerHTML = `<div style="width: 45px; height: 45px; color: ${pColor}; display: flex; justify-content: center; align-items: center;">${svg}</div>`;
-                    slot.style.border = "2px dashed #8A2BE2"; // Morado para indicar que está cargado
+                    slot.style.border = "1px solid #8A2BE2"; 
                     slot.style.background = "#0d1a24";
+                    slot.style.boxShadow = "inset 0 0 10px rgba(138, 43, 226, 0.2)";
                     
                     slot.addEventListener("click", () => {
                         window.genosEnReactor.splice(i, 1);
                         window.renderizarAlquimia();
                     });
                 } else {
-                    slot.style.border = "2px dashed #4dd0e1";
-                    slot.style.background = "#0d1a24";
-                    slot.innerHTML = '<span style="color: #4dd0e1; font-size: 28px; font-weight: normal;">+</span>';
+                    // Muestras vacías idénticas a las del Centro de Crianza
+                    slot.style.border = "1px dashed #4dd0e1";
+                    slot.style.background = "transparent";
+                    slot.innerHTML = '<span style="color: #4dd0e1; font-size: 24px; font-weight: 300;">+</span>';
                 }
                 containerSlots.appendChild(slot);
             }
@@ -239,18 +285,17 @@ document.addEventListener("DOMContentLoaded", () => {
             const genosLibres = genosDisponibles.filter(g => !window.genosEnReactor.find(enR => enR.id === g.id));
             
             if (genosLibres.length === 0) {
-                containerDisponibles.innerHTML = '<span style="color: #64748b; font-size: 12px; margin: auto; font-style: italic;">No hay sujetos en la base de datos.</span>';
+                containerDisponibles.innerHTML = '<span style="color: #64748b; font-size: 11px; margin: auto; font-style: italic;">No hay sujetos en la base de datos.</span>';
             } else {
                 genosLibres.forEach(geno => {
                     const card = document.createElement("div");
-                    // Tarjetas fondo oscuro
-                    card.style = "min-width: 55px; height: 55px; background: #1a2a36; border: 1px solid #4dd0e1; border-radius: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: transform 0.1s;";
+                    card.style = "min-width: 50px; height: 50px; background: #0d1a24; border: 1px solid #384a5e; border-radius: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: transform 0.1s;";
                     
                     const pColor = geno.color || geno.base_color || "#ccc";
                     let svg = typeof window.generarSvgGeno === 'function' ? window.generarSvgGeno(geno) : '';
                     svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
                     
-                    card.innerHTML = `<div style="width: 45px; height: 45px; color: ${pColor}; display: flex; justify-content: center; align-items: center;">${svg}</div>`;
+                    card.innerHTML = `<div style="width: 40px; height: 40px; color: ${pColor}; display: flex; justify-content: center; align-items: center;">${svg}</div>`;
                     
                     card.addEventListener("mousedown", () => card.style.transform = "scale(0.9)");
                     card.addEventListener("mouseup", () => card.style.transform = "scale(1)");
@@ -278,12 +323,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 btnFuse.style.opacity = "1";
                 btnFuse.style.cursor = "pointer";
                 btnFuse.style.boxShadow = "0 4px 15px rgba(138, 43, 226, 0.4)";
+                btnFuse.style.color = "#1a2a36 !important";
             } else {
                 btnFuse.innerText = "INSERTA 5 MUESTRAS";
-                btnFuse.style.background = "#333";
-                btnFuse.style.opacity = "0.5";
+                btnFuse.style.background = "#2a323d"; // Fondo apagado como en crianza
+                btnFuse.style.opacity = "0.7";
                 btnFuse.style.cursor = "not-allowed";
                 btnFuse.style.boxShadow = "none";
+                btnFuse.style.color = "#888 !important";
             }
         }
     }
@@ -298,7 +345,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 const btnFuse = document.getElementById("btn-fuse-genos");
                 const containerSlots = document.getElementById("reactor-slots-container");
                 
-                // Consumir esencia
                 if(typeof window.miInventario.addEssence === 'function') {
                     window.miInventario.addEssence(-reglas.cost);
                 } else {
@@ -306,13 +352,13 @@ document.addEventListener("DOMContentLoaded", () => {
                     if(typeof window.miInventario.updateUI === 'function') window.miInventario.updateUI();
                 }
                 
-                // Destruir los 5 Genos sacrificados
                 const idsABorrar = window.genosEnReactor.map(g => g.id);
                 window.misGenos = window.misGenos.filter(g => !idsABorrar.includes(g.id));
                 
                 btnFuse.disabled = true;
                 btnFuse.innerText = "SINTETIZANDO ADN...";
                 btnFuse.style.background = "#8A2BE2";
+                btnFuse.style.color = "#fff !important";
                 btnFuse.style.cursor = "wait";
                 
                 let toggle = false;
@@ -334,7 +380,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     const limiteNormal = limiteCritico + reglas.probNorm;
                     const limiteEstancada = limiteNormal + reglas.probStag;
 
-                    // Función Helper para crear el Geno con ADN moderno V14
                     const inyectarNuevoMutante = (resultado) => {
                         const statsBase = window.generarStatsPorRareza ? window.generarStatsPorRareza(resultado.rarity) : { hp: 50, atk: 15, def: 10, spd: 15, luk: 15 };
                         
