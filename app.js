@@ -1,5 +1,5 @@
 // =========================================
-// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V14.9 - FIX DEFINITIVO DE CENTRADO VIEWBOX)
+// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V14.10 - FIX CÁMARA ORIGINAL Y CENTRADO)
 // Requiere cargar 'genes.js' previamente en el HTML.
 // =========================================
 
@@ -368,6 +368,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const pColor = geno.color || geno.base_color || "#ccc";
             let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
+            // El viewBox artificial SÍ se queda en las tarjetas pequeñas para que cuadren bonito en la grilla
             svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             
             card.innerHTML = `
@@ -375,12 +376,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span style="color: white; font-weight: bold; font-size: 12px; margin-top: 10px; text-align: center;">${geno.name || 'Sujeto'}</span>
             `;
             
-            // ✨ FIX FINAL: RESTAURADO EL VIEWBOX "-20 0 200 160" PARA EL CENTRADO PERFECTO
             card.onclick = () => {
                 window.miMascota = geno;
                 if (pedestal) {
                     const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-                    let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+                    
+                    // ✨ FIX MAESTRO DE LA CÁMARA (PEDESTAL): 
+                    // No reemplazamos ni borramos el <svg ...> original, solo le INYECTAMOS el ancho y alto del 100%
+                    // Esto preserva su "viewBox" nativo (por eso se centra) y su escala nativa (por eso rebota suave)
+                    let pSvg = svgPedestal.replace('<svg ', '<svg style="width: 100%; height: 100%; overflow: visible;" ');
+                    
                     pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; width: 250px; height: 250px; color: ${pColor}; top: 35%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
                 }
                 const nameEl = document.getElementById('geno-name');
@@ -547,8 +552,9 @@ function iniciarSecuenciaBienvenida() {
             pedestal.style.display = "block";
             const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
             
-            // ✨ FIX FINAL: RESTAURADO EL VIEWBOX "-20 0 200 160" PARA EL CENTRADO PERFECTO
-            let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+            // ✨ FIX MAESTRO DE LA CÁMARA
+            let pSvg = svgPedestal.replace('<svg ', '<svg style="width: 100%; height: 100%; overflow: visible;" ');
+            
             pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; width: 250px; height: 250px; color: ${miPrimerGeno.color}; top: 35%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
         }
         
