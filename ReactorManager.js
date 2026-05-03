@@ -1,13 +1,13 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V14.8 - FIX LÍNEAS FINAS DE FONDO)
+// ReactorManager.js - FUSIONES Y MUTACIONES (V14.9 - FIX DEFINITIVO DEL BOTÓN Y POSICIÓN)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ✨ INYECCIÓN DE ESTILOS: Fondo corregido con líneas de 1px
+    // ✨ INYECCIÓN DE ESTILOS: Solo estilizamos la caja negra, dejamos el botón global INTACTO
     const style = document.createElement('style');
     style.innerHTML = `
-        /* 1. Fondo Cian con líneas horizontales finas (1px) y separadas (6px total) */
+        /* 1. Fondo Cian con líneas horizontales finas y disposición Flex para empujar el botón al fondo */
         #alchemy-screen {
             background-color: #4dd0e1 !important;
             background-image: repeating-linear-gradient(to bottom, rgba(0,0,0,0.04) 0px, rgba(0,0,0,0.04) 1px, transparent 1px, transparent 6px) !important;
@@ -15,16 +15,18 @@ document.addEventListener("DOMContentLoaded", () => {
             overflow-y: auto !important;
             padding: 20px !important;
             box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: column !important;
         }
 
-        /* 2. Caja Negra Central */
+        /* 2. Caja Negra Central (Usa margin-bottom: auto para empujar el botón hacia abajo) */
         #alchemy-screen .reactor-panel-wrapper {
             background: #1a2a36 !important;
             border: none !important;
             border-radius: 16px !important;
             box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important;
             padding: 25px 20px !important;
-            margin-bottom: 20px !important;
+            margin-bottom: auto !important; /* <-- Esto empuja el botón al fondo */
         }
 
         /* Limpieza de contenedores internos heredados */
@@ -137,27 +139,12 @@ document.addEventListener("DOMContentLoaded", () => {
             margin-top: 20px !important;
         }
         
-        /* Botón Volver al Laboratorio Sólido y Sin Bordes */
-        #alchemy-screen .btn-go-home {
-            background: #0f172a !important; 
-            color: #4dd0e1 !important;
-            border: none !important; 
-            border-radius: 12px !important;
-            font-weight: bold !important;
-            text-transform: uppercase !important;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3) !important;
-            padding: 18px !important;
-            width: 100% !important;
-            letter-spacing: 1px !important;
-            text-align: center !important;
-            display: block !important;
-            margin-top: 0 !important;
-            cursor: pointer !important;
-        }
+        /* NOTA: Eliminado por completo el CSS para .btn-go-home 
+           Dejamos que tu CSS global le ponga el borde de neón brillante y el color correcto */
     `;
     document.head.appendChild(style);
 
-    // ✨ DOM SCRIPT: Empaquetamos todo en una caja negra (panel)
+    // ✨ DOM SCRIPT: Empaquetamos todo en una caja negra (panel) y dejamos el botón original AFUERA intacto
     setTimeout(() => {
         const alchemyScreen = document.getElementById("alchemy-screen");
         if (alchemyScreen && !alchemyScreen.querySelector('.reactor-panel-wrapper')) {
@@ -166,6 +153,7 @@ document.addEventListener("DOMContentLoaded", () => {
             wrapper.className = "reactor-panel-wrapper";
             
             Array.from(alchemyScreen.children).forEach(child => {
+                // Movemos todo al wrapper, EXCEPTO el botón de volver
                 if (!child.classList.contains('btn-go-home') && child !== wrapper) {
                     if(child.tagName === 'DIV') {
                         child.style.border = "none";
