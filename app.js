@@ -1,5 +1,5 @@
 // =========================================
-// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V14.10 - FIX CÁMARA ORIGINAL Y CENTRADO)
+// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V14.11 - FIX DEFINITIVO ANIMACIÓN Y TAMAÑO)
 // Requiere cargar 'genes.js' previamente en el HTML.
 // =========================================
 
@@ -12,22 +12,21 @@ window.maxGenoSlots = window.maxGenoSlots || 6;
 window.getIconoElemento = function(elementoStr) {
     if (!elementoStr) return "";
     
-    // Limpiamos el string por si viene con emojis antiguos de versiones previas (ej: "🤖 Cibernético" -> "Cibernético")
+    // Limpiamos el string por si viene con emojis antiguos de versiones previas
     const nombreLimpio = elementoStr.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, '').trim();
     
     // Buscamos el SVG en la galería de la tienda
     let svg = window.ShopManager && window.ShopManager.iconosSVG ? window.ShopManager.iconosSVG[nombreLimpio] : null;
     
     if (svg) {
-        // Le inyectamos un estilo para alinearlo con el texto y darle un poco de sombra
         return svg.replace('<svg ', '<svg style="vertical-align: text-bottom; margin-right: 6px; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.6));" ');
     }
     
-    return ""; // Fallback por si no encuentra el elemento
+    return ""; 
 };
 
 // =========================================
-// ✨ TABLA DE IVs V14.0 (HP DUPLICADO PARA COMBATES MÁS LARGOS)
+// ✨ TABLA DE IVs V14.0 
 // =========================================
 window.TABLA_IVS = {
     "Común": { hp: [70, 110], atk: [10, 22], def: [5, 15], spd: [8, 25], luk: [5, 15] },
@@ -50,7 +49,7 @@ window.generarStatsPorRareza = function(rareza) {
 };
 
 // =========================================
-// GENERADOR MAESTRO V9.1 (SISTEMA DE DOS DADOS)
+// GENERADOR MAESTRO V9.1
 // =========================================
 window.generarGenesV9 = function(rareza) {
     const slots = { A: null, B: null, C: null };
@@ -368,7 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const pColor = geno.color || geno.base_color || "#ccc";
             let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-            // El viewBox artificial SÍ se queda en las tarjetas pequeñas para que cuadren bonito en la grilla
+            // El viewBox artificial se queda SÓLO en las tarjetas pequeñas de la grilla
             svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             
             card.innerHTML = `
@@ -376,17 +375,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span style="color: white; font-weight: bold; font-size: 12px; margin-top: 10px; text-align: center;">${geno.name || 'Sujeto'}</span>
             `;
             
+            // ✨ FIX DEFINITIVO Y LIMPIO: Carga el SVG exactamente igual que SaveManager
             card.onclick = () => {
                 window.miMascota = geno;
                 if (pedestal) {
-                    const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-                    
-                    // ✨ FIX MAESTRO DE LA CÁMARA (PEDESTAL): 
-                    // No reemplazamos ni borramos el <svg ...> original, solo le INYECTAMOS el ancho y alto del 100%
-                    // Esto preserva su "viewBox" nativo (por eso se centra) y su escala nativa (por eso rebota suave)
-                    let pSvg = svgPedestal.replace('<svg ', '<svg style="width: 100%; height: 100%; overflow: visible;" ');
-                    
-                    pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; width: 250px; height: 250px; color: ${pColor}; top: 35%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
+                    pedestal.style.color = pColor;
+                    // Inyectamos el SVG nativo sin wrappers falsos ni reemplazar el viewBox
+                    pedestal.innerHTML = typeof window.generarSvgGeno === 'function' ? window.generarSvgGeno(geno) : '';
                 }
                 const nameEl = document.getElementById('geno-name');
                 if (nameEl) nameEl.innerText = `${geno.name} #${geno.id}`;
@@ -543,19 +538,16 @@ function iniciarSecuenciaBienvenida() {
         }, 2500);
     };
 
+    // ✨ FIX LIMPIO PARA EL GENO INICIAL (Misma lógica: sin wrappers falsos)
     btnClaim.onclick = () => {
         window.miMascota = miPrimerGeno;
         if(!window.misGenos) window.misGenos = []; window.misGenos.push(miPrimerGeno);
 
         const pedestal = document.getElementById("geno-container");
         if (pedestal) {
-            pedestal.style.display = "block";
-            const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
-            
-            // ✨ FIX MAESTRO DE LA CÁMARA
-            let pSvg = svgPedestal.replace('<svg ', '<svg style="width: 100%; height: 100%; overflow: visible;" ');
-            
-            pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; width: 250px; height: 250px; color: ${miPrimerGeno.color}; top: 35%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
+            pedestal.style.display = "block"; // Aseguramos que sea visible
+            pedestal.style.color = miPrimerGeno.color;
+            pedestal.innerHTML = typeof window.generarSvgGeno === 'function' ? window.generarSvgGeno(miPrimerGeno) : '';
         }
         
         const nameEl = document.getElementById('geno-name');
