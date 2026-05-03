@@ -1,16 +1,42 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V14.1 - REWORK VISUAL TIPO CENTRO DE CRIANZA)
+// ReactorManager.js - FUSIONES Y MUTACIONES (V14.2 - FIX FONDO CIAN Y ESTILOS)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ✨ INYECCIÓN DE ESTILOS: Forzamos la estética del Centro de Crianza
+    // ✨ INYECCIÓN DE ESTILOS: Forzamos la estética del Centro de Crianza (Fondo Cian)
     const style = document.createElement('style');
     style.innerHTML = `
-        /* Elimina los bordes morados y fondos blancos del HTML antiguo */
-        #alchemy-screen .panel, #alchemy-screen > div > div {
+        /* 1. Fondo Cian para la pantalla completa con líneas de escaneo suaves */
+        #alchemy-screen {
+            background-color: #4dd0e1 !important;
+            background-image: repeating-linear-gradient(rgba(0,0,0,0.05) 0px, rgba(0,0,0,0.05) 1px, transparent 1px, transparent 4px) !important;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        /* 2. Panel central estilo Centro de Crianza */
+        #alchemy-screen .panel, 
+        #alchemy-screen > div.container > div {
+            background: #1a2a36 !important;
+            border: none !important;
+            border-radius: 16px !important;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3) !important;
+            padding: 20px !important;
+        }
+
+        /* 3. Elimina los bordes morados residuales del HTML antiguo */
+        #alchemy-screen > div > div > div {
             border: none !important;
             box-shadow: none !important;
+        }
+        
+        /* 4. Título Principal */
+        #alchemy-screen h2 {
+            color: #4dd0e1 !important;
+            text-shadow: none !important;
+            letter-spacing: 2px !important;
+            margin-bottom: 20px !important;
         }
         
         /* Contenedor de la lista de Genos disponibles */
@@ -29,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
         #reactor-available-genos::-webkit-scrollbar { display: none; }
         
         /* El texto arriba de los genos disponibles */
-        #reactor-available-genos-container > p, p.instruction-text {
+        #reactor-available-genos-container > p, p.instruction-text, #reactor-description {
             color: #888 !important;
             font-size: 10px !important;
             text-transform: uppercase !important;
@@ -43,7 +69,7 @@ document.addEventListener("DOMContentLoaded", () => {
             background: #1a2a36 !important;
             color: #4dd0e1 !important;
             border: 1px solid #4dd0e1 !important;
-            padding: 10px !important;
+            padding: 12px !important;
             border-radius: 8px !important;
             font-weight: bold !important;
             text-transform: uppercase !important;
@@ -52,11 +78,20 @@ document.addEventListener("DOMContentLoaded", () => {
             outline: none;
             cursor: pointer;
             box-shadow: inset 0 0 10px rgba(77, 208, 225, 0.1);
+            width: 100%;
+            margin-bottom: 15px;
         }
         
         select#reactor-level-select option {
             background: #0d1a24;
             color: #4dd0e1;
+        }
+
+        /* Textos de coste y disponibles */
+        #alchemy-screen p:has(span#alchemy-common-count),
+        #alchemy-screen p:has(span#reactor-cost-display) {
+            color: #fff !important;
+            font-size: 12px !important;
         }
 
         /* Botón de activación */
@@ -69,6 +104,20 @@ document.addEventListener("DOMContentLoaded", () => {
             transition: all 0.3s ease !important;
             border: none !important;
             color: #fff !important;
+            width: 100%;
+            margin-top: 15px !important;
+        }
+        
+        /* Botón Volver al Laboratorio para que pegue con el cian */
+        #alchemy-screen .btn-go-home {
+            background: #1a2a36 !important;
+            color: #4dd0e1 !important;
+            border: 2px solid #1a2a36 !important;
+            border-radius: 8px !important;
+            font-weight: bold !important;
+            text-transform: uppercase !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+            margin-top: 20px !important;
         }
     `;
     document.head.appendChild(style);
@@ -121,10 +170,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const descEl = document.getElementById("reactor-description");
         if(descEl) {
             descEl.innerText = `COMBINA 5 ESPECÍMENES (${reglas.reqRarity.toUpperCase()}S) PARA INICIAR LA SECUENCIA DE FUSIÓN.`;
-            descEl.style.color = "#aaa";
-            descEl.style.fontSize = "10px";
-            descEl.style.fontWeight = "bold";
-            descEl.style.letterSpacing = "1px";
         }
         
         const reqNameEl = document.getElementById("reactor-req-name");
@@ -257,14 +302,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 btnFuse.disabled = true;
                 btnFuse.innerText = "SINTETIZANDO ADN...";
-                btnFuse.style.background = "#8A2BE2";
+                btnFuse.style.background = "#D500F9";
                 btnFuse.style.cursor = "wait";
                 
                 let toggle = false;
                 const animacionReactor = setInterval(() => {
                     toggle = !toggle;
                     containerSlots.style.transform = toggle ? "scale(1.05)" : "scale(0.95)";
-                    containerSlots.style.filter = toggle ? "drop-shadow(0 0 15px #8A2BE2) brightness(1.3)" : "none";
+                    containerSlots.style.filter = toggle ? "drop-shadow(0 0 15px #8B5CF6) brightness(1.3)" : "none";
                 }, 150);
 
                 setTimeout(() => {
@@ -337,6 +382,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         window.genosEnReactor = []; 
                         window.renderizarAlquimia();
                         
+                        // Guardar siempre después del gacha
                         if (typeof window.guardarJuego === 'function') window.guardarJuego();
                         else if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
                         
