@@ -1,10 +1,10 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V14.2 - FIX FONDO CIAN Y ESTILOS)
+// ReactorManager.js - FUSIONES Y MUTACIONES (V14.3 - ESTILO IDÉNTICO AL CENTRO DE CRIANZA)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ✨ INYECCIÓN DE ESTILOS: Forzamos la estética del Centro de Crianza (Fondo Cian)
+    // ✨ INYECCIÓN DE ESTILOS: Clonamos la estética exacta del Centro de Crianza
     const style = document.createElement('style');
     style.innerHTML = `
         /* 1. Fondo Cian para la pantalla completa con líneas de escaneo suaves */
@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
             overflow-y: auto;
         }
 
-        /* 2. Panel central estilo Centro de Crianza */
+        /* 2. Panel central estilo Centro de Crianza (Sin bordes morados) */
         #alchemy-screen .panel, 
         #alchemy-screen > div.container > div {
             background: #1a2a36 !important;
@@ -25,8 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
             padding: 20px !important;
         }
 
-        /* 3. Elimina los bordes morados residuales del HTML antiguo */
-        #alchemy-screen > div > div > div {
+        /* 3. Limpieza absoluta de contenedores internos rebeldes */
+        #alchemy-screen > div > div > div, 
+        #alchemy-screen > div.container > div > div {
             border: none !important;
             box-shadow: none !important;
         }
@@ -35,14 +36,17 @@ document.addEventListener("DOMContentLoaded", () => {
         #alchemy-screen h2 {
             color: #4dd0e1 !important;
             text-shadow: none !important;
+            text-transform: uppercase !important;
             letter-spacing: 2px !important;
             margin-bottom: 20px !important;
+            font-weight: bold !important;
+            text-align: center !important;
         }
         
         /* Contenedor de la lista de Genos disponibles */
         #reactor-available-genos {
-            background: #0d1a24 !important; /* Fondo ultra oscuro */
-            border: 1px solid #1a2a36 !important;
+            background: #0d1a24 !important; 
+            border: none !important; /* Quitamos el borde para igualar la UI */
             border-radius: 12px !important;
             padding: 15px !important;
             min-height: 80px;
@@ -62,28 +66,30 @@ document.addEventListener("DOMContentLoaded", () => {
             letter-spacing: 1px !important;
             font-weight: bold !important;
             margin-bottom: 8px !important;
+            text-align: center !important;
         }
 
         /* Selector de nivel */
         select#reactor-level-select {
-            background: #1a2a36 !important;
+            background: transparent !important;
             color: #4dd0e1 !important;
-            border: 1px solid #4dd0e1 !important;
+            border: 1px dashed #4dd0e1 !important;
             padding: 12px !important;
-            border-radius: 8px !important;
+            border-radius: 12px !important;
             font-weight: bold !important;
             text-transform: uppercase !important;
             font-size: 12px !important;
             letter-spacing: 1px !important;
             outline: none;
             cursor: pointer;
-            box-shadow: inset 0 0 10px rgba(77, 208, 225, 0.1);
+            box-shadow: none !important;
             width: 100%;
             margin-bottom: 15px;
+            text-align: center;
         }
         
         select#reactor-level-select option {
-            background: #0d1a24;
+            background: #1a2a36;
             color: #4dd0e1;
         }
 
@@ -92,9 +98,10 @@ document.addEventListener("DOMContentLoaded", () => {
         #alchemy-screen p:has(span#reactor-cost-display) {
             color: #fff !important;
             font-size: 12px !important;
+            text-align: center !important;
         }
 
-        /* Botón de activación */
+        /* Botón de activación principal */
         #btn-fuse-genos {
             border-radius: 8px !important;
             font-weight: 900 !important;
@@ -108,16 +115,19 @@ document.addEventListener("DOMContentLoaded", () => {
             margin-top: 15px !important;
         }
         
-        /* Botón Volver al Laboratorio para que pegue con el cian */
+        /* Botón Volver al Laboratorio (Idéntico a todas las pantallas V14) */
         #alchemy-screen .btn-go-home {
             background: #1a2a36 !important;
             color: #4dd0e1 !important;
-            border: 2px solid #1a2a36 !important;
-            border-radius: 8px !important;
+            border: 1px solid #1a2a36 !important;
+            border-radius: 12px !important;
             font-weight: bold !important;
             text-transform: uppercase !important;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
             margin-top: 20px !important;
+            padding: 15px !important;
+            width: 100% !important;
+            letter-spacing: 1px !important;
         }
     `;
     document.head.appendChild(style);
@@ -169,7 +179,8 @@ document.addEventListener("DOMContentLoaded", () => {
         
         const descEl = document.getElementById("reactor-description");
         if(descEl) {
-            descEl.innerText = `COMBINA 5 ESPECÍMENES (${reglas.reqRarity.toUpperCase()}S) PARA INICIAR LA SECUENCIA DE FUSIÓN.`;
+            descEl.innerText = `COMBINA 5 ESPECÍMENES (${reglas.reqRarity.toUpperCase()}S) PARA INICIAR LA SECUENCIA DE FUSIÓN. COSTE: ${reglas.cost} ✨`;
+            descEl.style.color = "#888";
         }
         
         const reqNameEl = document.getElementById("reactor-req-name");
@@ -194,7 +205,7 @@ document.addEventListener("DOMContentLoaded", () => {
             for(let i=0; i<5; i++) {
                 const slot = document.createElement("div");
                 
-                // ✨ UI IDÉNTICA AL CENTRO DE CRIANZA
+                // ✨ UI IDÉNTICA AL CENTRO DE CRIANZA (Borde punteado cian)
                 slot.style = "width: 55px; height: 55px; border-radius: 12px; display: flex; justify-content: center; align-items: center; cursor: pointer; position: relative; transition: all 0.2s;";
                 
                 if (window.genosEnReactor[i]) {
@@ -205,9 +216,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
                     
                     slot.innerHTML = `<div style="width: 45px; height: 45px; color: ${pColor}; display: flex; justify-content: center; align-items: center;">${svg}</div>`;
-                    slot.style.border = "2px solid #8A2BE2"; // Morado para indicar que está cargado de energía
-                    slot.style.background = "#1a2a36";
-                    slot.style.boxShadow = "0 0 10px rgba(138, 43, 226, 0.4)";
+                    slot.style.border = "2px dashed #8A2BE2"; // Morado para indicar que está cargado
+                    slot.style.background = "#0d1a24";
                     
                     slot.addEventListener("click", () => {
                         window.genosEnReactor.splice(i, 1);
@@ -233,7 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 genosLibres.forEach(geno => {
                     const card = document.createElement("div");
-                    // Tarjetas estilo Centro de Crianza
+                    // Tarjetas fondo oscuro
                     card.style = "min-width: 55px; height: 55px; background: #1a2a36; border: 1px solid #4dd0e1; border-radius: 10px; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: transform 0.1s;";
                     
                     const pColor = geno.color || geno.base_color || "#ccc";
@@ -302,14 +312,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 btnFuse.disabled = true;
                 btnFuse.innerText = "SINTETIZANDO ADN...";
-                btnFuse.style.background = "#D500F9";
+                btnFuse.style.background = "#8A2BE2";
                 btnFuse.style.cursor = "wait";
                 
                 let toggle = false;
                 const animacionReactor = setInterval(() => {
                     toggle = !toggle;
                     containerSlots.style.transform = toggle ? "scale(1.05)" : "scale(0.95)";
-                    containerSlots.style.filter = toggle ? "drop-shadow(0 0 15px #8B5CF6) brightness(1.3)" : "none";
+                    containerSlots.style.filter = toggle ? "drop-shadow(0 0 15px #8A2BE2) brightness(1.3)" : "none";
                 }, 150);
 
                 setTimeout(() => {
@@ -382,7 +392,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         window.genosEnReactor = []; 
                         window.renderizarAlquimia();
                         
-                        // Guardar siempre después del gacha
                         if (typeof window.guardarJuego === 'function') window.guardarJuego();
                         else if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
                         
