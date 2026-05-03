@@ -1,12 +1,66 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V14.5 - RESPETA ESTILOS GLOBALES Y FONDO ORIGINAL)
+// ReactorManager.js - FUSIONES Y MUTACIONES (V14.6 - FIX ABSOLUTO DE FONDO CIAN Y BOTÓN)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ✨ INYECCIÓN DE ESTILOS: Solo estilizamos lo de ADENTRO de la caja, sin tocar fondos ni botones globales
+    // ✨ INYECCIÓN DE ESTILOS: Forzamos el aspecto visual del Centro de Crianza
     const style = document.createElement('style');
     style.innerHTML = `
+        /* 1. Fondo Cian con líneas horizontales (Idéntico a Crianza) */
+        #alchemy-screen {
+            background-color: #4dd0e1 !important;
+            background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px) !important;
+            height: 100vh !important;
+            overflow-y: auto !important;
+            padding: 20px !important;
+            box-sizing: border-box !important;
+        }
+
+        /* 2. Caja Negra Central */
+        #alchemy-screen .reactor-panel-wrapper {
+            background: #1a2a36 !important;
+            border: none !important;
+            border-radius: 16px !important;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important;
+            padding: 25px 20px !important;
+            margin-bottom: 20px !important;
+        }
+
+        /* Limpieza de contenedores internos heredados */
+        #alchemy-screen .reactor-panel-wrapper > div {
+            border: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            padding: 0 !important;
+        }
+        
+        /* 3. Título Principal */
+        #alchemy-screen h2 {
+            color: #4dd0e1 !important;
+            text-shadow: none !important;
+            text-transform: uppercase !important;
+            letter-spacing: 2px !important;
+            margin: 0 0 15px 0 !important;
+            font-weight: bold !important;
+            text-align: center !important;
+            font-size: 16px !important;
+            border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+            padding-bottom: 15px !important;
+        }
+        
+        /* 4. Descripción */
+        #reactor-description {
+            color: #888 !important;
+            font-size: 10px !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+            font-weight: bold !important;
+            margin-bottom: 20px !important;
+            text-align: center !important;
+            line-height: 1.4 !important;
+        }
+
         /* Selector de Nivel */
         select#reactor-level-select {
             background: #0d1a24 !important;
@@ -78,8 +132,27 @@ document.addEventListener("DOMContentLoaded", () => {
             padding: 15px !important;
             transition: all 0.3s ease !important;
             border: none !important;
+            color: #fff !important;
             width: 100%;
             margin-top: 20px !important;
+        }
+        
+        /* ✨ FIX MAESTRO: Botón Volver al Laboratorio Sólido y Sin Bordes */
+        #alchemy-screen .btn-go-home {
+            background: #0f172a !important; /* Azul muy oscuro / casi negro */
+            color: #4dd0e1 !important;
+            border: none !important; /* Sin bordes cian */
+            border-radius: 12px !important;
+            font-weight: bold !important;
+            text-transform: uppercase !important;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3) !important;
+            padding: 18px !important;
+            width: 100% !important;
+            letter-spacing: 1px !important;
+            text-align: center !important;
+            display: block !important;
+            margin-top: 0 !important;
+            cursor: pointer !important;
         }
     `;
     document.head.appendChild(style);
@@ -89,19 +162,16 @@ document.addEventListener("DOMContentLoaded", () => {
         const alchemyScreen = document.getElementById("alchemy-screen");
         if (alchemyScreen && !alchemyScreen.querySelector('.reactor-panel-wrapper')) {
             
-            // Creamos la caja negra idéntica a la del centro de crianza
             const wrapper = document.createElement("div");
-            wrapper.className = "panel reactor-panel-wrapper";
-            wrapper.style = "background: #1a2a36; border-radius: 16px; padding: 25px 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); margin-bottom: 30px; border: none;";
+            wrapper.className = "reactor-panel-wrapper";
             
-            // Metemos todo adentro EXCEPTO el botón de volver al laboratorio
             Array.from(alchemyScreen.children).forEach(child => {
                 if (!child.classList.contains('btn-go-home') && child !== wrapper) {
-                    // Limpiamos bordes de divs viejos que pudieran haber
                     if(child.tagName === 'DIV') {
                         child.style.border = "none";
                         child.style.boxShadow = "none";
                         child.style.background = "transparent";
+                        child.style.padding = "0";
                     }
                     wrapper.appendChild(child);
                 }
@@ -109,17 +179,8 @@ document.addEventListener("DOMContentLoaded", () => {
             
             alchemyScreen.insertBefore(wrapper, alchemyScreen.firstChild);
             
-            // Estilizamos el título y la descripción
             const titleEl = wrapper.querySelector("h2");
-            if (titleEl) {
-                titleEl.innerText = "REACTOR GENÉTICO";
-                titleEl.style = "color: #4dd0e1; text-shadow: none; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 15px 0; font-weight: bold; text-align: center; font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;";
-            }
-
-            const descEl = document.getElementById("reactor-description");
-            if (descEl) {
-                descEl.style = "color: #888; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-bottom: 20px; text-align: center; line-height: 1.4;";
-            }
+            if (titleEl) titleEl.innerText = "REACTOR GENÉTICO";
         }
     }, 50);
 
@@ -212,7 +273,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         window.renderizarAlquimia();
                     });
                 } else {
-                    // Muestras vacías idénticas a las del Centro de Crianza
                     slot.style.border = "1px dashed #4dd0e1";
                     slot.style.background = "transparent";
                     slot.innerHTML = '<span style="color: #4dd0e1; font-size: 24px; font-weight: 300;">+</span>';
