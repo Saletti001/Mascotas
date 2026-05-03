@@ -1,40 +1,7 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V15.10 - FIX CAZADOR DE CALCULADORA)
+// ReactorManager.js - FUSIONES Y MUTACIONES (V15.11 - FIX CÁLCULO NATIVO DE CALIDAD +)
 // =========================================
 
-// ✨ PARCHE GLOBAL INTELIGENTE: Ejecutamos un radar que busca la calculadora hasta atraparla
-let intentosParche = 0;
-const intervalParche = setInterval(() => {
-    // Si la función ya existe en tu juego y aún no la hemos parcheado...
-    if (typeof window.calcularCalidad === "function" && !window.calcularCalidadParcheada) {
-        const calcOriginal = window.calcularCalidad; // Guardamos la original
-        
-        window.calcularCalidad = function(stats, rareza, nivel) {
-            let rLimpia = rareza || "Común";
-            let sClon = { ...stats }; // Clonamos para no arruinar los stats reales del Geno
-
-            // Si es un mutante "+", le quitamos el bono del 15% temporalmente SOLO para el cálculo de la barra
-            if (typeof rLimpia === "string" && rLimpia.includes("+")) {
-                rLimpia = rLimpia.replace("+", ""); 
-                if (sClon.hp !== undefined) {
-                    sClon.hp = Math.round(sClon.hp / 1.15);
-                    sClon.atk = Math.round(sClon.atk / 1.15);
-                    sClon.def = Math.round(sClon.def / 1.15);
-                    sClon.spd = Math.round(sClon.spd / 1.15);
-                    sClon.luk = Math.round(sClon.luk / 1.15);
-                }
-            }
-            return calcOriginal(sClon, rLimpia, nivel);
-        };
-        window.calcularCalidadParcheada = true;
-        clearInterval(intervalParche); // ¡Atrapada y parcheada! Apagamos el radar.
-    }
-    
-    intentosParche++;
-    if (intentosParche > 100) clearInterval(intervalParche); // Nos rendimos tras 10 segundos por seguridad
-}, 100);
-
-// ✨ INICIO DEL MÓDULO VISUAL
 document.addEventListener("DOMContentLoaded", () => {
     
     // ✨ ESTILOS
@@ -405,12 +372,37 @@ document.addEventListener("DOMContentLoaded", () => {
                         const baseRarity = resultado.rarity.replace("+", "");
                         let statsBase = window.generarStatsPorRareza ? window.generarStatsPorRareza(baseRarity) : { hp: 50, atk: 15, def: 10, spd: 15, luk: 15 };
                         
+                        // ✨ FIX: CALCULADORA NATIVA DE MUTANTES (Para guardar el rango original)
                         if (resultado.rarity.includes("+")) {
+                            // Extraemos la tabla que usa app.js (TABLA_IVS) porque es la correcta que incluye Defensa
+                            const tablaStats = window.TABLA_IVS || window.ESCALA_RAREZAS; 
+                            const limites = tablaStats[baseRarity] || tablaStats["Común"];
+                            
+                            // Calculamos la calidad ORIGINAL antes de inflar los números
+                            let tMin = limites.hp[0] + limites.atk[0] + (limites.def ? limites.def[0] : 0) + limites.spd[0] + limites.luk[0];
+                            let tMax = limites.hp[1] + limites.atk[1] + (limites.def ? limites.def[1] : 0) + limites.spd[1] + limites.luk[1];
+                            let tObt = statsBase.hp + statsBase.atk + (statsBase.def || 0) + statsBase.spd + statsBase.luk;
+
+                            let pct = Math.round(((tObt - tMin) / (tMax - tMin)) * 100);
+                            if (pct > 100) pct = 100;
+                            if (pct < 0) pct = 0;
+
+                            let rangoOriginal = "D";
+                            if (pct >= 90) rangoOriginal = "S";      // Según tu app.js S es 90
+                            else if (pct >= 75) rangoOriginal = "A"; // Según tu app.js A es 75
+                            else if (pct >= 50) rangoOriginal = "B";
+                            else if (pct >= 25) rangoOriginal = "C";
+
+                            // Ahora sí, le inyectamos la radiación para que sea una bestia
                             statsBase.hp = Math.floor(statsBase.hp * 1.15);
                             statsBase.atk = Math.floor(statsBase.atk * 1.15);
-                            statsBase.def = Math.floor(statsBase.def * 1.15);
+                            if (statsBase.def) statsBase.def = Math.floor(statsBase.def * 1.15);
                             statsBase.spd = Math.floor(statsBase.spd * 1.15);
                             statsBase.luk = Math.floor(statsBase.luk * 1.15);
+                            
+                            // Guardamos la calidad sellada genéticamente para que RPGManager no la sobrescriba
+                            statsBase.rango = rangoOriginal;
+                            statsBase.calidadPorcentaje = pct;
                         }
 
                         const formasMutantes = ["gota", "frijol", "estrella"]; 
