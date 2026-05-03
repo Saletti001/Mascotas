@@ -1,10 +1,9 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V15.2 - FIX CRÍTICO: CUELGUE EN ANIMACIÓN)
+// ReactorManager.js - FUSIONES Y MUTACIONES (V15.3 - FIX CARAS MUTANTES PARA TODOS)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ✨ PARCHE GLOBAL: Enseñamos a la Calculadora a entender el símbolo "+"
     if (typeof window.calcularCalidad === "function" && !window.calcularCalidadParcheada) {
         const calcOriginal = window.calcularCalidad;
         window.calcularCalidad = function(stats, rareza, nivel) {
@@ -17,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
         window.calcularCalidadParcheada = true; 
     }
 
-    // ✨ ESTILOS
     const style = document.createElement('style');
     style.innerHTML = `
         #alchemy-screen:not(.hidden) {
@@ -141,7 +139,6 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
     document.head.appendChild(style);
 
-    // ✨ DOM SCRIPT
     setTimeout(() => {
         const alchemyScreen = document.getElementById("alchemy-screen");
         const breedingScreen = document.getElementById("breeding-screen");
@@ -379,8 +376,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     
                     const limiteCritico = reglas.probCrit;
                     const limiteNormal = limiteCritico + reglas.probNorm;
-                    
-                    // ✨ FIX CRÍTICO: Aquí estaba el error tipográfico (probStag -> reglas.probStag)
                     const limiteEstancada = limiteNormal + reglas.probStag;
 
                     const inyectarNuevoMutante = (resultado) => {
@@ -395,11 +390,12 @@ document.addEventListener("DOMContentLoaded", () => {
                             statsBase.luk = Math.floor(statsBase.luk * 1.15);
                         }
 
-                        const ojosMutantes = ["alien", "ciclope", "furioso", "bizco"];
+                        // ✨ FIX: AHORA LAS MUTACIONES SE APLICAN A TODOS LOS GENOS DEL REACTOR
+                        const ojosMutantes = ["alien", "ciclope", "furioso", "bizco", "tierno"];
                         const bocasMutantes = ["colmillos", "babeando", "cremallera", "triste"];
                         
-                        const ojoElegido = resultado.rarity.includes("+") ? ojosMutantes[Math.floor(Math.random() * ojosMutantes.length)] : "estandar";
-                        const bocaElegida = resultado.rarity.includes("+") ? bocasMutantes[Math.floor(Math.random() * bocasMutantes.length)] : "feliz";
+                        const ojoElegido = ojosMutantes[Math.floor(Math.random() * ojosMutantes.length)];
+                        const bocaElegida = bocasMutantes[Math.floor(Math.random() * bocasMutantes.length)];
 
                         const nuevoId = typeof window.generarNuevoID === 'function' ? window.generarNuevoID() : Date.now();
                         const prefijos = ["Neo", "Bio", "Geno", "Cyto", "Viro", "Rad", "Syn", "Evo", "Nexo", "Mut"];
