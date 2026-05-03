@@ -1,5 +1,5 @@
 // =========================================
-// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V14.11 - FIX DEFINITIVO ANIMACIÓN Y TAMAÑO)
+// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V14.12 - FIX FINAL TAMAÑO, CENTRADO Y ANIMACIÓN)
 // Requiere cargar 'genes.js' previamente en el HTML.
 // =========================================
 
@@ -12,10 +12,7 @@ window.maxGenoSlots = window.maxGenoSlots || 6;
 window.getIconoElemento = function(elementoStr) {
     if (!elementoStr) return "";
     
-    // Limpiamos el string por si viene con emojis antiguos de versiones previas
     const nombreLimpio = elementoStr.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, '').trim();
-    
-    // Buscamos el SVG en la galería de la tienda
     let svg = window.ShopManager && window.ShopManager.iconosSVG ? window.ShopManager.iconosSVG[nombreLimpio] : null;
     
     if (svg) {
@@ -159,8 +156,6 @@ window.migrarHPGenosExistentes = function() {
 
     if (huboCambios) {
         if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
-        console.log("🔧 Parche V14.4 Absoluto aplicado: HP Base duplicado y Puntos Extra reducidos a la mitad.");
-        
         setTimeout(() => {
             if (typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
         }, 100);
@@ -367,7 +362,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const pColor = geno.color || geno.base_color || "#ccc";
             let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-            // El viewBox artificial se queda SÓLO en las tarjetas pequeñas de la grilla
             svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             
             card.innerHTML = `
@@ -375,13 +369,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span style="color: white; font-weight: bold; font-size: 12px; margin-top: 10px; text-align: center;">${geno.name || 'Sujeto'}</span>
             `;
             
-            // ✨ FIX DEFINITIVO Y LIMPIO: Carga el SVG exactamente igual que SaveManager
+            // ✨ FIX MATEMÁTICO: viewBox para centrar, pero bajando el tamaño a 160px para que no se infle
             card.onclick = () => {
                 window.miMascota = geno;
                 if (pedestal) {
-                    pedestal.style.color = pColor;
-                    // Inyectamos el SVG nativo sin wrappers falsos ni reemplazar el viewBox
-                    pedestal.innerHTML = typeof window.generarSvgGeno === 'function' ? window.generarSvgGeno(geno) : '';
+                    const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
+                    let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+                    pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; width: 160px; height: 160px; color: ${pColor}; top: 35%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
                 }
                 const nameEl = document.getElementById('geno-name');
                 if (nameEl) nameEl.innerText = `${geno.name} #${geno.id}`;
@@ -538,16 +532,18 @@ function iniciarSecuenciaBienvenida() {
         }, 2500);
     };
 
-    // ✨ FIX LIMPIO PARA EL GENO INICIAL (Misma lógica: sin wrappers falsos)
     btnClaim.onclick = () => {
         window.miMascota = miPrimerGeno;
         if(!window.misGenos) window.misGenos = []; window.misGenos.push(miPrimerGeno);
 
         const pedestal = document.getElementById("geno-container");
         if (pedestal) {
-            pedestal.style.display = "block"; // Aseguramos que sea visible
-            pedestal.style.color = miPrimerGeno.color;
-            pedestal.innerHTML = typeof window.generarSvgGeno === 'function' ? window.generarSvgGeno(miPrimerGeno) : '';
+            pedestal.style.display = "block";
+            const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
+            
+            // ✨ FIX MATEMÁTICO INICIAL
+            let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+            pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; width: 160px; height: 160px; color: ${miPrimerGeno.color}; top: 35%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
         }
         
         const nameEl = document.getElementById('geno-name');
