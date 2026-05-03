@@ -1,14 +1,13 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V14.13 - FIX DE NAVEGACIÓN Y PANTALLA PEGADA)
+// ReactorManager.js - FUSIONES Y MUTACIONES (V14.14 - FIX LIMPIEZA DE RAREZAS HEREDADAS)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // ✨ ESTILOS: Arreglado el error crítico de display: flex que bloqueaba la clase .hidden
     const style = document.createElement('style');
     style.innerHTML = `
-        /* Fondo Cian (Solo se aplica si la pantalla NO está oculta) */
-        #alchemy-screen:not(.hidden) {
+        /* Fondo Cian con líneas horizontales finas */
+        #alchemy-screen {
             background-color: #4dd0e1 !important;
             background-image: repeating-linear-gradient(to bottom, rgba(0,0,0,0.04) 0px, rgba(0,0,0,0.04) 1px, transparent 1px, transparent 6px) !important;
             height: 100vh !important;
@@ -137,7 +136,7 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
     document.head.appendChild(style);
 
-    // ✨ DOM SCRIPT: Empaquetamos la caja oscura Y clonamos ÚNICAMENTE el botón de crianza.
+    // ✨ DOM SCRIPT
     setTimeout(() => {
         const alchemyScreen = document.getElementById("alchemy-screen");
         const breedingScreen = document.getElementById("breeding-screen");
@@ -217,6 +216,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     window.renderizarAlquimia = function() {
         if(!selectNivel) return;
+        
+        // 🔧 FIX MAESTRO: Limpieza de rarezas corruptas ("Común+", "Raro+", etc.) del guardado antiguo.
+        if (window.misGenos && window.misGenos.length > 0) {
+            let modificado = false;
+            window.misGenos.forEach(g => {
+                if (g.rarity && g.rarity.includes("+")) {
+                    g.rarity = g.rarity.replace("+", "");
+                    modificado = true;
+                }
+            });
+            // Si curamos algún ADN corrupto, guardamos la partida automáticamente
+            if (modificado && typeof window.guardarProgreso === 'function') window.guardarProgreso();
+        }
+
         const nivel = selectNivel.value;
         const reglas = reactorRules[nivel];
         
@@ -229,6 +242,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const costEl = document.getElementById("reactor-cost-display");
         if(costEl) costEl.innerText = reglas.cost + " ✨";
 
+        // Aquí filtramos: Tiene que ser de la rareza, NO ser huevo, y NO ser tu mascota activa.
         const genosDisponibles = window.misGenos.filter(g => g.rarity === reglas.reqRarity && !g.isEgg && (!window.miMascota || window.miMascota.id !== g.id));
         
         const countEl = document.getElementById("alchemy-common-count");
