@@ -1,5 +1,5 @@
 // =========================================
-// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V14.12 - FIX FINAL TAMAÑO, CENTRADO Y ANIMACIÓN)
+// app.js - CONTROLADOR PRINCIPAL Y NAVEGACIÓN (V14.13 - FIX MATEMÁTICO DE ESCALA 1:1)
 // Requiere cargar 'genes.js' previamente en el HTML.
 // =========================================
 
@@ -362,6 +362,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const pColor = geno.color || geno.base_color || "#ccc";
             let svg = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
+            // El viewBox artificial (-20 0 200 160) se queda SÓLO en la tarjeta pequeña para que se vea bien en la grilla
             svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
             
             card.innerHTML = `
@@ -369,13 +370,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span style="color: white; font-weight: bold; font-size: 12px; margin-top: 10px; text-align: center;">${geno.name || 'Sujeto'}</span>
             `;
             
-            // ✨ FIX MATEMÁTICO: viewBox para centrar, pero bajando el tamaño a 160px para que no se infle
+            // ✨ FIX MATEMÁTICO: viewBox="-45 -45 250 250"
+            // Esto le indica al motor gráfico que el centro exacto del dibujo está en las coordenadas X=80, Y=80
+            // Mantiene la escala 1:1 original, recupera el tamaño que tenías, y evita el rebote violento.
             card.onclick = () => {
                 window.miMascota = geno;
                 if (pedestal) {
                     const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
-                    let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
-                    pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; width: 160px; height: 160px; color: ${pColor}; top: 35%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
+                    let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-45 -45 250 250" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+                    pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; width: 250px; height: 250px; color: ${pColor}; top: 35%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
                 }
                 const nameEl = document.getElementById('geno-name');
                 if (nameEl) nameEl.innerText = `${geno.name} #${geno.id}`;
@@ -541,9 +544,9 @@ function iniciarSecuenciaBienvenida() {
             pedestal.style.display = "block";
             const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
             
-            // ✨ FIX MATEMÁTICO INICIAL
-            let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
-            pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; width: 160px; height: 160px; color: ${miPrimerGeno.color}; top: 35%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
+            // ✨ FIX MATEMÁTICO: Escala original de 1:1, centrado absoluto, mismo rebote
+            let pSvg = svgPedestal.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-45 -45 250 250" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
+            pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; width: 250px; height: 250px; color: ${miPrimerGeno.color}; top: 35%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center;">${pSvg}</div>`;
         }
         
         const nameEl = document.getElementById('geno-name');
