@@ -1,5 +1,5 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V15.17 - FIX TARJETAS DE SEGURIDAD QoL)
+// ReactorManager.js - FUSIONES Y MUTACIONES (V15.18 - FIX ANCHO CONTENEDOR GENOS)
 // =========================================
 
 // ✨ PARCHE GLOBAL INTELIGENTE: Ejecutamos un radar que busca la calculadora hasta atraparla
@@ -58,6 +58,7 @@ document.addEventListener("DOMContentLoaded", () => {
             box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important;
             padding: 25px 20px !important;
             margin-bottom: auto !important;
+            overflow: hidden !important; /* Para que no se salga el margen negativo de las opciones */
         }
 
         #alchemy-screen .reactor-panel-wrapper > div {
@@ -118,14 +119,18 @@ document.addEventListener("DOMContentLoaded", () => {
             font-weight: normal !important;
         }
 
+        /* ✨ FIX MAESTRO QoL: Estirando la caja negra para que entren 4 Genos perfectos */
         #reactor-available-genos {
             background: #0d1a24 !important; 
             border: none !important;
             border-radius: 12px !important;
-            padding: 15px !important;
-            min-height: 110px; /* ✨ Aumentado para que quepan las tarjetas altas */
+            padding: 15px 8px !important; /* Menos padding interior a los lados */
+            margin: 0 -12px !important; /* Estira la caja hacia los bordes */
+            width: calc(100% + 24px) !important; /* Compensa los márgenes negativos */
+            box-sizing: border-box !important;
+            min-height: 110px; 
             display: flex;
-            gap: 10px;
+            gap: 8px; /* Menos espacio entre cartas (de 10px a 8px) */
             overflow-x: auto;
             -ms-overflow-style: none; 
             scrollbar-width: none;
@@ -138,6 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
             color: #64748b !important;
             font-size: 10px !important;
             margin-bottom: 8px !important;
+            margin-left: -5px !important; /* Acomoda el texto al nuevo margen */
             text-align: left !important;
             text-transform: none !important;
             font-weight: normal !important;
@@ -331,7 +337,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     let svg = typeof window.generarSvgGeno === 'function' ? window.generarSvgGeno(geno) : '';
                     svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
                     
-                    // ✨ FIX QoL: Insignia de seguridad en los slots seleccionados
                     let rango = geno.stats && geno.stats.rango ? geno.stats.rango : "D";
                     let colorRango = rango === "S" ? "#ffcc00" : rango === "A" ? "#00d2ff" : rango === "B" ? "#4CAF50" : rango === "C" ? "#f0ad4e" : "#d9534f";
 
@@ -367,7 +372,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 genosLibres.forEach(geno => {
                     const card = document.createElement("div");
                     
-                    // ✨ FIX QoL: Transformamos la miniatura en una mini-tarjeta de datos
                     card.style = "min-width: 65px; height: 85px; background: rgba(0,0,0,0.3); border: 1px solid rgba(77,208,225,0.2); border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; cursor: pointer; flex-shrink: 0; transition: transform 0.1s; position: relative; padding: 5px 0;";
                     
                     const pColor = geno.color || geno.base_color || "#ccc";
