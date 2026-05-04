@@ -1,5 +1,5 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V15.16 - FIX ICONO EV SVG)
+// ReactorManager.js - FUSIONES Y MUTACIONES (V15.17 - FIX TARJETAS DE SEGURIDAD QoL)
 // =========================================
 
 // ✨ PARCHE GLOBAL INTELIGENTE: Ejecutamos un radar que busca la calculadora hasta atraparla
@@ -32,7 +32,7 @@ const intervalParche = setInterval(() => {
     if (intentosParche > 100) clearInterval(intervalParche); 
 }, 100);
 
-// ✨ NUEVO: ICONO SVG GLOBAL PARA LA ESENCIA VITAL (EV)
+// ✨ ICONO SVG GLOBAL PARA LA ESENCIA VITAL (EV)
 window.iconoEV = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: text-bottom; filter: drop-shadow(0 0 4px rgba(255,204,0,0.8)); margin-left: 2px;"><path d="M12 1L14.5 8.5L22 11L14.5 13.5L12 21L9.5 13.5L2 11L9.5 8.5L12 1Z" fill="#FFD700"/><path d="M12 4L13.5 9.5L19 11L13.5 12.5L12 18L10.5 12.5L5 11L10.5 9.5L12 4Z" fill="#FFF8DC"/></svg>`;
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -123,13 +123,14 @@ document.addEventListener("DOMContentLoaded", () => {
             border: none !important;
             border-radius: 12px !important;
             padding: 15px !important;
-            min-height: 70px;
+            min-height: 110px; /* ✨ Aumentado para que quepan las tarjetas altas */
             display: flex;
             gap: 10px;
             overflow-x: auto;
             -ms-overflow-style: none; 
             scrollbar-width: none;
             box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+            align-items: center;
         }
         #reactor-available-genos::-webkit-scrollbar { display: none; }
         
@@ -301,7 +302,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if(reqNameEl) reqNameEl.innerText = reglas.reqRarity + "s";
         
         const costEl = document.getElementById("reactor-cost-display");
-        // ✨ FIX: Usamos innerHTML para renderizar el SVG en lugar del texto puro
         if(costEl) costEl.innerHTML = `${reglas.cost} ${window.iconoEV}`;
 
         const genosDisponibles = window.misGenos.filter(g => 
@@ -331,7 +331,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     let svg = typeof window.generarSvgGeno === 'function' ? window.generarSvgGeno(geno) : '';
                     svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
                     
-                    slot.innerHTML = `<div style="width: 45px; height: 45px; color: ${pColor}; display: flex; justify-content: center; align-items: center;">${svg}</div>`;
+                    // ✨ FIX QoL: Insignia de seguridad en los slots seleccionados
+                    let rango = geno.stats && geno.stats.rango ? geno.stats.rango : "D";
+                    let colorRango = rango === "S" ? "#ffcc00" : rango === "A" ? "#00d2ff" : rango === "B" ? "#4CAF50" : rango === "C" ? "#f0ad4e" : "#d9534f";
+
+                    slot.innerHTML = `
+                        <div style="position: absolute; top: -5px; right: -5px; background: #0d1a24; border: 1.5px solid ${colorRango}; color: ${colorRango}; font-size: 9px; font-weight: 900; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 10;">${rango}</div>
+                        <div style="width: 40px; height: 40px; color: ${pColor}; display: flex; justify-content: center; align-items: center;">${svg}</div>
+                    `;
                     slot.style.border = "1px solid #8A2BE2"; 
                     slot.style.background = "#0d1a24";
                     slot.style.boxShadow = "inset 0 0 10px rgba(138, 43, 226, 0.2)";
@@ -360,15 +367,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 genosLibres.forEach(geno => {
                     const card = document.createElement("div");
                     
-                    card.style = "min-width: 55px; height: 55px; background: transparent; border: none; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; transition: transform 0.1s; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.4));";
+                    // ✨ FIX QoL: Transformamos la miniatura en una mini-tarjeta de datos
+                    card.style = "min-width: 65px; height: 85px; background: rgba(0,0,0,0.3); border: 1px solid rgba(77,208,225,0.2); border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; cursor: pointer; flex-shrink: 0; transition: transform 0.1s; position: relative; padding: 5px 0;";
                     
                     const pColor = geno.color || geno.base_color || "#ccc";
                     let svg = typeof window.generarSvgGeno === 'function' ? window.generarSvgGeno(geno) : '';
                     svg = svg.replace(/<svg[^>]*>/, '<svg width="100%" height="100%" viewBox="-20 0 200 160" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" style="overflow: visible;">');
                     
-                    card.innerHTML = `<div style="width: 55px; height: 55px; color: ${pColor}; display: flex; justify-content: center; align-items: center;">${svg}</div>`;
+                    let rango = geno.stats && geno.stats.rango ? geno.stats.rango : "D";
+                    let colorRango = rango === "S" ? "#ffcc00" : rango === "A" ? "#00d2ff" : rango === "B" ? "#4CAF50" : rango === "C" ? "#f0ad4e" : "#d9534f";
+
+                    card.innerHTML = `
+                        <div style="width: 100%; display: flex; justify-content: space-between; padding: 0 5px; box-sizing: border-box;">
+                            <span style="font-size: 9px; font-weight: bold; color: #888;">Nv.${geno.level || 1}</span>
+                            <span style="font-size: 10px; font-weight: 900; color: ${colorRango};">${rango}</span>
+                        </div>
+                        <div style="width: 40px; height: 40px; color: ${pColor}; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)); margin-bottom: 2px;">${svg}</div>
+                        <div style="font-size: 9px; color: #fff; max-width: 60px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${geno.name || "Geno"}</div>
+                    `;
                     
-                    card.addEventListener("mousedown", () => card.style.transform = "scale(0.9)");
+                    card.addEventListener("mousedown", () => card.style.transform = "scale(0.95)");
                     card.addEventListener("mouseup", () => card.style.transform = "scale(1)");
                     
                     card.addEventListener("click", () => {
@@ -551,7 +569,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         window.misGenos.push(mutante);
                     };
 
-                    // ✨ FIX: Cambiamos el texto de la alerta para usar "EV" en vez del emoji
                     if (tirada < limiteCritico) {
                         inyectarNuevoMutante(reglas.resCrit);
                         mensaje = `¡ÉXITO CRÍTICO! 🌟\nEl Reactor ha creado una anomalía: [Geno ${reglas.resCrit.rarity}].`;
