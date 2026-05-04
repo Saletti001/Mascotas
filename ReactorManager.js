@@ -1,5 +1,5 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V15.27 - FIX CÁLCULO DE CALIDAD EN TIEMPO REAL)
+// ReactorManager.js - FUSIONES Y MUTACIONES (V15.28 - FIX SUPERPOSICIÓN MÓVIL Y TEXTOS)
 // =========================================
 
 // ✨ PARCHE GLOBAL INTELIGENTE: Ejecutamos un radar que busca la calculadora hasta atraparla
@@ -57,8 +57,14 @@ document.addEventListener("DOMContentLoaded", () => {
             border-radius: 16px !important;
             box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important;
             padding: 25px 20px !important;
-            margin-bottom: auto !important;
+            margin-bottom: 20px !important; /* 👈 FIX: Margen fijo en vez de auto */
+            flex-shrink: 0 !important; /* 👈 FIX MAESTRO: Impide que el celular aplaste el panel */
             overflow: hidden !important; 
+        }
+
+        #alchemy-screen .btn-go-home {
+            margin-top: auto !important; /* 👈 FIX: Empuja el botón al fondo si hay espacio */
+            flex-shrink: 0 !important;
         }
 
         #alchemy-screen .reactor-panel-wrapper > div {
@@ -310,7 +316,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const costEl = document.getElementById("reactor-cost-display");
         if(costEl) costEl.innerHTML = `${reglas.cost} ${window.iconoEV}`;
 
-        // ✨ FIX MAESTRO: Calculadora en tiempo real para Genos antiguos sin datos
         const obtenerCalidadVisual = (g) => {
             if (g.stats && g.stats.calidadPorcentaje !== undefined) {
                 return { rango: g.stats.rango, pct: g.stats.calidadPorcentaje };
@@ -338,7 +343,15 @@ document.addEventListener("DOMContentLoaded", () => {
         );
         
         const countEl = document.getElementById("alchemy-common-count");
-        if(countEl) countEl.innerText = genosDisponibles.length;
+        // ✨ FIX MAESTRO: Forzamos el espaciado directamente en el contenedor del texto
+        if(countEl && countEl.parentNode) {
+            countEl.innerText = genosDisponibles.length;
+            countEl.parentNode.style.display = "flex";
+            countEl.parentNode.style.justifyContent = "space-between";
+            countEl.parentNode.style.borderBottom = "1px dashed rgba(255,255,255,0.1)";
+            countEl.parentNode.style.paddingBottom = "10px";
+            countEl.parentNode.style.marginBottom = "20px";
+        }
         
         const containerSlots = document.getElementById("reactor-slots-container");
         if(containerSlots) {
