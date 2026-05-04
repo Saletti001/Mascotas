@@ -1,5 +1,5 @@
 // =========================================
-// SanctuaryManager.js - LÓGICA DEL SANTUARIO V9.0 (UI PREMIUM CYAN)
+// SanctuaryManager.js - LÓGICA DEL SANTUARIO V9.1 (FIX BOTÓN VOLVER)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -8,20 +8,19 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- ESTILOS INYECTADOS PARA EL SANTUARIO ---
     const style = document.createElement('style');
     style.innerHTML = `
-        /* Fondo cian con textura, igual al Reactor */
+        /* Clonado exacto del fondo del Reactor */
         #sanctuary-screen:not(.hidden) {
             background-color: #4dd0e1 !important;
             background-image: repeating-linear-gradient(to bottom, rgba(0,0,0,0.04) 0px, rgba(0,0,0,0.04) 1px, transparent 1px, transparent 6px) !important;
             height: 100% !important; 
             min-height: 100vh !important;
             overflow-y: auto !important;
-            padding: 20px 20px 80px 20px !important;
+            padding: 20px 20px 60px 20px !important;
             box-sizing: border-box !important;
             display: flex !important;
             flex-direction: column !important;
         }
 
-        /* Contenedor tipo panel principal oscuro */
         #sanctuary-screen .sanctuary-panel-wrapper {
             background: #1a2a36 !important;
             border: none !important;
@@ -33,7 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
             overflow: hidden !important; 
         }
 
-        /* Estilos del Título y Subtítulo */
         #sanctuary-screen h2.screen-title {
             color: #4CAF50 !important;
             text-shadow: none !important;
@@ -58,7 +56,6 @@ document.addEventListener("DOMContentLoaded", () => {
             line-height: 1.4 !important;
         }
 
-        /* HUD de Límite Diario (Caja fuerte) */
         .sanctuary-limit-hud {
             display: flex;
             justify-content: space-between;
@@ -70,7 +67,6 @@ document.addEventListener("DOMContentLoaded", () => {
             margin-bottom: 25px;
         }
 
-        /* Grid de Genos actualizado */
         .sanctuary-grid-modern {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -78,13 +74,13 @@ document.addEventListener("DOMContentLoaded", () => {
             width: 100%;
         }
 
-        /* Botón de Volver al Laboratorio */
+        /* ✨ FIX MAESTRO MÓVIL: Regla idéntica a la del Reactor */
         #sanctuary-screen .btn-go-home {
             position: relative !important;
             margin-top: auto !important; 
+            margin-bottom: 20px !important;
             flex-shrink: 0 !important;
             z-index: 10 !important;
-            width: 100% !important;
         }
     `;
     document.head.appendChild(style);
@@ -97,16 +93,13 @@ document.addEventListener("DOMContentLoaded", () => {
             const wrapper = document.createElement("div");
             wrapper.className = "sanctuary-panel-wrapper";
             
-            // Movemos el contenido al wrapper, excepto el botón de volver
             Array.from(sanctuaryScreen.children).forEach(child => {
                 if (!child.classList.contains('btn-go-home') && child !== wrapper) {
                     
-                    // Si es el subtítulo original, le ponemos la clase para los estilos nuevos
                     if (child.tagName === 'P') {
                         child.className = "sanctuary-desc";
                     }
 
-                    // Destruimos el contador viejo de límite diario (lo reconstruiremos en el HUD)
                     if (child.tagName === 'DIV' && child.innerText.includes('Límite diario')) {
                         child.style.display = 'none'; 
                     }
@@ -115,12 +108,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
 
-            // Insertamos el wrapper justo al principio
             sanctuaryScreen.insertBefore(wrapper, sanctuaryScreen.firstChild);
             
-            // Reconstruimos el HUD del límite diario justo antes del grid
             const gridEl = document.getElementById("sanctuary-grid");
-            gridEl.className = "sanctuary-grid-modern"; // Aplicamos el nuevo grid
+            gridEl.className = "sanctuary-grid-modern"; 
             
             const limitHud = document.createElement('div');
             limitHud.className = "sanctuary-limit-hud";
@@ -202,7 +193,6 @@ document.addEventListener("DOMContentLoaded", () => {
         
         const dailyReleases = getDailyData();
         
-        // Actualizamos el HUD nuevo
         const countDisplay = document.getElementById("hud-daily-release-count");
         if (countDisplay) {
             countDisplay.innerText = `${dailyReleases}/${maxDailyReleases}`;
@@ -217,7 +207,6 @@ document.addEventListener("DOMContentLoaded", () => {
         
         grid.innerHTML = "";
 
-        // Filtramos: No huevos y No mascota activa actual
         const idMascota = window.miMascota ? String(window.miMascota.id) : null;
         const genosDisponibles = (window.misGenos || []).filter(g => !g.isEgg && String(g.id) !== idMascota);
 
@@ -239,7 +228,6 @@ document.addEventListener("DOMContentLoaded", () => {
             let colorRango = rango === "S" ? "#ffcc00" : rango === "A" ? "#00d2ff" : rango === "B" ? "#4CAF50" : rango === "C" ? "#f0ad4e" : "#d9534f";
 
             const card = document.createElement("div");
-            // Nuevo diseño de tarjeta alineado con el Reactor
             card.style = "background: rgba(0,0,0,0.3); border: 1px solid rgba(76, 175, 80, 0.2); border-radius: 12px; display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden; padding: 10px; box-sizing: border-box;";
             
             let overlayHtml = '';
@@ -313,7 +301,6 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     });
                     
-                    // Efecto de botón premium al hacer hover
                     btn.onmouseover = () => { 
                         btn.style.background = "linear-gradient(90deg, #4CAF50, #45a049)"; 
                         btn.style.color = "#fff"; 
