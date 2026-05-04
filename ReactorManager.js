@@ -1,5 +1,5 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V15.14 - FIX LIMPIEZA DE UI)
+// ReactorManager.js - FUSIONES Y MUTACIONES (V15.15 - FIX LORE "FUSIONAR")
 // =========================================
 
 // ✨ PARCHE GLOBAL INTELIGENTE: Ejecutamos un radar que busca la calculadora hasta atraparla
@@ -88,7 +88,6 @@ document.addEventListener("DOMContentLoaded", () => {
             line-height: 1.4 !important;
         }
 
-        /* ✨ FIX MAESTRO DE INTERFAZ: Menú desplegable estilo videojuego sci-fi */
         .custom-select-wrapper { position: relative; width: 100%; margin-bottom: 20px; user-select: none; }
         .custom-select-trigger { background: #0d1a24 !important; color: #4dd0e1 !important; border: 1px solid #111c24 !important; padding: 15px !important; border-radius: 8px !important; font-weight: bold !important; text-transform: uppercase !important; font-size: 11px !important; letter-spacing: 1px !important; cursor: pointer; text-align: center; box-shadow: inset 0 2px 5px rgba(0,0,0,0.3); display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; }
         .custom-select-trigger:hover { border-color: #4dd0e1 !important; box-shadow: 0 0 10px rgba(77,208,225,0.2), inset 0 2px 5px rgba(0,0,0,0.3); }
@@ -230,19 +229,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const trigger = document.createElement("div");
             trigger.className = "custom-select-trigger";
-            trigger.innerText = selectNivel.options[selectNivel.selectedIndex].text;
 
             const optionsContainer = document.createElement("div");
             optionsContainer.className = "custom-select-options";
 
             Array.from(selectNivel.options).forEach((opt, index) => {
+                // ✨ FIX LORE: Reemplazamos automáticamente QUEMAR por FUSIONAR 
+                const textoAdaptado = opt.text.replace(/QUEMAR/gi, "FUSIONAR");
+                
+                if (opt.selected) trigger.innerText = textoAdaptado;
+
                 const customOpt = document.createElement("div");
                 customOpt.className = "custom-option" + (opt.selected ? " selected" : "");
-                customOpt.innerText = opt.text;
+                customOpt.innerText = textoAdaptado;
                 
                 customOpt.addEventListener("click", () => {
                     selectNivel.selectedIndex = index;
-                    trigger.innerText = opt.text;
+                    trigger.innerText = textoAdaptado;
                     trigger.classList.remove("open");
                     optionsContainer.classList.remove("open");
                     
@@ -290,7 +293,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const reglas = reactorRules[nivel];
         
         const descEl = document.getElementById("reactor-description");
-        // ✨ FIX: Texto de descripción limpio, sin repetir el costo
         if(descEl) descEl.innerText = `COMBINA 5 ESPECÍMENES (${reglas.reqRarity.toUpperCase()}S) PARA INICIAR LA SECUENCIA DE FUSIÓN.`;
         
         const reqNameEl = document.getElementById("reactor-req-name");
