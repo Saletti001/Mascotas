@@ -1,5 +1,5 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V15.29 - FIX UI MÓVIL Y TEXTOS)
+// ReactorManager.js - FUSIONES Y MUTACIONES (V15.30 - FIX RESCATE DE LAYOUT Y MÓVIL)
 // =========================================
 
 // ✨ PARCHE GLOBAL INTELIGENTE: Ejecutamos un radar que busca la calculadora hasta atraparla
@@ -40,14 +40,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // ✨ ESTILOS
     const style = document.createElement('style');
     style.innerHTML = `
-        /* ✨ FIX MAESTRO MÓVIL: Uso de dvh y padding inferior para evitar solapamientos */
         #alchemy-screen:not(.hidden) {
             background-color: #4dd0e1 !important;
             background-image: repeating-linear-gradient(to bottom, rgba(0,0,0,0.04) 0px, rgba(0,0,0,0.04) 1px, transparent 1px, transparent 6px) !important;
+            height: 100% !important; 
             min-height: 100vh !important;
-            height: 100dvh !important; /* Adaptabilidad dinámica en móviles modernos */
             overflow-y: auto !important;
-            padding: 20px 20px 40px 20px !important; /* Más espacio al fondo */
+            padding: 20px 20px 40px 20px !important;
             box-sizing: border-box !important;
             display: flex !important;
             flex-direction: column !important;
@@ -59,14 +58,18 @@ document.addEventListener("DOMContentLoaded", () => {
             border-radius: 16px !important;
             box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important;
             padding: 25px 20px !important;
-            margin-bottom: 25px !important; /* Espacio extra debajo de la caja negra */
-            flex-shrink: 0 !important; /* Evita que la pantalla comprima el panel */
+            margin-bottom: 20px !important;
+            flex-shrink: 0 !important; /* Impide aplastamientos en móvil */
             overflow: hidden !important; 
         }
 
+        /* ✨ FIX MAESTRO MÓVIL: Obliga al botón a respetar el espacio y no flotar */
         #alchemy-screen .btn-go-home {
-            margin-top: auto !important;
+            position: relative !important;
+            margin-top: auto !important; 
+            margin-bottom: 20px !important;
             flex-shrink: 0 !important;
+            z-index: 10 !important;
         }
 
         #alchemy-screen .reactor-panel-wrapper > div {
@@ -115,12 +118,6 @@ document.addEventListener("DOMContentLoaded", () => {
         .custom-option:hover { background: #4dd0e1; color: #1a2a36; }
         .custom-option.selected { background: rgba(77,208,225,0.2); color: #fff; }
 
-        /* Eliminamos los viejos estilos conflictivos del contador */
-        #alchemy-screen p:has(span#alchemy-common-count),
-        #alchemy-screen p:has(span#reactor-cost-display) {
-            border-bottom: none !important;
-        }
-
         #reactor-available-genos {
             background: #0d1a24 !important; 
             border: none !important;
@@ -131,7 +128,7 @@ document.addEventListener("DOMContentLoaded", () => {
             box-sizing: border-box !important;
             min-height: 110px; 
             display: flex;
-            justify-content: flex-start !important; 
+            justify-content: flex-start !important;
             gap: 8px; 
             overflow-x: auto;
             -ms-overflow-style: none; 
@@ -161,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
             border: none !important;
             color: #fff !important;
             width: 100%;
-            margin-top: 25px !important; /* Más aire arriba del botón de fusionar */
+            margin-top: 25px !important; 
         }
     `;
     document.head.appendChild(style);
@@ -306,48 +303,48 @@ document.addEventListener("DOMContentLoaded", () => {
         const descEl = document.getElementById("reactor-description");
         if(descEl) descEl.innerText = `COMBINA 5 ESPECÍMENES (${reglas.reqRarity.toUpperCase()}S) PARA INICIAR LA SECUENCIA DE FUSIÓN.`;
         
-        // ✨ FIX MAESTRO: Destruimos el texto feo y lo reemplazamos con un panel estilo HUD
-        let tempCountEl = document.getElementById("alchemy-common-count");
-        if(tempCountEl && tempCountEl.parentNode && !tempCountEl.parentNode.dataset.styled) {
-            const pContainer = tempCountEl.parentNode;
-            pContainer.dataset.styled = "true"; // Marcamos para no reconstruirlo infinitamente
+        const reqNameEl = document.getElementById("reactor-req-name");
+        const countEl = document.getElementById("alchemy-common-count");
+        const costEl = document.getElementById("reactor-cost-display");
+
+        // ✨ FIX MAESTRO DE TEXTOS: Modificamos respetando el HTML original
+        if (reqNameEl) {
+            let plural = reglas.reqRarity === "Común" ? "Comunes" : reglas.reqRarity + "s";
+            reqNameEl.innerText = plural;
             
-            // Le damos estilo de panel
+            // Borramos la 's' extra que ponía el HTML viejo ("Comúns):")
+            if (reqNameEl.nextSibling && reqNameEl.nextSibling.nodeType === 3) {
+                reqNameEl.nextSibling.nodeValue = reqNameEl.nextSibling.nodeValue.replace(/s\):/g, "):");
+            }
+        }
+
+        if (costEl) {
+            costEl.innerHTML = `${reglas.cost} ${window.iconoEV}`;
+        }
+
+        // ✨ FIX LAYOUT: Separamos limpiamente usando el contenedor padre
+        if (countEl && countEl.parentNode && countEl.parentNode.tagName === 'P') {
+            const pContainer = countEl.parentNode;
             pContainer.style.display = "flex";
             pContainer.style.justifyContent = "space-between";
             pContainer.style.alignItems = "center";
-            pContainer.style.background = "rgba(0, 0, 0, 0.2)";
+            pContainer.style.background = "rgba(0,0,0,0.2)";
             pContainer.style.padding = "12px 15px";
             pContainer.style.borderRadius = "8px";
-            pContainer.style.border = "1px solid rgba(77, 208, 225, 0.15)";
+            pContainer.style.border = "1px solid rgba(77,208,225,0.15)";
             pContainer.style.marginBottom = "25px";
             
-            // Reconstruimos el HTML interno asegurándonos de mantener los IDs vivos
-            pContainer.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    <span style="color: #888; text-transform: uppercase; font-size: 10px; font-weight: bold; letter-spacing: 1px;">Sujetos</span> 
-                    <span id="reactor-req-name" style="color: #4dd0e1; font-weight: bold; font-size: 12px;"></span> 
-                    <span id="alchemy-common-count" style="color: #fff; font-weight: bold; font-size: 12px; margin-left: 2px; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 12px;">0</span>
-                </div>
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    <span style="color: #888; text-transform: uppercase; font-size: 10px; font-weight: bold; letter-spacing: 1px;">Coste</span> 
-                    <span id="reactor-cost-display" style="color: #ffcc00; font-weight: bold; font-size: 12px; display: flex; align-items: center;">0</span>
-                </div>
-            `;
+            // Textos estilizados en la propia p
+            pContainer.style.color = "#fff";
+            pContainer.style.fontSize = "12px";
+            pContainer.style.fontWeight = "bold";
+            
+            if (costEl) {
+                costEl.style.color = "#ffcc00";
+                costEl.style.display = "flex";
+                costEl.style.alignItems = "center";
+            }
         }
-
-        // Volvemos a buscar los elementos porque los acabamos de re-crear en el paso anterior
-        const reqNameEl = document.getElementById("reactor-req-name");
-        const costEl = document.getElementById("reactor-cost-display");
-        const countEl = document.getElementById("alchemy-common-count");
-
-        // ✨ FIX GRAMATICAL: Si es Común el plural es Comunes, si es otro, solo le añade la "s"
-        if(reqNameEl) {
-            let pluralCorrecto = reglas.reqRarity === "Común" ? "Comunes" : reglas.reqRarity + "s";
-            reqNameEl.innerText = pluralCorrecto;
-        }
-        
-        if(costEl) costEl.innerHTML = `${reglas.cost} ${window.iconoEV}`;
 
         const genosDisponibles = window.misGenos.filter(g => 
             (g.rarity === reglas.reqRarity || g.rarity === reglas.reqRarity + "+") && 
