@@ -1,5 +1,5 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V15.20 - FIX ADAPTABILIDAD 4 GENOS Y %)
+// ReactorManager.js - FUSIONES Y MUTACIONES (V15.21 - FIX LAYOUT DE TARJETAS)
 // =========================================
 
 // ✨ PARCHE GLOBAL INTELIGENTE: Ejecutamos un radar que busca la calculadora hasta atraparla
@@ -119,14 +119,14 @@ document.addEventListener("DOMContentLoaded", () => {
             font-weight: normal !important;
         }
 
-        /* ✨ FIX MAESTRO: Estructura 100% adaptable matemáticamente */
+        /* ✨ FIX MAESTRO: Expandimos a los lados con margen negativo */
         #reactor-available-genos {
             background: #0d1a24 !important; 
             border: none !important;
             border-radius: 12px !important;
-            padding: 15px 10px !important; 
-            margin: 0 !important; 
-            width: 100% !important; 
+            padding: 15px 8px !important; 
+            margin: 0 -15px !important; /* Estira 15px a cada lado */
+            width: calc(100% + 30px) !important; /* Compensa los márgenes */
             box-sizing: border-box !important;
             min-height: 110px; 
             display: flex;
@@ -143,7 +143,7 @@ document.addEventListener("DOMContentLoaded", () => {
             color: #64748b !important;
             font-size: 10px !important;
             margin-bottom: 8px !important;
-            margin-left: 0 !important; 
+            margin-left: -5px !important; 
             text-align: left !important;
             text-transform: none !important;
             font-weight: normal !important;
@@ -341,7 +341,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     let colorRango = rango === "S" ? "#ffcc00" : rango === "A" ? "#00d2ff" : rango === "B" ? "#4CAF50" : rango === "C" ? "#f0ad4e" : "#d9534f";
                     let pct = geno.stats && geno.stats.calidadPorcentaje !== undefined ? geno.stats.calidadPorcentaje : 0;
 
-                    // ✨ FIX: Modificamos la insignia superior para que sea una píldora con el %
                     slot.innerHTML = `
                         <div style="position: absolute; top: -5px; right: -5px; background: #0d1a24; border: 1px solid ${colorRango}; color: ${colorRango}; font-size: 8px; font-weight: 900; padding: 2px 4px; border-radius: 6px; display: flex; align-items: center; justify-content: center; z-index: 10; letter-spacing: 0.5px;">${rango} ${pct}%</div>
                         <div style="width: 40px; height: 40px; color: ${pColor}; display: flex; justify-content: center; align-items: center;">${svg}</div>
@@ -374,8 +373,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 genosLibres.forEach(geno => {
                     const card = document.createElement("div");
                     
-                    // ✨ FIX: Cálculo matemático perfecto para las 4 cartas (100% - espaciado) / 4
-                    card.style = "min-width: calc(25% - 4.5px); height: 85px; background: rgba(0,0,0,0.3); border: 1px solid rgba(77,208,225,0.2); border-radius: 8px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; cursor: pointer; flex-shrink: 0; transition: transform 0.1s; position: relative; padding: 5px 0; box-sizing: border-box;";
+                    // ✨ FIX: Ajustado el CSS para centrar y aplicar Flex Column
+                    card.style = "min-width: calc(25% - 4.5px); height: 85px; background: rgba(0,0,0,0.3); border: 1px solid rgba(77,208,225,0.2); border-radius: 8px; display: flex; flex-direction: column; align-items: center; cursor: pointer; flex-shrink: 0; transition: transform 0.1s; position: relative; padding: 5px 2px; box-sizing: border-box;";
                     
                     const pColor = geno.color || geno.base_color || "#ccc";
                     let svg = typeof window.generarSvgGeno === 'function' ? window.generarSvgGeno(geno) : '';
@@ -385,14 +384,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     let colorRango = rango === "S" ? "#ffcc00" : rango === "A" ? "#00d2ff" : rango === "B" ? "#4CAF50" : rango === "C" ? "#f0ad4e" : "#d9534f";
                     let pct = geno.stats && geno.stats.calidadPorcentaje !== undefined ? geno.stats.calidadPorcentaje : 0;
 
-                    // ✨ FIX: Se añadió el porcentaje junto a la letra de rango
+                    // ✨ FIX: Texto agrupado a la izquierda, SVG empujado hacia abajo.
                     card.innerHTML = `
-                        <div style="width: 100%; display: flex; justify-content: space-between; padding: 0 4px; box-sizing: border-box;">
-                            <span style="font-size: 9px; font-weight: bold; color: #888;">Nv.${geno.level || 1}</span>
-                            <span style="font-size: 9px; font-weight: 900; color: ${colorRango}; white-space: nowrap;">${rango} ${pct}%</span>
+                        <div style="width: 100%; text-align: left; padding-left: 4px; line-height: 1.2;">
+                            <div style="font-size: 9px; font-weight: bold; color: #888;">Nv.${geno.level || 1}</div>
+                            <div style="font-size: 10px; font-weight: 900; color: ${colorRango};">${rango} ${pct}%</div>
                         </div>
-                        <div style="width: 38px; height: 38px; color: ${pColor}; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)); margin-bottom: 2px;">${svg}</div>
-                        <div style="font-size: 9px; color: #fff; max-width: 90%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${geno.name || "Geno"}</div>
+                        <div style="width: 38px; height: 38px; color: ${pColor}; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)); margin-top: auto; margin-bottom: 0px;">${svg}</div>
+                        <div style="font-size: 9px; color: #fff; max-width: 95%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px;">${geno.name || "Geno"}</div>
                     `;
                     
                     card.addEventListener("mousedown", () => card.style.transform = "scale(0.95)");
