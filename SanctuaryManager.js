@@ -1,5 +1,5 @@
 // =========================================
-// SanctuaryManager.js - LÓGICA DEL SANTUARIO V9.2 (FIX BOTÓN PREMIUM Y SCROLL)
+// SanctuaryManager.js - LÓGICA DEL SANTUARIO V9.3 (FIX SCROLL INTERNO Y CABECERA FIJA)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -8,39 +8,37 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- ESTILOS INYECTADOS PARA EL SANTUARIO ---
     const style = document.createElement('style');
     style.innerHTML = `
-        /* 🚫 Eliminar barra de scroll gris nativa */
-        #sanctuary-screen::-webkit-scrollbar {
-            display: none !important;
-            width: 0 !important;
-            height: 0 !important;
-        }
-        #sanctuary-screen {
-            -ms-overflow-style: none !important;
-            scrollbar-width: none !important;
-        }
-
-        /* Clonado exacto del fondo del Reactor */
+        /* La pantalla principal ya NO hace scroll, ocupa exactamente el 100% */
         #sanctuary-screen:not(.hidden) {
             background-color: #4dd0e1 !important;
             background-image: repeating-linear-gradient(to bottom, rgba(0,0,0,0.04) 0px, rgba(0,0,0,0.04) 1px, transparent 1px, transparent 6px) !important;
-            height: 100% !important; 
-            min-height: 100vh !important;
-            overflow-y: auto !important;
-            padding: 20px 20px 60px 20px !important;
+            height: 100dvh !important; /* Usamos dvh para móviles */
+            overflow: hidden !important; /* Bloqueamos el scroll externo */
+            padding: 20px !important;
             box-sizing: border-box !important;
             display: flex !important;
             flex-direction: column !important;
         }
 
+        /* El panel oscuro ahora es un contenedor Flex que toma el espacio restante */
         #sanctuary-screen .sanctuary-panel-wrapper {
             background: #1a2a36 !important;
             border: none !important;
             border-radius: 16px !important;
             box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important;
-            padding: 25px 20px !important;
+            padding: 25px 20px 0 20px !important; /* Padding bottom 0 para que el scroll llegue al borde inferior */
             margin-bottom: 20px !important;
-            flex-shrink: 0 !important; 
+            display: flex !important;
+            flex-direction: column !important;
+            flex-grow: 1 !important; /* Se estira para empujar el botón hacia abajo */
             overflow: hidden !important; 
+        }
+
+        /* Protegemos la cabecera para que NO se encoja ni haga scroll */
+        #sanctuary-screen h2.screen-title,
+        #sanctuary-screen p.sanctuary-desc,
+        .sanctuary-limit-hud {
+            flex-shrink: 0 !important;
         }
 
         #sanctuary-screen h2.screen-title {
@@ -75,23 +73,32 @@ document.addEventListener("DOMContentLoaded", () => {
             padding: 12px 15px;
             border-radius: 8px;
             border: 1px solid rgba(76, 175, 80, 0.15);
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
+        /* ✨ FIX MAESTRO: El grid ahora tiene scroll independiente */
         .sanctuary-grid-modern {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             gap: 15px;
             width: 100%;
+            overflow-y: auto !important; /* El scroll sucede SOLAMENTE aquí */
+            flex-grow: 1 !important;
+            padding-bottom: 25px !important; /* Espacio para respirar al final de la lista */
+            
+            /* Ocultamos las barras de scroll nativas para que se vea limpio */
+            -ms-overflow-style: none !important;
+            scrollbar-width: none !important;
         }
 
-        /* ✨ FIX MAESTRO MÓVIL: Botón idéntico, centrado y con dimensiones relativas */
+        .sanctuary-grid-modern::-webkit-scrollbar {
+            display: none !important;
+        }
+
+        /* El botón principal fijo abajo */
         #sanctuary-screen .btn-go-home {
             position: relative !important;
-            margin-top: auto !important; 
-            margin-bottom: 20px !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
+            margin: 0 auto 0 auto !important; 
             width: 70% !important;
             max-width: 300px !important;
             flex-shrink: 0 !important;
@@ -145,13 +152,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 wrapper.insertBefore(limitHud, gridEl);
             }
 
-            // ✨ FIX BOTÓN: Robar el botón premium desde Crianza e inyectarlo en el Santuario
+            // Inyectamos el diseño premium del botón
             if (breedingScreen) {
                 const btnCrianza = breedingScreen.querySelector('.btn-go-home');
                 const btnSanctuary = sanctuaryScreen.querySelector('.btn-go-home');
                 if (btnCrianza && btnSanctuary) {
                     btnSanctuary.className = btnCrianza.className; 
-                    // Nota: No copiamos cssText intencionalmente para que no se pegue el "position: absolute"
                     if (btnCrianza.innerHTML !== btnSanctuary.innerHTML) {
                         btnSanctuary.innerHTML = btnCrianza.innerHTML; 
                     }
