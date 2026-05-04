@@ -1,5 +1,5 @@
 // =========================================
-// ReactorManager.js - FUSIONES Y MUTACIONES (V15.22 - FIX EXPANSIÓN AL LÍMITE)
+// ReactorManager.js - FUSIONES Y MUTACIONES (V15.23 - FIX ESPACIO Y TEXTOS)
 // =========================================
 
 // ✨ PARCHE GLOBAL INTELIGENTE: Ejecutamos un radar que busca la calculadora hasta atraparla
@@ -119,14 +119,14 @@ document.addEventListener("DOMContentLoaded", () => {
             font-weight: normal !important;
         }
 
-        /* ✨ FIX MAESTRO: Llevamos el rectángulo negro al límite absoluto del contenedor (20px) */
+        /* ✨ FIX MAESTRO: Estiramos al límite absoluto del relleno exterior (-25px) */
         #reactor-available-genos {
             background: #0d1a24 !important; 
             border: none !important;
-            border-radius: 8px !important; /* Suavizamos los bordes porque ahora tocarán el panel */
-            padding: 15px 12px !important; 
-            margin: 0 -20px !important; /* 👈 Máxima expansión lateral (compensa el padding de .reactor-panel-wrapper) */
-            width: calc(100% + 40px) !important; /* 👈 +40px para cubrir el margen negativo de ambos lados */
+            border-radius: 8px !important; 
+            padding: 15px 15px !important; /* Damos un respiro interno a los lados */
+            margin: 0 -25px !important; /* 👈 Invade todo el borde vacío */
+            width: calc(100% + 50px) !important; /* 👈 Compensa para no romper el grid */
             box-sizing: border-box !important;
             min-height: 110px; 
             display: flex;
@@ -373,8 +373,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 genosLibres.forEach(geno => {
                     const card = document.createElement("div");
                     
-                    // Matemáticas exactas para asegurar que las 4 cartas entren usando el ancho de (100% / 4) menos el espaciado (gap)
-                    card.style = "min-width: calc(25% - 4.5px); height: 85px; background: rgba(0,0,0,0.3); border: 1px solid rgba(77,208,225,0.2); border-radius: 8px; display: flex; flex-direction: column; align-items: center; cursor: pointer; flex-shrink: 0; transition: transform 0.1s; position: relative; padding: 5px 2px; box-sizing: border-box;";
+                    // Aseguramos matemáticamente que entren 4 y le damos un toque más de altura
+                    card.style = "min-width: calc(25% - 6px); height: 95px; background: rgba(0,0,0,0.3); border: 1px solid rgba(77,208,225,0.2); border-radius: 8px; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; cursor: pointer; flex-shrink: 0; transition: transform 0.1s; position: relative; padding: 6px 2px; box-sizing: border-box;";
                     
                     const pColor = geno.color || geno.base_color || "#ccc";
                     let svg = typeof window.generarSvgGeno === 'function' ? window.generarSvgGeno(geno) : '';
@@ -384,13 +384,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     let colorRango = rango === "S" ? "#ffcc00" : rango === "A" ? "#00d2ff" : rango === "B" ? "#4CAF50" : rango === "C" ? "#f0ad4e" : "#d9534f";
                     let pct = geno.stats && geno.stats.calidadPorcentaje !== undefined ? geno.stats.calidadPorcentaje : 0;
 
+                    // ✨ FIX: Bloque de texto superior ajustado (D y % justo debajo del Nivel)
+                    // ✨ FIX: SVG bajado y pegado al nombre
                     card.innerHTML = `
-                        <div style="width: 100%; text-align: left; padding-left: 4px; line-height: 1.2;">
-                            <div style="font-size: 9px; font-weight: bold; color: #888;">Nv.${geno.level || 1}</div>
-                            <div style="font-size: 10px; font-weight: 900; color: ${colorRango};">${rango} ${pct}%</div>
+                        <div style="width: 100%; text-align: left; padding-left: 6px; line-height: 1.1;">
+                            <div style="font-size: 9px; font-weight: bold; color: #888; margin-bottom: 2px;">Nv.${geno.level || 1}</div>
+                            <div style="font-size: 10px; font-weight: 900; color: ${colorRango}; letter-spacing: 0.5px;">${rango} <span style="font-size: 8px;">${pct}%</span></div>
                         </div>
-                        <div style="width: 38px; height: 38px; color: ${pColor}; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)); margin-top: auto; margin-bottom: 0px;">${svg}</div>
-                        <div style="font-size: 9px; color: #fff; max-width: 95%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 2px;">${geno.name || "Geno"}</div>
+                        <div style="width: 42px; height: 42px; color: ${pColor}; display: flex; justify-content: center; align-items: center; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)); margin-top: auto; margin-bottom: -3px;">${svg}</div>
+                        <div style="font-size: 9px; color: #fff; max-width: 95%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-bottom: 2px;">${geno.name || "Geno"}</div>
                     `;
                     
                     card.addEventListener("mousedown", () => card.style.transform = "scale(0.95)");
