@@ -1,5 +1,5 @@
 // =========================================
-// SanctuaryManager.js - LÓGICA DEL SANTUARIO V9.7 (FIX CLON EXACTO DE BOTÓN REACTOR)
+// SanctuaryManager.js - LÓGICA DEL SANTUARIO V9.8 (FIX HTML RAÍZ Y CÓDIGO LIMPIO)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -96,13 +96,18 @@ document.addEventListener("DOMContentLoaded", () => {
             display: none !important;
         }
 
-        /* ✨ FIX MAESTRO: Copia 1:1 de las reglas del botón del Reactor */
-        #sanctuary-screen .btn-go-home {
+        /* ✨ FIX MAESTRO DEL BOTÓN: Ahora que es el div correcto, lo centramos abajo */
+        #sanctuary-screen .sanctuary-btn {
             position: relative !important;
             margin-top: auto !important;
             margin-bottom: 20px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            width: 70% !important;
+            max-width: 300px !important;
             flex-shrink: 0 !important;
             z-index: 10 !important;
+            transform: none !important;
         }
     `;
     document.head.appendChild(style);
@@ -117,6 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 wrapper.className = "sanctuary-panel-wrapper";
                 
                 Array.from(sanctuaryScreen.children).forEach(child => {
+                    // No metemos el botón dentro de la caja oscura
                     if (!child.classList.contains('btn-go-home') && child !== wrapper) {
                         
                         if (child.tagName === 'P') {
@@ -134,7 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 sanctuaryScreen.insertBefore(wrapper, sanctuaryScreen.firstChild);
                 
                 const gridEl = document.getElementById("sanctuary-grid");
-                gridEl.className = "sanctuary-grid-modern"; 
+                if(gridEl) gridEl.className = "sanctuary-grid-modern"; 
                 
                 const limitHud = document.createElement('div');
                 limitHud.className = "sanctuary-limit-hud";
