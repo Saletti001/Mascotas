@@ -1,5 +1,5 @@
 // =========================================
-// SanctuaryManager.js - LÓGICA DEL SANTUARIO V10.1 (UI ORIGINAL Y SCROLL)
+// SanctuaryManager.js - LÓGICA DEL SANTUARIO V10.2 (CÓDIGO LIMPIO)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
             border-radius: 16px !important;
             box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important;
             padding: 25px 20px 0 20px !important; 
-            margin-bottom: 20px !important;
+            margin-bottom: 0 !important;
             display: flex !important;
             flex-direction: column !important;
             flex: 1 1 0 !important; 
@@ -95,14 +95,6 @@ document.addEventListener("DOMContentLoaded", () => {
         .sanctuary-grid-modern::-webkit-scrollbar {
             display: none !important;
         }
-
-        /* Dejamos que el botón use las reglas nativas de ui.css, solo lo posicionamos */
-        #sanctuary-screen .btn-go-home {
-            position: relative !important;
-            margin-top: auto !important;
-            flex-shrink: 0 !important;
-            z-index: 10 !important;
-        }
     `;
     document.head.appendChild(style);
 
@@ -116,17 +108,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 wrapper.className = "sanctuary-panel-wrapper";
                 
                 Array.from(sanctuaryScreen.children).forEach(child => {
-                    // Mantenemos el botón back-btn AFUERA del contenedor oscuro
+                    // Ignoramos el botón de volver para que se quede anclado abajo
                     if (!child.classList.contains('btn-go-home') && child !== wrapper) {
-                        
-                        if (child.tagName === 'P') {
-                            child.className = "sanctuary-desc";
-                        }
-
+                        if (child.tagName === 'P') child.className = "sanctuary-desc";
                         if (child.tagName === 'DIV' && child.innerText.includes('Límite diario')) {
                             child.style.display = 'none'; 
                         }
-
                         wrapper.appendChild(child);
                     }
                 });
