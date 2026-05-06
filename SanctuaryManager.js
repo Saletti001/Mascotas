@@ -1,5 +1,5 @@
 // =========================================
-// SanctuaryManager.js - LÓGICA DEL SANTUARIO V10.2 (CÓDIGO LIMPIO)
+// SanctuaryManager.js - LÓGICA DEL SANTUARIO V10.3 (NEÓN PERFECTO Y HUECO INFERIOR)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -8,26 +8,28 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- ESTILOS INYECTADOS PARA EL SANTUARIO ---
     const style = document.createElement('style');
     style.innerHTML = `
-        /* 🚫 Bloquear Scroll Externo Totalmente */
+        /* 🚫 Pantalla principal con posición relativa para anclar el botón flotante */
         #sanctuary-screen:not(.hidden) {
             background-color: #4dd0e1 !important;
             background-image: repeating-linear-gradient(to bottom, rgba(0,0,0,0.04) 0px, rgba(0,0,0,0.04) 1px, transparent 1px, transparent 6px) !important;
             height: 100dvh !important; 
             max-height: 100dvh !important;
             overflow: hidden !important; 
-            padding: 20px 20px 30px 20px !important;
+            padding: 20px 20px 0px 20px !important; /* 👈 Sin padding abajo, el botón usará ese espacio */
             box-sizing: border-box !important;
             display: flex !important;
             flex-direction: column !important;
+            position: relative !important; /* 👈 VITAL para el botón absolute */
         }
 
+        /* ✨ FIX MAESTRO: El panel deja un hueco de 90px exactos para el botón flotante */
         #sanctuary-screen .sanctuary-panel-wrapper {
             background: #1a2a36 !important;
             border: none !important;
             border-radius: 16px !important;
             box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important;
             padding: 25px 20px 0 20px !important; 
-            margin-bottom: 0 !important;
+            margin-bottom: 90px !important; /* 👈 HUECO INFERIOR PARA QUE EL BOTÓN NO SE MONTE */
             display: flex !important;
             flex-direction: column !important;
             flex: 1 1 0 !important; 
@@ -108,7 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 wrapper.className = "sanctuary-panel-wrapper";
                 
                 Array.from(sanctuaryScreen.children).forEach(child => {
-                    // Ignoramos el botón de volver para que se quede anclado abajo
+                    // Ignoramos el botón de volver para que flote libremente abajo
                     if (!child.classList.contains('btn-go-home') && child !== wrapper) {
                         if (child.tagName === 'P') child.className = "sanctuary-desc";
                         if (child.tagName === 'DIV' && child.innerText.includes('Límite diario')) {
