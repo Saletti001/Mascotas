@@ -1,5 +1,5 @@
 // =========================================
-// SanctuaryManager.js - LÓGICA DEL SANTUARIO V9.6 (FIX BRILLO NEÓN DEL BOTÓN)
+// SanctuaryManager.js - LÓGICA DEL SANTUARIO V9.7 (FIX CLON EXACTO DE BOTÓN REACTOR)
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -96,25 +96,13 @@ document.addEventListener("DOMContentLoaded", () => {
             display: none !important;
         }
 
-        /* ✨ FIX MAESTRO DE NEÓN: Dejamos que el botón respire sin forzar flex interno */
+        /* ✨ FIX MAESTRO: Copia 1:1 de las reglas del botón del Reactor */
         #sanctuary-screen .btn-go-home {
             position: relative !important;
-            left: auto !important;
-            right: auto !important;
-            top: auto !important;
-            bottom: auto !important;
-            transform: none !important; 
-            align-self: center !important; 
-            margin: 0 auto !important; 
-            width: 70% !important;
-            max-width: 300px !important;
+            margin-top: auto !important;
+            margin-bottom: 20px !important;
             flex-shrink: 0 !important;
             z-index: 10 !important;
-            
-            /* Eliminamos estilos por defecto de la etiqueta <button> que rompen el padding del neón */
-            border: none !important;
-            outline: none !important;
-            background-color: transparent !important;
         }
     `;
     document.head.appendChild(style);
@@ -122,7 +110,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // --- REESTRUCTURACIÓN DEL HTML AL CARGAR ---
     setTimeout(() => {
         const sanctuaryScreen = document.getElementById("sanctuary-screen");
-        const breedingScreen = document.getElementById("breeding-screen");
         
         if (sanctuaryScreen) {
             if (!sanctuaryScreen.querySelector('.sanctuary-panel-wrapper')) {
@@ -162,17 +149,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                 `;
                 wrapper.insertBefore(limitHud, gridEl);
-            }
-
-            if (breedingScreen) {
-                const btnCrianza = breedingScreen.querySelector('.btn-go-home');
-                const btnSanctuary = sanctuaryScreen.querySelector('.btn-go-home');
-                if (btnCrianza && btnSanctuary) {
-                    btnSanctuary.className = btnCrianza.className; 
-                    if (btnCrianza.innerHTML !== btnSanctuary.innerHTML) {
-                        btnSanctuary.innerHTML = btnCrianza.innerHTML; 
-                    }
-                }
             }
         }
     }, 50);
