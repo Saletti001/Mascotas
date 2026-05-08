@@ -351,7 +351,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if(controls) controls.style.setProperty("display", "none", "important");
             if(btnStart) { btnStart.style.setProperty("display", "block", "important"); 
             btnStart.innerText = "Buscar otro rival"; }
-            if(btnLeave) btnLeave.style.setProperty("display", "block", "important"); 
+            if(btnLeave) btnLeave.style.setProperty("display", "", "important"); 
         }, 1000);
     }
 
