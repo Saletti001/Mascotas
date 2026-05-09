@@ -216,24 +216,21 @@
             <p id="reactor-description" style="text-align: center; color: #666; font-size: 14px; padding: 0 20px; margin-bottom: 20px;">Fusiona 5 Genos Comunes para intentar crear 1 Geno Raro.</p>
             <div class="alchemy-panel">
                 <div class="alchemy-stats" style="flex-direction: column; gap: 10px; border-bottom: none; margin-bottom: 10px;">
-    <select id="reactor-level-select" style="padding: 10px; border-radius: 8px; border: 2px solid #8B5CF6; font-weight: bold; color: #333; outline: none; width: 100%; text-align: center; cursor: pointer; background: #f8f9fa;">
-        <option value="1">Nivel 1 (Quemar 5 Comunes)</option>
-        <option value="2">Nivel 2 (Quemar 5 Raros)</option>
-        <option value="3">Nivel 3 (Quemar 5 Épicos)</option>
-    </select>
-    
-    <!-- Nuevo contenedor simplificado y flexible -->
-    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; width: 100%; margin-top: 10px; padding-bottom: 10px; border-bottom: 1px dashed #ccc; color: #fff; font-size: 13px;">
-        <div style="display: flex; align-items: center; gap: 5px;">
-            Disponibles: <span id="alchemy-common-count" style="font-weight: bold; color: #4dd0e1; font-size: 14px;">0</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 5px;">
-            Costo: <span id="reactor-cost-display" style="font-weight: bold; color: #ffcc00; font-size: 14px; display: flex; align-items: center;">100 ✨</span>
-        </div>
-        <!-- Elemento oculto para compatibilidad con scripts existentes que busquen este ID -->
-        <span id="reactor-req-name" style="display: none;">Comunes</span>
-    </div>
-</div>
+                    <select id="reactor-level-select" style="padding: 10px; border-radius: 8px; border: 2px solid #8B5CF6; font-weight: bold; color: #333; outline: none; width: 100%; text-align: center; cursor: pointer; background: #f8f9fa;">
+                        <option value="1">Nivel 1 (Quemar 5 Comunes)</option>
+                        <option value="2">Nivel 2 (Quemar 5 Raros)</option>
+                        <option value="3">Nivel 3 (Quemar 5 Épicos)</option>
+                    </select>
+                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; width: 100%; margin-top: 10px; padding-bottom: 10px; border-bottom: 1px dashed #ccc; color: #fff; font-size: 13px;">
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            Disponibles: <span id="alchemy-common-count" style="font-weight: bold; color: #4dd0e1; font-size: 14px;">0</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            Costo: <span id="reactor-cost-display" style="font-weight: bold; color: #ffcc00; font-size: 14px; display: flex; align-items: center;">100 ✨</span>
+                        </div>
+                        <span id="reactor-req-name" style="display: none;">Comunes</span>
+                    </div>
+                </div>
                 <div id="reactor-slots-container" style="display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; width: 100%; min-height: 55px;"></div>
                 <div style="font-size: 11px; color: #888; text-align: left; width: 100%; margin-bottom: 5px;">Toca un Geno para cargarlo:</div>
                 <div id="reactor-available-genos" style="display: flex; overflow-x: auto; gap: 10px; padding: 10px; background: #f0f4f8; border-radius: 8px; margin-bottom: 20px; width: 100%; min-height: 60px; box-sizing: border-box;"></div>
@@ -328,46 +325,43 @@
         </div>
 
         <div id="coliseum-screen" class="app-screen hidden">
-            <h2 class="screen-title" style="color: #d9534f; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 15px 0; font-weight: bold; text-align: center; font-size: 16px;">Coliseo Nexo</h2>
+            <h2 class="screen-title">Coliseo Nexo</h2>
             
-            <div id="battle-area">
-                <div class="fighters-vs-container" style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 20px;">
-                    <div id="player-sprite-battle" style="text-align: center;">
-                        <div id="player-visual-box"></div>
-                        <div id="battle-player-name" style="margin-top: 5px; font-weight: bold; font-size: 12px; color: #4dd0e1;">Tu Geno</div>
+            <div id="battle-area" class="coliseum-card">
+                <div class="fighters-vs-container">
+                    <div id="player-sprite-battle" class="fighter-left">
+                        <div id="player-visual-box" class="fighter-sprite"></div>
+                        <div id="battle-player-name" class="fighter-name">Tu Geno</div>
                         <div class="hp-bar-container">
-                            <div id="player-hp-bar"></div>
+                            <div id="player-hp-bar" class="hp-bar-fill-green"></div>
                         </div>
-                        <div id="player-hp-text" style="font-size: 10px; margin-top: 2px; color: #aaa;">HP</div>
+                        <div id="player-hp-text" class="hp-text">HP</div>
                     </div>
                     
-                    <div class="vs-badge-battle" style="font-size: 24px; font-weight: 900; color: #ffcc00; text-shadow: 0 0 10px rgba(255,204,0,0.5);">VS</div>
+                    <div class="vs-badge-battle">VS</div>
                     
-                    <div id="enemy-sprite-battle" style="text-align: center;">
-                        <div id="enemy-visual-box"></div>
-                        <div id="battle-enemy-name" style="margin-top: 5px; font-weight: bold; font-size: 12px; color: #d9534f;">---</div>
+                    <div id="enemy-sprite-battle" class="fighter-right">
+                        <div id="enemy-visual-box" class="fighter-sprite"></div>
+                        <div id="battle-enemy-name" class="fighter-name">---</div>
                         <div class="hp-bar-container">
-                            <div id="enemy-hp-bar"></div>
+                            <div id="enemy-hp-bar" class="hp-bar-fill-red"></div>
                         </div>
-                        <div id="enemy-hp-text" style="font-size: 10px; margin-top: 2px; color: #aaa;">HP</div>
+                        <div id="enemy-hp-text" class="hp-text">HP</div>
                     </div>
                 </div>
                 
-                <div id="battle-log">Arena preparada. Esperando combatientes...</div>
+                <div id="battle-log" class="battle-log-container">Arena preparada. Esperando combatientes...</div>
             </div>
             
-            <div id="battle-controls" class="hidden"></div>
+            <div id="battle-controls" class="controls-container hidden"></div>
             
             <button id="btn-start-battle" class="btn-primary">Entrar a la Arena</button>
             
-            <div id="btn-leave-battle" class="fab-btn btn-go-home" style="margin: 20px auto; width: 70%; max-width: 300px; display: flex; justify-content: center;">
-                <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0; font-weight: bold; text-align: center; letter-spacing: 1px; width: 100%;">RETIRARSE</div>
-            </div>
+            <button id="btn-leave-battle" class="btn-secondary back-btn btn-go-home">Retirarse</button>
         </div>
-        <!-- Pega esto justo encima del div id="market-screen" -->
+
         <div id="shop-screen" class="app-screen hidden">
-            <!-- El ShopManager.js inyectará la tienda aquí -->
-        </div>
+            </div>
         <div id="market-screen" class="app-screen hidden">
             <h2 class="screen-title" style="color: #8A2BE2;">Mercado Web3</h2>
             <div style="display: flex; justify-content: center; margin-bottom: 15px;">
