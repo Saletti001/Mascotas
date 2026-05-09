@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="base.css">
     <link rel="stylesheet" href="ui.css">
     <link rel="stylesheet" href="screens.css">
+    <link rel="stylesheet" href="ArcadeUI.css">
     <style>
         .modal-content::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
         .modal-content { -ms-overflow-style: none !important; scrollbar-width: none !important; }
@@ -185,28 +186,30 @@
             </div>
         </div>
 
-        <div id="arcade-menu" class="app-screen hidden" style="background-color: #4dd0e1; background-image: repeating-linear-gradient(to bottom, rgba(0,0,0,0.04) 0px, rgba(0,0,0,0.04) 1px, transparent 1px, transparent 6px); height: 100dvh; max-height: 100dvh; overflow: hidden; padding: 20px 20px 30px 20px; box-sizing: border-box; display: flex; flex-direction: column;">
+        <div id="arcade-menu" class="app-screen hidden">
             
-            <h2 class="screen-title" style="color: #d9534f; text-shadow: none; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 15px 0; font-weight: bold; text-align: center; font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px; flex-shrink: 0;">Salón Arcade</h2>
+            <h2 class="screen-title">Salón Arcade</h2>
             
-            <div class="arcade-grid" style="flex-grow: 1; overflow-y: auto; background: #1a2a36; border: none; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.4); padding: 20px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 15px;">
-                <div class="arcade-card" id="card-catch-game" style="background: rgba(0,0,0,0.3); border: 1px solid #4dd0e1; border-radius: 12px; padding: 15px; text-align: center; color: white; cursor: pointer;">
+            <div class="arcade-card-container">
+                <div class="arcade-card" id="card-catch-game">
                     <div class="card-icon" style="font-size: 30px; margin-bottom: 10px;">🍎</div>
-                    <h3 style="margin: 0 0 5px 0; color: #4dd0e1; font-size: 14px; text-transform: uppercase;">Lluvia de Manzanas</h3>
-                    <p style="margin: 0; font-size: 11px; color: #aaa;">Atrapa 5 manzanas para ganar 1 item.</p>
+                    <h3 style="margin: 0; font-size: 14px; text-transform: uppercase; color: #4dd0e1;">Lluvia de Manzanas</h3>
+                    <p style="margin: 5px 0 0 0; font-size: 11px; color: #aaa;">Atrapa 5 manzanas para ganar 1 item.</p>
                 </div>
-                <div class="arcade-card locked" style="background: rgba(0,0,0,0.2); border: 1px dashed #555; border-radius: 12px; padding: 15px; text-align: center; color: #777;">
+                
+                <div class="arcade-card locked">
                     <div class="card-icon" style="font-size: 30px; margin-bottom: 10px; filter: grayscale(1);">🔒</div>
-                    <h3 style="margin: 0 0 5px 0; font-size: 14px; text-transform: uppercase;">Próximamente</h3>
-                    <p style="margin: 0; font-size: 11px;">Nuevo minijuego en desarrollo.</p>
+                    <h3 style="margin: 0; font-size: 14px; text-transform: uppercase;">Próximamente</h3>
+                    <p style="margin: 5px 0 0 0; font-size: 11px;">Nuevo minijuego en desarrollo.</p>
                 </div>
             </div>
             
-            <div style="margin-top: auto !important; margin-bottom: 25px !important; width: 100% !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; flex-shrink: 0 !important; text-align: center !important;">
-                <div class="fab-btn btn-go-home" style="display: inline-block !important; position: relative !important; margin: 0 auto !important; width: 70% !important; max-width: 300px !important; bottom: auto !important; left: auto !important; transform: none !important; box-sizing: border-box !important;">
+            <div class="arcade-footer-anchor">
+                <div class="fab-btn btn-go-home">
                     <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0; width: 100%; text-align: center; font-weight: bold; letter-spacing: 1px;">VOLVER AL LABORATORIO</div>
                 </div>
             </div>
+
         </div>
 
         <div id="minigame-screen" class="app-screen hidden">

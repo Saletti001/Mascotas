@@ -1,0 +1,78 @@
+/* ArcadeUI.css - Estilos independientes para el Salón Arcade */
+
+#arcade-menu.app-screen {
+    background-color: #4dd0e1 !important;
+    background-image: repeating-linear-gradient(to bottom, rgba(0,0,0,0.04) 0px, rgba(0,0,0,0.04) 1px, transparent 1px, transparent 6px) !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    overflow: hidden !important;
+    padding: 20px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+#arcade-menu .screen-title {
+    color: #1a2a36 !important; /* Oscuro para que resalte sobre el cian */
+    text-shadow: none !important;
+    text-transform: uppercase !important;
+    letter-spacing: 2px !important;
+    margin: 0 0 15px 0 !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    font-size: 16px !important;
+    border-bottom: 1px solid rgba(0,0,0,0.1) !important;
+    padding-bottom: 15px !important;
+    flex-shrink: 0 !important;
+}
+
+.arcade-card-container {
+    flex-grow: 1 !important;
+    overflow-y: auto !important;
+    background: #1a2a36 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important;
+    padding: 20px !important;
+    margin-bottom: 15px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 15px !important;
+}
+
+.arcade-card {
+    background: rgba(0,0,0,0.3) !important;
+    border: 1px solid #4dd0e1 !important;
+    border-radius: 12px !important;
+    padding: 15px !important;
+    text-align: center !important;
+    color: white !important;
+    cursor: pointer !important;
+    transition: 0.2s !important;
+}
+
+.arcade-card:active {
+    transform: scale(0.98) !important;
+}
+
+.arcade-card.locked {
+    background: rgba(0,0,0,0.2) !important;
+    border: 1px dashed #555 !important;
+    color: #777 !important;
+    cursor: default !important;
+}
+
+/* El botón neón blindado para el Arcade */
+.arcade-footer-anchor {
+    display: block !important;
+    margin: auto auto 15px auto !important;
+    width: 100% !important;
+    text-align: center !important;
+    flex-shrink: 0 !important;
+}
+
+.arcade-footer-anchor .fab-btn {
+    display: inline-block !important;
+    width: 70% !important;
+    max-width: 300px !important;
+    margin: 0 auto !important;
+}
