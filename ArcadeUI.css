@@ -14,14 +14,14 @@
 }
 
 /* 2. LA CAJA OSCURA (Blindada y elástica) */
-#arcade-menu .arcade-card-container {
-    flex-grow: 1 !important; /* Se estira hacia abajo */
-    overflow-y: hidden !important; /* Esconde el scroll de la caja general */
+.arcade-card-container {
+    flex-grow: 1 !important; 
+    overflow-y: hidden !important; 
     background: #1a2a36 !important;
     border-radius: 16px !important;
     box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important;
     padding: 15px !important;
-    margin-bottom: 55px !important; /* Margen blindado para separar el botón */
+    margin-bottom: 70px !important; /* 🔥 Aumentado de 55px a 70px para darle más respiro al botón 🔥 */
     display: flex !important;
     flex-direction: column !important;
 }
