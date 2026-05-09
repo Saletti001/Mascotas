@@ -255,7 +255,8 @@ document.addEventListener("DOMContentLoaded", () => {
             } else if (dailyReleases >= maxDailyReleases) {
                 btnHtml = `<button disabled style="margin-top: auto; width: 100%; padding: 12px; border-radius: 8px; border: none; background: #2a323d; color: #888; font-weight: bold; cursor: not-allowed; text-transform: uppercase; font-size: 11px; letter-spacing: 1px;">LÍMITE ALCANZADO</button>`;
             } else {
-                btnHtml = `<button class="btn-liberar-geno" data-id="${geno.id}" style="margin-top: auto; width: 100%; padding: 12px; border-radius: 8px; background: transparent; border: 1px solid #4CAF50; color: #4CAF50; font-weight: 900; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; font-size: 11px; letter-spacing: 1px;">LIBERAR ✨</button>`;
+                // AQUÍ ESTÁ LA CORRECCIÓN: Le quitamos el ✨ viejo y le ponemos tu nuevo iconoEV
+                btnHtml = `<button class="btn-liberar-geno" data-id="${geno.id}" style="margin-top: auto; width: 100%; padding: 12px; border-radius: 8px; background: transparent; border: 1px solid #4CAF50; color: #4CAF50; font-weight: 900; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; font-size: 11px; letter-spacing: 1px; display: flex; justify-content: center; align-items: center; gap: 5px;">LIBERAR ${window.iconoEV || ''}</button>`;
             }
 
             const extraBadge = (typeof window.getMultiplicadorEsencia === 'function' && window.getMultiplicadorEsencia(geno) > 1) 
