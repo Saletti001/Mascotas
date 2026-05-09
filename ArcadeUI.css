@@ -133,3 +133,44 @@
     margin: 0 auto !important;
     box-sizing: border-box !important;
 }
+
+/* Modificación para centrar el icono y título ahora que no hay descripción */
+#arcade-menu .arcade-card-container .arcade-games-grid .arcade-card {
+    position: relative !important; /* Vital para el botón 'i' */
+    justify-content: center !important; /* Centra el contenido verticalmente */
+    padding: 15px 5px !important; /* Un poco más alto para verse balanceado */
+}
+
+/* El botón pequeño de Información (i) */
+.arcade-info-btn {
+    position: absolute !important;
+    top: 6px !important;
+    right: 6px !important;
+    width: 20px !important;
+    height: 20px !important;
+    border-radius: 50% !important;
+    background: rgba(77, 208, 225, 0.15) !important;
+    border: 1px solid rgba(77, 208, 225, 0.5) !important;
+    color: #4dd0e1 !important;
+    font-size: 11px !important;
+    font-weight: bold !important;
+    font-family: monospace !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    z-index: 10 !important;
+    transition: 0.2s !important;
+}
+
+.arcade-info-btn:active {
+    background: rgba(77, 208, 225, 0.4) !important;
+    transform: scale(0.9) !important;
+}
+
+/* Botón 'i' cuando el juego está bloqueado */
+#arcade-menu .arcade-card-container .arcade-games-grid .arcade-card.locked .arcade-info-btn {
+    background: rgba(85, 85, 85, 0.2) !important;
+    border-color: #555 !important;
+    color: #777 !important;
+}

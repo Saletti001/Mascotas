@@ -5,6 +5,14 @@ class ArcadeManager {
         this.gameScreen = document.getElementById("minigame-screen");
         this.gridContainer = document.querySelector(".arcade-games-grid");
         
+        // Elementos del modal de información
+        this.infoModal = document.getElementById("arcade-info-modal");
+        this.infoIcon = document.getElementById("arcade-info-icon");
+        this.infoTitle = document.getElementById("arcade-info-title");
+        this.infoDesc = document.getElementById("arcade-info-desc");
+        this.closeInfoBtn = document.getElementById("close-arcade-info");
+        this.playInfoBtn = document.getElementById("btn-play-from-info");
+        
         this.init();
     }
 
@@ -13,29 +21,59 @@ class ArcadeManager {
         this.setupEvents();
     }
 
-    // Esta función dibuja las 30 tarjetas por ti
     renderGames() {
         if (!this.gridContainer) return;
-        
-        this.gridContainer.innerHTML = ""; // Limpiamos la caja
+        this.gridContainer.innerHTML = "";
 
         ARCADE_GAMES_DATABASE.forEach(game => {
             const card = document.createElement("div");
             card.className = `arcade-card ${game.locked ? 'locked' : ''}`;
             card.id = `card-${game.id}`;
             
+            // HTML de la tarjeta (Ahora solo con Icono, Título y el botón 'i')
             card.innerHTML = `
+                <div class="arcade-info-btn">i</div>
                 <div class="card-icon">${game.icon}</div>
                 <h3>${game.title}</h3>
-                <p>${game.desc}</p>
             `;
 
-            if (!game.locked) {
-                card.onclick = () => this.launchMinigame(game.id);
-            }
+            // Lógica inteligente de clics
+            card.onclick = (e) => {
+                // Si el jugador tocó exactamente el botón 'i'
+                if (e.target.classList.contains('arcade-info-btn')) {
+                    e.stopPropagation(); // Evita que se lance el juego al tocar la 'i'
+                    this.showInfo(game);
+                } 
+                // Si tocó el resto de la tarjeta y no está bloqueada
+                else if (!game.locked) {
+                    this.launchMinigame(game.id);
+                }
+            };
 
             this.gridContainer.appendChild(card);
         });
+    }
+
+    showInfo(game) {
+        if(!this.infoModal) return;
+        
+        // Llenar datos
+        this.infoIcon.innerText = game.icon;
+        this.infoTitle.innerText = game.title;
+        this.infoDesc.innerText = game.desc;
+        
+        // Si el juego está bloqueado, ocultar botón de jugar, si no, mostrarlo
+        if(game.locked) {
+            this.playInfoBtn.style.display = "none";
+        } else {
+            this.playInfoBtn.style.display = "block";
+            this.playInfoBtn.onclick = () => {
+                this.infoModal.classList.add("hidden");
+                this.launchMinigame(game.id);
+            };
+        }
+        
+        this.infoModal.classList.remove("hidden");
     }
 
     launchMinigame(gameName) {
@@ -52,7 +90,11 @@ class ArcadeManager {
     }
 
     setupEvents() {
-        // Los clics ya se configuran automáticamente en renderGames()
+        if(this.closeInfoBtn) {
+            this.closeInfoBtn.onclick = () => {
+                this.infoModal.classList.add("hidden");
+            }
+        }
     }
 }
 
