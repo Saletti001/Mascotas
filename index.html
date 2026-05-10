@@ -12,6 +12,8 @@
     <style>
         .modal-content::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
         .modal-content { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+        /* Estilo para que los iconos SVG inyectados se adapten al texto */
+        .ev-icon-wrapper svg, .ev-icon-injector svg { width: 100%; height: 100%; display: block; }
     </style>
 </head>
 <body>
@@ -21,22 +23,20 @@
         <div id="room-area" class="app-screen">
             <div id="top-hud">
                 <div class="hud-top-row">
-                    <div class="currency-badge"><span id="vital-essence-amount">✨ 0</span></div>
-             
+                    <div class="currency-badge" style="display: flex; align-items: center; gap: 6px; padding-left: 8px;">
+                        <span id="hud-ev-icon-container" style="display: inline-block; width: 1.4em; height: 1.4em; display: flex; align-items: center;"></span>
+                        <span id="vital-essence-amount">0</span>
+                    </div>
                     <div class="currency-badge pol"><span id="pol-amount">🔷 10.0 POL</span></div>
                 </div>
 
                 <div class="hud-action-row">
                     <div class="action-btn-container">
                         <button id="btn-show-stats" class="action-btn">🔬 Stats</button>
-       
                     </div>
-
                     <div class="action-btn-container">
                         <button id="btn-show-genos" class="action-btn">👾 Genos</button>
                     </div>
-
-                   
                     <div id="inventory-ui" class="action-btn-container">
                         <button id="backpack-icon" class="action-btn">
                             <span style="font-size: 18px; margin-right: 5px;">💠</span> 
@@ -44,13 +44,10 @@
                         </button>
                     </div>
                 </div>
-         
             </div>
 
             <div id="stats-modal-overlay" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 2000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);">
-                
                 <div class="modal-content" style="max-height: 85vh; overflow-y: auto; width: 85%; max-width: 350px;">
-                    
                     <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;">
                         <h3 class="stats-title" style="margin: 0; color: #80deea; text-transform: uppercase; font-size: 16px; display: flex; align-items: center; gap: 10px;">
                             <span id="geno-name">Geno Base</span> 
@@ -163,17 +160,14 @@
                         <h3>Almacén Nexo</h3>
                         <button id="close-inventory">❌</button>
                     </div>
-        
                     <div id="inventory-grid"></div>
                     <div id="item-actions" class="hidden">
                         <div id="selected-item-info">Seleccionado: --</div>
                         <div class="action-buttons">
-              
                             <button id="btn-release-one" class="release-btn">Destruir 1</button>
                             <button id="btn-release-all" class="release-btn danger">Vaciar</button>
                         </div>
                     </div>
-        
                 </div>
             </div>
 
@@ -183,7 +177,6 @@
 
             <div id="incubator-capsule">
                 <div class="energy-beam">
-        
                     <div class="energy-particle" style="left: 20%; animation-duration: 2.5s; animation-delay: 0s;"></div>
                     <div class="energy-particle" style="left: 50%; animation-duration: 3s; animation-delay: 1s;"></div>
                     <div class="energy-particle" style="left: 80%; animation-duration: 2.8s; animation-delay: 1.5s;"></div>
@@ -208,14 +201,10 @@
 
         <div id="arcade-menu" class="app-screen hidden">
             <div class="arcade-card-container">
-  
                 <h2 class="screen-title">Salón Arcade</h2>
-                
                 <div class="arcade-games-grid"></div> 
             </div>
-            
             <div class="arcade-footer-anchor">
-             
                  <div class="fab-btn btn-go-home">
                     <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0; width: 100%; text-align: center; font-weight: bold; letter-spacing: 1px;">VOLVER AL LABORATORIO</div>
                 </div>
@@ -248,19 +237,17 @@
                         <option value="1">Nivel 1 (Quemar 5 Comunes)</option>
                         <option value="2">Nivel 2 (Quemar 5 Raros)</option>
                         <option value="3">Nivel 3 (Quemar 5 Épicos)</option>
-            
                     </select>
                     <div style="display: flex; flex-wrap: wrap; justify-content: space-between; width: 100%; margin-top: 10px; padding-bottom: 10px; border-bottom: 1px dashed #ccc; color: #fff; font-size: 13px;">
                         <div style="display: flex; align-items: center; gap: 5px;">
                             Disponibles: <span id="alchemy-common-count" style="font-weight: bold; color: #4dd0e1; font-size: 14px;">0</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 5px;">
-                            Costo: <span id="reactor-cost-display" style="font-weight: bold; color: #ffcc00; font-size: 14px; display: flex; align-items: center;">100 ✨</span>
+                            Costo: <span id="reactor-cost-display" style="font-weight: bold; color: #ffcc00; font-size: 14px; display: flex; align-items: center; gap: 4px;">100 <span class="ev-icon-injector" style="display: inline-block; width: 1.2em; height: 1.2em;"></span></span>
                         </div>
                         <span id="reactor-req-name" style="display: none;">Comunes</span>
                     </div>
                 </div>
-     
                 <div id="reactor-slots-container" style="display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; width: 100%; min-height: 55px;"></div>
                 <div style="font-size: 11px; color: #888; text-align: left; width: 100%; margin-bottom: 5px;">Toca un Geno para cargarlo:</div>
                 <div id="reactor-available-genos" style="display: flex; overflow-x: auto; gap: 10px; padding: 10px; background: #f0f4f8; border-radius: 8px; margin-bottom: 20px; width: 100%; min-height: 60px; box-sizing: border-box;"></div>
@@ -275,8 +262,8 @@
                     <div class="drawer-header" style="justify-content: center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px;">
                         <h3 style="font-size: 16px !important; color: #80deea !important; text-transform: uppercase !important; letter-spacing: 1px !important; margin: 0 !important; font-weight: bold !important; text-shadow: none !important;">CENTRO DE CRIANZA</h3>
                     </div>
-                    <p style="text-align: center; color: #aaa !important; font-size: 10px !important; text-transform: uppercase !important; letter-spacing: 1px !important; padding: 0 !important; margin-bottom: 25px !important; text-shadow: none !important;">
-                        Combina el ADN de dos especímenes (Nv. 10+) para iniciar la secuencia. Costo: 500 ✨
+                    <p style="text-align: center; color: #aaa !important; font-size: 10px !important; text-transform: uppercase !important; letter-spacing: 1px !important; padding: 0 !important; margin-bottom: 25px !important; text-shadow: none !important; display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 4px;">
+                        Combina el ADN de dos especímenes (Nv. 10+) para iniciar la secuencia. Costo: 500 <span class="ev-icon-injector" style="display: inline-block; width: 1.4em; height: 1.4em; transform: translateY(-2px);"></span>
                     </p>
                     <div style="display: flex; justify-content: space-around; width: 100%; margin-bottom: 20px; position: relative; align-items: center;">
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
@@ -325,8 +312,7 @@
                         <div style="display: flex; gap: 10px; margin-bottom: 15px; font-size: 11px; font-weight: bold; text-transform: uppercase; align-items: center; background: rgba(0,0,0,0.3); padding: 5px 15px; border-radius: 15px; border: 1px solid #333;">
                             <span id="id-card-rarity" style="color: #aaa;">--</span> <span style="color:#555">|</span>
                             <span id="id-card-element" style="color: #00d2ff;">--</span> <span style="color:#555">|</span>
-                            <span style="color: #f0ad4e;">Crías: 
-<span id="id-card-breeds">--</span></span>
+                            <span style="color: #f0ad4e;">Crías: <span id="id-card-breeds">--</span></span>
                         </div>
                     </div>
                     <div style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px; margin-bottom: 15px; text-align: center; border: 1px solid #333; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
@@ -360,33 +346,27 @@
             
             <div id="battle-area" class="coliseum-card">
                 <div class="fighters-vs-container">
-      
                     <div id="player-sprite-battle" class="fighter-left">
                         <div id="player-visual-box" class="fighter-sprite"></div>
                         <div id="battle-player-name" class="fighter-name">Tu Geno</div>
                         <div class="hp-bar-container">
-      
                             <div id="player-hp-bar" class="hp-bar-fill-green"></div>
                         </div>
                         <div id="player-hp-text" class="hp-text">HP</div>
                     </div>
-      
                     
                     <div class="vs-badge-battle">VS</div>
                     
                     <div id="enemy-sprite-battle" class="fighter-right">
-                       
                         <div id="enemy-visual-box" class="fighter-sprite"></div>
                         <div id="battle-enemy-name" class="fighter-name">---</div>
                         <div class="hp-bar-container">
                             <div id="enemy-hp-bar" class="hp-bar-fill-red"></div>
-                
                         </div>
                         <div id="enemy-hp-text" class="hp-text">HP</div>
                     </div>
                 </div>
                 
-              
                 <div id="battle-log" class="battle-log-container">Arena preparada. Esperando combatientes...</div>
             </div>
             
@@ -394,22 +374,18 @@
             
             <button id="btn-start-battle" class="btn-primary">Entrar a la Arena</button>
             
-            <div 
-id="btn-leave-battle" style="display: block; margin: 40px auto 25px auto !important; width: 70% !important; max-width: 300px !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; text-align: center !important;">
+            <div id="btn-leave-battle" style="display: block; margin: 40px auto 25px auto !important; width: 70% !important; max-width: 300px !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; text-align: center !important;">
                 <div class="fab-btn btn-go-home" style="position: relative !important; width: 100% !important; margin: 0 !important; display: block !important;">
                     <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0; width: 100%; text-align: center; font-weight: bold; letter-spacing: 1px;">RETIRARSE</div>
-     
                 </div>
             </div>
-            
         </div>
 
-        <div id="shop-screen" class="app-screen hidden">
-            </div>
+        <div id="shop-screen" class="app-screen hidden"></div>
+        
         <div id="market-screen" class="app-screen hidden">
             <h2 class="screen-title" style="color: #8A2BE2;">Mercado Web3</h2>
-       
-             <div style="display: flex; justify-content: center; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: center; margin-bottom: 15px;">
                 <button id="tab-market-buy" style="background: #8A2BE2; color: white; border: 1px solid #8A2BE2; padding: 8px 20px; font-weight: bold; border-radius: 8px 0 0 8px; cursor: pointer;">Comprar</button>
                 <button id="tab-market-sell" style="background: #eee; color: #333; border: 1px solid #ccc; padding: 8px 20px; font-weight: bold; border-radius: 0 8px 8px 0; cursor: pointer;">Mis Ventas</button>
             </div>
@@ -436,19 +412,16 @@ id="btn-leave-battle" style="display: block; margin: 40px auto 25px auto !import
                 <div class="drawer-header"><h3>Red Nexo</h3><button id="close-drawer">❌</button></div>
                 <div class="drawer-grid">
                     <div class="drawer-item" id="btn-toggle-music"><div class="drawer-icon" id="music-icon">🎵</div><span id="music-text">Música: OFF</span></div>
-                
                     <div class="drawer-item" id="btn-feed"><div class="drawer-icon">🍎</div><span>Alimentar</span></div>
                     <div class="drawer-item" id="btn-sanctuary"><div class="drawer-icon">🏛️</div><span>Santuario</span></div>
                     <div class="drawer-item" id="btn-alchemy"><div class="drawer-icon">⚛️</div><span>Reactor</span></div>
                     <div class="drawer-item" id="btn-breeding"><div class="drawer-icon">🧬</div><span>Crianza</span></div>
                     <div class="drawer-item" id="btn-arcade"><div class="drawer-icon">🕹️</div><span>Arcade</span></div>
- 
                     <div class="drawer-item" id="btn-coliseum"><div class="drawer-icon">⚔️</div><span>Coliseo</span></div>
                     <div class="drawer-item" id="btn-market"><div class="drawer-icon">🛒</div><span>Mercado</span></div>
                     <div class="drawer-item" id="btn-shop" onclick="document.getElementById('drawer-menu').classList.add('hidden'); if(window.ShopManager) window.ShopManager.init(); navegarA('shop-screen');">
-                    <div class="drawer-icon">🏪</div><span>Tienda Nexo</span>
+                        <div class="drawer-icon">🏪</div><span>Tienda Nexo</span>
                     </div>
-                    
                     <div class="drawer-item" id="btn-implants" onclick="document.getElementById('drawer-menu').classList.add('hidden'); ImplantsManager.init(); navegarA('implants-area');">
                         <div class="drawer-icon">💾</div><span>Implantes</span>
                     </div>
@@ -460,15 +433,12 @@ id="btn-leave-battle" style="display: block; margin: 40px auto 25px auto !import
 
     <script src="SaveManager.js"></script>
     <script src="AudioEngine.js"></script>
-    
-<script src="genes.js"></script>
-
+    <script src="genes.js"></script>
     <script src="genoma.js"></script>
     <script src="motorGenetico.js"></script>
     <script src="caras.js"></script>
     <script src="accesorios.js"></script>
     <script src="SVGEngine.js?v=2"></script>
-
     <script src="InventoryManager.js"></script>
     <script src="BreedingManager.js"></script>
     <script src="MarketManager.js"></script>
@@ -477,19 +447,38 @@ id="btn-leave-battle" style="display: block; margin: 40px auto 25px auto !import
     <script src="ColiseumLogic.js"></script>
     <script src="ColiseumUI.js"></script>
     <script src="ColiseumManager.js"></script>
-    
     <script src="ArcadeData.js"></script>
     <script src="ArcadeManager.js"></script>
-    
     <script src="MinigameCatch.js"></script>
     <script src="ReactorManager.js"></script>
     <script src="SanctuaryManager.js"></script>
- 
-   <script src="RPGManager.js"></script>
-
+    <script src="RPGManager.js"></script>
     <script src="app.js"></script>
     <script src="ImplantsUI.js"></script>
     <script src="ImplantsManager.js"></script>
     
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const inyectarIconos = () => {
+                if(!window.iconoEV) return;
+                
+                // Inyectar en el HUD Superior
+                const hudIcon = document.getElementById('hud-ev-icon-container');
+                if(hudIcon && !hudIcon.innerHTML.includes('svg')) hudIcon.innerHTML = window.iconoEV;
+                
+                // Inyectar en todos los contenedores con la clase injector
+                document.querySelectorAll('.ev-icon-injector').forEach(el => {
+                    if(!el.innerHTML.includes('svg')) el.innerHTML = window.iconoEV;
+                });
+            };
+
+            // Ejecutamos con un pequeño retraso para asegurar que SVGEngine cargó window.iconoEV
+            setTimeout(inyectarIconos, 150);
+            
+            // Re-inyectar cuando se abren pantallas que podrían resetear el DOM
+            const observer = new MutationObserver(inyectarIconos);
+            observer.observe(document.body, { childList: true, subtree: true });
+        });
+    </script>
 </body>
 </html>
