@@ -329,9 +329,19 @@ document.addEventListener("DOMContentLoaded", () => {
             if(window.Sonidos) {
                 const estaSonando = window.Sonidos.toggleMusica();
                 if(estaSonando) {
-                    musicIcon.innerText = "🔊"; musicText.innerText = "Música: ON"; btnMusic.style.background = "#e0f7fa";
+                    // MÚSICA ON: SVG en color celeste neón con fondo sutil
+                    musicIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`;
+                    musicText.innerText = "Música: ON"; 
+                    musicText.style.color = "#00d2ff";
+                    btnMusic.style.background = "rgba(0, 210, 255, 0.1)";
+                    btnMusic.style.borderLeft = "2px solid #00d2ff";
                 } else {
-                    musicIcon.innerText = "🎵"; musicText.innerText = "Música: OFF"; btnMusic.style.background = "transparent";
+                    // MÚSICA OFF: SVG original en violeta apagado
+                    musicIcon.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e0b0ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`;
+                    musicText.innerText = "Música: OFF"; 
+                    musicText.style.color = "";
+                    btnMusic.style.background = "transparent";
+                    btnMusic.style.borderLeft = "none";
                 }
             }
         });
