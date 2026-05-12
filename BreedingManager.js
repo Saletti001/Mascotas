@@ -98,9 +98,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function actualizarPolUI() {
         const polText = document.getElementById("pol-amount");
-        if(polText && window.miWallet) polText.innerText = `🔷 ${window.miWallet.pol.toFixed(1)} POL`;
+        // Aquí le quitamos el 🔷 viejo para que solo se vea tu nuevo hexágono SVG
+        if(polText && window.miWallet) polText.innerText = `${window.miWallet.pol.toFixed(1)} POL`;
         const essenceText = document.getElementById("vital-essence-amount");
-        // ¡Aquí le quitamos el ✨ viejo para que deje brillar a tu SVG!
         if(essenceText && window.miInventario) essenceText.innerText = window.miInventario.vitalEssence || 0;
     }
 
