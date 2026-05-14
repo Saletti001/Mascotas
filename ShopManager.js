@@ -95,8 +95,8 @@ window.ShopManager = {
         `;
         document.head.appendChild(style);
 
-        // Fondo cian estilo Santuario
-        contenedor.style.background = "#4dd0e1"; 
+        // Fondo transparente para dejar ver el cian retro del HTML
+        contenedor.style.background = "transparent";
 
         contenedor.innerHTML = `
             <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 15px; position: relative;">
