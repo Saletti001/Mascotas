@@ -1,5 +1,5 @@
 // =========================================
-// MarketManager.js - RED DE CRIADORES (WEB3) - DISEÑO 1:1 STATS
+// MarketManager.js - RED DE CRIADORES (WEB3) - CLEAN UI & STATS
 // =========================================
 
 window.mercadoNPC = window.mercadoNPC || [];
@@ -8,7 +8,6 @@ window.misVentas = window.misVentas || [];
 // Función para generar Genos aleatorios en el mercado
 function generarGenoNPC() {
     const rarities = ["Común", "Raro", "Épico"];
-    // FIX: Se quitaron los emojis de los textos
     const elements = ["Ígneo", "Acuático", "Tóxico", "Cibernético", "Biomutante", "Viral", "Radiactivo", "Sintético"];
     const r = rarities[Math.floor(Math.random() * rarities.length)];
     let price = r === "Común" ? (Math.random() * 2 + 1) : r === "Raro" ? (Math.random() * 5 + 5) : (Math.random() * 15 + 15);
@@ -71,14 +70,12 @@ window.iniciarMercado = function() {
             .market-scroll-area::-webkit-scrollbar, .market-detail-scroll::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
             .market-scroll-area, .market-detail-scroll { -ms-overflow-style: none !important; scrollbar-width: none !important; }
             
-            /* FIX: Ocultar las flechitas nativas de los inputs de número */
+            /* CSS NUCLEAR PARA ELIMINAR LAS FLECHITAS DEL INPUT NUMBER */
+            .hide-spinners { -moz-appearance: textfield !important; }
             .hide-spinners::-webkit-outer-spin-button,
             .hide-spinners::-webkit-inner-spin-button {
-                -webkit-appearance: none;
-                margin: 0;
-            }
-            .hide-spinners {
-                -moz-appearance: textfield;
+                -webkit-appearance: none !important;
+                margin: 0 !important;
             }
 
             .market-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; }
@@ -218,13 +215,12 @@ window.abrirDetalleMercado = function(geno, tipoAccion) {
     }
     iconContainer.innerHTML = svgIcon;
     
-    // FORMATO IDÉNTICO: Solo el hashtag y el número en cian
     idEl.innerText = geno.id ? `#${geno.id.toString().padStart(6, '0')}` : "#000000";
 
     const stBase = geno.stats || { hp: 0, atk: 0, def: 0, spd: 0, luk: 0 };
     const stAdded = geno.addedStats || { hp: 0, atk: 0, def: 0, spd: 0, luk: 0 };
     
-    // SVGs originales de tu motor
+    // SVGs originales 
     const iconHp = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff4b4b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
     const iconAtk = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff8c00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"></path><path d="M13 19l6-6"></path><path d="M16 16l4 4"></path><path d="M19 21l2-2"></path></svg>`;
     const iconDef = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>`;
@@ -258,12 +254,18 @@ window.abrirDetalleMercado = function(geno, tipoAccion) {
         `;
     }
 
+    // LIMPIADOR DE EMOJIS: Extrae SOLO letras de la variable element. Ej: "🦠 Viral" -> "Viral"
+    const elementoLimpio = (geno.element || "Desconocido").replace(/[^A-Za-záéíóúÁÉÍÓÚñÑ ]/g, '').trim();
+
     statsContainer.innerHTML = `
+        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
+            <span style="color: #cbd5e1;">Nivel:</span> <span style="color: #fff; font-weight: bold;">${geno.level}</span>
+        </div>
         <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
             <span style="color: #cbd5e1;">Rareza:</span> <span style="color: #fff; font-weight: bold;">${geno.rarity}</span>
         </div>
         <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
-            <span style="color: #cbd5e1;">Elem:</span> <span style="color: #fff; font-weight: bold;">${geno.element}</span>
+            <span style="color: #cbd5e1;">Elem:</span> <span style="color: #fff; font-weight: bold;">${elementoLimpio}</span>
         </div>
         
         <div style="border-bottom: 1px solid rgba(255,255,255,0.1); margin: 15px 0;"></div>
