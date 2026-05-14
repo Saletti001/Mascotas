@@ -95,8 +95,9 @@ window.ShopManager = {
         `;
         document.head.appendChild(style);
 
-        // Fondo transparente para dejar ver el cian retro del HTML
-        contenedor.style.background = "transparent";
+        // Fondo cian neón con líneas de escáner retro
+        contenedor.style.backgroundColor = "#4dd0e1";
+        contenedor.style.backgroundImage = "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px)";
 
         contenedor.innerHTML = `
             <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 15px; position: relative;">
