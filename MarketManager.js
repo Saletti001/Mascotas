@@ -1,5 +1,5 @@
 // =========================================
-// MarketManager.js - RED DE CRIADORES (WEB3) - CLEAN UI & STATS
+// MarketManager.js - RED DE CRIADORES (WEB3) - COMPLETO CON INSPECCIÓN DE VENTAS
 // =========================================
 
 window.mercadoNPC = window.mercadoNPC || [];
@@ -122,10 +122,15 @@ window.iniciarMercado = function() {
             .market-btn-neon:hover { filter: brightness(1.2) contrast(1.1); }
             .market-btn-neon:active { transform: scale(0.97); }
             
+            /* FIX: Hacemos la fila interactiva para poder inspeccionar */
             .listed-item-row {
                 display: flex; justify-content: space-between; align-items: center; 
                 background: rgba(0,0,0,0.4); padding: 10px 15px; border-radius: 8px; 
                 border: 1px solid #4A148C; margin-bottom: 8px; font-size: 12px; color: #fff;
+                cursor: pointer; transition: background 0.2s;
+            }
+            .listed-item-row:hover {
+                background: rgba(138, 43, 226, 0.2);
             }
         `;
         document.head.appendChild(style);
@@ -254,7 +259,7 @@ window.abrirDetalleMercado = function(geno, tipoAccion) {
         `;
     }
 
-    // LIMPIADOR DE EMOJIS: Extrae SOLO letras de la variable element. Ej: "🦠 Viral" -> "Viral"
+    // LIMPIADOR DE EMOJIS: Extrae SOLO letras de la variable element
     const elementoLimpio = (geno.element || "Desconocido").replace(/[^A-Za-záéíóúÁÉÍÓÚñÑ ]/g, '').trim();
 
     statsContainer.innerHTML = `
@@ -321,6 +326,22 @@ window.abrirDetalleMercado = function(geno, tipoAccion) {
             if(window.procesarVentaMercado(geno, val)) {
                 modal.style.display = "none";
             }
+        };
+    } else if (tipoAccion === 'listado') {
+        // NUEVO ESTADO: Inspeccionar un Geno que ya está a la venta
+        actionContainer.innerHTML = `
+            <div style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px; border: 1px solid #384a5e; margin-bottom: 15px;">
+                <div style="color: #cbd5e1; font-size: 12px; line-height: 1.5; margin-bottom: 5px;">Espécimen listado en la red global.</div>
+                <div style="color: #4CAF50; font-size: 12px; font-weight: bold;">Esperando a un comprador...</div>
+            </div>
+            <div style="font-size: 18px; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px;">
+                <span style="color: #D500F9; text-shadow: 0 0 8px rgba(213,0,249,0.8);">🔷 ${geno.pricePol} POL</span>
+            </div>
+            <button id="modal-btn-action" class="market-btn-neon" style="width: 100%; font-size: 14px; padding: 12px; background: #384a5e; box-shadow: none;">Cerrar Inspección</button>
+        `;
+        
+        document.getElementById("modal-btn-action").onclick = () => {
+            modal.style.display = "none";
         };
     }
 
@@ -464,15 +485,28 @@ window.renderizarMisVentas = function() {
         window.misVentas.forEach(geno => {
             const item = document.createElement("div");
             item.className = "listed-item-row";
+            // SE AÑADIÓ EL ÍCONO DE LUPA PARA INDICAR QUE ES CLICKABLE
             item.innerHTML = `
-                <span style="font-weight: bold; font-size: 13px;">${geno.name}</span>
+                <div style="display: flex; align-items: center; gap: 8px; pointer-events: none;">
+                    <span style="font-size: 14px;">🔍</span>
+                    <span style="font-weight: bold; font-size: 13px;">${geno.name}</span>
+                </div>
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="color: #D500F9; font-weight: 900;">🔷 ${geno.pricePol}</span>
-                    <button class="market-btn-neon red" style="padding: 5px 10px; width: auto; font-size: 10px; margin: 0;">Cancelar</button>
+                    <span style="color: #D500F9; font-weight: 900; pointer-events: none;">🔷 ${geno.pricePol}</span>
+                    <button class="market-btn-neon red btn-cancel-sale" style="padding: 5px 10px; width: auto; font-size: 10px; margin: 0; position: relative; z-index: 2;">Cancelar</button>
                 </div>
             `;
             
-            item.querySelector("button").addEventListener("click", () => {
+            // EVENTO PARA ABRIR EL MODAL DE INSPECCIÓN
+            item.addEventListener("click", (e) => {
+                // Si hizo clic en el botón de cancelar, no abrir el modal
+                if(e.target.classList.contains('btn-cancel-sale')) return;
+                window.abrirDetalleMercado(geno, 'listado');
+            });
+            
+            // EVENTO DEL BOTÓN CANCELAR
+            item.querySelector(".btn-cancel-sale").addEventListener("click", (e) => {
+                e.stopPropagation(); // Evitar que también se abra el modal
                 window.misVentas = window.misVentas.filter(g => g.id !== geno.id);
                 delete geno.pricePol;
                 window.misGenos.push(geno);
