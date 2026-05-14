@@ -37,7 +37,7 @@ window.ShopManager = {
         const contenedor = document.getElementById("shop-screen");
         if (!contenedor) return;
 
-        // Limpiamos cualquier estilo en línea previo para que no estorbe
+        // Limpiamos estilos en línea previos para que no interfieran
         contenedor.style.background = "";
         contenedor.style.backgroundColor = "";
         contenedor.style.backgroundImage = "";
@@ -49,8 +49,8 @@ window.ShopManager = {
                 background-color: #4dd0e1 !important;
                 background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px) !important;
             }
-            
-            .tienda-scroll-area::-webkit-scrollbar { display: none !important;
+
+            .tienda-scroll-area::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
             .tienda-scroll-area { -ms-overflow-style: none !important; scrollbar-width: none !important; }
             
             /* NUEVA GRILLA ESPECÍFICA PARA LA TIENDA */
@@ -105,10 +105,6 @@ window.ShopManager = {
             .shop-btn-neon:active { transform: scale(0.97); }
         `;
         document.head.appendChild(style);
-
-        // Fondo cian neón con líneas de escáner retro
-        contenedor.style.backgroundColor = "#4dd0e1";
-        contenedor.style.backgroundImage = "repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px)";
 
         contenedor.innerHTML = `
             <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 15px; position: relative;">
@@ -166,7 +162,7 @@ window.ShopManager = {
         document.getElementById("tab-shop-bazar").addEventListener("click", () => this.cambiarPestana('bazar'));
         document.getElementById("tab-shop-dojo").addEventListener("click", () => this.cambiarPestana('dojo'));
         document.getElementById("tab-shop-premium").addEventListener("click", () => this.cambiarPestana('premium'));
-    },
+    },/////
 
     cambiarPestana: function(pestana) {
         ['bazar', 'dojo', 'premium'].forEach(tab => {
