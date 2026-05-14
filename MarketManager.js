@@ -1,16 +1,31 @@
 // =========================================
-// MarketManager.js - RED DE CRIADORES (WEB3) - ESTILO TIENDA CON MODAL
+// MarketManager.js - RED DE CRIADORES (WEB3) - CON STATS COMPLETOS
 // =========================================
 
 window.mercadoNPC = window.mercadoNPC || [];
 window.misVentas = window.misVentas || [];
 
-// Función para generar Genos aleatorios en el mercado
+// Función para generar Genos aleatorios en el mercado CON STATS
 function generarGenoNPC() {
     const rarities = ["Común", "Raro", "Épico"];
     const elements = ["🔥 Ígneo", "💧 Acuático", "🧪 Tóxico", "⚙️ Cibernético"];
     const r = rarities[Math.floor(Math.random() * rarities.length)];
     let price = r === "Común" ? (Math.random() * 2 + 1) : r === "Raro" ? (Math.random() * 5 + 5) : (Math.random() * 15 + 15);
+    let level = Math.floor(Math.random() * 10) + 1;
+    
+    // Generar Stats base según rareza
+    let objBase = window.generarStatsPorRareza ? window.generarStatsPorRareza(r) : { hp: 50, atk: 15, def: 10, spd: 15, luk: 15 };
+    let statsBase = JSON.parse(JSON.stringify(objBase)); // Copia segura
+    
+    // Simular escalado de stats por nivel
+    if (level > 1) {
+        statsBase.hp += (level - 1) * 2;
+        statsBase.atk += (level - 1);
+        statsBase.def += (level - 1);
+        statsBase.spd += (level - 1);
+        statsBase.luk += (level - 1);
+    }
+
     return {
         id: Date.now() + Math.floor(Math.random() * 1000),
         name: `Geno ${r} (NPC)`,
@@ -19,8 +34,9 @@ function generarGenoNPC() {
         shape: Math.random() > 0.5 ? "gota" : "frijol",
         color: `#${Math.floor(Math.random()*16777215).toString(16)}`, 
         pricePol: price.toFixed(1),
-        level: Math.floor(Math.random() * 10) + 1,
-        reward: 100
+        level: level,
+        reward: 100,
+        stats: statsBase
     };
 }
 
@@ -41,7 +57,6 @@ window.iniciarMercado = function() {
         const style = document.createElement('style');
         style.id = styleId;
         style.innerHTML = `
-            /* OVERRIDE FONDO MERCADO (Cian Unificado) */
             #market-screen {
                 background-color: #4dd0e1 !important; 
                 background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px) !important;
@@ -66,7 +81,6 @@ window.iniciarMercado = function() {
                 box-shadow: inset 0 15px 20px -15px #D500F9, 0 -5px 15px -10px #D500F9;
             }
 
-            /* TARJETAS DE GENOS - IGUALADAS A LA TIENDA */
             .market-card-neon {
                 background: linear-gradient(180deg, #2A3B4C 0%, #1A2A36 100%);
                 border: 1px solid #384a5e; border-radius: 12px; padding: 18px 12px;
@@ -146,7 +160,10 @@ window.iniciarMercado = function() {
                     <div id="market-detail-icon" style="width: 80px; height: 80px; margin: 0 auto 15px auto; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));"></div>
                     <h3 id="market-detail-name" style="color: #fff; margin: 0 0 10px 0; font-size: 18px; text-transform: uppercase; letter-spacing: 1px; text-shadow: 0 2px 5px rgba(213,0,249,0.5);"></h3>
                     <div id="market-detail-tags" style="display: flex; justify-content: center; gap: 6px; margin-bottom: 15px; flex-wrap: wrap;"></div>
-                    <p id="market-detail-desc" style="color: #cbd5e1; font-size: 12px; line-height: 1.5; margin-bottom: 20px; padding: 12px; background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid #384a5e;"></p>
+                    
+                    <div id="market-detail-stats"></div>
+
+                    <p id="market-detail-desc" style="color: #cbd5e1; font-size: 12px; line-height: 1.5; margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.4); border-radius: 8px; border: 1px solid #384a5e;"></p>
                     <div id="market-detail-price" style="font-size: 18px; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px;"></div>
                     <div id="market-detail-action"></div>
                 </div>
@@ -179,6 +196,7 @@ window.abrirDetalleMercado = function(geno, tipoAccion) {
     const iconContainer = document.getElementById("market-detail-icon");
     const nameEl = document.getElementById("market-detail-name");
     const tagsContainer = document.getElementById("market-detail-tags");
+    const statsContainer = document.getElementById("market-detail-stats");
     const descEl = document.getElementById("market-detail-desc");
     const priceEl = document.getElementById("market-detail-price");
     const actionContainer = document.getElementById("market-detail-action");
@@ -193,12 +211,25 @@ window.abrirDetalleMercado = function(geno, tipoAccion) {
     iconContainer.innerHTML = svgIcon;
     nameEl.innerText = geno.name;
 
+    // Etiquetas (Nivel, Rareza, Elemento)
     let tagsHTML = "";
     const createTag = (text, color) => `<span style="background: ${color}20; color: ${color}; border: 1px solid ${color}; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: bold; text-transform: uppercase;">${text}</span>`;
     tagsHTML += createTag(`Nivel ${geno.level}`, "#fff");
     tagsHTML += createTag(geno.rarity, "#D500F9");
     if(geno.element) tagsHTML += createTag(geno.element, "#4dd0e1");
     tagsContainer.innerHTML = tagsHTML;
+
+    // Cuadrícula de Stats idéntica al laboratorio
+    const st = geno.stats || { hp: '?', atk: '?', def: '?', spd: '?', luk: '?' };
+    statsContainer.innerHTML = `
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; margin-bottom: 15px;">
+            <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #4A148C; color: #fff;">❤️ Vit: <span style="float: right; font-weight: bold;">${st.hp}</span></div>
+            <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #4A148C; color: #fff;">⚔️ Fue: <span style="float: right; font-weight: bold;">${st.atk}</span></div>
+            <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #4A148C; grid-column: span 2; text-align: center; color: #fff;">🛡️ Defensa: <span style="font-weight: bold; margin-left: 10px;">${st.def}</span></div>
+            <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #4A148C; color: #fff;">⚡ Agi: <span style="float: right; font-weight: bold;">${st.spd}</span></div>
+            <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #4A148C; color: #fff;">🍀 Sue: <span style="float: right; font-weight: bold;">${st.luk}</span></div>
+        </div>
+    `;
 
     if (tipoAccion === 'comprar') {
         descEl.innerHTML = `Espécimen listado en la red global.<br>Recompensa estimada al liberar: <b>${geno.reward} ✨</b>`;
@@ -210,7 +241,7 @@ window.abrirDetalleMercado = function(geno, tipoAccion) {
             modal.style.display = "none";
         };
     } else if (tipoAccion === 'publicar') {
-        descEl.innerHTML = `Establece el precio en $POL para listar este espécimen. Los compradores analizarán su pureza genética.`;
+        descEl.innerHTML = `Establece el precio en $POL para listar este espécimen. Los compradores analizarán sus atributos.`;
         priceEl.innerHTML = ``;
         actionContainer.innerHTML = `
             <input type="number" id="modal-input-price" placeholder="Precio en POL" style="width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.4); border: 1px solid #D500F9; border-radius: 8px; text-align: center; color: #fff; font-weight: bold; outline: none; font-size: 16px;" step="0.1" min="0.1">
@@ -244,6 +275,8 @@ window.procesarCompraMercado = function(geno) {
     if (window.miWallet && window.miWallet.pol >= precio) {
         window.miWallet.pol -= precio;
         const polText = document.getElementById("pol-amount");
+        
+        // FIX BUG: Se actualiza el número limpio sin el emoji
         if(polText) polText.innerText = `${window.miWallet.pol.toFixed(1)} POL`;
         
         delete geno.pricePol;
@@ -401,7 +434,9 @@ if(!window.simuladorMercadoActivo) {
                 if (window.miWallet) {
                     window.miWallet.pol += ganancia;
                     const polText = document.getElementById("pol-amount");
-                    if(polText) polText.innerText = `🔷 ${window.miWallet.pol.toFixed(1)} POL`;
+                    
+                    // FIX BUG: Actualización sin inyectar el emoji doble
+                    if(polText) polText.innerText = `${window.miWallet.pol.toFixed(1)} POL`;
                 }
 
                 alert(`💰 ¡VENTA EXITOSA!\nUn comprador anónimo adquirió tu [${genoVendido.name}].\nHas recibido +${ganancia} POL.`);
