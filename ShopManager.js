@@ -86,32 +86,38 @@ window.ShopManager = {
         `;
         document.head.appendChild(style);
 
+        // Forzamos el fondo transparente para que se vea el cian de la app
+        contenedor.style.background = "transparent";
+
         contenedor.innerHTML = `
             <div class="tienda-scroll-area" style="width: 100%; height: 100%; overflow-y: auto; padding-bottom: 20px; padding-top: 15px;">
                 
-                <h2 class="screen-title" style="color: #00d2ff; text-align: center; text-shadow: 0 0 15px rgba(0,210,255,0.4); margin-bottom: 20px; font-weight: 900; letter-spacing: 2px;">TERMINAL COMERCIAL</h2>
-                
-                <div style="display: flex; justify-content: center; margin-bottom: 20px; padding: 0 10px; border-bottom: 1px solid #384a5e;">
-                    <button id="tab-shop-bazar" class="shop-tab-neon" style="--tab-color: #69F0AE;">Suministros</button>
-                    <button id="tab-shop-dojo" class="shop-tab-neon" style="--tab-color: #00E5FF;">Matriz Táctica</button>
-                    <button id="tab-shop-premium" class="shop-tab-neon" style="--tab-color: #E040FB;">Premium</button>
+                <div style="background: #111e28; border-radius: 16px; margin: 10px 15px; padding: 25px 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+                    
+                    <h2 class="screen-title" style="color: #4dd0e1; text-align: center; text-shadow: none; margin-bottom: 25px; font-weight: 900; letter-spacing: 2px;">TERMINAL COMERCIAL</h2>
+                    
+                    <div style="display: flex; justify-content: center; margin-bottom: 20px; padding: 0; border-bottom: 1px solid #384a5e;">
+                        <button id="tab-shop-bazar" class="shop-tab-neon" style="--tab-color: #69F0AE;">Suministros</button>
+                        <button id="tab-shop-dojo" class="shop-tab-neon" style="--tab-color: #00E5FF;">Matriz Táctica</button>
+                        <button id="tab-shop-premium" class="shop-tab-neon" style="--tab-color: #E040FB;">Premium</button>
+                    </div>
+                    
+                    <div id="shop-bazar-view" class="shop-view">
+                        <p style="text-align: center; color: #80deea; font-size: 10px; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Consumibles y herramientas de supervivencia</p>
+                        <div id="shop-bazar-grid" class="sanctuary-grid"></div>
+                    </div>
+                    
+                    <div id="shop-dojo-view" class="shop-view hidden">
+                        <p style="text-align: center; color: #80deea; font-size: 10px; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Módulos de Técnica. Límite: 1 en mochila.</p>
+                        <div id="shop-dojo-grid" class="sanctuary-grid"></div>
+                    </div>
+                    
+                    <div id="shop-premium-view" class="shop-view hidden">
+                        <p style="text-align: center; color: #80deea; font-size: 10px; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Mejoras de infraestructura permanentes</p>
+                        <div id="shop-premium-grid" class="sanctuary-grid"></div>
+                    </div>
+                    
                 </div>
-                
-                <div id="shop-bazar-view" class="shop-view">
-                    <p style="text-align: center; color: #cbd5e1; font-size: 11px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Consumibles y herramientas de supervivencia</p>
-                    <div id="shop-bazar-grid" class="sanctuary-grid"></div>
-                </div>
-                
-                <div id="shop-dojo-view" class="shop-view hidden">
-                    <p style="text-align: center; color: #cbd5e1; font-size: 11px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Módulos de Técnica. Límite: 1 en mochila.</p>
-                    <div id="shop-dojo-grid" class="sanctuary-grid"></div>
-                </div>
-                
-                <div id="shop-premium-view" class="shop-view hidden">
-                    <p style="text-align: center; color: #cbd5e1; font-size: 11px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Mejoras de infraestructura permanentes</p>
-                    <div id="shop-premium-grid" class="sanctuary-grid"></div>
-                </div>
-                
                 <div style="height: 130px; width: 100%; flex-shrink: 0; display: block;"></div>
                 
             </div>
