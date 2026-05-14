@@ -78,52 +78,55 @@ window.ShopManager = {
                 font-weight: 900; color: #fff; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-size: 13px;
                 background: linear-gradient(90deg, var(--card-color-dark), var(--card-color));
                 box-shadow: 0 4px 10px rgba(0,0,0,0.4), inset 0 2px 5px rgba(255,255,255,0.2);
-                transition: filter 0.2s, transform 0.1s;
-                text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+                transition: filter 0.2s, transform 0.1s; text-shadow: 0 1px 2px rgba(0,0,0,0.8);
             }
             .shop-btn-neon:hover { filter: brightness(1.2) contrast(1.1); }
             .shop-btn-neon:active { transform: scale(0.97); }
         `;
         document.head.appendChild(style);
 
-        // Forzamos el fondo transparente para que se vea el cian de la app
+        // Fondo transparente para ver el cian de la app
         contenedor.style.background = "transparent";
 
         contenedor.innerHTML = `
-            <div class="tienda-scroll-area" style="width: 100%; height: 100%; overflow-y: auto; padding-bottom: 20px; padding-top: 15px;">
+            <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 15px; position: relative;">
                 
-                <div style="background: #111e28; border-radius: 16px; margin: 10px 15px; padding: 25px 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+                <div style="background: #111e28; border-radius: 16px; width: calc(100% - 30px); height: calc(100% - 100px); display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden;">
                     
-                    <h2 class="screen-title" style="color: #4dd0e1; text-align: center; text-shadow: none; margin-bottom: 25px; font-weight: 900; letter-spacing: 2px;">TERMINAL COMERCIAL</h2>
-                    
-                    <div style="display: flex; justify-content: center; margin-bottom: 20px; padding: 0; border-bottom: 1px solid #384a5e;">
-                        <button id="tab-shop-bazar" class="shop-tab-neon" style="--tab-color: #69F0AE;">Suministros</button>
-                        <button id="tab-shop-dojo" class="shop-tab-neon" style="--tab-color: #00E5FF;">Matriz Táctica</button>
-                        <button id="tab-shop-premium" class="shop-tab-neon" style="--tab-color: #E040FB;">Premium</button>
+                    <div style="padding: 25px 15px 0 15px; flex-shrink: 0;">
+                        <h2 class="screen-title" style="color: #4dd0e1; text-align: center; text-shadow: none; margin: 0 0 25px 0; font-weight: 900; letter-spacing: 2px;">TERMINAL COMERCIAL</h2>
+                        
+                        <div style="display: flex; justify-content: center; margin-bottom: 15px; padding: 0; border-bottom: 1px solid #384a5e;">
+                            <button id="tab-shop-bazar" class="shop-tab-neon" style="--tab-color: #69F0AE;">Suministros</button>
+                            <button id="tab-shop-dojo" class="shop-tab-neon" style="--tab-color: #00E5FF;">Matriz Táctica</button>
+                            <button id="tab-shop-premium" class="shop-tab-neon" style="--tab-color: #E040FB;">Premium</button>
+                        </div>
                     </div>
                     
-                    <div id="shop-bazar-view" class="shop-view">
-                        <p style="text-align: center; color: #80deea; font-size: 10px; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Consumibles y herramientas de supervivencia</p>
-                        <div id="shop-bazar-grid" class="sanctuary-grid"></div>
+                    <div class="tienda-scroll-area" style="flex: 1; overflow-y: auto; padding: 0 15px 20px 15px;">
+                        
+                        <div id="shop-bazar-view" class="shop-view">
+                            <p style="text-align: center; color: #80deea; font-size: 10px; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Consumibles y herramientas de supervivencia</p>
+                            <div id="shop-bazar-grid" class="sanctuary-grid"></div>
+                        </div>
+                        
+                        <div id="shop-dojo-view" class="shop-view hidden">
+                            <p style="text-align: center; color: #80deea; font-size: 10px; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Módulos de Técnica. Límite: 1 en mochila.</p>
+                            <div id="shop-dojo-grid" class="sanctuary-grid"></div>
+                        </div>
+                        
+                        <div id="shop-premium-view" class="shop-view hidden">
+                            <p style="text-align: center; color: #80deea; font-size: 10px; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Mejoras de infraestructura permanentes</p>
+                            <div id="shop-premium-grid" class="sanctuary-grid"></div>
+                        </div>
+                        
                     </div>
-                    
-                    <div id="shop-dojo-view" class="shop-view hidden">
-                        <p style="text-align: center; color: #80deea; font-size: 10px; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Módulos de Técnica. Límite: 1 en mochila.</p>
-                        <div id="shop-dojo-grid" class="sanctuary-grid"></div>
-                    </div>
-                    
-                    <div id="shop-premium-view" class="shop-view hidden">
-                        <p style="text-align: center; color: #80deea; font-size: 10px; font-weight: bold; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 1px;">Mejoras de infraestructura permanentes</p>
-                        <div id="shop-premium-grid" class="sanctuary-grid"></div>
-                    </div>
-                    
                 </div>
-                <div style="height: 130px; width: 100%; flex-shrink: 0; display: block;"></div>
                 
-            </div>
-            
-            <div class="fab-btn btn-go-home" onclick="navegarA('room-area')" style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 70%; max-width: 300px; z-index: 100;">
-                <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0; text-align: center;">VOLVER AL LABORATORIO</div>
+                <div class="fab-btn btn-go-home" onclick="navegarA('room-area')" style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 70%; max-width: 300px; z-index: 100;">
+                    <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0; text-align: center;">VOLVER AL LABORATORIO</div>
+                </div>
+                
             </div>
 
             <div id="shop-detail-modal" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 20, 30, 0.90); z-index: 9999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
@@ -167,11 +170,9 @@ window.ShopManager = {
         div.className = "shop-card-neon";
         
         div.style.cssText = `--card-color: ${colorLuz}; --card-color-dark: ${colorOscuro}; --card-color-glow: ${colorLuz}60;`;
-        
         let precioTag = tipoMoneda === "EV" 
             ? `<div style="font-weight: 900; color: ${colorLuz}; margin: 10px 0 15px 0; font-size: 15px; text-shadow: 0 0 8px ${colorLuz}80;">✨ ${item.price.toFixed(2)} EV</div>` 
             : `<div style="font-weight: 900; color: ${colorLuz}; margin: 10px 0 15px 0; font-size: 15px; text-shadow: 0 0 8px ${colorLuz}80;">🔷 ${item.price.toFixed(2)} POL</div>`;
-
         div.innerHTML = `
             <div style="font-size: 3.5rem; margin-bottom: 10px; filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.8)); pointer-events: none;">${item.icon}</div>
             <h4 style="margin: 5px 0 8px 0; font-size: 14px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">${item.name}</h4>
@@ -179,16 +180,13 @@ window.ShopManager = {
             ${precioTag}
             <button class="shop-btn-neon">Comprar</button>
         `;
-
         div.querySelector("button").addEventListener("click", (e) => {
             e.stopPropagation(); 
             this.procesarCompra(item);
         });
-
         div.addEventListener("click", () => {
             this.abrirDetalle(item, colorLuz);
         });
-
         return div;
     },
 
@@ -213,7 +211,6 @@ window.ShopManager = {
 
         let tagsHTML = "";
         const createTag = (text, color) => `<span style="background: ${color}20; color: ${color}; border: 1px solid ${color}; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: bold; text-transform: uppercase;">${text}</span>`;
-
         if (item.type === "MT") {
             tagsHTML += createTag("Módulo MT", "#a0aec0");
             tagsHTML += createTag(item.element, colorLuz);
@@ -229,11 +226,9 @@ window.ShopManager = {
             tagsHTML += createTag(item.type === "consumable" ? "Consumible" : "Herramienta", colorLuz);
         }
         tagsContainer.innerHTML = tagsHTML;
-
         priceEl.innerHTML = item.currency === "EV" 
             ? `<span style="color: ${colorLuz}; text-shadow: 0 0 8px ${colorLuz}80;">✨ ${item.price.toFixed(2)} EV</span>` 
             : `<span style="color: ${colorLuz}; text-shadow: 0 0 8px ${colorLuz}80;">🔷 ${item.price.toFixed(2)} POL</span>`;
-
         modal.style.display = "flex";
 
         const btnClose = document.getElementById("close-shop-detail");
@@ -264,7 +259,6 @@ window.ShopManager = {
                 }
 
                 window.miInventario.vitalEssence -= item.price;
-
                 const formasBase = ["gota", "frijol", "circulo", "cuadrado", "triangulo"];
                 const coloresBase = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77", "#ff9800", "#ffb347", "#a8e6cf"];
                 const elementosBase = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
@@ -289,7 +283,6 @@ window.ShopManager = {
                 
                 const rarezaInicial = "Común";
                 const statsBase = window.generarStatsPorRareza ? window.generarStatsPorRareza(rarezaInicial) : { hp: 50, atk: 15, def: 10, spd: 15, luk: 15 };
-                
                 const huevo = {
                     id: typeof window.generarNuevoID === 'function' ? window.generarNuevoID() : Date.now(), 
                     name: nombreAleatorio, 
@@ -323,7 +316,6 @@ window.ShopManager = {
                     hatchTime: 0, 
                     generation: 1
                 };
-
                 if(!window.misGenos) window.misGenos = []; 
                 window.misGenos.push(huevo);
 
@@ -337,7 +329,6 @@ window.ShopManager = {
                     maxStack: 1,
                     desc: "Material genético puro de tienda. Requiere incubación."
                 }, 1);
-
                 window.miInventario.updateUI();
                 alert("✅ ¡Has comprado un Bio-Núcleo Básico!\nRevisa tu Cámara de Bio-Núcleos en el Centro de Crianza para incubarlo.");
                 if(window.guardarJuego) window.guardarJuego();
@@ -354,7 +345,6 @@ window.ShopManager = {
             }
 
             let agregadoExitosamente = window.miInventario.addItem(itemParaInventario);
-            
             if (agregadoExitosamente) {
                 window.miInventario.vitalEssence -= item.price;
                 window.miInventario.updateUI();
@@ -461,7 +451,6 @@ window.ShopManager = {
             "Tóxico": ["#C6FF00", "#558B2F"],
             "Sintético": ["#B388FF", "#512DA8"]
         };
-
         dojoItems.forEach(item => {
             const [colorLuz, colorOscuro] = coloresMT[item.element] || ["#00d2ff", "#005c8a"];
             grid.appendChild(this.crearTarjeta(item, colorLuz, colorOscuro, "EV"));
