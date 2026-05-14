@@ -126,7 +126,7 @@ window.iniciarMercado = function() {
             <div style="background: #111e28; border-radius: 16px; width: calc(100% - 30px); height: calc(100% - 100px); display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden;">
                 
                 <div style="padding: 25px 15px 0 15px; flex-shrink: 0;">
-                    <h2 class="screen-title" style="color: #D500F9; text-align: center; text-shadow: none; margin: 0 0 25px 0; font-weight: 900; letter-spacing: 2px;">MERCADO WEB3</h2>
+                    <h2 class="screen-title" style="color: #D500F9; text-align: center; text-shadow: none; margin: 0 0 25px 0; font-weight: 900; letter-spacing: 2px;">RED DE CRIADORES</h2>
                     
                     <div style="display: flex; justify-content: center; margin-bottom: 15px; padding: 0; border-bottom: 1px solid #384a5e;">
                         <button id="tab-market-buy" class="market-tab-neon active">Comprar</button>
