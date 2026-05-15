@@ -1,5 +1,5 @@
 // =========================================
-// MarketManager.js - RED DE CRIADORES (WEB3) - ADN EXACTO Y CALIDAD CORREGIDA
+// MarketManager.js - RED DE CRIADORES (WEB3) - DATOS EN TIEMPO REAL Y SVG
 // =========================================
 
 window.mercadoNPC = window.mercadoNPC || [];
@@ -34,7 +34,6 @@ function generarGenoNPC() {
         name: `Geno ${r} (NPC)`,
         rarity: r,
         element: elements[Math.floor(Math.random() * elements.length)],
-        // FIX: Propiedades estándar completas para que los SVGs funcionen bien
         body_shape: Math.random() > 0.5 ? "gota" : "frijol",
         base_color: colorRandom,
         color: colorRandom,
@@ -136,6 +135,10 @@ window.iniciarMercado = function() {
             .listed-item-row:hover {
                 background: rgba(138, 43, 226, 0.2);
             }
+            
+            /* Animación para el botón de cerrar SVG */
+            #close-market-detail:hover svg { stroke: #ff8a80; transform: scale(1.1); }
+            #close-market-detail svg { transition: all 0.2s; }
         `;
         document.head.appendChild(style);
     }
@@ -174,10 +177,18 @@ window.iniciarMercado = function() {
 
             <div id="market-detail-modal" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 20, 30, 0.90); z-index: 9999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
                 <div class="market-detail-scroll" style="background: linear-gradient(180deg, #1A2A36 0%, #0F172A 100%); border: 2px solid #D500F9; border-radius: 16px; padding: 25px 20px; width: 85%; max-width: 350px; max-height: 90vh; overflow-y: auto; position: relative; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 20px rgba(213,0,249,0.2);">
-                    <button id="close-market-detail" style="position: absolute; top: 10px; right: 15px; background: transparent; border: none; color: #aaa; font-size: 24px; font-weight: bold; cursor: pointer;">&times;</button>
+                    
+                    <button id="close-market-detail" style="position: absolute; top: 12px; right: 15px; background: transparent; border: none; cursor: pointer; padding: 5px; outline: none;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff5252" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
                     
                     <div id="market-detail-icon" style="width: 80px; height: 80px; margin: 0 auto 10px auto; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));"></div>
-                    <div id="market-detail-id-text" style="color: #4dd0e1; font-size: 16px; font-weight: 900; margin-bottom: 20px; letter-spacing: 1px;"></div>
+                    
+                    <div id="market-detail-name-text" style="color: #fff; font-size: 18px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px;"></div>
+                    <div id="market-detail-id-text" style="color: #4dd0e1; font-size: 14px; font-weight: bold; margin-bottom: 20px; letter-spacing: 1px;"></div>
                     
                     <div id="market-detail-stats"></div>
                     <div id="market-detail-action" style="margin-top: 20px;"></div>
@@ -194,30 +205,41 @@ window.iniciarMercado = function() {
     const viewBuy = document.getElementById("market-buy-view");
     const viewSell = document.getElementById("market-sell-view");
 
+    // FIX: Ahora al cambiar de pestaña forzamos la recarga de datos para evitar fantasmas
     tabBuy.addEventListener("click", () => {
         tabBuy.classList.add("active"); tabSell.classList.remove("active");
         viewBuy.classList.remove("hidden"); viewSell.classList.add("hidden");
+        window.renderizarMercado();
     });
 
     tabSell.addEventListener("click", () => {
         tabSell.classList.add("active"); tabBuy.classList.remove("active");
         viewSell.classList.remove("hidden"); viewBuy.classList.add("hidden");
+        window.renderizarMisVentas();
     });
 
     window.renderizarMercado();
     window.renderizarMisVentas();
 };
 
-window.abrirDetalleMercado = function(geno, tipoAccion) {
+window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
     const modal = document.getElementById("market-detail-modal");
+    
+    // FIX TIEMPO REAL: Buscamos siempre el Geno directamente de la base de datos maestra 
+    // en lugar de usar la variable 'vieja' que se quedó en el HTML.
+    let geno = null;
+    if(window.misGenos) geno = window.misGenos.find(g => g.id === idGenoBuscar);
+    if(!geno && window.misVentas) geno = window.misVentas.find(g => g.id === idGenoBuscar);
+    if(!geno && window.mercadoNPC) geno = window.mercadoNPC.find(g => g.id === idGenoBuscar);
+    
+    if(!geno) return; // Si no existe, cancelamos.
+
     const iconContainer = document.getElementById("market-detail-icon");
+    const nameEl = document.getElementById("market-detail-name-text");
     const idEl = document.getElementById("market-detail-id-text");
     const statsContainer = document.getElementById("market-detail-stats");
     const actionContainer = document.getElementById("market-detail-action");
 
-    if(!modal) return;
-
-    // FIX SVG: Pasamos todas las propiedades del Geno al motor para que respete ojos, boca y forma
     let svgIcon = '🧬';
     if (typeof window.generarSvgGeno === 'function') {
         let propGeno = { ...geno };
@@ -228,10 +250,13 @@ window.abrirDetalleMercado = function(geno, tipoAccion) {
     }
     iconContainer.innerHTML = svgIcon;
     
+    // Inyectamos Nombre e ID correctos
+    nameEl.innerText = geno.name || "Desconocido";
     idEl.innerText = geno.id ? `#${geno.id.toString().padStart(6, '0')}` : "#000000";
 
     const stBase = geno.stats || { hp: 0, atk: 0, def: 0, spd: 0, luk: 0 };
-    const stAdded = geno.addedStats || { hp: 0, atk: 0, def: 0, spd: 0, luk: 0 };
+    // FIX STATS AÑADIDOS: Buscamos por todas las posibles formas en las que se llamen tus stats extra
+    const stAdded = geno.addedStats || geno.stats_added || geno.statsExtra || geno.puntosNivel || { hp: 0, atk: 0, def: 0, spd: 0, luk: 0 };
     
     const iconHp = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff4b4b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
     const iconAtk = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff8c00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"></path><path d="M13 19l6-6"></path><path d="M16 16l4 4"></path><path d="M19 21l2-2"></path></svg>`;
@@ -268,7 +293,6 @@ window.abrirDetalleMercado = function(geno, tipoAccion) {
 
     const elementoLimpio = (geno.element || "Desconocido").replace(/[^A-Za-záéíóúÁÉÍÓÚñÑ ]/g, '').trim();
 
-    // FIX CALIDAD: Calculamos la calidad visual correcta si está vacía
     let calidadFinal = geno.quality || geno.calidad;
     if (!calidadFinal) {
         calidadFinal = geno.rarity === "Común" ? "C (46%)" : geno.rarity === "Raro" ? "B (68%)" : geno.rarity === "Épico" ? "A (85%)" : "Estándar";
@@ -276,7 +300,7 @@ window.abrirDetalleMercado = function(geno, tipoAccion) {
 
     statsContainer.innerHTML = `
         <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
-            <span style="color: #cbd5e1;">Nivel:</span> <span style="color: #fff; font-weight: bold;">${geno.level}</span>
+            <span style="color: #cbd5e1;">Nivel:</span> <span style="color: #fff; font-weight: bold;">${geno.level || 1}</span>
         </div>
         <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px;">
             <span style="color: #cbd5e1;">Rareza:</span> <span style="color: #fff; font-weight: bold;">${geno.rarity}</span>
@@ -312,7 +336,7 @@ window.abrirDetalleMercado = function(geno, tipoAccion) {
         actionContainer.innerHTML = `
             <div style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px; border: 1px solid #384a5e; margin-bottom: 15px;">
                 <div style="color: #cbd5e1; font-size: 12px; line-height: 1.5; margin-bottom: 5px;">Espécimen listado en la red global.</div>
-                <div style="color: #cbd5e1; font-size: 12px;">Recompensa estimada al liberar: <b>${geno.reward} ✨</b></div>
+                <div style="color: #cbd5e1; font-size: 12px;">Recompensa estimada al liberar: <b>${geno.reward || 100} ✨</b></div>
             </div>
             <div style="font-size: 18px; font-weight: 900; letter-spacing: 1px; margin-bottom: 15px;">
                 <span style="color: #D500F9; text-shadow: 0 0 8px rgba(213,0,249,0.8);">🔷 ${geno.pricePol} POL</span>
@@ -423,7 +447,6 @@ window.renderizarMercado = function() {
         const card = document.createElement("div");
         card.className = "market-card-neon";
         
-        // FIX SVG: Copiamos todo el ADN para que dibuje caras correctas
         let svgIcon = '🧬';
         if (typeof window.generarSvgGeno === 'function') {
             let propGeno = { ...geno };
@@ -438,16 +461,17 @@ window.renderizarMercado = function() {
                 ${svgIcon}
             </div>
             <h4 style="margin: 0 0 5px 0; font-size: 13px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">${geno.name}</h4>
-            <p style="font-size: 11px; color: #cbd5e1; margin: 0 0 10px 0; pointer-events: none;">Nv. ${geno.level} | ${geno.rarity}</p>
+            <p style="font-size: 11px; color: #cbd5e1; margin: 0 0 10px 0; pointer-events: none;">Nv. ${geno.level || 1} | ${geno.rarity}</p>
             <div style="font-weight: 900; color: #D500F9; margin-bottom: 15px; font-size: 14px; text-shadow: 0 0 8px rgba(213,0,249,0.8); pointer-events: none;">🔷 ${geno.pricePol} POL</div>
             <button class="market-btn-neon">Inspeccionar</button>
         `;
         
+        // FIX: Pasamos solo el ID, no el objeto entero, para evitar congelamientos de datos
         card.querySelector("button").addEventListener("click", (e) => {
             e.stopPropagation();
-            window.abrirDetalleMercado(geno, 'comprar');
+            window.abrirDetalleMercado(geno.id, 'comprar');
         });
-        card.addEventListener("click", () => window.abrirDetalleMercado(geno, 'comprar'));
+        card.addEventListener("click", () => window.abrirDetalleMercado(geno.id, 'comprar'));
         
         grid.appendChild(card);
     });
@@ -468,7 +492,6 @@ window.renderizarMisVentas = function() {
             const card = document.createElement("div");
             card.className = "market-card-neon";
             
-            // FIX SVG
             let svgIcon = '🧬';
             if (typeof window.generarSvgGeno === 'function') {
                 let propGeno = { ...geno };
@@ -483,16 +506,16 @@ window.renderizarMisVentas = function() {
                     ${svgIcon}
                 </div>
                 <h4 style="margin: 0 0 5px 0; font-size: 13px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">${geno.name}</h4>
-                <p style="font-size: 11px; color: #cbd5e1; margin: 0 0 10px 0; pointer-events: none;">Nv. ${geno.level} | ${geno.rarity}</p>
+                <p style="font-size: 11px; color: #cbd5e1; margin: 0 0 10px 0; pointer-events: none;">Nv. ${geno.level || 1} | ${geno.rarity}</p>
                 <div style="font-weight: 900; color: #69F0AE; margin-bottom: 15px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; pointer-events: none;">Disponible</div>
                 <button class="market-btn-neon green">Vender</button>
             `;
             
             card.querySelector("button").addEventListener("click", (e) => {
                 e.stopPropagation();
-                window.abrirDetalleMercado(geno, 'publicar');
+                window.abrirDetalleMercado(geno.id, 'publicar');
             });
-            card.addEventListener("click", () => window.abrirDetalleMercado(geno, 'publicar'));
+            card.addEventListener("click", () => window.abrirDetalleMercado(geno.id, 'publicar'));
             
             grid.appendChild(card);
         });
@@ -517,7 +540,7 @@ window.renderizarMisVentas = function() {
             
             item.addEventListener("click", (e) => {
                 if(e.target.classList.contains('btn-cancel-sale')) return;
-                window.abrirDetalleMercado(geno, 'listado');
+                window.abrirDetalleMercado(geno.id, 'listado');
             });
             
             item.querySelector(".btn-cancel-sale").addEventListener("click", (e) => {
