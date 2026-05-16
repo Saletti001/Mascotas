@@ -1,9 +1,19 @@
 // =========================================
-// MarketManager.js - RED DE CRIADORES (WEB3) - CLON EXACTO DE STATS
+// MarketManager.js - RED DE CRIADORES (WEB3) - CLON EXACTO DE STATS (CON SVG LOCK)
 // =========================================
 
 window.mercadoNPC = window.mercadoNPC || [];
 window.misVentas = window.misVentas || [];
+
+// Utilidad para buscar el nombre real
+function obtenerNombreGeno(g) {
+    return g.customName || g.nickname || g.apodo || g.name || "Desconocido";
+}
+
+// Utilidad para buscar los stats añadidos
+function obtenerStatsAnadidos(g) {
+    return g.statsAdded || g.addedStats || g.bonusStats || g.puntosNivel || g.stats_added || { hp: 0, atk: 0, def: 0, spd: 0, luk: 0 };
+}
 
 // Función para generar Genos aleatorios en el mercado
 function generarGenoNPC() {
@@ -18,7 +28,7 @@ function generarGenoNPC() {
     let baseStats = JSON.parse(JSON.stringify(objBase));
     let totalStats = JSON.parse(JSON.stringify(objBase));
     
-    // Simular escalado de stats por nivel directamente en totalStats (igual que tu motor)
+    // Simular escalado de stats por nivel directamente en totalStats
     if (level > 1) {
         totalStats.hp += (level - 1) * 2;
         totalStats.atk += (level - 1);
@@ -266,12 +276,10 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
     const genesContainer = document.getElementById("market-detail-genes");
     const actionContainer = document.getElementById("market-detail-action");
 
-    // Inyectar Nombre y Nivel usando la misma variable del RPGManager
     nameEl.innerText = geno.name || "Geno";
     lvlEl.innerText = `Nv. ${geno.level || 1}`;
     idEl.innerText = geno.id ? `#${geno.id}` : "#000000";
 
-    // Inyectar Elemento e Icono SVG del elemento usando tu motor base
     const elementoActual = (geno.genes && geno.genes.afinidad) ? geno.genes.afinidad.dom : (geno.element || "Normal");
     const nombreElementoLimpio = elementoActual.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, '').trim();
     
@@ -284,14 +292,12 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
     }
     iconContainer.innerHTML = `<div style="font-size: 45px; margin-bottom: 8px; display: flex; justify-content: center; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8));">${iconoElementoHTML}</div>`;
 
-    // Inyectar Calidad
     let calidadFinal = geno.quality || geno.calidad;
     if (!calidadFinal) {
         calidadFinal = geno.rarity === "Común" ? "C (46%)" : geno.rarity === "Raro" ? "B (68%)" : geno.rarity === "Épico" ? "A (85%)" : "Estándar";
     }
     qualityEl.innerText = calidadFinal;
 
-    // --- REPLICAMOS TU LÓGICA DE STATS EXACTA ---
     const stBase = geno.baseStats || geno.stats || { hp: 0, atk: 0, def: 0, spd: 0, luk: 0 };
     const stTotal = geno.stats || { hp: 0, atk: 0, def: 0, spd: 0, luk: 0 };
 
@@ -306,7 +312,6 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
         const numTotal = Math.floor(total) || 0;
         const diff = numTotal - numBase;
         
-        // Exactamente tu lógica de RPGManager.js: Si diff > 0 dibuja, si no, lo deja vacío
         const addedStr = diff > 0 ? `(+${diff})` : '';
         const totalStr = diff > 0 ? `${numTotal}` : '';
         
@@ -328,12 +333,18 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
         ${renderRow('Sue', iconLuk, stBase.luk, stTotal.luk)}
     `;
 
-    // Estructura Genética
+    // Estructura Genética con CANDADO SVG
     let geneHtml = `
         <div style="font-size: 12px; color: #4dd0e1; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; letter-spacing: 1px; text-align: center;">Estructura Genética</div>
         <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 1px dashed #555; text-align: center; color: #666; font-size: 12px;">
-            🔒 ADN Bloqueado<br>
-            <span style="font-size: 10px; color: #444; margin-top: 6px; display: inline-block;">Usa un escáner para revelar la secuencia.</span>
+            <div style="display: flex; justify-content: center; align-items: center; gap: 6px; color: #f0ad4e; margin-bottom: 6px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <span style="font-size: 14px; font-weight: bold;">ADN Bloqueado</span>
+            </div>
+            <span style="font-size: 10px; color: #888; display: inline-block;">Usa un escáner para revelar la secuencia.</span>
         </div>
     `;
         
@@ -404,7 +415,6 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
 
     modal.style.display = "flex";
 
-    // Manejo correcto de la X usando .closest()
     const btnClose = document.getElementById("close-market-detail");
     const cerrarModal = (e) => {
         if(e.target === modal || e.target.closest('#close-market-detail')) {
@@ -429,7 +439,7 @@ window.procesarCompraMercado = function(geno) {
         window.mercadoNPC = window.mercadoNPC.filter(g => g.id !== geno.id);
         window.mercadoNPC.push(generarGenoNPC());
         
-        alert(`✅ ¡Compra exitosa! Adquiriste a [${geno.name}] por ${precio} POL.`);
+        alert(`✅ ¡Compra exitosa! Adquiriste a [${obtenerNombreGeno(geno)}] por ${precio} POL.`);
         window.renderizarMercado();
         
         if(window.guardarJuego) window.guardarJuego();
@@ -450,7 +460,7 @@ window.procesarVentaMercado = function(geno, inputPrecio) {
     geno.pricePol = precio.toFixed(1);
     window.misVentas.push(geno);
     
-    alert(`✅ Has publicado a [${geno.name}] en la red por ${geno.pricePol} POL.`);
+    alert(`✅ Has publicado a [${obtenerNombreGeno(geno)}] en la red por ${geno.pricePol} POL.`);
     window.renderizarMisVentas();
     
     if(window.guardarJuego) window.guardarJuego();
@@ -477,11 +487,13 @@ window.renderizarMercado = function() {
             if (tempSvg) svgIcon = tempSvg.replace(/width="[^"]+"/, 'width="100%"').replace(/height="[^"]+"/, 'height="100%"');
         }
 
+        const nombreMostrado = obtenerNombreGeno(geno);
+
         card.innerHTML = `
             <div style="width: 55px; height: 55px; margin-bottom: 10px; filter: drop-shadow(0px 5px 8px rgba(0,0,0,0.6)); pointer-events: none;">
                 ${svgIcon}
             </div>
-            <h4 style="margin: 0 0 5px 0; font-size: 13px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">${geno.name || "Geno"}</h4>
+            <h4 style="margin: 0 0 5px 0; font-size: 13px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">${nombreMostrado}</h4>
             <p style="font-size: 11px; color: #cbd5e1; margin: 0 0 10px 0; pointer-events: none;">Nv. ${geno.level || 1} | ${geno.rarity}</p>
             <div style="font-weight: 900; color: #D500F9; margin-bottom: 15px; font-size: 14px; text-shadow: 0 0 8px rgba(213,0,249,0.8); pointer-events: none;">🔷 ${geno.pricePol} POL</div>
             <button class="market-btn-neon">Inspeccionar</button>
@@ -521,11 +533,13 @@ window.renderizarMisVentas = function() {
                 if (tempSvg) svgIcon = tempSvg.replace(/width="[^"]+"/, 'width="100%"').replace(/height="[^"]+"/, 'height="100%"');
             }
 
+            const nombreMostrado = obtenerNombreGeno(geno);
+
             card.innerHTML = `
                 <div style="width: 55px; height: 55px; margin-bottom: 10px; filter: drop-shadow(0px 5px 8px rgba(0,0,0,0.6)); pointer-events: none;">
                     ${svgIcon}
                 </div>
-                <h4 style="margin: 0 0 5px 0; font-size: 13px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">${geno.name || "Geno"}</h4>
+                <h4 style="margin: 0 0 5px 0; font-size: 13px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">${nombreMostrado}</h4>
                 <p style="font-size: 11px; color: #cbd5e1; margin: 0 0 10px 0; pointer-events: none;">Nv. ${geno.level || 1} | ${geno.rarity}</p>
                 <div style="font-weight: 900; color: #69F0AE; margin-bottom: 15px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; pointer-events: none;">Disponible</div>
                 <button class="market-btn-neon green">Vender</button>
@@ -548,10 +562,12 @@ window.renderizarMisVentas = function() {
             const item = document.createElement("div");
             item.className = "listed-item-row";
             
+            const nombreVenta = obtenerNombreGeno(geno);
+            
             item.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 8px; pointer-events: none;">
                     <span style="font-size: 14px;">🔍</span>
-                    <span style="font-weight: bold; font-size: 13px;">${geno.name || "Geno"}</span>
+                    <span style="font-weight: bold; font-size: 13px;">${nombreVenta}</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <span style="color: #D500F9; font-weight: 900; pointer-events: none;">🔷 ${geno.pricePol}</span>
@@ -595,7 +611,7 @@ if(!window.simuladorMercadoActivo) {
                     if(polText) polText.innerText = `${window.miWallet.pol.toFixed(1)} POL`;
                 }
 
-                alert(`💰 ¡VENTA EXITOSA!\nUn comprador anónimo adquirió tu [${genoVendido.name}].\nHas recibido +${ganancia} POL.`);
+                alert(`💰 ¡VENTA EXITOSA!\nUn comprador anónimo adquirió tu [${obtenerNombreGeno(genoVendido)}].\nHas recibido +${ganancia} POL.`);
                 
                 const grid = document.getElementById("market-sell-grid");
                 if(grid) window.renderizarMisVentas();
