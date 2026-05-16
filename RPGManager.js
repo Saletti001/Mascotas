@@ -210,8 +210,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 structureContainer.innerHTML = `
                     <div style="font-size: 12px; color: #4dd0e1; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; letter-spacing: 1px; text-align: center;">Estructura Genética</div>
                     <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 1px dashed #555; text-align: center; color: #666; font-size: 12px;">
-                        🔒 ADN Bloqueado<br>
-                        <span style="font-size: 10px; color: #444; margin-top: 6px; display: inline-block;">Usa un escáner para revelar la secuencia.</span>
+                        <div style="display: flex; justify-content: center; align-items: center; gap: 6px; color: #f0ad4e; margin-bottom: 6px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <span style="font-size: 14px; font-weight: bold;">ADN Bloqueado</span>
+                        </div>
+                        <span style="font-size: 10px; color: #888; display: inline-block;">Usa un escáner para revelar la secuencia.</span>
                     </div>
                 `;
             } else {
@@ -285,7 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
             
             if (!g.scanned && !g.scanned_full) {
                 const btnBasico = document.createElement("button");
-                btnBasico.innerHTML = "🔍 Escáner Básico";
+                btnBasico.innerHTML = "Escáner Básico";
                 btnBasico.style = "flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; background: linear-gradient(90deg, #005c8a, #00E5FF); box-shadow: 0 4px 10px rgba(0,229,255,0.3); font-size: 11px; text-transform: uppercase; transition: filter 0.2s;";
                 btnBasico.onmouseover = () => btnBasico.style.filter = "brightness(1.2)";
                 btnBasico.onmouseout = () => btnBasico.style.filter = "brightness(1)";
@@ -295,7 +301,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!g.scanned_full) {
                 const btnCompleto = document.createElement("button");
-                btnCompleto.innerHTML = "🧬 Escáner Completo";
+                btnCompleto.innerHTML = "Escáner Completo";
                 btnCompleto.style = "flex: 1; padding: 10px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; color: white; background: linear-gradient(90deg, #7B1FA2, #D500F9); box-shadow: 0 4px 10px rgba(213,0,249,0.3); font-size: 11px; text-transform: uppercase; transition: filter 0.2s;";
                 btnCompleto.onmouseover = () => btnCompleto.style.filter = "brightness(1.2)";
                 btnCompleto.onmouseout = () => btnCompleto.style.filter = "brightness(1)";
