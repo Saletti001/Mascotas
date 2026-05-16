@@ -1,9 +1,19 @@
 // =========================================
-// MarketManager.js - RED DE CRIADORES (WEB3) - DATOS EN TIEMPO REAL Y SVG
+// MarketManager.js - RED DE CRIADORES (WEB3) - UI EXACTA Y BUGS ARREGLADOS
 // =========================================
 
 window.mercadoNPC = window.mercadoNPC || [];
 window.misVentas = window.misVentas || [];
+
+// Utilidad para buscar el nombre real (por si el jugador lo renombró)
+function obtenerNombreGeno(g) {
+    return g.nickname || g.apodo || g.name || "Desconocido";
+}
+
+// Utilidad para buscar los stats añadidos (soporta múltiples nombres de variables)
+function obtenerStatsAnadidos(g) {
+    return g.statsAdded || g.addedStats || g.bonusStats || g.puntosNivel || g.stats_added || { hp: 0, atk: 0, def: 0, spd: 0, luk: 0 };
+}
 
 // Función para generar Genos aleatorios en el mercado
 function generarGenoNPC() {
@@ -13,11 +23,9 @@ function generarGenoNPC() {
     let price = r === "Común" ? (Math.random() * 2 + 1) : r === "Raro" ? (Math.random() * 5 + 5) : (Math.random() * 15 + 15);
     let level = Math.floor(Math.random() * 10) + 1;
     
-    // Generar Stats base según rareza
     let objBase = window.generarStatsPorRareza ? window.generarStatsPorRareza(r) : { hp: 50, atk: 15, def: 10, spd: 15, luk: 15 };
     let statsBase = JSON.parse(JSON.stringify(objBase));
     
-    // Simular escalado de stats por nivel
     let addedStatsBase = { hp: 0, atk: 0, def: 0, spd: 0, luk: 0 };
     if (level > 1) {
         addedStatsBase.hp = (level - 1) * 2;
@@ -43,7 +51,7 @@ function generarGenoNPC() {
         level: level,
         reward: 100,
         stats: statsBase,
-        addedStats: addedStatsBase,
+        statsAdded: addedStatsBase, // Usamos un nombre estándar
         quality: r === "Común" ? "C (46%)" : r === "Raro" ? "B (68%)" : "A (85%)",
         scanned: false,
         hidden_genes: { A: null, B: null, C: null }
@@ -136,7 +144,6 @@ window.iniciarMercado = function() {
                 background: rgba(138, 43, 226, 0.2);
             }
             
-            /* Animación para el botón de cerrar SVG */
             #close-market-detail:hover svg { stroke: #ff8a80; transform: scale(1.1); }
             #close-market-detail svg { transition: all 0.2s; }
         `;
@@ -186,7 +193,6 @@ window.iniciarMercado = function() {
                     </button>
                     
                     <div id="market-detail-icon" style="width: 80px; height: 80px; margin: 0 auto 10px auto; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));"></div>
-                    
                     <div id="market-detail-name-text" style="color: #fff; font-size: 18px; font-weight: 900; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px;"></div>
                     <div id="market-detail-id-text" style="color: #4dd0e1; font-size: 14px; font-weight: bold; margin-bottom: 20px; letter-spacing: 1px;"></div>
                     
@@ -205,7 +211,6 @@ window.iniciarMercado = function() {
     const viewBuy = document.getElementById("market-buy-view");
     const viewSell = document.getElementById("market-sell-view");
 
-    // FIX: Ahora al cambiar de pestaña forzamos la recarga de datos para evitar fantasmas
     tabBuy.addEventListener("click", () => {
         tabBuy.classList.add("active"); tabSell.classList.remove("active");
         viewBuy.classList.remove("hidden"); viewSell.classList.add("hidden");
@@ -225,14 +230,13 @@ window.iniciarMercado = function() {
 window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
     const modal = document.getElementById("market-detail-modal");
     
-    // FIX TIEMPO REAL: Buscamos siempre el Geno directamente de la base de datos maestra 
-    // en lugar de usar la variable 'vieja' que se quedó en el HTML.
+    // Buscar Geno siempre en tiempo real
     let geno = null;
     if(window.misGenos) geno = window.misGenos.find(g => g.id === idGenoBuscar);
     if(!geno && window.misVentas) geno = window.misVentas.find(g => g.id === idGenoBuscar);
     if(!geno && window.mercadoNPC) geno = window.mercadoNPC.find(g => g.id === idGenoBuscar);
     
-    if(!geno) return; // Si no existe, cancelamos.
+    if(!geno) return; 
 
     const iconContainer = document.getElementById("market-detail-icon");
     const nameEl = document.getElementById("market-detail-name-text");
@@ -250,13 +254,13 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
     }
     iconContainer.innerHTML = svgIcon;
     
-    // Inyectamos Nombre e ID correctos
-    nameEl.innerText = geno.name || "Desconocido";
+    // Inyectar nombre personalizado si lo tiene
+    nameEl.innerText = obtenerNombreGeno(geno);
     idEl.innerText = geno.id ? `#${geno.id.toString().padStart(6, '0')}` : "#000000";
 
     const stBase = geno.stats || { hp: 0, atk: 0, def: 0, spd: 0, luk: 0 };
-    // FIX STATS AÑADIDOS: Buscamos por todas las posibles formas en las que se llamen tus stats extra
-    const stAdded = geno.addedStats || geno.stats_added || geno.statsExtra || geno.puntosNivel || { hp: 0, atk: 0, def: 0, spd: 0, luk: 0 };
+    // Rastrear cómo se llamen los puntos añadidos en tu código
+    const stAdded = obtenerStatsAnadidos(geno);
     
     const iconHp = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff4b4b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
     const iconAtk = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff8c00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"></path><path d="M13 19l6-6"></path><path d="M16 16l4 4"></path><path d="M19 21l2-2"></path></svg>`;
@@ -264,16 +268,19 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
     const iconSpd = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`;
     const iconLuk = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`;
 
+    // FIX STATS: Ahora SIEMPRE pinta el +0 y la suma igual que tu panel principal
     const renderRow = (label, icon, base, added) => {
-        const total = base + added;
-        const addedStr = added > 0 ? `(+${added})` : '';
-        const totalStr = added > 0 ? `${total}` : '';
+        const numBase = parseInt(base) || 0;
+        const numAdded = parseInt(added) || 0;
+        const total = numBase + numAdded;
+        const addedColor = numAdded > 0 ? '#4CAF50' : '#888'; // Verde si sumó algo, gris si es 0
+        
         return `
         <div style="display: grid; grid-template-columns: 55px 25px 40px 30px 1fr; gap: 4px; align-items: center; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; font-size: 13px;">
             <span style="text-align: left; display: flex; align-items: center; gap: 4px; color: #fff;">${icon} ${label}:</span>
-            <span style="font-weight: bold; color: #fff; text-align: right;">${base}</span>
-            <span style="color: #4CAF50; font-size: 11px; font-weight: bold; text-align: right;">${addedStr}</span>
-            <span style="color: #ffcc00; font-weight: bold; font-size: 15px; text-align: right;">${totalStr}</span>
+            <span style="font-weight: bold; color: #fff; text-align: right;">${numBase}</span>
+            <span style="color: ${addedColor}; font-size: 11px; font-weight: bold; text-align: right;">+${numAdded}</span>
+            <span style="color: #ffcc00; font-weight: bold; font-size: 15px; text-align: right;">${total}</span>
             <div></div>
         </div>`;
     };
@@ -382,16 +389,15 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
 
     modal.style.display = "flex";
 
+    // FIX CERRAR X: Ahora detecta si el clic se hizo en el botón o en cualquier cosa de adentro (el SVG)
     const btnClose = document.getElementById("close-market-detail");
     const cerrarModal = (e) => {
-        if(e.target === modal || e.target === btnClose) {
+        if(e.target === modal || e.target.closest('#close-market-detail')) {
             modal.style.display = "none";
             modal.removeEventListener("click", cerrarModal);
-            btnClose.removeEventListener("click", cerrarModal);
         }
     };
     modal.addEventListener("click", cerrarModal);
-    btnClose.addEventListener("click", cerrarModal);
 };
 
 window.procesarCompraMercado = function(geno) {
@@ -408,7 +414,7 @@ window.procesarCompraMercado = function(geno) {
         window.mercadoNPC = window.mercadoNPC.filter(g => g.id !== geno.id);
         window.mercadoNPC.push(generarGenoNPC());
         
-        alert(`✅ ¡Compra exitosa! Adquiriste a [${geno.name}] por ${precio} POL.`);
+        alert(`✅ ¡Compra exitosa! Adquiriste a [${obtenerNombreGeno(geno)}] por ${precio} POL.`);
         window.renderizarMercado();
         
         if(window.guardarJuego) window.guardarJuego();
@@ -429,7 +435,7 @@ window.procesarVentaMercado = function(geno, inputPrecio) {
     geno.pricePol = precio.toFixed(1);
     window.misVentas.push(geno);
     
-    alert(`✅ Has publicado a [${geno.name}] en la red por ${geno.pricePol} POL.`);
+    alert(`✅ Has publicado a [${obtenerNombreGeno(geno)}] en la red por ${geno.pricePol} POL.`);
     window.renderizarMisVentas();
     
     if(window.guardarJuego) window.guardarJuego();
@@ -456,17 +462,18 @@ window.renderizarMercado = function() {
             if (tempSvg) svgIcon = tempSvg.replace(/width="[^"]+"/, 'width="100%"').replace(/height="[^"]+"/, 'height="100%"');
         }
 
+        const nombreMostrado = obtenerNombreGeno(geno);
+
         card.innerHTML = `
             <div style="width: 55px; height: 55px; margin-bottom: 10px; filter: drop-shadow(0px 5px 8px rgba(0,0,0,0.6)); pointer-events: none;">
                 ${svgIcon}
             </div>
-            <h4 style="margin: 0 0 5px 0; font-size: 13px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">${geno.name}</h4>
+            <h4 style="margin: 0 0 5px 0; font-size: 13px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">${nombreMostrado}</h4>
             <p style="font-size: 11px; color: #cbd5e1; margin: 0 0 10px 0; pointer-events: none;">Nv. ${geno.level || 1} | ${geno.rarity}</p>
             <div style="font-weight: 900; color: #D500F9; margin-bottom: 15px; font-size: 14px; text-shadow: 0 0 8px rgba(213,0,249,0.8); pointer-events: none;">🔷 ${geno.pricePol} POL</div>
             <button class="market-btn-neon">Inspeccionar</button>
         `;
         
-        // FIX: Pasamos solo el ID, no el objeto entero, para evitar congelamientos de datos
         card.querySelector("button").addEventListener("click", (e) => {
             e.stopPropagation();
             window.abrirDetalleMercado(geno.id, 'comprar');
@@ -501,11 +508,13 @@ window.renderizarMisVentas = function() {
                 if (tempSvg) svgIcon = tempSvg.replace(/width="[^"]+"/, 'width="100%"').replace(/height="[^"]+"/, 'height="100%"');
             }
 
+            const nombreMostrado = obtenerNombreGeno(geno);
+
             card.innerHTML = `
                 <div style="width: 55px; height: 55px; margin-bottom: 10px; filter: drop-shadow(0px 5px 8px rgba(0,0,0,0.6)); pointer-events: none;">
                     ${svgIcon}
                 </div>
-                <h4 style="margin: 0 0 5px 0; font-size: 13px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">${geno.name}</h4>
+                <h4 style="margin: 0 0 5px 0; font-size: 13px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">${nombreMostrado}</h4>
                 <p style="font-size: 11px; color: #cbd5e1; margin: 0 0 10px 0; pointer-events: none;">Nv. ${geno.level || 1} | ${geno.rarity}</p>
                 <div style="font-weight: 900; color: #69F0AE; margin-bottom: 15px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; pointer-events: none;">Disponible</div>
                 <button class="market-btn-neon green">Vender</button>
@@ -527,10 +536,13 @@ window.renderizarMisVentas = function() {
         window.misVentas.forEach(geno => {
             const item = document.createElement("div");
             item.className = "listed-item-row";
+            
+            const nombreVenta = obtenerNombreGeno(geno);
+            
             item.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 8px; pointer-events: none;">
                     <span style="font-size: 14px;">🔍</span>
-                    <span style="font-weight: bold; font-size: 13px;">${geno.name}</span>
+                    <span style="font-weight: bold; font-size: 13px;">${nombreVenta}</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <span style="color: #D500F9; font-weight: 900; pointer-events: none;">🔷 ${geno.pricePol}</span>
@@ -558,7 +570,6 @@ window.renderizarMisVentas = function() {
     }
 };
 
-// SIMULACIÓN DE COMPRADORES
 if(!window.simuladorMercadoActivo) {
     window.simuladorMercadoActivo = true;
     setInterval(() => {
@@ -575,7 +586,7 @@ if(!window.simuladorMercadoActivo) {
                     if(polText) polText.innerText = `${window.miWallet.pol.toFixed(1)} POL`;
                 }
 
-                alert(`💰 ¡VENTA EXITOSA!\nUn comprador anónimo adquirió tu [${genoVendido.name}].\nHas recibido +${ganancia} POL.`);
+                alert(`💰 ¡VENTA EXITOSA!\nUn comprador anónimo adquirió tu [${obtenerNombreGeno(genoVendido)}].\nHas recibido +${ganancia} POL.`);
                 
                 const grid = document.getElementById("market-sell-grid");
                 if(grid) window.renderizarMisVentas();
