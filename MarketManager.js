@@ -1,21 +1,15 @@
 // =========================================
-// MarketManager.js - RED DE CRIADORES (WEB3) - CLON EXACTO DE STATS (CON SVG LOCK)
+// MarketManager.js - RED DE CRIADORES (WEB3) - 100% TIEMPO REAL Y SVG
 // =========================================
 
 window.mercadoNPC = window.mercadoNPC || [];
 window.misVentas = window.misVentas || [];
 
-// Utilidad para buscar el nombre real
+// Buscar nombre real
 function obtenerNombreGeno(g) {
     return g.customName || g.nickname || g.apodo || g.name || "Desconocido";
 }
 
-// Utilidad para buscar los stats añadidos
-function obtenerStatsAnadidos(g) {
-    return g.statsAdded || g.addedStats || g.bonusStats || g.puntosNivel || g.stats_added || { hp: 0, atk: 0, def: 0, spd: 0, luk: 0 };
-}
-
-// Función para generar Genos aleatorios en el mercado
 function generarGenoNPC() {
     const rarities = ["Común", "Raro", "Épico"];
     const elements = ["Ígneo", "Acuático", "Tóxico", "Cibernético", "Biomutante", "Viral", "Radiactivo", "Sintético"];
@@ -23,18 +17,13 @@ function generarGenoNPC() {
     let price = r === "Común" ? (Math.random() * 2 + 1) : r === "Raro" ? (Math.random() * 5 + 5) : (Math.random() * 15 + 15);
     let level = Math.floor(Math.random() * 10) + 1;
     
-    // Generar Stats base
     let objBase = window.generarStatsPorRareza ? window.generarStatsPorRareza(r) : { hp: 50, atk: 15, def: 10, spd: 15, luk: 15 };
     let baseStats = JSON.parse(JSON.stringify(objBase));
     let totalStats = JSON.parse(JSON.stringify(objBase));
     
-    // Simular escalado de stats por nivel directamente en totalStats
     if (level > 1) {
-        totalStats.hp += (level - 1) * 2;
-        totalStats.atk += (level - 1);
-        totalStats.def += (level - 1);
-        totalStats.spd += (level - 1);
-        totalStats.luk += (level - 1);
+        totalStats.hp += (level - 1) * 2; totalStats.atk += (level - 1);
+        totalStats.def += (level - 1); totalStats.spd += (level - 1); totalStats.luk += (level - 1);
     }
 
     const colorRandom = `#${Math.floor(Math.random()*16777215).toString(16)}`;
@@ -47,8 +36,6 @@ function generarGenoNPC() {
         body_shape: Math.random() > 0.5 ? "gota" : "frijol",
         base_color: colorRandom,
         color: colorRandom,
-        eye_type: "estandar",
-        mouth_type: "estandar",
         pricePol: price.toFixed(1),
         level: level,
         reward: 100,
@@ -56,7 +43,7 @@ function generarGenoNPC() {
         baseStats: baseStats,
         quality: r === "Común" ? "C (46%)" : r === "Raro" ? "B (68%)" : "A (85%)",
         scanned: false,
-        hidden_genes: { A: null, B: null, C: null }
+        scanned_full: false
     };
 }
 
@@ -88,8 +75,7 @@ window.iniciarMercado = function() {
             .hide-spinners { -moz-appearance: textfield !important; }
             .hide-spinners::-webkit-outer-spin-button,
             .hide-spinners::-webkit-inner-spin-button {
-                -webkit-appearance: none !important;
-                margin: 0 !important;
+                -webkit-appearance: none !important; margin: 0 !important;
             }
 
             .market-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; }
@@ -101,34 +87,25 @@ window.iniciarMercado = function() {
             }
             .market-tab-neon:hover { background: rgba(42, 59, 76, 0.9); color: #fff; }
             .market-tab-neon.active {
-                color: #fff; background: rgba(30, 20, 50, 0.9);
-                border: 1px solid #D500F9; border-bottom: 2px solid transparent;
+                color: #fff; background: rgba(30, 20, 50, 0.9); border: 1px solid #D500F9; border-bottom: 2px solid transparent;
                 box-shadow: inset 0 15px 20px -15px #D500F9, 0 -5px 15px -10px #D500F9;
             }
 
             .market-card-neon {
-                background: linear-gradient(180deg, #2A3B4C 0%, #1A2A36 100%);
-                border: 1px solid #384a5e; border-radius: 12px; padding: 18px 12px;
-                transition: all 0.3s ease; position: relative; overflow: hidden;
-                display: flex; flex-direction: column; align-items: center; text-align: center;
-                box-shadow: 0 4px 10px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.05);
-                width: 100%; box-sizing: border-box; cursor: pointer;
+                background: linear-gradient(180deg, #2A3B4C 0%, #1A2A36 100%); border: 1px solid #384a5e; border-radius: 12px; padding: 18px 12px;
+                transition: all 0.3s ease; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; text-align: center;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.05); width: 100%; box-sizing: border-box; cursor: pointer;
             }
-            .market-card-neon::before {
-                content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: #D500F9; transition: 0.3s;
-            }
+            .market-card-neon::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: #D500F9; transition: 0.3s; }
             .market-card-neon:hover {
-                transform: translateY(-4px); border-color: #D500F9;
-                box-shadow: 0 10px 25px rgba(0,0,0,0.4), 0 0 15px rgba(213,0,249,0.4);
+                transform: translateY(-4px); border-color: #D500F9; box-shadow: 0 10px 25px rgba(0,0,0,0.4), 0 0 15px rgba(213,0,249,0.4);
                 background: linear-gradient(180deg, #32465A 0%, #203342 100%);
             }
             .market-card-neon:hover::before { height: 6px; box-shadow: 0 0 15px #D500F9; }
 
             .market-btn-neon {
-                width: 100%; padding: 10px; border: none; border-radius: 8px; margin-top: auto;
-                font-weight: 900; color: #fff; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-size: 13px;
-                background: linear-gradient(90deg, #6A1B9A, #D500F9);
-                box-shadow: 0 4px 10px rgba(0,0,0,0.4), inset 0 2px 5px rgba(255,255,255,0.2);
+                width: 100%; padding: 10px; border: none; border-radius: 8px; margin-top: auto; font-weight: 900; color: #fff; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-size: 13px;
+                background: linear-gradient(90deg, #6A1B9A, #D500F9); box-shadow: 0 4px 10px rgba(0,0,0,0.4), inset 0 2px 5px rgba(255,255,255,0.2);
                 transition: filter 0.2s, transform 0.1s; text-shadow: 0 1px 2px rgba(0,0,0,0.8); box-sizing: border-box;
             }
             .market-btn-neon.green { background: linear-gradient(90deg, #2E7D32, #69F0AE); }
@@ -137,38 +114,29 @@ window.iniciarMercado = function() {
             .market-btn-neon:active { transform: scale(0.97); }
             
             .listed-item-row {
-                display: flex; justify-content: space-between; align-items: center; 
-                background: rgba(0,0,0,0.4); padding: 10px 15px; border-radius: 8px; 
-                border: 1px solid #4A148C; margin-bottom: 8px; font-size: 12px; color: #fff;
-                cursor: pointer; transition: background 0.2s;
+                display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4); padding: 10px 15px; border-radius: 8px; 
+                border: 1px solid #4A148C; margin-bottom: 8px; font-size: 12px; color: #fff; cursor: pointer; transition: background 0.2s;
             }
-            .listed-item-row:hover {
-                background: rgba(138, 43, 226, 0.2);
-            }
+            .listed-item-row:hover { background: rgba(138, 43, 226, 0.2); }
         `;
         document.head.appendChild(style);
     }
 
     contenedor.innerHTML = `
         <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 15px; position: relative;">
-            
             <div style="background: #111e28; border-radius: 16px; width: calc(100% - 30px); height: calc(100% - 100px); display: flex; flex-direction: column; box-shadow: 0 10px 25px rgba(0,0,0,0.5); overflow: hidden;">
-                
                 <div style="padding: 25px 15px 0 15px; flex-shrink: 0;">
                     <h2 class="screen-title" style="color: #D500F9; text-align: center; text-shadow: none; margin: 0 0 25px 0; font-weight: 900; letter-spacing: 2px;">RED DE CRIADORES</h2>
-                    
                     <div style="display: flex; justify-content: center; margin-bottom: 15px; padding: 0; border-bottom: 1px solid #384a5e;">
                         <button id="tab-market-buy" class="market-tab-neon active">Comprar</button>
                         <button id="tab-market-sell" class="market-tab-neon">Mis Ventas</button>
                     </div>
                 </div>
-                
                 <div class="market-scroll-area" style="flex: 1; overflow-y: auto; padding: 0 10px 20px 10px;">
                     <div id="market-buy-view">
                         <p style="text-align: center; color: #b39ddb; font-size: 10px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Adquiere Genos de otros criadores</p>
                         <div id="market-buy-grid" class="market-grid"></div>
                     </div>
-                    
                     <div id="market-sell-view" class="hidden">
                         <p style="text-align: center; color: #b39ddb; font-size: 10px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Lista tus Genos en la red</p>
                         <div id="market-my-listed" style="margin-bottom: 15px; width: 100%;"></div>
@@ -176,14 +144,12 @@ window.iniciarMercado = function() {
                     </div>
                 </div>
             </div>
-            
             <div class="fab-btn btn-go-home" onclick="navegarA('room-area')" style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 70%; max-width: 300px; z-index: 100;">
                 <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0; text-align: center;">VOLVER AL LABORATORIO</div>
             </div>
 
             <div id="market-detail-modal" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 9999; display: none; align-items: center; justify-content: center; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);">
                 <div class="market-detail-scroll modal-content" style="max-height: 85vh; overflow-y: auto; width: 85%; max-width: 350px; background: #111e28; border-radius: 12px; padding: 20px; box-sizing: border-box; position: relative;">
-                    
                     <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;">
                         <h3 class="stats-title" style="margin: 0; color: #80deea; text-transform: uppercase; font-size: 16px; display: flex; align-items: center; gap: 10px;">
                             <span id="market-detail-name-text">--</span>
@@ -195,38 +161,30 @@ window.iniciarMercado = function() {
                             </svg>
                         </button>
                     </div>
-
                     <div class="stats-level-badge" style="text-align: center; margin-bottom: 15px;">
                         <span id="market-detail-level-badge" style="background: #4dd0e1; color: #000; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 12px;"></span>
                     </div>
-
                     <div id="market-detail-element-icon" style="text-align: center; margin-bottom: 8px;"></div>
                     <div id="market-detail-id-text" style="text-align: center; margin-bottom: 15px; font-weight: bold; color: #00d2ff; font-family: monospace; letter-spacing: 2px; font-size: 15px;"></div>
-                    
                     <div class="stat-info" style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
                         <span>Rareza:</span> <span id="market-detail-rarity" style="color: #fff; font-weight: bold;">--</span>
                     </div>
                     <div class="stat-info" style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
                         <span>Elem:</span> <span id="market-detail-elem" style="color: #fff; font-weight: bold;">--</span>
                     </div>
-                    
                     <div class="stat-info" style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1);">
                         <span>Calidad (Pura):</span> 
                         <span id="market-detail-quality" style="font-weight: 900; font-size: 14px; color: #ffcc00; text-shadow: 0 0 5px rgba(255,255,255,0.5);">--</span>
                     </div>
-
                     <hr class="stats-divider" style="border: none; border-top: 1px solid #333; margin: 15px 0;">
-                    
                     <div class="stat-header" style="display: flex; justify-content: space-between; font-weight: bold; color: #4dd0e1; margin-bottom: 10px; font-size: 14px;">
                         <span>Atributos Activos</span>
                     </div>
-
                     <div id="market-detail-stats"></div>
                     <div id="market-detail-genes" style="margin-top: 15px;"></div>
                     <div id="market-detail-action" style="margin-top: 20px; text-align: center;"></div>
                 </div>
             </div>
-            
         </div>
     `;
 
@@ -256,15 +214,18 @@ window.iniciarMercado = function() {
 window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
     const modal = document.getElementById("market-detail-modal");
     
-    // Buscar Geno siempre en tiempo real
+    // TIEMPO REAL: Si el ID coincide con la mascota activa, usamos window.miMascota para tener nivel y stats frescos
     let geno = null;
-    if(window.misGenos) geno = window.misGenos.find(g => g.id === idGenoBuscar);
+    if (window.miMascota && window.miMascota.id === idGenoBuscar) {
+        geno = window.miMascota;
+    } else if(window.misGenos) {
+        geno = window.misGenos.find(g => g.id === idGenoBuscar);
+    }
     if(!geno && window.misVentas) geno = window.misVentas.find(g => g.id === idGenoBuscar);
     if(!geno && window.mercadoNPC) geno = window.mercadoNPC.find(g => g.id === idGenoBuscar);
     
     if(!geno) return; 
 
-    // Referencias al DOM
     const nameEl = document.getElementById("market-detail-name-text");
     const lvlEl = document.getElementById("market-detail-level-badge");
     const iconContainer = document.getElementById("market-detail-element-icon");
@@ -276,13 +237,12 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
     const genesContainer = document.getElementById("market-detail-genes");
     const actionContainer = document.getElementById("market-detail-action");
 
-    nameEl.innerText = geno.name || "Geno";
+    nameEl.innerText = obtenerNombreGeno(geno);
     lvlEl.innerText = `Nv. ${geno.level || 1}`;
     idEl.innerText = geno.id ? `#${geno.id}` : "#000000";
 
     const elementoActual = (geno.genes && geno.genes.afinidad) ? geno.genes.afinidad.dom : (geno.element || "Normal");
     const nombreElementoLimpio = elementoActual.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, '').trim();
-    
     rarityEl.innerText = geno.rarity || "Común";
     elemEl.innerText = nombreElementoLimpio;
 
@@ -293,9 +253,7 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
     iconContainer.innerHTML = `<div style="font-size: 45px; margin-bottom: 8px; display: flex; justify-content: center; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8));">${iconoElementoHTML}</div>`;
 
     let calidadFinal = geno.quality || geno.calidad;
-    if (!calidadFinal) {
-        calidadFinal = geno.rarity === "Común" ? "C (46%)" : geno.rarity === "Raro" ? "B (68%)" : geno.rarity === "Épico" ? "A (85%)" : "Estándar";
-    }
+    if (!calidadFinal) { calidadFinal = geno.rarity === "Común" ? "C (46%)" : geno.rarity === "Raro" ? "B (68%)" : geno.rarity === "Épico" ? "A (85%)" : "Estándar"; }
     qualityEl.innerText = calidadFinal;
 
     const stBase = geno.baseStats || geno.stats || { hp: 0, atk: 0, def: 0, spd: 0, luk: 0 };
@@ -311,7 +269,6 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
         const numBase = Math.floor(base) || 0;
         const numTotal = Math.floor(total) || 0;
         const diff = numTotal - numBase;
-        
         const addedStr = diff > 0 ? `(+${diff})` : '';
         const totalStr = diff > 0 ? `${numTotal}` : '';
         
@@ -333,12 +290,26 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
         ${renderRow('Sue', iconLuk, stBase.luk, stTotal.luk)}
     `;
 
-    // Estructura Genética con CANDADO SVG
+    // EXTRACCIÓN ROBUSTA DE GENES
+    let genA = "Desconocido";
+    let genB = "Desconocido";
+
+    if (geno.genes) {
+        if (geno.genes.cosmetico) genA = geno.genes.cosmetico.name || geno.genes.cosmetico;
+        else if (geno.genes.A) genA = geno.genes.A.name || geno.genes.A;
+        
+        if (geno.genes.funcional) genB = geno.genes.funcional.name || geno.genes.funcional;
+        else if (geno.genes.B) genB = geno.genes.B.name || geno.genes.B;
+    }
+
+    if (typeof genA === 'object') genA = genA.name || "Desconocido";
+    if (typeof genB === 'object') genB = genB.name || "Desconocido";
+
     let geneHtml = `
         <div style="font-size: 12px; color: #4dd0e1; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; letter-spacing: 1px; text-align: center;">Estructura Genética</div>
         <div style="background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; border: 1px dashed #555; text-align: center; color: #666; font-size: 12px;">
             <div style="display: flex; justify-content: center; align-items: center; gap: 6px; color: #f0ad4e; margin-bottom: 6px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
                     <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
@@ -348,19 +319,19 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
         </div>
     `;
         
-    if (geno.scanned && geno.hidden_genes) {
+    if (geno.scanned || geno.scanned_full) {
         geneHtml = `
             <div style="font-size: 12px; color: #4dd0e1; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; letter-spacing: 1px; text-align: center;">Estructura Genética</div>
             <div style="background: rgba(0,0,0,0.4); padding: 8px 12px; border-radius: 6px; font-size: 11px; color: #fff; border-left: 3px solid #ffcc00; display: flex; flex-direction: column; gap: 4px; margin-bottom: 4px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span style="color: #ffcc00; font-weight: bold; font-size: 10px; text-transform: uppercase;">Gen A (Cosmético)</span>
-                    <span style="font-weight: bold;">${geno.hidden_genes.A ? geno.hidden_genes.A.name : 'Desconocido'}</span>
+                    <span style="font-weight: bold;">${genA}</span>
                 </div>
             </div>
             <div style="background: rgba(0,0,0,0.4); padding: 8px 12px; border-radius: 6px; font-size: 11px; color: #fff; border-left: 3px solid #80deea; display: flex; flex-direction: column; gap: 4px; margin-bottom: 4px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span style="color: #80deea; font-weight: bold; font-size: 10px; text-transform: uppercase;">Gen B (Funcional)</span>
-                    <span style="font-weight: bold;">${geno.hidden_genes.B ? geno.hidden_genes.B.name : 'Desconocido'}</span>
+                    <span style="font-weight: bold;">${genB}</span>
                 </div>
             </div>
         `;
@@ -379,10 +350,7 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
             </div>
             <button id="modal-btn-action" class="market-btn-neon" style="width: 100%; font-size: 14px; padding: 12px;">Confirmar Compra</button>
         `;
-        document.getElementById("modal-btn-action").onclick = () => {
-            window.procesarCompraMercado(geno);
-            modal.style.display = "none";
-        };
+        document.getElementById("modal-btn-action").onclick = () => { window.procesarCompraMercado(geno); modal.style.display = "none"; };
     } else if (tipoAccion === 'publicar') {
         actionContainer.innerHTML = `
             <div style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px; border: 1px solid #384a5e; margin-bottom: 15px;">
@@ -393,9 +361,7 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
         `;
         document.getElementById("modal-btn-action").onclick = () => {
             const val = document.getElementById("modal-input-price").value;
-            if(window.procesarVentaMercado(geno, val)) {
-                modal.style.display = "none";
-            }
+            if(window.procesarVentaMercado(geno, val)) { modal.style.display = "none"; }
         };
     } else if (tipoAccion === 'listado') {
         actionContainer.innerHTML = `
@@ -408,9 +374,7 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
             </div>
             <button id="modal-btn-action" class="market-btn-neon" style="width: 100%; font-size: 14px; padding: 12px; background: #384a5e; box-shadow: none;">Cerrar Inspección</button>
         `;
-        document.getElementById("modal-btn-action").onclick = () => {
-            modal.style.display = "none";
-        };
+        document.getElementById("modal-btn-action").onclick = () => { modal.style.display = "none"; };
     }
 
     modal.style.display = "flex";
@@ -418,8 +382,7 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
     const btnClose = document.getElementById("close-market-detail");
     const cerrarModal = (e) => {
         if(e.target === modal || e.target.closest('#close-market-detail')) {
-            modal.style.display = "none";
-            modal.removeEventListener("click", cerrarModal);
+            modal.style.display = "none"; modal.removeEventListener("click", cerrarModal);
         }
     };
     modal.addEventListener("click", cerrarModal);
@@ -444,17 +407,12 @@ window.procesarCompraMercado = function(geno) {
         
         if(window.guardarJuego) window.guardarJuego();
         else if(window.guardarProgreso) window.guardarProgreso();
-    } else {
-        alert("❌ No tienes suficiente $POL para comprar este Geno.");
-    }
+    } else { alert("❌ No tienes suficiente $POL para comprar este Geno."); }
 };
 
 window.procesarVentaMercado = function(geno, inputPrecio) {
     const precio = parseFloat(inputPrecio);
-    if (isNaN(precio) || precio <= 0) {
-        alert("⚠️ Por favor, introduce un precio válido mayor a 0.");
-        return false;
-    }
+    if (isNaN(precio) || precio <= 0) { alert("⚠️ Por favor, introduce un precio válido mayor a 0."); return false; }
 
     window.misGenos = window.misGenos.filter(g => g.id !== geno.id);
     geno.pricePol = precio.toFixed(1);
@@ -465,7 +423,6 @@ window.procesarVentaMercado = function(geno, inputPrecio) {
     
     if(window.guardarJuego) window.guardarJuego();
     else if(window.guardarProgreso) window.guardarProgreso();
-    
     return true;
 };
 
@@ -474,9 +431,8 @@ window.renderizarMercado = function() {
     if(!grid) return;
     grid.innerHTML = "";
 
-    window.mercadoNPC.forEach(geno => {
-        const card = document.createElement("div");
-        card.className = "market-card-neon";
+    window.mercadoNPC.forEach(gRaw => {
+        let geno = gRaw;
         
         let svgIcon = '🧬';
         if (typeof window.generarSvgGeno === 'function') {
@@ -487,24 +443,18 @@ window.renderizarMercado = function() {
             if (tempSvg) svgIcon = tempSvg.replace(/width="[^"]+"/, 'width="100%"').replace(/height="[^"]+"/, 'height="100%"');
         }
 
-        const nombreMostrado = obtenerNombreGeno(geno);
-
+        const card = document.createElement("div");
+        card.className = "market-card-neon";
         card.innerHTML = `
-            <div style="width: 55px; height: 55px; margin-bottom: 10px; filter: drop-shadow(0px 5px 8px rgba(0,0,0,0.6)); pointer-events: none;">
-                ${svgIcon}
-            </div>
-            <h4 style="margin: 0 0 5px 0; font-size: 13px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">${nombreMostrado}</h4>
+            <div style="width: 55px; height: 55px; margin-bottom: 10px; filter: drop-shadow(0px 5px 8px rgba(0,0,0,0.6)); pointer-events: none;">${svgIcon}</div>
+            <h4 style="margin: 0 0 5px 0; font-size: 13px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">${obtenerNombreGeno(geno)}</h4>
             <p style="font-size: 11px; color: #cbd5e1; margin: 0 0 10px 0; pointer-events: none;">Nv. ${geno.level || 1} | ${geno.rarity}</p>
             <div style="font-weight: 900; color: #D500F9; margin-bottom: 15px; font-size: 14px; text-shadow: 0 0 8px rgba(213,0,249,0.8); pointer-events: none;">🔷 ${geno.pricePol} POL</div>
             <button class="market-btn-neon">Inspeccionar</button>
         `;
         
-        card.querySelector("button").addEventListener("click", (e) => {
-            e.stopPropagation();
-            window.abrirDetalleMercado(geno.id, 'comprar');
-        });
+        card.querySelector("button").addEventListener("click", (e) => { e.stopPropagation(); window.abrirDetalleMercado(geno.id, 'comprar'); });
         card.addEventListener("click", () => window.abrirDetalleMercado(geno.id, 'comprar'));
-        
         grid.appendChild(card);
     });
 };
@@ -520,9 +470,9 @@ window.renderizarMisVentas = function() {
     if (genosVendibles.length === 0) {
         grid.innerHTML = '<p style="grid-column: span 2; text-align: center; color: #888; font-size: 12px; padding: 20px;">No tienes Genos en tu Santuario para vender.</p>';
     } else {
-        genosVendibles.forEach(geno => {
-            const card = document.createElement("div");
-            card.className = "market-card-neon";
+        genosVendibles.forEach(gRaw => {
+            // TIEMPO REAL: Reemplazar el objeto estático por la Mascota en vivo si es la misma
+            let geno = (window.miMascota && window.miMascota.id === gRaw.id) ? window.miMascota : gRaw;
             
             let svgIcon = '🧬';
             if (typeof window.generarSvgGeno === 'function') {
@@ -533,24 +483,18 @@ window.renderizarMisVentas = function() {
                 if (tempSvg) svgIcon = tempSvg.replace(/width="[^"]+"/, 'width="100%"').replace(/height="[^"]+"/, 'height="100%"');
             }
 
-            const nombreMostrado = obtenerNombreGeno(geno);
-
+            const card = document.createElement("div");
+            card.className = "market-card-neon";
             card.innerHTML = `
-                <div style="width: 55px; height: 55px; margin-bottom: 10px; filter: drop-shadow(0px 5px 8px rgba(0,0,0,0.6)); pointer-events: none;">
-                    ${svgIcon}
-                </div>
-                <h4 style="margin: 0 0 5px 0; font-size: 13px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">${nombreMostrado}</h4>
+                <div style="width: 55px; height: 55px; margin-bottom: 10px; filter: drop-shadow(0px 5px 8px rgba(0,0,0,0.6)); pointer-events: none;">${svgIcon}</div>
+                <h4 style="margin: 0 0 5px 0; font-size: 13px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">${obtenerNombreGeno(geno)}</h4>
                 <p style="font-size: 11px; color: #cbd5e1; margin: 0 0 10px 0; pointer-events: none;">Nv. ${geno.level || 1} | ${geno.rarity}</p>
                 <div style="font-weight: 900; color: #69F0AE; margin-bottom: 15px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; pointer-events: none;">Disponible</div>
                 <button class="market-btn-neon green">Vender</button>
             `;
             
-            card.querySelector("button").addEventListener("click", (e) => {
-                e.stopPropagation();
-                window.abrirDetalleMercado(geno.id, 'publicar');
-            });
+            card.querySelector("button").addEventListener("click", (e) => { e.stopPropagation(); window.abrirDetalleMercado(geno.id, 'publicar'); });
             card.addEventListener("click", () => window.abrirDetalleMercado(geno.id, 'publicar'));
-            
             grid.appendChild(card);
         });
     }
@@ -558,16 +502,15 @@ window.renderizarMisVentas = function() {
     listContainer.innerHTML = "";
     if (window.misVentas.length > 0) {
         listContainer.innerHTML = '<h4 style="width: 100%; color: #D500F9; border-bottom: 1px solid #384a5e; padding-bottom: 8px; margin: 0 0 10px 0; font-size: 12px; text-transform: uppercase;">Tus Ventas Activas:</h4>';
-        window.misVentas.forEach(geno => {
+        window.misVentas.forEach(gRaw => {
+            let geno = (window.miMascota && window.miMascota.id === gRaw.id) ? window.miMascota : gRaw;
+            
             const item = document.createElement("div");
             item.className = "listed-item-row";
-            
-            const nombreVenta = obtenerNombreGeno(geno);
-            
             item.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 8px; pointer-events: none;">
                     <span style="font-size: 14px;">🔍</span>
-                    <span style="font-weight: bold; font-size: 13px;">${nombreVenta}</span>
+                    <span style="font-weight: bold; font-size: 13px;">${obtenerNombreGeno(geno)}</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <span style="color: #D500F9; font-weight: 900; pointer-events: none;">🔷 ${geno.pricePol}</span>
