@@ -2,12 +2,12 @@
 // CloudManager.js - PUENTE CON SUPABASE
 // =========================================
 
-// ⚠️ PEGA AQUÍ TUS CLAVES DE SUPABASE
+// TUS CLAVES DE SUPABASE
 const supabaseUrl = 'https://xoxkapvondvtlftecwcv.supabase.co';
 const supabaseKey = 'sb_publishable_FBCAFJCwTr9xtSgbcZC6rQ_oudcDLza';
 
-// Inicializar el cliente
-const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+// CAMBIO APLICADO: Renombramos a 'supabaseClient' para evitar chocar con el código del servidor
+const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 window.miUsuarioCloud = null;
 
 // Botón de prueba flotante para conectar a la nube sin romper la UI actual
@@ -24,13 +24,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
         btnNube.innerHTML = "⏳ Conectando...";
 
-        // Intentar iniciar sesión
-        let { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        // Intentar iniciar sesión usando supabaseClient
+        let { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
         // Si da error (el usuario no existe), lo creamos
         if (error) {
             console.log("Usuario no existe. Creando nueva cuenta...");
-            const res = await supabase.auth.signUp({ email, password });
+            const res = await supabaseClient.auth.signUp({ email, password });
             data = res.data;
             error = res.error;
             if(!error) alert("✅ ¡Cuenta en la nube creada con éxito!");
@@ -75,8 +75,8 @@ window.respaldarEnNube = async function() {
         ventasActivas: window.misVentas || []
     };
 
-    // Subimos a la "Caja Fuerte" (Tabla jugadores)
-    const { error } = await supabase
+    // Subimos a la "Caja Fuerte" usando supabaseClient
+    const { error } = await supabaseClient
         .from('jugadores')
         .upsert({
             id: window.miUsuarioCloud.id,
