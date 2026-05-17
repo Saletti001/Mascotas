@@ -5,7 +5,7 @@
 window.LoginUI = {
     inyectar: function() {
         const html = `
-            <div id="pantalla-login" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, rgba(11, 26, 46, 0.9) 0%, rgba(2, 6, 15, 1) 100%); z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); overflow: hidden;">
+            <div id="pantalla-login" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at center, rgba(20, 45, 75, 0.5) 0%, rgba(5, 12, 25, 0.8) 100%); z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); overflow: hidden;">
 
                 <style>
                     @keyframes moveGrid {
@@ -24,16 +24,22 @@ window.LoginUI = {
                     }
                 </style>
 
-                <div style="position: absolute; top: 0; left: -50%; width: 200%; height: 200%; background-image: linear-gradient(rgba(0, 210, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 210, 255, 0.1) 1px, transparent 1px); background-size: 40px 40px; transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px); animation: moveGrid 3s linear infinite; pointer-events: none;"></div>
+                <div style="position: absolute; top: 0; left: -50%; width: 200%; height: 200%; background-image: linear-gradient(rgba(0, 210, 255, 0.25) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 210, 255, 0.25) 1px, transparent 1px); background-size: 40px 40px; transform: perspective(500px) rotateX(60deg) translateY(-100px) translateZ(-200px); animation: moveGrid 3s linear infinite; pointer-events: none;"></div>
                 
-                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(2,6,15,1) 30%, transparent 100%); pointer-events: none;"></div>
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(180deg, rgba(5,12,25,0.6) 10%, transparent 100%); pointer-events: none;"></div>
 
                 <div class="modal-content" style="position: relative; background: linear-gradient(180deg, rgba(30, 41, 59, 0.85) 0%, rgba(15, 23, 42, 0.95) 100%); border: 2px solid #00d2ff; box-shadow: 0 0 30px rgba(0, 210, 255, 0.2), inset 0 0 20px rgba(0,210,255,0.1); width: 85%; max-width: 320px; border-radius: 15px; padding: 30px 20px 20px 20px; box-sizing: border-box; text-align: center; font-family: monospace, sans-serif; animation: floatPanel 4s ease-in-out infinite;">
                     
                     <div style="position: absolute; top: -35px; left: 50%; transform: translateX(-50%); width: 70px; height: 70px; background: #0f172a; border-radius: 50%; border: 2px solid #00d2ff; display: flex; justify-content: center; align-items: center; animation: pulseGlow 2s infinite;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 2v20"></path>
-                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                            <circle cx="12" cy="12" r="3.5" fill="#00d2ff"></circle>
+                            <path d="M 12 2 C 17.5 2, 22 6.5, 22 12 C 22 17.5, 17.5 22, 12 22"></path>
+                            <path d="M 12 2 C 6.5 2, 2 6.5, 2 12"></path>
+                            <path d="M 12 22 C 6.5 22, 2 17.5, 2 12"></path>
+                            <line x1="2" y1="12" x2="6.5" y2="12"></line>
+                            <line x1="17.5" y1="12" x2="22" y2="12"></line>
+                            <line x1="12" y1="2" x2="12" y2="6.5"></line>
+                            <line x1="12" y1="18.5" x2="12" y2="22"></line>
                         </svg>
                     </div>
                     
