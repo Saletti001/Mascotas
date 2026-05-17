@@ -3,8 +3,8 @@
 // =========================================
 
 // ⚠️ PEGA AQUÍ TUS CLAVES DE SUPABASE
-const supabaseUrl = 'https://TU-URL-DEL-PROYECTO.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsIn... (TU LLAVE PUBLISHABLE LARGA)';
+const supabaseUrl = 'https://xoxkapvondvtlftecwcv.supabase.co';
+const supabaseKey = 'sb_publishable_FBCAFJCwTr9xtSgbcZC6rQ_oudcDLza';
 
 // Inicializar el cliente
 const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
