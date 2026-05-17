@@ -69,6 +69,34 @@ document.addEventListener("DOMContentLoaded", async () => {
             }, 1000);
         }
     };
+
+    // ========================================================
+    // 5. RECUPERAR CONTRASEÑA (Ahora está dentro de la función correcta)
+    // ========================================================
+    const btnRecuperar = document.getElementById("btn-recuperar");
+    if(btnRecuperar) {
+        btnRecuperar.onclick = async () => {
+            const email = inputEmail.value;
+            if(!email) {
+                return window.LoginUI.mostrarMensaje("Escribe tu correo arriba primero.", "#ffcc00");
+            }
+
+            btnRecuperar.innerText = "ENVIANDO...";
+            
+            // Ya configurado con tu usuario real de GitHub
+            const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                redirectTo: 'https://saletti001.github.io/Mascotas/', 
+            });
+
+            if (error) {
+                window.LoginUI.mostrarMensaje("Error: " + error.message);
+                btnRecuperar.innerText = "¿Olvidaste tu contraseña?";
+            } else {
+                window.LoginUI.mostrarMensaje("¡Revisa tu bandeja de entrada!", "#4CAF50");
+                btnRecuperar.innerText = "ENLACE ENVIADO";
+            }
+        };
+    }
 });
 
 // ========================================================
