@@ -154,3 +154,24 @@ async function cargarDatosDeLaNube() {
         if(typeof window.actualizarInventarioUI === 'function') window.actualizarInventarioUI();
     }
 }
+
+// ========================================================
+// AUTO-GUARDADO INVISIBLE (DEBOUNCE)
+// ========================================================
+let timeoutGuardado = null;
+
+window.autoGuardar = function() {
+    // Si no hay cuenta conectada, ignoramos la orden
+    if (!window.miUsuarioCloud) return; 
+    
+    // Si ya había un guardado programado en cola, lo cancelamos
+    if (timeoutGuardado) {
+        clearTimeout(timeoutGuardado);
+    }
+    
+    // Programamos un nuevo guardado silencioso para dentro de 3 segundos
+    timeoutGuardado = setTimeout(() => {
+        console.log("⏳ Ejecutando auto-guardado en la Red Nexo...");
+        window.respaldarEnNube();
+    }, 3000); // 3000 milisegundos = 3 segundos
+};
