@@ -181,16 +181,21 @@ window.autoGuardar = function() {
 let timeoutGuardado = null;
 
 window.autoGuardar = function() {
-    // Si el jugador no ha iniciado sesión, no hacemos nada
-    if (!window.miUsuarioCloud) return; 
+    // 💡 RASTREADOR 3
+    console.log("⏱️ Gatillo activado: Esperando 3 segundos...");
     
-    // Si ya había un guardado en cola, lo reiniciamos
+    if (!window.miUsuarioCloud) {
+        console.log("⚠️ Nube: Guardado cancelado porque no has iniciado sesión.");
+        return; 
+    }
+    
     if (timeoutGuardado) {
         clearTimeout(timeoutGuardado);
     }
     
-    // Esperamos 3 segundos de inactividad antes de enviar el paquete a Alemania
     timeoutGuardado = setTimeout(() => {
+        // 💡 RASTREADOR 4
+        console.log("🚀 Enviando paquete a Supabase...");
         window.respaldarEnNube();
     }, 3000); 
 };
