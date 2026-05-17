@@ -60,6 +60,8 @@ window.LoginUI = {
                     
                     <button id="btn-registro" style="width: 100%; padding: 12px; background: rgba(0,0,0,0.3); color: #00d2ff; border: 1px dashed #00d2ff; border-radius: 8px; cursor: pointer; font-family: monospace; font-size: 11px; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px;" onmouseover="this.style.background='rgba(0, 210, 255, 0.1)'" onmouseout="this.style.background='rgba(0,0,0,0.3)'">Sintetizar Cuenta</button>
                     
+                    <p id="btn-recuperar" style="color: #80deea; font-size: 10px; cursor: pointer; margin-top: 15px; margin-bottom: 0; text-decoration: underline; letter-spacing: 1px; transition: 0.3s; text-transform: uppercase;" onmouseover="this.style.color='#00d2ff'" onmouseout="this.style.color='#80deea'">¿Olvidaste tu contraseña?</p>
+
                     <p id="login-msg" style="color: #ff4c4c; font-size: 11px; margin-top: 15px; min-height: 15px; text-transform: uppercase; font-weight: bold; text-shadow: 0 0 5px rgba(255, 76, 76, 0.5);"></p>
                 </div>
             </div>
