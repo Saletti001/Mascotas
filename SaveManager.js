@@ -1,5 +1,5 @@
 // =========================================
-// SaveManager.js - SISTEMA DE GUARDADO LOCAL BLINDADO
+// SaveManager.js - SISTEMA DE GUARDADO LOCAL Y NUBE
 // =========================================
 
 const SAVE_KEY = "proyecto_genos_save_v1";
@@ -50,9 +50,10 @@ window.cargarProgreso = function() {
     return false;
 };
 
-window.guardarProgreso = function() {
-    console.log("💾 Guardado local (Silencioso)..."); // Le quitamos dramatismo al texto
-
+// ========================================================
+// 1. GUARDADO SILENCIOSO (Solo PC local)
+// ========================================================
+window.guardarLocalSilencioso = function() {
     if (!window.miMascota || !window.miMascota.id || window.miMascota.id === "temp") return;
 
     const dataToSave = {
@@ -66,9 +67,24 @@ window.guardarProgreso = function() {
     localStorage.setItem(SAVE_KEY, JSON.stringify(dataToSave));
 };
 
+// ========================================================
+// 2. GUARDADO DE ACCIÓN (Local + Nube)
+// ========================================================
+window.guardarProgreso = function() {
+    // Primero guarda en la PC
+    window.guardarLocalSilencioso(); 
+    
+    // Luego le avisa a la Nube (con sus 3 segundos de espera de seguridad)
+    if (typeof window.autoGuardar === 'function') {
+        window.autoGuardar();
+    }
+};
+
 window.cargarProgreso();
+
 document.addEventListener("DOMContentLoaded", () => {
+    // EL BUCLE DE 5 SEGUNDOS: Ahora SOLO llama al silencioso, no despierta a la Nube.
     setInterval(() => {
-        window.guardarProgreso();
+        window.guardarLocalSilencioso();
     }, 5000);
 });
