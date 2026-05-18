@@ -32,11 +32,6 @@ class InventoryManager {
     guardarCambios() {
         if (typeof window.guardarJuego === 'function') window.guardarJuego();
         else if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
-        
-        // ✨ NUEVO: Gatillo inteligente que SOLO avisa a la Nube cuando el inventario sufre cambios
-        if (typeof window.autoGuardar === 'function') {
-            window.autoGuardar();
-        }
     }
 
     addEssence(amount) {
