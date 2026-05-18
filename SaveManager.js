@@ -51,13 +51,9 @@ window.cargarProgreso = function() {
 };
 
 window.guardarProgreso = function() {
-    // 💡 RASTREADOR 1
-    console.log("💾 Intentando guardado local...");
+    console.log("💾 Guardado local (Silencioso)..."); // Le quitamos dramatismo al texto
 
-    if (!window.miMascota || !window.miMascota.id || window.miMascota.id === "temp") {
-        console.log("⚠️ Guardado cancelado: Tu mascota actual es 'temp' o no existe.");
-        return;
-    }
+    if (!window.miMascota || !window.miMascota.id || window.miMascota.id === "temp") return;
 
     const dataToSave = {
         misGenos: window.misGenos || [],
@@ -68,13 +64,6 @@ window.guardarProgreso = function() {
         inventarioItems: window.miInventario ? (window.miInventario.items || window.miInventario.slots || []) : []
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(dataToSave));
-
-    // 💡 RASTREADOR 2
-    if (typeof window.autoGuardar === 'function') {
-        window.autoGuardar();
-    } else {
-        console.log("⚠️ Error: La función autoGuardar no existe. Revisa CloudManager.js");
-    }
 };
 
 window.cargarProgreso();
