@@ -9,7 +9,7 @@ const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 window.miUsuarioCloud = null;
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // 1. Inyectamos la interfaz visual desde nuestro nuevo archivo
+    // 1. Inyectamos la interfaz visual
     window.LoginUI.inyectar();
 
     const btnIniciar = document.getElementById("btn-iniciar");
@@ -17,12 +17,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const inputEmail = document.getElementById("login-email");
     const inputPass = document.getElementById("login-pass");
 
-    // 2. REVISAR SI YA ESTÁ CONECTADO (Memoria Automática)
+    // 2. REVISAR SI YA ESTÁ CONECTADO
     const { data: { session } } = await supabaseClient.auth.getSession();
     
     if (session) {
         window.miUsuarioCloud = session.user;
-        window.LoginUI.ocultar(); // Ocultamos la UI si ya tiene el token guardado
+        window.LoginUI.ocultar();
         cargarDatosDeLaNube();
     }
 
@@ -65,14 +65,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             window.LoginUI.mostrarMensaje("¡Cuenta creada!", "#00d2ff");
             setTimeout(() => {
                 window.LoginUI.ocultar();
-                window.respaldarEnNube(); // Creamos su primer perfil vacío en la DB
+                window.respaldarEnNube();
             }, 1000);
         }
     };
 
-    // ========================================================
-    // 5. RECUPERAR CONTRASEÑA (Ahora está dentro de la función correcta)
-    // ========================================================
+    // 5. RECUPERAR CONTRASEÑA
     const btnRecuperar = document.getElementById("btn-recuperar");
     if(btnRecuperar) {
         btnRecuperar.onclick = async () => {
@@ -83,7 +81,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
             btnRecuperar.innerText = "ENVIANDO...";
             
-            // Ya configurado con tu usuario real de GitHub
             const { data, error } = await supabaseClient.auth.resetPasswordForEmail(email, {
                 redirectTo: 'https://saletti001.github.io/Mascotas/', 
             });
@@ -100,7 +97,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 // ========================================================
-// FUNCIONES DE GUARDADO Y CARGA
+// FUNCIONES DE GUARDADO Y CARGA (NUBE)
 // ========================================================
 window.respaldarEnNube = async function() {
     if (!window.miUsuarioCloud) return;
@@ -156,32 +153,11 @@ async function cargarDatosDeLaNube() {
 }
 
 // ========================================================
-// AUTO-GUARDADO INVISIBLE (DEBOUNCE)
-// ========================================================
-let timeoutGuardado = null;
-
-window.autoGuardar = function() {
-    // Si no hay cuenta conectada, ignoramos la orden
-    if (!window.miUsuarioCloud) return; 
-    
-    // Si ya había un guardado programado en cola, lo cancelamos
-    if (timeoutGuardado) {
-        clearTimeout(timeoutGuardado);
-    }
-    
-    // Programamos un nuevo guardado silencioso para dentro de 3 segundos
-    timeoutGuardado = setTimeout(() => {
-        console.log("⏳ Ejecutando auto-guardado en la Red Nexo...");
-        window.respaldarEnNube();
-    }, 3000); // 3000 milisegundos = 3 segundos
-};
-// ========================================================
 // AUTO-GUARDADO INVISIBLE EN LA RED NEXO (DEBOUNCE)
 // ========================================================
 let timeoutGuardado = null;
 
 window.autoGuardar = function() {
-    // 💡 RASTREADOR 3
     console.log("⏱️ Gatillo activado: Esperando 3 segundos...");
     
     if (!window.miUsuarioCloud) {
@@ -194,7 +170,6 @@ window.autoGuardar = function() {
     }
     
     timeoutGuardado = setTimeout(() => {
-        // 💡 RASTREADOR 4
         console.log("🚀 Enviando paquete a Supabase...");
         window.respaldarEnNube();
     }, 3000); 
