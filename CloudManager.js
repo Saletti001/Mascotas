@@ -172,7 +172,7 @@ async function cargarDatosDeLaNube() {
         // Actualizar el texto visual de las monedas POL si cambió en el otro dispositivo
         if (window.miWallet && window.miWallet.pol !== undefined) {
             const polText = document.getElementById("pol-amount");
-            if(polText) polText.innerText = `🔷 ${window.miWallet.pol.toFixed(1)} POL`;
+            if(polText) polText.innerText = `${window.miWallet.pol.toFixed(1)} POL`;
         }
 
         // Redibujar el pedestal principal con los nuevos datos gráficos del Geno

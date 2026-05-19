@@ -41,7 +41,7 @@ window.cargarProgreso = function() {
                 if (window.miWallet && data.pol !== undefined) {
                     window.miWallet.pol = data.pol;
                     const polText = document.getElementById("pol-amount");
-                    if(polText) polText.innerText = `🔷 ${window.miWallet.pol.toFixed(1)} POL`;
+                    if(polText) polText.innerText = `${window.miWallet.pol.toFixed(1)} POL`;
                 }
 
                 const pedestal = document.getElementById("geno-container");
