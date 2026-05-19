@@ -134,9 +134,10 @@ async function cargarDatosDeLaNube() {
     if (error) return console.log("Perfil nuevo o error. Iniciando partida fresca.");
 
     if (data && data.datos_juego) {
-        console.log("☁️ Descargando progreso del jugador...");
+        console.log("☁️ Descargando progreso del jugador desde la Red Nexo...");
         const dj = data.datos_juego;
         
+        // 1. Sobrescribir variables globales con los datos frescos de la nube
         if (dj.mascotaActiva) window.miMascota = dj.mascotaActiva;
         if (dj.inventario && window.miInventario) {
             window.miInventario.slots = dj.inventario.slots || 10;
@@ -147,8 +148,41 @@ async function cargarDatosDeLaNube() {
         if (dj.genosGuardados) window.misGenos = dj.genosGuardados;
         if (dj.ventasActivas) window.misVentas = dj.ventasActivas;
 
-        if(typeof window.actualizarHUD === 'function') window.actualizarHUD();
-        if(typeof window.actualizarInventarioUI === 'function') window.actualizarInventarioUI();
+        // 2. REGENERAR APARIENCIA (Importante para cambios de estadísticas/nivel)
+        if (window.misGenos) {
+            window.misGenos.forEach(geno => {
+                if (typeof generarSvgGeno === 'function') geno.svg = generarSvgGeno(geno);
+            });
+        }
+        if (window.miMascota && typeof generarSvgGeno === 'function') {
+            window.miMascota.svg = generarSvgGeno(window.miMascota);
+        }
+
+        // 3. SINCRONIZAR MEMORIA LOCAL INMEDIATAMENTE
+        if (typeof window.guardarLocalSilencioso === 'function') {
+            window.guardarLocalSilencioso();
+        }
+
+        // 4. ORDEN DE REDIBUJADO DE INTERFACES (REFRESCO TOTAL)
+        if (typeof window.actualizarHUD === 'function') window.actualizarHUD();
+        if (typeof window.actualizarInventarioUI === 'function') window.actualizarInventarioUI();
+        if (typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
+        if (typeof window.renderizarIncubadora === 'function') window.renderizarIncubadora();
+
+        // Actualizar el texto visual de las monedas POL si cambió en el otro dispositivo
+        if (window.miWallet && window.miWallet.pol !== undefined) {
+            const polText = document.getElementById("pol-amount");
+            if(polText) polText.innerText = `🔷 ${window.miWallet.pol.toFixed(1)} POL`;
+        }
+
+        // Redibujar el pedestal principal con los nuevos datos gráficos del Geno
+        const pedestal = document.getElementById("geno-container");
+        if (pedestal && window.miMascota && window.miMascota.id && window.miMascota.id !== "temp") {
+            pedestal.style.display = "block";
+            pedestal.innerHTML = `<div class="geno-idle" style="color: ${window.miMascota.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${window.miMascota.svg}</div>`;
+        }
+        
+        console.log("✅ Sincronización completa. El juego se ha actualizado visualmente.");
     }
 }
 
