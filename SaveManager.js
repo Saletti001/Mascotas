@@ -13,14 +13,11 @@ window.cargarProgreso = function() {
         if (data.miMascota) window.miMascota = data.miMascota;
         if (data.maxGenoSlots) window.maxGenoSlots = data.maxGenoSlots;
 
-        // ✨ AUTO-REPARADOR DE GENOS (AL CARGAR)
-        // Si hay mascota activa pero no está en la lista de colección, la añadimos.
+        // ✨ AUTO-REPARADOR DE GENOS
         if (window.miMascota && window.miMascota.id !== "temp") {
             if (!window.misGenos) window.misGenos = [];
             const yaExiste = window.misGenos.find(g => g.id === window.miMascota.id);
-            if (!yaExiste) {
-                window.misGenos.push(window.miMascota);
-            }
+            if (!yaExiste) window.misGenos.push(window.miMascota);
         }
 
         if (!window.miInventario) window.miInventario = {};
@@ -52,6 +49,12 @@ window.cargarProgreso = function() {
 
                 if(window.actualizarPanelRPG) window.actualizarPanelRPG();
                 if(window.renderizarIncubadora) window.renderizarIncubadora();
+                
+                // ✨ NUEVO: Forzar a la mochila a actualizar sus números al cargar la partida local
+                if (window.miInventario && typeof window.miInventario.updateUI === 'function') {
+                    window.miInventario.updateUI();
+                    window.miInventario.renderGrid();
+                }
             }, 150); 
         });
         
@@ -60,18 +63,13 @@ window.cargarProgreso = function() {
     return false;
 };
 
-// ========================================================
 // 1. GUARDADO SILENCIOSO (Solo PC local)
-// ========================================================
 window.guardarLocalSilencioso = function() {
     if (!window.miMascota || !window.miMascota.id || window.miMascota.id === "temp") return;
 
-    // ✨ AUTO-REPARADOR DE GENOS (AL GUARDAR)
     if (!window.misGenos) window.misGenos = [];
     const yaExiste = window.misGenos.find(g => g.id === window.miMascota.id);
-    if (!yaExiste) {
-        window.misGenos.push(window.miMascota);
-    }
+    if (!yaExiste) window.misGenos.push(window.miMascota);
 
     const dataToSave = {
         misGenos: window.misGenos,
@@ -84,15 +82,10 @@ window.guardarLocalSilencioso = function() {
     localStorage.setItem(SAVE_KEY, JSON.stringify(dataToSave));
 };
 
-// ========================================================
 // 2. GUARDADO DE ACCIÓN (Local + Nube)
-// ========================================================
 window.guardarProgreso = function() {
     window.guardarLocalSilencioso(); 
-    
-    if (typeof window.autoGuardar === 'function') {
-        window.autoGuardar();
-    }
+    if (typeof window.autoGuardar === 'function') window.autoGuardar();
 };
 
 window.cargarProgreso();
