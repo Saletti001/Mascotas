@@ -13,6 +13,16 @@ window.cargarProgreso = function() {
         if (data.miMascota) window.miMascota = data.miMascota;
         if (data.maxGenoSlots) window.maxGenoSlots = data.maxGenoSlots;
 
+        // ✨ AUTO-REPARADOR DE GENOS (AL CARGAR)
+        // Si hay mascota activa pero no está en la lista de colección, la añadimos.
+        if (window.miMascota && window.miMascota.id !== "temp") {
+            if (!window.misGenos) window.misGenos = [];
+            const yaExiste = window.misGenos.find(g => g.id === window.miMascota.id);
+            if (!yaExiste) {
+                window.misGenos.push(window.miMascota);
+            }
+        }
+
         if (!window.miInventario) window.miInventario = {};
         if (data.inventarioItems) window.miInventario.items = data.inventarioItems;
         if (data.esencia !== undefined) window.miInventario.vitalEssence = data.esencia;
@@ -56,9 +66,16 @@ window.cargarProgreso = function() {
 window.guardarLocalSilencioso = function() {
     if (!window.miMascota || !window.miMascota.id || window.miMascota.id === "temp") return;
 
+    // ✨ AUTO-REPARADOR DE GENOS (AL GUARDAR)
+    if (!window.misGenos) window.misGenos = [];
+    const yaExiste = window.misGenos.find(g => g.id === window.miMascota.id);
+    if (!yaExiste) {
+        window.misGenos.push(window.miMascota);
+    }
+
     const dataToSave = {
-        misGenos: window.misGenos || [],
-        miMascota: window.miMascota || null,
+        misGenos: window.misGenos,
+        miMascota: window.miMascota,
         maxGenoSlots: window.maxGenoSlots || 6,
         esencia: window.miInventario ? (window.miInventario.vitalEssence || 0) : 0,
         pol: window.miWallet ? window.miWallet.pol : 10.0,
@@ -71,10 +88,8 @@ window.guardarLocalSilencioso = function() {
 // 2. GUARDADO DE ACCIÓN (Local + Nube)
 // ========================================================
 window.guardarProgreso = function() {
-    // Primero guarda en la PC
     window.guardarLocalSilencioso(); 
     
-    // Luego le avisa a la Nube (con sus 3 segundos de espera de seguridad)
     if (typeof window.autoGuardar === 'function') {
         window.autoGuardar();
     }
@@ -83,7 +98,6 @@ window.guardarProgreso = function() {
 window.cargarProgreso();
 
 document.addEventListener("DOMContentLoaded", () => {
-    // EL BUCLE DE 5 SEGUNDOS: Ahora SOLO llama al silencioso, no despierta a la Nube.
     setInterval(() => {
         window.guardarLocalSilencioso();
     }, 5000);
