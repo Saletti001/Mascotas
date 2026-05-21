@@ -8,6 +8,21 @@ function obtenerNombreGeno(g) {
     return g.customName || g.nickname || g.apodo || g.name || "Desconocido";
 }
 
+// ✨ PARCHE: Fuerza la actualización del texto del inventario
+window.forzarActualizacionMochila = function() {
+    if (window.miInventario && typeof window.miInventario.updateUI === 'function') {
+        window.miInventario.updateUI();
+        if(typeof window.miInventario.renderGrid === 'function') window.miInventario.renderGrid();
+        
+        if (window.miInventario.slots) {
+            let ocupados = window.miInventario.slots.filter(s => s !== null && s !== undefined).length;
+            let max = window.miInventario.maxSlots || window.maxSlots || 10;
+            const counter = document.getElementById("slot-counter");
+            if (counter) counter.innerHTML = `${ocupados}/${max}<br>CAP`;
+        }
+    }
+};
+
 window.iniciarMercado = function() {
     const contenedor = document.getElementById("market-screen");
     if (!contenedor) return;
@@ -44,10 +59,15 @@ window.iniciarMercado = function() {
             #close-market-detail:hover svg { stroke: #ff8a80; transform: scale(1.1); }
             #close-market-detail svg { transition: all 0.2s; }
             
-            /* Estilos del Filtro */
-            .market-filter-select { flex: 1; background: #0f0f1a; color: #4dd0e1; border: 1px solid #384a5e; border-radius: 6px; padding: 8px; outline: none; font-size: 11px; text-transform: uppercase; font-weight: bold; cursor: pointer; transition: border-color 0.2s; }
-            .market-filter-select:hover { border-color: #00d2ff; }
-            .market-filter-select:focus { border-color: #D500F9; box-shadow: 0 0 8px rgba(213,0,249,0.3); }
+            /* ✨ Estilos del Select Personalizado (Soporta SVGs) */
+            .custom-select-wrapper { position: relative; flex: 1; user-select: none; }
+            .custom-select-trigger { background: #0f0f1a; color: #4dd0e1; border: 1px solid #384a5e; border-radius: 6px; padding: 10px 12px; font-size: 10px; text-transform: uppercase; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+            .custom-select-trigger:hover { border-color: #00d2ff; }
+            .custom-select-options { position: absolute; display: none; top: 100%; left: 0; right: 0; background: #0f0f1a; border: 1px solid #00d2ff; border-radius: 6px; z-index: 999; margin-top: 4px; max-height: 250px; overflow-y: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+            .custom-select-options.open { display: block; }
+            .custom-option { padding: 10px 12px; display: flex; align-items: center; gap: 8px; font-size: 10px; text-transform: uppercase; font-weight: bold; color: #cbd5e1; cursor: pointer; transition: background 0.2s; border-bottom: 1px solid #1a2a36; }
+            .custom-option:hover { background: rgba(0, 210, 255, 0.15); color: #fff; }
+            .custom-option svg { width: 14px; height: 14px; filter: drop-shadow(0 0 3px rgba(255,255,255,0.3)); }
         `;
         document.head.appendChild(style);
     }
@@ -66,22 +86,23 @@ window.iniciarMercado = function() {
                     
                     <div id="market-buy-view">
                         <div style="display: flex; gap: 8px; margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid #384a5e;">
-                            <select id="filter-type" class="market-filter-select">
-                                <option value="all">Todo el Mercado</option>
-                                <option value="genos">Solo Genos</option>
-                                <option value="items">Solo Objetos / EV</option>
-                            </select>
-                            <select id="filter-element" class="market-filter-select">
-                                <option value="all">Cualquier Elemento</option>
-                                <option value="Igneo">🔥 Ígneo</option>
-                                <option value="Acuatico">💧 Acuático</option>
-                                <option value="Toxico">☣️ Tóxico</option>
-                                <option value="Cibernetico">⚙️ Cibernético</option>
-                                <option value="Biomutante">🧬 Biomutante</option>
-                                <option value="Viral">🦠 Viral</option>
-                                <option value="Radiactivo">☢️ Radiactivo</option>
-                                <option value="Sintetico">🤖 Sintético</option>
-                            </select>
+                            
+                            <div class="custom-select-wrapper" id="filter-type-wrapper" data-value="all">
+                                <div class="custom-select-trigger"><span>TODO EL MERCADO</span> <span>▼</span></div>
+                                <div class="custom-select-options">
+                                    <div class="custom-option" data-value="all">TODO EL MERCADO</div>
+                                    <div class="custom-option" data-value="genos">SOLO GENOS</div>
+                                    <div class="custom-option" data-value="items">SOLO OBJETOS / EV</div>
+                                </div>
+                            </div>
+
+                            <div class="custom-select-wrapper" id="filter-element-wrapper" data-value="all">
+                                <div class="custom-select-trigger"><span>CUALQUIER ELEMENTO</span> <span>▼</span></div>
+                                <div class="custom-select-options" id="filter-element-options">
+                                    <div class="custom-option" data-value="all">CUALQUIER ELEMENTO</div>
+                                    </div>
+                            </div>
+
                         </div>
                         
                         <div id="market-buy-grid" class="market-grid">
@@ -124,6 +145,56 @@ window.iniciarMercado = function() {
 
     document.getElementById("market-detail-modal").style.display = "none";
 
+    // ✨ INYECTAR ELEMENTOS REALES AL FILTRO ✨
+    const elementOptionsContainer = document.getElementById("filter-element-options");
+    const tusElementos = ["Tóxico", "Cibernético", "Biomutante", "Viral", "Radiactivo", "Sintético"];
+    
+    tusElementos.forEach(el => {
+        const cleanName = el.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ]/g, '').trim();
+        let iconSvg = "";
+        if (typeof window.getIconoElemento === 'function') {
+            iconSvg = window.getIconoElemento(cleanName).replace('margin-right: 6px;', 'margin-right: 0;');
+        }
+        
+        const opt = document.createElement('div');
+        opt.className = 'custom-option';
+        opt.dataset.value = cleanName;
+        opt.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;">${iconSvg}</div> ${cleanName}`;
+        elementOptionsContainer.appendChild(opt);
+    });
+
+    // ✨ LÓGICA DE LOS MENÚS DESPLEGABLES PERSONALIZADOS ✨
+    document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
+        const trigger = wrapper.querySelector('.custom-select-trigger');
+        const options = wrapper.querySelector('.custom-select-options');
+        const triggerText = trigger.querySelector('span'); // El primer span es el texto principal
+
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.querySelectorAll('.custom-select-options').forEach(opt => {
+                if (opt !== options) opt.classList.remove('open');
+            });
+            options.classList.toggle('open');
+        });
+
+        options.querySelectorAll('.custom-option').forEach(option => {
+            option.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // Copia el contenido visual (SVG incluido) al botón principal
+                triggerText.innerHTML = option.innerHTML; 
+                wrapper.dataset.value = option.dataset.value;
+                options.classList.remove('open');
+                // En la Fase 2 aquí dispararemos la búsqueda en Supabase
+            });
+        });
+    });
+
+    // Cerrar al hacer clic fuera
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.custom-select-options').forEach(opt => opt.classList.remove('open'));
+    });
+
+    // Pestañas
     const tabBuy = document.getElementById("tab-market-buy");
     const tabSell = document.getElementById("tab-market-sell");
     const viewBuy = document.getElementById("market-buy-view");
@@ -197,10 +268,7 @@ window.abrirDetalleItem = function(itemBase) {
         alert(`✅ Has publicado [1x ${itemBase.name}] en la red por ${ventaObjeto.pricePol} POL.`);
         modal.style.display = "none";
         
-        if (window.miInventario && typeof window.miInventario.updateUI === 'function') {
-            window.miInventario.updateUI();
-            if(typeof window.miInventario.renderGrid === 'function') window.miInventario.renderGrid();
-        }
+        window.forzarActualizacionMochila(); // Actualiza visuales y contador
         window.renderizarMisVentas();
         if(window.guardarProgreso) window.guardarProgreso();
     };
@@ -401,21 +469,18 @@ window.renderizarMisVentas = function() {
                 </div>
             `;
             
-            // ✨ LÓGICA DE CANCELACIÓN ANTIBALAS ✨
             row.querySelector(".btn-cancel-sale").addEventListener("click", (e) => {
                 e.stopPropagation();
                 
                 if (isItem) {
                     let devolucionExitosa = false;
                     
-                    // 1. Intentamos usar la función nativa del inventario
                     try {
                         if (window.miInventario && typeof window.miInventario.addItem === 'function') {
                             devolucionExitosa = window.miInventario.addItem(venta.itemData);
                         }
-                    } catch(err) { console.warn("Fallback de inventario activado.", err); }
+                    } catch(err) {}
 
-                    // 2. Si falla o devuelve false, forzamos la entrada manualmente buscando un hueco libre
                     if (!devolucionExitosa) {
                         let invArray = window.miInventario.slots || window.miInventario.items;
                         let emptyIndex = invArray.findIndex(s => s === null || s === undefined);
@@ -425,24 +490,18 @@ window.renderizarMisVentas = function() {
                         }
                     }
 
-                    // 3. Si definitivamente no hay espacio, lo bloqueamos
                     if (!devolucionExitosa) {
                         alert("🎒 ¡Mochila llena! No puedes cancelar esta venta hasta liberar un espacio.");
                         return;
                     }
 
-                    // 4. Actualizamos la interfaz de la mochila
-                    if (window.miInventario && typeof window.miInventario.updateUI === 'function') {
-                        window.miInventario.updateUI();
-                        if(typeof window.miInventario.renderGrid === 'function') window.miInventario.renderGrid();
-                    }
+                    window.forzarActualizacionMochila(); // Actualiza visuales y contador
                 } else {
                     delete venta.pricePol;
                     if(!window.misGenos) window.misGenos = [];
                     window.misGenos.push(venta);
                 }
 
-                // Eliminación estricta por referencia
                 window.misVentas = window.misVentas.filter(v => v !== venta);
                 window.renderizarMisVentas();
                 if(window.guardarProgreso) window.guardarProgreso();
