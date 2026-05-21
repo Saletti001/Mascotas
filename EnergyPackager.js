@@ -1,36 +1,33 @@
 // =========================================
-// EnergyPackager.js - SISTEMA DE CÁPSULAS DE EV
+// EnergyPackager.js - SISTEMA DE CÁPSULAS DINÁMICAS
 // =========================================
 
 window.EnergyPackager = {
-    costoEmpaquetado: 1100, // Lo que cuesta crearla
-    valorCapsula: 1000,     // Lo que contiene la cápsula
+    comision: 0.10, // 10% de impuesto anti-bot
 
     inyectarUI: function() {
-        // 1. Inyectar el botón en el HUD (debajo de la barra de recursos)
-        const hudContainer = document.querySelector('.hud-top-row') || document.body;
-        
-        const btnEmpaquetar = document.createElement('div');
-        btnEmpaquetar.innerHTML = `
-            <button id="btn-abrir-empaquetador" style="position: absolute; top: 55px; left: 16px; background: #2a2a4a; border: 1px solid #00d2ff; color: #00d2ff; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-family: sans-serif; cursor: pointer; display: flex; align-items: center; gap: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); z-index: 100;">
-                <span>⚡</span> Empaquetar EV
-            </button>
-        `;
-        document.body.appendChild(btnEmpaquetar);
-
-        // 2. Inyectar el Modal del Laboratorio
+        // 1. Inyectar el Modal del Laboratorio (Diseño actualizado con Input)
         const modalHTML = `
             <div id="packager-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10000; justify-content:center; align-items:center;">
                 <div style="background:#1a1a2e; border: 2px solid #00d2ff; border-radius: 15px; padding: 25px; width: 85%; max-width: 320px; text-align: center; color: white; font-family: sans-serif; box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);">
                     <h2 style="color: #00d2ff; margin-top:0; font-size: 20px;">🔋 Laboratorio</h2>
-                    <p style="font-size: 13px; color: #aaa; margin-bottom: 20px; line-height: 1.4;">
-                        Comprime tu Esencia Vital en cápsulas físicas para comerciarlas en el Mercado Global. Ocuparán espacio en tu inventario.
+                    <p style="font-size: 12px; color: #aaa; margin-bottom: 20px; line-height: 1.4;">
+                        Introduce la cantidad de EV que deseas encapsular. Se aplicará un impuesto de red del 10%.
                     </p>
                     
                     <div style="background: #0f0f1a; border: 1px solid #2a2a4a; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
-                        <div style="font-size: 14px; margin-bottom: 10px;">Coste de compresión: <b style="color: #ff4757;">${this.costoEmpaquetado} EV</b></div>
-                        <div style="font-size: 24px; margin-bottom: 10px;">⬇️</div>
-                        <div style="font-size: 14px;">Recibes: <b style="color: #2ed573;">1x Cápsula (${this.valorCapsula} EV)</b></div>
+                        <div style="margin-bottom: 15px; text-align: left;">
+                            <label style="font-size: 11px; color: #4dd0e1; font-weight: bold; text-transform: uppercase;">Cantidad a encapsular (EV):</label>
+                            <input type="number" id="input-ev-capsula" min="1" placeholder="Ej. 1000" style="width: 100%; padding: 10px; margin-top: 8px; border-radius: 5px; border: 1px solid #00d2ff; background: rgba(0, 210, 255, 0.1); color: white; font-size: 18px; box-sizing: border-box; text-align: center; font-weight: bold; outline: none;">
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; color: #ff4757; margin-bottom: 8px; border-bottom: 1px dashed rgba(255, 71, 87, 0.3); padding-bottom: 8px;">
+                            <span>Impuesto (10%):</span>
+                            <span><b id="txt-comision-ev">0</b> EV</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 15px; font-weight: bold;">
+                            <span style="color: #aaa;">Total a pagar:</span>
+                            <span style="color: #ffcc00;"><b id="txt-total-ev">0</b> EV</span>
+                        </div>
                     </div>
 
                     <button id="btn-crear-capsula" style="background: #00d2ff; color: #000; border: none; padding: 12px; font-weight: bold; border-radius: 8px; cursor: pointer; width: 100%; margin-bottom: 10px; font-size: 14px;">
@@ -44,28 +41,58 @@ window.EnergyPackager = {
         `;
         document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-        // 3. Eventos
-        document.getElementById('btn-abrir-empaquetador').onclick = () => {
-            document.getElementById('packager-modal').style.display = 'flex';
-        };
+        // 2. Evento para abrir el modal desde el HUD
+        const btnAbrir = document.getElementById('btn-abrir-empaquetador');
+        if(btnAbrir) {
+            btnAbrir.onclick = () => {
+                document.getElementById('packager-modal').style.display = 'flex';
+                document.getElementById('input-ev-capsula').value = '';
+                document.getElementById('txt-comision-ev').innerText = '0';
+                document.getElementById('txt-total-ev').innerText = '0';
+            };
+        }
 
-        document.getElementById('btn-crear-capsula').onclick = () => this.fabricarCapsula();
+        // 3. Lógica matemática en tiempo real al escribir
+        const inputEv = document.getElementById('input-ev-capsula');
+        inputEv.addEventListener('input', (e) => {
+            let val = parseInt(e.target.value) || 0;
+            if (val < 0) { val = 0; e.target.value = 0; }
+            
+            let comision = Math.ceil(val * this.comision);
+            let total = val + comision;
+            
+            document.getElementById('txt-comision-ev').innerText = comision;
+            document.getElementById('txt-total-ev').innerText = total;
+        });
+
+        // 4. Botón de creación
+        document.getElementById('btn-crear-capsula').onclick = () => {
+            let val = parseInt(document.getElementById('input-ev-capsula').value);
+            this.fabricarCapsula(val);
+        };
     },
 
-    fabricarCapsula: function() {
-        // Validar si existe el inventario
-        if (!window.miInventario) window.miInventario = { items: [], slots: 10, vitalEssence: 0 };
-        if (!window.miInventario.items) window.miInventario.items = [];
-
-        // 1. Comprobar si hay suficiente EV
-        if (window.miInventario.vitalEssence < this.costoEmpaquetado) {
-            alert(`❌ Energía insuficiente. Necesitas ${this.costoEmpaquetado} EV.`);
+    fabricarCapsula: function(valorDeseado) {
+        if (!valorDeseado || valorDeseado <= 0) {
+            alert("Introduce una cantidad válida superior a 0.");
             return;
         }
 
-        // 2. Comprobar límites de "Bolsillos Rotos" (Slots)
-        // Buscamos si ya existe un stack de cápsulas que no esté lleno (Límite 20)
-        let slotExistente = window.miInventario.items.find(item => item.id === "capsula_ev" && item.cantidad < 20);
+        if (!window.miInventario) window.miInventario = { items: [], slots: 10, vitalEssence: 0 };
+        if (!window.miInventario.items) window.miInventario.items = [];
+
+        let comision = Math.ceil(valorDeseado * this.comision);
+        let costoTotal = valorDeseado + comision;
+
+        if (window.miInventario.vitalEssence < costoTotal) {
+            alert(`❌ Energía insuficiente. Necesitas ${costoTotal} EV (incluyendo el 10% de impuesto).`);
+            return;
+        }
+
+        // Generamos un ID dinámico. Así, una cápsula de 500 no se mezclará con una de 1000.
+        let capsulaId = "capsula_ev_" + valorDeseado;
+        
+        let slotExistente = window.miInventario.items.find(item => item.id === capsulaId && item.cantidad < 20);
         let maxSlots = window.miInventario.slots || 10;
         
         if (!slotExistente && window.miInventario.items.length >= maxSlots) {
@@ -73,27 +100,27 @@ window.EnergyPackager = {
             return;
         }
 
-        // 3. Ejecutar la transacción
-        window.miInventario.vitalEssence -= this.costoEmpaquetado;
+        // Ejecutar transacción
+        window.miInventario.vitalEssence -= costoTotal;
 
         if (slotExistente) {
             slotExistente.cantidad += 1;
         } else {
             window.miInventario.items.push({
-                id: "capsula_ev",
-                name: "Cápsula EV",
-                type: "consumible", // Tipo consumible (se apila hasta 20)
-                description: `Contiene ${this.valorCapsula} EV. Muy demandada en el mercado.`,
+                id: capsulaId,
+                name: `Cápsula EV (${valorDeseado})`,
+                type: "consumible",
+                description: `Contiene ${valorDeseado} EV condensada.`,
                 icon: "🔋",
                 cantidad: 1,
-                valorMercado: 1 // Referencia para el mercado
+                evContenido: valorDeseado, // Guardamos la pureza interna de la cápsula
+                valorMercado: valorDeseado // Ayuda para listados en el mercado Web3
             });
         }
 
-        // 4. Actualizar Interfaces y Guardar
+        // Actualizar visuales y guardar
         if (typeof window.actualizarHUD === 'function') window.actualizarHUD();
         
-        // Actualizar el número de la barra que acabamos de unificar
         const evText = document.getElementById("vital-essence-amount");
         if (evText) evText.innerText = Math.floor(window.miInventario.vitalEssence);
 
@@ -104,11 +131,12 @@ window.EnergyPackager = {
 
         if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
 
-        alert("✨ ¡Cápsula creada con éxito! Revisa tu mochila.");
+        alert(`✨ ¡Cápsula de ${valorDeseado} EV creada! Se te descontaron ${costoTotal} EV.`);
+        document.getElementById('packager-modal').style.display = 'none';
     }
 };
 
-// Iniciar cuando el juego cargue
+// Iniciar al cargar
 document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
         window.EnergyPackager.inyectarUI();
