@@ -8,21 +8,27 @@ function obtenerNombreGeno(g) {
     return g.customName || g.nickname || g.apodo || g.name || "Desconocido";
 }
 
-// ✨ PARCHE ACTUALIZADO: Restaura "SLOTS" y protege el botón de la Wallet
 window.forzarActualizacionMochila = function() {
-    if (window.miInventario && typeof window.miInventario.updateUI === 'function') {
-        window.miInventario.updateUI();
-        if(typeof window.miInventario.renderGrid === 'function') window.miInventario.renderGrid();
+    if (window.miInventario) {
+        if (window.miInventario.slots) {
+            for(let i = 0; i < window.miInventario.slots.length; i++) {
+                if (window.miInventario.slots[i] && window.miInventario.slots[i].count <= 0) {
+                    window.miInventario.slots[i] = null;
+                }
+            }
+        }
+        
+        if (typeof window.miInventario.updateUI === 'function') window.miInventario.updateUI();
+        if (typeof window.miInventario.renderGrid === 'function') window.miInventario.renderGrid();
         
         if (window.miInventario.slots) {
-            let ocupados = window.miInventario.slots.filter(s => s !== null && s !== undefined).length;
+            let ocupados = window.miInventario.slots.filter(s => s !== null && s !== undefined && s.id).length;
             let max = window.miInventario.maxSlots || window.maxSlots || 10;
             const counter = document.getElementById("slot-counter");
-            // CORRECCIÓN: Vuelve a decir "SLOTS"
             if (counter) counter.innerHTML = `${ocupados}/${max}<br>SLOTS`;
         }
     }
-    // CORRECCIÓN: Le avisamos al WalletManager que redibuje el botón Web3
+    
     if (typeof window.WalletManager !== 'undefined') {
         window.WalletManager.actualizarBoton();
     }
@@ -54,7 +60,7 @@ window.iniciarMercado = function() {
             .market-card-neon::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: #D500F9; transition: 0.3s; }
             .market-card-neon:hover { transform: translateY(-4px); border-color: #D500F9; box-shadow: 0 10px 25px rgba(0,0,0,0.4), 0 0 15px rgba(213,0,249,0.4); background: linear-gradient(180deg, #32465A 0%, #203342 100%); }
             .market-card-neon:hover::before { height: 6px; box-shadow: 0 0 15px #D500F9; }
-            .market-btn-neon { width: 100%; padding: 10px; border: none; border-radius: 8px; margin-top: auto; font-weight: 900; color: #fff; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; background: linear-gradient(90deg, #6A1B9A, #D500F9); box-shadow: 0 4px 10px rgba(0,0,0,0.4), inset 0 2px 5px rgba(255,255,255,0.2); transition: filter 0.2s, transform 0.1s; text-shadow: 0 1px 2px rgba(0,0,0,0.8); box-sizing: border-box; }
+            .market-btn-neon { width: 100%; padding: 10px; border: none; border-radius: 8px; margin-top: auto; font-weight: 900; color: #fff; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; background: linear-gradient(90deg, #6A1B9A, #D500F9); box-shadow: 0 4px 10px rgba(0,0,0,0.4), inset 0 2px 5px rgba(255,255,255,0.2); transition: filter 0.2s, transform 0.1s; text-shadow: 0 1px 2px rgba(0,0,0,0.8); box-shadow: border-box; }
             .market-btn-neon.green { background: linear-gradient(90deg, #2E7D32, #69F0AE); }
             .market-btn-neon.red { background: linear-gradient(90deg, #c62828, #ff5252); }
             .market-btn-neon:hover { filter: brightness(1.2) contrast(1.1); }
@@ -64,16 +70,20 @@ window.iniciarMercado = function() {
             #close-market-detail:hover svg { stroke: #ff8a80; transform: scale(1.1); }
             #close-market-detail svg { transition: all 0.2s; }
             
-            /* Estilos del Select Personalizado Corregido */
-            .custom-select-wrapper { position: relative; flex: 1; user-select: none; }
-            .custom-select-trigger { background: #0f0f1a; color: #4dd0e1; border: 1px solid #384a5e; border-radius: 6px; padding: 10px 12px; font-size: 10px; text-transform: uppercase; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
-            .custom-select-trigger:hover { border-color: #00d2ff; }
-            .trigger-text { display: flex; align-items: center; gap: 6px; }
-            .custom-select-options { position: absolute; display: none; top: 100%; left: 0; right: 0; background: #0f0f1a; border: 1px solid #00d2ff; border-radius: 6px; z-index: 999; margin-top: 4px; max-height: 250px; overflow-y: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-            .custom-select-options.open { display: block; }
-            .custom-option { padding: 10px 12px; display: flex; align-items: center; gap: 8px; font-size: 10px; text-transform: uppercase; font-weight: bold; color: #cbd5e1; cursor: pointer; transition: background 0.2s; border-bottom: 1px solid #1a2a36; }
-            .custom-option:hover { background: rgba(0, 210, 255, 0.15); color: #fff; }
-            .custom-option svg { width: 14px; height: 14px; filter: drop-shadow(0 0 3px rgba(255,255,255,0.3)); }
+            /* ✨ COMPONENTES BLINDADOS CONTRA DOBLE FLECHA GLOBAL ✨ */
+            .mk-dropdown-wrapper { position: relative; flex: 1; user-select: none; }
+            .mk-dropdown-btn { background: #0f0f1a !important; background-image: none !important; color: #4dd0e1; border: 1px solid #384a5e; border-radius: 6px; padding: 10px 12px; font-size: 10px; text-transform: uppercase; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+            /* Aniquilamos cualquier flecha que el CSS de tu plantilla intente meter por la fuerza */
+            .mk-dropdown-btn::after, .mk-dropdown-btn::before, .mk-dropdown-wrapper::after, .mk-dropdown-wrapper::before { content: none !important; display: none !important; background: none !important; background-image: none !important; }
+            .mk-dropdown-btn:hover { border-color: #00d2ff; }
+            .mk-dropdown-text { display: flex; align-items: center; gap: 6px; }
+            .mk-dropdown-text::after, .mk-dropdown-text::before { content: none !important; display: none !important; }
+            .mk-dropdown-list { position: absolute; display: none; top: 100%; left: 0; right: 0; background: #0f0f1a; border: 1px solid #00d2ff; border-radius: 6px; z-index: 999; margin-top: 4px; max-height: 250px; overflow-y: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+            .mk-dropdown-list.open { display: block; }
+            .mk-dropdown-opt { padding: 10px 12px; display: flex; align-items: center; gap: 8px; font-size: 10px; text-transform: uppercase; font-weight: bold; color: #cbd5e1; cursor: pointer; transition: background 0.2s; border-bottom: 1px solid #1a2a36; }
+            .mk-dropdown-opt::after, .mk-dropdown-opt::before { content: none !important; display: none !important; }
+            .mk-dropdown-opt:hover { background: rgba(0, 210, 255, 0.15); color: #fff; }
+            .mk-dropdown-opt svg { width: 14px; height: 14px; filter: drop-shadow(0 0 3px rgba(255,255,255,0.3)); }
         `;
         document.head.appendChild(style);
     }
@@ -93,25 +103,25 @@ window.iniciarMercado = function() {
                     <div id="market-buy-view">
                         <div style="display: flex; gap: 8px; margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid #384a5e;">
                             
-                            <div class="custom-select-wrapper" id="filter-type-wrapper" data-value="all">
-                                <div class="custom-select-trigger">
-                                    <div class="trigger-text">TODO EL MERCADO</div> 
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            <div class="mk-dropdown-wrapper" id="filter-type-wrapper" data-value="all">
+                                <div class="mk-dropdown-btn">
+                                    <div class="mk-dropdown-text">TODO EL MERCADO</div> 
+                                    <span style="font-size: 8px; color:#4dd0e1;">▼</span>
                                 </div>
-                                <div class="custom-select-options">
-                                    <div class="custom-option" data-value="all">TODO EL MERCADO</div>
-                                    <div class="custom-option" data-value="genos">SOLO GENOS</div>
-                                    <div class="custom-option" data-value="items">SOLO OBJETOS / EV</div>
+                                <div class="mk-dropdown-list">
+                                    <div class="mk-dropdown-opt" data-value="all">TODO EL MERCADO</div>
+                                    <div class="mk-dropdown-opt" data-value="genos">SOLO GENOS</div>
+                                    <div class="mk-dropdown-opt" data-value="items">SOLO OBJETOS / EV</div>
                                 </div>
                             </div>
 
-                            <div class="custom-select-wrapper" id="filter-element-wrapper" data-value="all">
-                                <div class="custom-select-trigger">
-                                    <div class="trigger-text">CUALQUIER ELEMENTO</div> 
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            <div class="mk-dropdown-wrapper" id="filter-element-wrapper" data-value="all">
+                                <div class="mk-dropdown-btn">
+                                    <div class="mk-dropdown-text">CUALQUIER ELEMENTO</div> 
+                                    <span style="font-size: 8px; color:#4dd0e1;">▼</span>
                                 </div>
-                                <div class="custom-select-options" id="filter-element-options">
-                                    <div class="custom-option" data-value="all">CUALQUIER ELEMENTO</div>
+                                <div class="mk-dropdown-list" id="filter-element-options">
+                                    <div class="mk-dropdown-opt" data-value="all">CUALQUIER ELEMENTO</div>
                                 </div>
                             </div>
 
@@ -168,26 +178,26 @@ window.iniciarMercado = function() {
         }
         
         const opt = document.createElement('div');
-        opt.className = 'custom-option';
+        opt.className = 'mk-dropdown-opt';
         opt.dataset.value = cleanName;
         opt.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;">${iconSvg}</div> ${cleanName}`;
         elementOptionsContainer.appendChild(opt);
     });
 
-    document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
-        const trigger = wrapper.querySelector('.custom-select-trigger');
-        const options = wrapper.querySelector('.custom-select-options');
-        const triggerText = trigger.querySelector('.trigger-text'); // Selecciona solo la parte del texto/icono, sin tocar la flecha
+    document.querySelectorAll('.mk-dropdown-wrapper').forEach(wrapper => {
+        const trigger = wrapper.querySelector('.mk-dropdown-btn');
+        const options = wrapper.querySelector('.mk-dropdown-list');
+        const triggerText = trigger.querySelector('.mk-dropdown-text'); 
 
         trigger.addEventListener('click', (e) => {
             e.stopPropagation();
-            document.querySelectorAll('.custom-select-options').forEach(opt => {
+            document.querySelectorAll('.mk-dropdown-list').forEach(opt => {
                 if (opt !== options) opt.classList.remove('open');
             });
             options.classList.toggle('open');
         });
 
-        options.querySelectorAll('.custom-option').forEach(option => {
+        options.querySelectorAll('.mk-dropdown-opt').forEach(option => {
             option.addEventListener('click', (e) => {
                 e.stopPropagation();
                 triggerText.innerHTML = option.innerHTML; 
@@ -198,7 +208,7 @@ window.iniciarMercado = function() {
     });
 
     document.addEventListener('click', () => {
-        document.querySelectorAll('.custom-select-options').forEach(opt => opt.classList.remove('open'));
+        document.querySelectorAll('.mk-dropdown-list').forEach(opt => opt.classList.remove('open'));
     });
 
     const tabBuy = document.getElementById("tab-market-buy");
@@ -222,7 +232,6 @@ window.iniciarMercado = function() {
 
 // ==========================================
 // FUNCIÓN PARA DETALLES DE OBJETOS (CÁPSULAS)
-// ✨ CORRECCIÓN: Soporta modo 'publicar' o 'listado' (Lectura)
 // ==========================================
 window.abrirDetalleItem = function(itemBase, tipoAccion = 'publicar') {
     const modal = document.getElementById("market-detail-modal");
@@ -258,11 +267,6 @@ window.abrirDetalleItem = function(itemBase, tipoAccion = 'publicar') {
             if (isNaN(precio) || precio <= 0) { alert("⚠️ Introduce un precio válido mayor a 0."); return; }
 
             itemBase.count -= 1;
-            if (itemBase.count <= 0) {
-                let invArray = window.miInventario.slots || window.miInventario.items;
-                let index = invArray.indexOf(itemBase);
-                if (index > -1) invArray[index] = null;
-            }
 
             const ventaObjeto = {
                 saleId: "venta_" + Date.now(),
@@ -439,7 +443,11 @@ window.renderizarMisVentas = function() {
             <p style="font-size: 11px; color: #cbd5e1; margin: 0 0 10px 0; pointer-events: none;">Nv. ${geno.level || 1} | ${geno.rarity}</p>
             <button class="market-btn-neon green">Vender</button>
         `;
+        
+        // ✨ CORRECCIÓN: Ahora toda la tarjeta del Geno es interactiva para ver estadísticas completas antes de vender
+        card.addEventListener("click", () => { window.abrirDetalleMercado(geno.id, 'publicar'); });
         card.querySelector("button").addEventListener("click", (e) => { e.stopPropagation(); window.abrirDetalleMercado(geno.id, 'publicar'); });
+        
         grid.appendChild(card);
     });
 
@@ -449,7 +457,7 @@ window.renderizarMisVentas = function() {
         else if (Array.isArray(window.miInventario.items)) inventarioArray = window.miInventario.items;
     }
 
-    const itemsVendibles = inventarioArray.filter(item => item !== null && typeof item === 'object' && item.valorMercado);
+    const itemsVendibles = inventarioArray.filter(item => item !== null && typeof item === 'object' && item.valorMercado && item.count > 0);
     
     itemsVendibles.forEach(item => {
         hayCosasParaVender = true;
@@ -462,7 +470,11 @@ window.renderizarMisVentas = function() {
             <p style="font-size: 11px; color: #cbd5e1; margin: 0 0 10px 0; pointer-events: none;">En mochila: x${item.count}</p>
             <button class="market-btn-neon green" style="background: linear-gradient(90deg, #0097a7, #4dd0e1);">Vender</button>
         `;
+        
+        // Toda la tarjeta del objeto es interactiva
+        card.addEventListener("click", () => { window.abrirDetalleItem(item, 'publicar'); });
         card.querySelector("button").addEventListener("click", (e) => { e.stopPropagation(); window.abrirDetalleItem(item, 'publicar'); });
+        
         grid.appendChild(card);
     });
 
@@ -473,7 +485,6 @@ window.renderizarMisVentas = function() {
         grid.appendChild(msj);
     }
 
-    // 3. Renderizar listados activos
     listContainer.innerHTML = "";
     if (window.misVentas.length > 0) {
         listContainer.innerHTML = '<h4 style="width: 100%; color: #D500F9; border-bottom: 1px solid #384a5e; padding-bottom: 8px; margin: 0 0 10px 0; font-size: 12px; text-transform: uppercase;">Tus Ventas Activas:</h4>';
@@ -496,7 +507,6 @@ window.renderizarMisVentas = function() {
                 </div>
             `;
 
-            // ✨ CORRECCIÓN: Evento de clic en la fila para inspeccionar el listado
             row.addEventListener("click", (e) => {
                 if (e.target.closest('.btn-cancel-sale')) return; 
                 
