@@ -8,14 +8,13 @@ function obtenerNombreGeno(g) {
     return g.customName || g.nickname || g.apodo || g.name || "Desconocido";
 }
 
-// ✨ DEVOLVEMOS EL CONTROL AL INVENTORY MANAGER ORIGINAL
+// ✨ SINOPSIS LIMPIA: Dejamos que tu InventoryManager maneje su propia interfaz nativa
 window.forzarActualizacionMochila = function() {
     if (window.miInventario && typeof window.miInventario.updateUI === 'function') {
         window.miInventario.updateUI();
         if(typeof window.miInventario.renderGrid === 'function') window.miInventario.renderGrid();
     }
     
-    // Protegemos el botón de MetaMask
     if (typeof window.WalletManager !== 'undefined') {
         window.WalletManager.actualizarBoton();
     }
@@ -57,7 +56,7 @@ window.iniciarMercado = function() {
             #close-market-detail:hover svg { stroke: #ff8a80; transform: scale(1.1); }
             #close-market-detail svg { transition: all 0.2s; }
             
-            /* COMPONENTES BLINDADOS CONTRA DOBLE FLECHA GLOBAL */
+            /* Filtros optimizados sin duplicación de flechas */
             .mk-dropdown-wrapper { position: relative; flex: 1; user-select: none; }
             .mk-dropdown-btn { background: #0f0f1a !important; background-image: none !important; color: #4dd0e1; border: 1px solid #384a5e; border-radius: 6px; padding: 10px 12px; font-size: 10px; text-transform: uppercase; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
             .mk-dropdown-btn::after, .mk-dropdown-btn::before, .mk-dropdown-wrapper::after, .mk-dropdown-wrapper::before { content: none !important; display: none !important; background: none !important; background-image: none !important; }
@@ -92,7 +91,6 @@ window.iniciarMercado = function() {
                             <div class="mk-dropdown-wrapper" id="filter-type-wrapper" data-value="all">
                                 <div class="mk-dropdown-btn">
                                     <div class="mk-dropdown-text">TODO EL MERCADO</div> 
-                                    <span style="font-size: 8px; color:#4dd0e1;">▼</span>
                                 </div>
                                 <div class="mk-dropdown-list">
                                     <div class="mk-dropdown-opt" data-value="all">TODO EL MERCADO</div>
@@ -104,7 +102,6 @@ window.iniciarMercado = function() {
                             <div class="mk-dropdown-wrapper" id="filter-element-wrapper" data-value="all">
                                 <div class="mk-dropdown-btn">
                                     <div class="mk-dropdown-text">CUALQUIER ELEMENTO</div> 
-                                    <span style="font-size: 8px; color:#4dd0e1;">▼</span>
                                 </div>
                                 <div class="mk-dropdown-list" id="filter-element-options">
                                     <div class="mk-dropdown-opt" data-value="all">CUALQUIER ELEMENTO</div>
@@ -162,7 +159,6 @@ window.iniciarMercado = function() {
         if (typeof window.getIconoElemento === 'function') {
             iconSvg = window.getIconoElemento(cleanName).replace('margin-right: 6px;', 'margin-right: 0;');
         }
-        
         const opt = document.createElement('div');
         opt.className = 'mk-dropdown-opt';
         opt.dataset.value = cleanName;
@@ -216,9 +212,6 @@ window.iniciarMercado = function() {
     window.renderizarMisVentas();
 };
 
-// ==========================================
-// FUNCIÓN PARA DETALLES DE OBJETOS (CÁPSULAS)
-// ==========================================
 window.abrirDetalleItem = function(itemBase, tipoAccion = 'publicar') {
     const modal = document.getElementById("market-detail-modal");
     const nameEl = document.getElementById("market-detail-name-text");
@@ -252,12 +245,12 @@ window.abrirDetalleItem = function(itemBase, tipoAccion = 'publicar') {
             const precio = parseFloat(document.getElementById("modal-input-price-item").value);
             if (isNaN(precio) || precio <= 0) { alert("⚠️ Introduce un precio válido mayor a 0."); return; }
 
-            // LÓGICA DE EXTRACCIÓN ORIGINAL NATIVA
             itemBase.count -= 1;
             if (itemBase.count <= 0) {
-                let invArray = window.miInventario.slots || window.miInventario.items;
+                let invArray = window.miInventario.slots || window.miInventario.items || [];
                 let index = invArray.indexOf(itemBase);
-                if (index > -1) invArray[index] = null;
+                // ✨ SE EXTRALIMITA CON EXTRACCIÓN REAL: Evita dejar un fantasma nulo
+                if (index > -1) invArray.splice(index, 1);
             }
 
             const ventaObjeto = {
@@ -268,7 +261,6 @@ window.abrirDetalleItem = function(itemBase, tipoAccion = 'publicar') {
             };
 
             window.misVentas.push(ventaObjeto);
-            
             alert(`✅ Has publicado [1x ${itemBase.name}] en la red por ${ventaObjeto.pricePol} POL.`);
             modal.style.display = "none";
             
@@ -297,9 +289,6 @@ window.abrirDetalleItem = function(itemBase, tipoAccion = 'publicar') {
     modal.addEventListener("click", cerrarModal);
 };
 
-// ==========================================
-// FUNCIÓN PARA PUBLICAR O INSPECCIONAR GENOS
-// ==========================================
 window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
     const modal = document.getElementById("market-detail-modal");
     let geno = null;
@@ -399,9 +388,6 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
     modal.addEventListener("click", cerrarModal);
 };
 
-// ==========================================
-// RENDERIZADO DEL INVENTARIO A LA VENTA
-// ==========================================
 window.renderizarMisVentas = function() {
     const grid = document.getElementById("market-sell-grid");
     const listContainer = document.getElementById("market-my-listed");
@@ -438,7 +424,6 @@ window.renderizarMisVentas = function() {
         
         card.addEventListener("click", () => { window.abrirDetalleMercado(geno.id, 'publicar'); });
         card.querySelector("button").addEventListener("click", (e) => { e.stopPropagation(); window.abrirDetalleMercado(geno.id, 'publicar'); });
-        
         grid.appendChild(card);
     });
 
@@ -464,7 +449,6 @@ window.renderizarMisVentas = function() {
         
         card.addEventListener("click", () => { window.abrirDetalleItem(item, 'publicar'); });
         card.querySelector("button").addEventListener("click", (e) => { e.stopPropagation(); window.abrirDetalleItem(item, 'publicar'); });
-        
         grid.appendChild(card);
     });
 
@@ -499,18 +483,13 @@ window.renderizarMisVentas = function() {
 
             row.addEventListener("click", (e) => {
                 if (e.target.closest('.btn-cancel-sale')) return; 
-                
-                if (isItem) {
-                    window.abrirDetalleItem(venta.itemData, 'listado');
-                } else {
-                    window.abrirDetalleMercado(venta.id || venta.saleId, 'listado');
-                }
+                if (isItem) window.abrirDetalleItem(venta.itemData, 'listado');
+                else window.abrirDetalleMercado(venta.id || venta.saleId, 'listado');
             });
             
             row.querySelector(".btn-cancel-sale").addEventListener("click", (e) => {
                 e.stopPropagation();
                 
-                // LÓGICA DE CANCELACIÓN CONECTADA A LA FUNCIÓN NATIVA DE TU INVENTARIO
                 if (isItem) {
                     let devolucionExitosa = false;
                     try {
@@ -520,19 +499,9 @@ window.renderizarMisVentas = function() {
                     } catch(err) {}
 
                     if (!devolucionExitosa) {
-                        let invArray = window.miInventario.slots || window.miInventario.items;
-                        let emptyIndex = invArray.findIndex(s => s === null || s === undefined);
-                        if (emptyIndex !== -1) {
-                            invArray[emptyIndex] = venta.itemData;
-                            devolucionExitosa = true;
-                        }
-                    }
-
-                    if (!devolucionExitosa) {
                         alert("🎒 ¡Mochila llena! No puedes cancelar esta venta hasta liberar un espacio.");
                         return;
                     }
-
                     window.forzarActualizacionMochila(); 
                 } else {
                     delete venta.pricePol;
