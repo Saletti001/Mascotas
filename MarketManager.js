@@ -8,27 +8,14 @@ function obtenerNombreGeno(g) {
     return g.customName || g.nickname || g.apodo || g.name || "Desconocido";
 }
 
+// ✨ DEVOLVEMOS EL CONTROL AL INVENTORY MANAGER ORIGINAL
 window.forzarActualizacionMochila = function() {
-    if (window.miInventario) {
-        if (window.miInventario.slots) {
-            for(let i = 0; i < window.miInventario.slots.length; i++) {
-                if (window.miInventario.slots[i] && window.miInventario.slots[i].count <= 0) {
-                    window.miInventario.slots[i] = null;
-                }
-            }
-        }
-        
-        if (typeof window.miInventario.updateUI === 'function') window.miInventario.updateUI();
-        if (typeof window.miInventario.renderGrid === 'function') window.miInventario.renderGrid();
-        
-        if (window.miInventario.slots) {
-            let ocupados = window.miInventario.slots.filter(s => s !== null && s !== undefined && s.id).length;
-            let max = window.miInventario.maxSlots || window.maxSlots || 10;
-            const counter = document.getElementById("slot-counter");
-            if (counter) counter.innerHTML = `${ocupados}/${max}<br>SLOTS`;
-        }
+    if (window.miInventario && typeof window.miInventario.updateUI === 'function') {
+        window.miInventario.updateUI();
+        if(typeof window.miInventario.renderGrid === 'function') window.miInventario.renderGrid();
     }
     
+    // Protegemos el botón de MetaMask
     if (typeof window.WalletManager !== 'undefined') {
         window.WalletManager.actualizarBoton();
     }
@@ -60,7 +47,7 @@ window.iniciarMercado = function() {
             .market-card-neon::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: #D500F9; transition: 0.3s; }
             .market-card-neon:hover { transform: translateY(-4px); border-color: #D500F9; box-shadow: 0 10px 25px rgba(0,0,0,0.4), 0 0 15px rgba(213,0,249,0.4); background: linear-gradient(180deg, #32465A 0%, #203342 100%); }
             .market-card-neon:hover::before { height: 6px; box-shadow: 0 0 15px #D500F9; }
-            .market-btn-neon { width: 100%; padding: 10px; border: none; border-radius: 8px; margin-top: auto; font-weight: 900; color: #fff; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; background: linear-gradient(90deg, #6A1B9A, #D500F9); box-shadow: 0 4px 10px rgba(0,0,0,0.4), inset 0 2px 5px rgba(255,255,255,0.2); transition: filter 0.2s, transform 0.1s; text-shadow: 0 1px 2px rgba(0,0,0,0.8); box-shadow: border-box; }
+            .market-btn-neon { width: 100%; padding: 10px; border: none; border-radius: 8px; margin-top: auto; font-weight: 900; color: #fff; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; font-size: 13px; background: linear-gradient(90deg, #6A1B9A, #D500F9); box-shadow: 0 4px 10px rgba(0,0,0,0.4), inset 0 2px 5px rgba(255,255,255,0.2); transition: filter 0.2s, transform 0.1s; text-shadow: 0 1px 2px rgba(0,0,0,0.8); box-sizing: border-box; }
             .market-btn-neon.green { background: linear-gradient(90deg, #2E7D32, #69F0AE); }
             .market-btn-neon.red { background: linear-gradient(90deg, #c62828, #ff5252); }
             .market-btn-neon:hover { filter: brightness(1.2) contrast(1.1); }
@@ -70,10 +57,9 @@ window.iniciarMercado = function() {
             #close-market-detail:hover svg { stroke: #ff8a80; transform: scale(1.1); }
             #close-market-detail svg { transition: all 0.2s; }
             
-            /* ✨ COMPONENTES BLINDADOS CONTRA DOBLE FLECHA GLOBAL ✨ */
+            /* COMPONENTES BLINDADOS CONTRA DOBLE FLECHA GLOBAL */
             .mk-dropdown-wrapper { position: relative; flex: 1; user-select: none; }
             .mk-dropdown-btn { background: #0f0f1a !important; background-image: none !important; color: #4dd0e1; border: 1px solid #384a5e; border-radius: 6px; padding: 10px 12px; font-size: 10px; text-transform: uppercase; font-weight: bold; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
-            /* Aniquilamos cualquier flecha que el CSS de tu plantilla intente meter por la fuerza */
             .mk-dropdown-btn::after, .mk-dropdown-btn::before, .mk-dropdown-wrapper::after, .mk-dropdown-wrapper::before { content: none !important; display: none !important; background: none !important; background-image: none !important; }
             .mk-dropdown-btn:hover { border-color: #00d2ff; }
             .mk-dropdown-text { display: flex; align-items: center; gap: 6px; }
@@ -266,7 +252,13 @@ window.abrirDetalleItem = function(itemBase, tipoAccion = 'publicar') {
             const precio = parseFloat(document.getElementById("modal-input-price-item").value);
             if (isNaN(precio) || precio <= 0) { alert("⚠️ Introduce un precio válido mayor a 0."); return; }
 
+            // LÓGICA DE EXTRACCIÓN ORIGINAL NATIVA
             itemBase.count -= 1;
+            if (itemBase.count <= 0) {
+                let invArray = window.miInventario.slots || window.miInventario.items;
+                let index = invArray.indexOf(itemBase);
+                if (index > -1) invArray[index] = null;
+            }
 
             const ventaObjeto = {
                 saleId: "venta_" + Date.now(),
@@ -444,7 +436,6 @@ window.renderizarMisVentas = function() {
             <button class="market-btn-neon green">Vender</button>
         `;
         
-        // ✨ CORRECCIÓN: Ahora toda la tarjeta del Geno es interactiva para ver estadísticas completas antes de vender
         card.addEventListener("click", () => { window.abrirDetalleMercado(geno.id, 'publicar'); });
         card.querySelector("button").addEventListener("click", (e) => { e.stopPropagation(); window.abrirDetalleMercado(geno.id, 'publicar'); });
         
@@ -471,7 +462,6 @@ window.renderizarMisVentas = function() {
             <button class="market-btn-neon green" style="background: linear-gradient(90deg, #0097a7, #4dd0e1);">Vender</button>
         `;
         
-        // Toda la tarjeta del objeto es interactiva
         card.addEventListener("click", () => { window.abrirDetalleItem(item, 'publicar'); });
         card.querySelector("button").addEventListener("click", (e) => { e.stopPropagation(); window.abrirDetalleItem(item, 'publicar'); });
         
@@ -520,6 +510,7 @@ window.renderizarMisVentas = function() {
             row.querySelector(".btn-cancel-sale").addEventListener("click", (e) => {
                 e.stopPropagation();
                 
+                // LÓGICA DE CANCELACIÓN CONECTADA A LA FUNCIÓN NATIVA DE TU INVENTARIO
                 if (isItem) {
                     let devolucionExitosa = false;
                     try {
