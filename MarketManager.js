@@ -366,14 +366,40 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
                 </div>
             `;
         };
-        secretGeneHtml = `
+        let htmlEstructura = `
             <div style="margin-top: 15px; padding: 15px; background: rgba(138, 43, 226, 0.1); border: 1px dashed rgba(138, 43, 226, 0.5); border-radius: 8px; text-align: center;">
                 <div style="font-size: 11px; color: #e0b0ff; text-transform: uppercase; margin-bottom: 10px; font-weight: bold; letter-spacing: 1px;">Estructura Genética</div>
                 ${buildSlot("Gen A", hg.A, "#ffcc00")}
                 ${buildSlot("Gen B", hg.B, "#80deea")}
                 ${buildSlot("Gen C", hg.C, "#8A2BE2")}
-            </div>
         `;
+
+        if (geno.scanned_full && geno.genes) {
+            const buildDRSlotCompact = (label, geneObj) => {
+                 if(!geneObj) return "";
+                 return `
+                    <div style="display: flex; justify-content: space-between; background: rgba(0,0,0,0.3); padding: 6px 10px; border-radius: 6px; font-size: 10px; margin-top: 4px; border-left: 2px solid #D500F9;">
+                        <span style="color: #ea80fc; font-weight: bold; width: 65px;">${label}</span>
+                        <span style="flex: 1; text-align: left; color: #fff;"><span style="color:#4CAF50; font-weight:bold;">D:</span> ${geneObj.dom}</span>
+                        <span style="flex: 1; text-align: left; color: #aaa;"><span style="color:#f44336; font-weight:bold;">R:</span> ${geneObj.rec}</span>
+                    </div>
+                 `;
+            };
+
+            htmlEstructura += `
+                <div style="font-size: 12px; color: #D500F9; text-transform: uppercase; margin-top: 20px; margin-bottom: 2px; font-weight: bold; letter-spacing: 1px; text-align: center;">Genoma Base</div>
+                <div style="font-size: 9px; color: #888; text-transform: uppercase; letter-spacing: 1px; text-align: center; margin-bottom: 8px;">
+                    <span style="color:#4CAF50; font-weight:bold;">D:</span> Dominante &nbsp;&nbsp;|&nbsp;&nbsp; <span style="color:#f44336; font-weight:bold;">R:</span> Recesivos
+                </div>
+                ${buildDRSlotCompact("FORMA", geno.genes.cuerpo)}
+                ${buildDRSlotCompact("AFINIDAD", geno.genes.afinidad)}
+                ${buildDRSlotCompact("OJOS", geno.genes.ojos)}
+                ${buildDRSlotCompact("BOCA", geno.genes.boca)}
+            `;
+        }
+
+        htmlEstructura += `</div>`;
+        secretGeneHtml = htmlEstructura;
     } else {
         secretGeneHtml = `
             <div style="margin-top: 15px; padding: 15px; background: rgba(138, 43, 226, 0.1); border: 1px dashed rgba(138, 43, 226, 0.5); border-radius: 8px; text-align: center;">
