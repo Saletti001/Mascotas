@@ -297,14 +297,18 @@ window.abrirDetalleItem = function(itemBase, tipoAccion = 'publicar') {
 window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
     const modal = document.getElementById("market-detail-modal");
     let geno = null;
-    if (window.miMascota && window.miMascota.id === idGenoBuscar) geno = window.miMascota;
-    else if(window.misGenos) geno = window.misGenos.find(g => g.id === idGenoBuscar);
-    
-    if(!geno && window.misVentas) {
-        let listado = window.misVentas.find(v => !v.isItem && v.id === idGenoBuscar);
-        if (listado) geno = listado;
+    if (typeof idGenoBuscar === "object" && idGenoBuscar !== null) {
+        geno = idGenoBuscar;
+    } else {
+        if (window.miMascota && window.miMascota.id === idGenoBuscar) geno = window.miMascota;
+        else if(window.misGenos) geno = window.misGenos.find(g => g.id === idGenoBuscar);
+        
+        if(!geno && window.misVentas) {
+            let listado = window.misVentas.find(v => !v.isItem && v.id === idGenoBuscar);
+            if (listado) geno = listado;
+        }
     }
-    if(!geno) return; 
+    if(!geno) return;
 
     const nameEl = document.getElementById("market-detail-name-text");
     const dynamicContent = document.getElementById("market-detail-dynamic-content");
@@ -321,6 +325,63 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
     let colorCalidad = calidadFinal.charAt(0) === "S" ? "#ffcc00" : calidadFinal.charAt(0) === "A" ? "#4dd0e1" : calidadFinal.charAt(0) === "B" ? "#4CAF50" : "#f0ad4e";
 
     const stTotal = geno.stats || { hp: 0, atk: 0, def: 0, spd: 0, luk: 0 };
+    const stBase = geno.baseStats || stTotal;
+
+    const buildStatRow = (icon, label, key) => {
+        const baseVal = Math.floor(stBase[key] !== undefined ? stBase[key] : (stTotal[key] || 0));
+        const totalVal = Math.floor(stTotal[key] || 0);
+        const diff = totalVal - baseVal;
+        let diffHtml = '';
+        let totalHtml = '';
+        if (diff > 0) {
+            diffHtml = `<span style="color: #4CAF50; font-size: 11px; margin: 0 8px;">(+${diff})</span>`;
+            totalHtml = `<span style="color: #ffcc00; font-weight: bold;">${totalVal}</span>`;
+        }
+        return `
+            <div style="background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 8px; display: flex; align-items: center; justify-content: space-between; border-left: 2px solid #333; margin-bottom: 6px;">
+                <div style="display: flex; align-items: center; gap: 8px; width: 70px;">
+                    <span>${icon}</span>
+                    <span style="color: #cbd5e1; font-size: 12px;">${label}:</span>
+                </div>
+                <div style="flex: 1; text-align: right; font-size: 14px;">
+                    <span style="color: #fff; font-weight: bold;">${baseVal}</span>
+                    ${diffHtml}
+                    ${totalHtml}
+                </div>
+            </div>
+        `;
+    };
+
+    let secretGeneHtml = "";
+    if (geno.scanned) {
+        const hg = geno.hidden_genes || { A: null, B: null, C: null };
+        const buildSlot = (slotLabel, geneData, colorBox) => {
+            if (!geneData) return `<div style="background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; font-size: 11px; color: #555; border-left: 3px solid #333; display: flex; justify-content: space-between; align-items: center;"><span>${slotLabel}</span> <span style="font-size:10px; font-style:italic;">Vacío</span></div>`;
+            return `
+                <div style="background: rgba(0,0,0,0.4); padding: 8px 12px; border-radius: 6px; font-size: 11px; color: #fff; border-left: 3px solid ${colorBox}; display: flex; flex-direction: column; gap: 4px; text-align: left; margin-bottom: 5px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: ${colorBox}; font-weight: bold; font-size: 10px; text-transform: uppercase;">${slotLabel}</span>
+                        <span style="font-weight: bold;">${geneData.name}</span>
+                    </div>
+                </div>
+            `;
+        };
+        secretGeneHtml = `
+            <div style="margin-top: 15px; padding: 15px; background: rgba(138, 43, 226, 0.1); border: 1px dashed rgba(138, 43, 226, 0.5); border-radius: 8px; text-align: center;">
+                <div style="font-size: 11px; color: #e0b0ff; text-transform: uppercase; margin-bottom: 10px; font-weight: bold; letter-spacing: 1px;">Estructura Genética</div>
+                ${buildSlot("Gen A", hg.A, "#ffcc00")}
+                ${buildSlot("Gen B", hg.B, "#80deea")}
+                ${buildSlot("Gen C", hg.C, "#8A2BE2")}
+            </div>
+        `;
+    } else {
+        secretGeneHtml = `
+            <div style="margin-top: 15px; padding: 15px; background: rgba(138, 43, 226, 0.1); border: 1px dashed rgba(138, 43, 226, 0.5); border-radius: 8px; text-align: center;">
+                <div style="font-size: 11px; color: #e0b0ff; text-transform: uppercase; margin-bottom: 5px; font-weight: bold; letter-spacing: 1px;">Estructura Genética</div>
+                <div style="color: #aaa; font-size: 12px;">🔒 ADN Bloqueado</div>
+            </div>
+        `;
+    }
 
     dynamicContent.innerHTML = `
         <div class="stats-level-badge" style="text-align: center; margin-bottom: 15px;">
@@ -328,6 +389,7 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
         </div>
         <div style="text-align: center; margin-bottom: 8px;">
             <div style="font-size: 45px; margin-bottom: 8px; display: flex; justify-content: center; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.8));">${iconoElementoHTML}</div>
+            <div style="font-size: 12px; color: #00d2ff; font-family: monospace; letter-spacing: 1px; font-weight: bold; margin-bottom: 15px;">#${geno.id || "000000"}</div>
         </div>
         
         <div class="stat-info" style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
@@ -341,13 +403,16 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
             <span style="font-weight: 900; font-size: 14px; color: ${colorCalidad};">${calidadFinal}</span>
         </div>
         <hr class="stats-divider" style="border: none; border-top: 1px solid #333; margin: 15px 0;">
-        <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; text-align: center; background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; border: 1px solid #333;">
-            <div><div style="font-size: 10px; color: #ff4b4b;">❤️</div><div style="font-size: 12px; font-weight: bold; color: #fff;">${stTotal.hp}</div></div>
-            <div><div style="font-size: 10px; color: #ff8c00;">⚔️</div><div style="font-size: 12px; font-weight: bold; color: #fff;">${stTotal.atk}</div></div>
-            <div><div style="font-size: 10px; color: #3b82f6;">🛡️</div><div style="font-size: 12px; font-weight: bold; color: #fff;">${stTotal.def}</div></div>
-            <div><div style="font-size: 10px; color: #facc15;">⚡</div><div style="font-size: 12px; font-weight: bold; color: #fff;">${stTotal.spd}</div></div>
-            <div><div style="font-size: 10px; color: #10b981;">🍀</div><div style="font-size: 12px; font-weight: bold; color: #fff;">${stTotal.luk}</div></div>
+        
+        <div style="font-size: 13px; color: #00d2ff; font-weight: bold; margin-bottom: 10px;">Atributos Activos</div>
+        <div style="display: flex; flex-direction: column; gap: 0;">
+            ${buildStatRow("<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#ff4b4b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z'></path></svg>", "Vit", "hp")}
+            ${buildStatRow("<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#ff8c00' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M14.5 17.5L3 6V3h3l11.5 11.5'></path><path d='M13 19l6-6'></path><path d='M16 16l4 4'></path><path d='M19 21l2-2'></path></svg>", "Fue", "atk")}
+            ${buildStatRow("<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#3b82f6' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><path d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'></path></svg>", "Def", "def")}
+            ${buildStatRow("<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#facc15' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polygon points='13 2 3 14 12 14 11 22 21 10 12 10 13 2'></polygon></svg>", "Agi", "spd")}
+            ${buildStatRow("<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='#10b981' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2'></polygon></svg>", "Sue", "luk")}
         </div>
+        ${secretGeneHtml}
     `;
 
     if (tipoAccion === 'publicar') {
@@ -646,8 +711,28 @@ window.cargarMercadoGlobal = async function() {
 
 window.abrirDetalleMercadoRemoto = function(listing) {
     const data = listing.itemData || {};
-    // Simularemos la apertura del modal existente
-    alert(`Inspeccionando a ${data.name || "Geno"} en venta por ${listing.pricePol} POL.`);
+    data.pricePol = listing.pricePol;
+    data.sellerId = listing.sellerId;
+    data.saleId = listing.saleId;
+    
+    // Inyectar estado en el modal pasándole el objeto directamente
+    const modal = document.getElementById("market-detail-modal");
+    const actionContainer = document.getElementById("market-detail-action");
+    
+    // Hacemos que actionContainer espere la compilación antes de sobreescribirlo
+    window.abrirDetalleMercado(data, 'inspeccion');
+    
+    actionContainer.innerHTML = `
+        <div style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px; border: 1px solid #384a5e; margin-bottom: 15px;">
+            <div style="color: #cbd5e1; font-size: 12px; line-height: 1.5; margin-bottom: 5px;">Vendedor: ${data.sellerId ? (data.sellerId.substring(0,6) + "...") : "Desconocido"}</div>
+            <div style="color: #D500F9; font-size: 16px; font-weight: bold; text-align: center;">🔷 ${data.pricePol} POL</div>
+        </div>
+        <button id="modal-btn-action-buy" class="market-btn-neon green" style="width: 100%; font-size: 14px; padding: 12px;">Comprar Espécimen</button>
+    `;
+    
+    document.getElementById("modal-btn-action-buy").onclick = () => {
+        alert(`Fase de compra en progreso. Pronto podrás comprar a [${data.name || "Geno"}] por ${data.pricePol} POL.`);
+    };
 };
 
 // =========================================
