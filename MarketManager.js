@@ -539,7 +539,7 @@ window.cargarMercadoGlobal = async function() {
 
     try {
         if (!window.supabaseClient) {
-            grid.innerHTML = \`<div style="grid-column: span 2; text-align: center; color: #ff5252; padding: 20px; font-size: 12px;">Error: Cliente de Nube no inicializado.</div>\`;
+            grid.innerHTML = `<div style="grid-column: span 2; text-align: center; color: #ff5252; padding: 20px; font-size: 12px;">Error: Cliente de Nube no inicializado.</div>`;
             return;
         }
 
@@ -553,7 +553,7 @@ window.cargarMercadoGlobal = async function() {
         grid.innerHTML = "";
 
         if (!listings || listings.length === 0) {
-            grid.innerHTML = \`<div style="grid-column: span 2; text-align: center; padding: 30px; color: #888; font-size: 12px;">El mercado global está vacío en este momento.</div>\`;
+            grid.innerHTML = `<div style="grid-column: span 2; text-align: center; padding: 30px; color: #888; font-size: 12px;">El mercado global está vacío en este momento.</div>`;
             return;
         }
 
@@ -569,21 +569,21 @@ window.cargarMercadoGlobal = async function() {
             }
 
             const nombre = data.customName || data.nickname || data.name || "Desconocido";
-            const subtitulo = esObjeto ? \`x\${data.count || 1} Unidades\` : \`Nv. \${data.level || 1} | \${data.rarity || 'Común'}\`;
+            const subtitulo = esObjeto ? `x${data.count || 1} Unidades` : `Nv. ${data.level || 1} | ${data.rarity || 'Común'}`;
 
             const card = document.createElement("div");
             card.className = "market-card-neon";
             if (esObjeto) card.style.border = "1px solid #4dd0e1";
 
-            card.innerHTML = \`
-                <div style="width: 55px; height: 55px; margin-bottom: 10px; filter: drop-shadow(0px 5px 8px rgba(0,0,0,0.6)); pointer-events: none;">\${svgIcon}</div>
-                <h4 style="margin: 0 0 5px 0; font-size: 13px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">\${nombre}</h4>
-                <p style="font-size: 11px; color: #cbd5e1; margin: 0 0 10px 0; pointer-events: none;">\${subtitulo}</p>
+            card.innerHTML = `
+                <div style="width: 55px; height: 55px; margin-bottom: 10px; filter: drop-shadow(0px 5px 8px rgba(0,0,0,0.6)); pointer-events: none;">${svgIcon}</div>
+                <h4 style="margin: 0 0 5px 0; font-size: 13px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">${nombre}</h4>
+                <p style="font-size: 11px; color: #cbd5e1; margin: 0 0 10px 0; pointer-events: none;">${subtitulo}</p>
                 <div style="margin-top: auto; width: 100%; display: flex; flex-direction: column; gap: 5px;">
-                    <span style="color: #D500F9; font-weight: 900; font-size: 12px;">🔷 \${listing.pricePol} POL</span>
+                    <span style="color: #D500F9; font-weight: 900; font-size: 12px;">🔷 ${listing.pricePol} POL</span>
                     <button class="market-btn-neon green">Comprar</button>
                 </div>
-            \`;
+            `;
 
             card.addEventListener("click", () => {
                 if (esObjeto) {
@@ -595,15 +595,15 @@ window.cargarMercadoGlobal = async function() {
 
             card.querySelector("button").addEventListener("click", (e) => {
                 e.stopPropagation();
-                alert(\`Fase de compra en progreso. Pronto podrás comprar [${nombre}] por \${listing.pricePol} POL.\`);
+                alert(`Fase de compra en progreso. Pronto podrás comprar [${nombre}] por ${listing.pricePol} POL.`);
             });
 
             grid.appendChild(card);
         });
 
     } catch (err) {
-        console.error("Error al cargar mercado:", err);
-        grid.innerHTML = \`<div style="grid-column: span 2; text-align: center; color: #ff5252; padding: 20px; font-size: 12px;">Error al conectar con la Red Nexo.</div>\`;
+        console.error("Error al cargar el mercado global:", err);
+        grid.innerHTML = `<div style="grid-column: span 2; text-align: center; color: #ff5252; padding: 20px; font-size: 12px;">Error al conectar con la Red Nexo.</div>`;
     }
 };
 

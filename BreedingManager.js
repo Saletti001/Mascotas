@@ -686,7 +686,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let countInc = 0;
         if (window.miInventario && window.miInventario.slots) {
-             const inc = window.miInventario.slots.find(i => i.id === "incubator_01");
+             const inc = window.miInventario.slots.find(i => i && i.id === "incubator_01");
              countInc = inc ? (inc.cantidad || inc.count || 0) : 0;
         }
 

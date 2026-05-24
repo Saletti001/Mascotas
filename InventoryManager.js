@@ -216,6 +216,7 @@ class InventoryManager {
             let hasExpiredItems = false;
             
             this.slots.forEach((item, index) => {
+                if (!item) return;
                 if (item.isOverflow && item.expiresAt) {
                     const restante = item.expiresAt - Date.now();
                     if (restante <= 0) {
@@ -234,7 +235,7 @@ class InventoryManager {
 
             if (hasExpiredItems) {
                 const prevCount = this.slots.length;
-                this.slots = this.slots.filter(item => !item.isOverflow || !item.expiresAt || item.expiresAt > Date.now());
+                this.slots = this.slots.filter(item => item && (!item.isOverflow || !item.expiresAt || item.expiresAt > Date.now()));
                 if (this.slots.length < prevCount) {
                     this.selectedIndex = null;
                     this.updateUI();
