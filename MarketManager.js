@@ -846,15 +846,28 @@ window.comprarListado = async function(listing) {
     }
 
     try {
+        const payloadToUpdate = { status: 'sold' };
+        // Si el usuario añadió la columna buyer_id o buyerId, podemos intentar pasarla, pero para estar 100% seguros de no romper el schema (ya que todo está en camelCase o JSON):
+        // Guardaremos el comprador dentro del itemData para no requerir una columna nueva obligatoria.
+        const updatedItemData = { ...(listing.itemData || {}), buyerId: window.miUsuarioCloud.id };
+        payloadToUpdate.itemData = updatedItemData;
+
         const { data, error } = await window.supabaseClient
             .from('market_listings')
-            .update({ status: 'sold', buyer_id: window.miUsuarioCloud.id })
+            .update(payloadToUpdate)
             .eq('id', listing.id || listing.saleId)
             .eq('status', 'active')
             .select();
 
-        if (error || !data || data.length === 0) {
-            alert("⚠️ La compra falló. El artículo pudo haber sido vendido o retirado.");
+        if (error) {
+            console.error("Supabase Error:", error);
+            alert(`⚠️ Error de base de datos: ${error.message || JSON.stringify(error)}\n\n(Verifica si tienes permisos RLS para hacer UPDATE o si la columna no existe).`);
+            if(btn) { btn.disabled = false; btn.innerText = "Comprar"; }
+            return;
+        }
+
+        if (!data || data.length === 0) {
+            alert("⚠️ La compra falló (0 filas afectadas). El artículo pudo haber sido vendido o retirado, o no tienes permisos (RLS) para modificarlo.");
             if(btn) { btn.disabled = false; btn.innerText = "Comprar"; }
             return;
         }
