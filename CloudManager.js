@@ -6,6 +6,7 @@ const supabaseUrl = 'https://xoxkapvondvtlftecwcv.supabase.co';
 const supabaseKey = 'sb_publishable_FBCAFJCwTr9xtSgbcZC6rQ_oudcDLza';
 
 const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+window.supabaseClient = supabaseClient;
 window.miUsuarioCloud = null;
 
 document.addEventListener("DOMContentLoaded", async () => {

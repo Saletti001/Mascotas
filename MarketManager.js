@@ -201,6 +201,7 @@ window.iniciarMercado = function() {
     tabBuy.addEventListener("click", () => {
         tabBuy.classList.add("active"); tabSell.classList.remove("active");
         viewBuy.classList.remove("hidden"); viewSell.classList.add("hidden");
+        if (typeof window.cargarMercadoGlobal === 'function') window.cargarMercadoGlobal();
     });
 
     tabSell.addEventListener("click", () => {
@@ -210,6 +211,7 @@ window.iniciarMercado = function() {
     });
 
     window.renderizarMisVentas();
+    if (typeof window.cargarMercadoGlobal === 'function') window.cargarMercadoGlobal();
 };
 
 window.abrirDetalleItem = function(itemBase, tipoAccion = 'publicar') {
@@ -242,6 +244,7 @@ window.abrirDetalleItem = function(itemBase, tipoAccion = 'publicar') {
         `;
 
         document.getElementById("modal-btn-action-item").onclick = () => {
+            if (!window.miUsuarioCloud) { alert("⚠️ Debes iniciar sesión (Vincular) para poder interactuar con la Red Nexo global."); return; }
             const precio = parseFloat(document.getElementById("modal-input-price-item").value);
             if (isNaN(precio) || precio <= 0) { alert("⚠️ Introduce un precio válido mayor a 0."); return; }
 
@@ -261,6 +264,7 @@ window.abrirDetalleItem = function(itemBase, tipoAccion = 'publicar') {
             };
 
             window.misVentas.push(ventaObjeto);
+            if (typeof window.publicarVentaEnNube === 'function') window.publicarVentaEnNube(ventaObjeto);
             alert(`✅ Has publicado [1x ${itemBase.name}] en la red por ${ventaObjeto.pricePol} POL.`);
             modal.style.display = "none";
             
@@ -354,6 +358,7 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
             <button id="modal-btn-action" class="market-btn-neon green" style="width: 100%; font-size: 14px; padding: 12px;">Publicar en la Red</button>
         `;
         document.getElementById("modal-btn-action").onclick = () => {
+            if (!window.miUsuarioCloud) { alert("⚠️ Debes iniciar sesión (Vincular) para poder interactuar con la Red Nexo global."); return; }
             const precio = parseFloat(document.getElementById("modal-input-price").value);
             if (isNaN(precio) || precio <= 0) { alert("⚠️ Introduce un precio válido mayor a 0."); return; }
 
@@ -361,6 +366,7 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
             geno.pricePol = precio.toFixed(1);
             geno.saleId = "venta_" + Date.now();
             window.misVentas.push(geno);
+            if (typeof window.publicarVentaEnNube === 'function') window.publicarVentaEnNube(geno);
             
             alert(`✅ Has publicado a [${obtenerNombreGeno(geno)}] en la red por ${geno.pricePol} POL.`);
             modal.style.display = "none";
@@ -510,6 +516,7 @@ window.renderizarMisVentas = function() {
                 }
 
                 window.misVentas = window.misVentas.filter(v => v !== venta);
+                if (typeof window.cancelarVentaEnNube === 'function') window.cancelarVentaEnNube(venta.saleId || venta.id);
                 window.renderizarMisVentas();
                 if(window.guardarProgreso) window.guardarProgreso();
             });
@@ -517,4 +524,129 @@ window.renderizarMisVentas = function() {
             listContainer.appendChild(row);
         });
     }
+};
+
+window.cargarMercadoGlobal = async function() {
+    const grid = document.getElementById("market-buy-grid");
+    if (!grid) return;
+
+    grid.innerHTML = `
+        <div style="grid-column: span 2; text-align: center; padding: 30px;">
+            <div style="color: #00d2ff; font-size: 30px; margin-bottom: 15px; animation: spin 2s linear infinite;">🌐</div>
+            <div style="color: #aaa; font-size: 12px; line-height: 1.5;">Conectando a la Nube Nexo...<br>Sincronizando mercado global.</div>
+        </div>
+    `;
+
+    try {
+        if (!window.supabaseClient) {
+            grid.innerHTML = \`<div style="grid-column: span 2; text-align: center; color: #ff5252; padding: 20px; font-size: 12px;">Error: Cliente de Nube no inicializado.</div>\`;
+            return;
+        }
+
+        const { data: listings, error } = await window.supabaseClient
+            .from('market_listings')
+            .select('*')
+            .eq('status', 'active');
+
+        if (error) throw error;
+
+        grid.innerHTML = "";
+
+        if (!listings || listings.length === 0) {
+            grid.innerHTML = \`<div style="grid-column: span 2; text-align: center; padding: 30px; color: #888; font-size: 12px;">El mercado global está vacío en este momento.</div>\`;
+            return;
+        }
+
+        listings.forEach(listing => {
+            const data = listing.itemData || {};
+            const esObjeto = listing.isItem;
+            
+            let svgIcon = esObjeto ? (data.icon || '🔋') : '🧬';
+            
+            if (!esObjeto && typeof window.generarSvgGeno === 'function') {
+                let tempSvg = window.generarSvgGeno({ ...data, body_shape: data.shape || data.body_shape, base_color: data.color || data.base_color });
+                if (tempSvg) svgIcon = tempSvg.replace(/width="[^"]+"/, 'width="100%"').replace(/height="[^"]+"/, 'height="100%"');
+            }
+
+            const nombre = data.customName || data.nickname || data.name || "Desconocido";
+            const subtitulo = esObjeto ? \`x\${data.count || 1} Unidades\` : \`Nv. \${data.level || 1} | \${data.rarity || 'Común'}\`;
+
+            const card = document.createElement("div");
+            card.className = "market-card-neon";
+            if (esObjeto) card.style.border = "1px solid #4dd0e1";
+
+            card.innerHTML = \`
+                <div style="width: 55px; height: 55px; margin-bottom: 10px; filter: drop-shadow(0px 5px 8px rgba(0,0,0,0.6)); pointer-events: none;">\${svgIcon}</div>
+                <h4 style="margin: 0 0 5px 0; font-size: 13px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">\${nombre}</h4>
+                <p style="font-size: 11px; color: #cbd5e1; margin: 0 0 10px 0; pointer-events: none;">\${subtitulo}</p>
+                <div style="margin-top: auto; width: 100%; display: flex; flex-direction: column; gap: 5px;">
+                    <span style="color: #D500F9; font-weight: 900; font-size: 12px;">🔷 \${listing.pricePol} POL</span>
+                    <button class="market-btn-neon green">Comprar</button>
+                </div>
+            \`;
+
+            card.addEventListener("click", () => {
+                if (esObjeto) {
+                    window.abrirDetalleItem({ ...data, pricePol: listing.pricePol, listadoRemoto: true }, 'listado_compra');
+                } else {
+                    window.abrirDetalleMercadoRemoto(listing);
+                }
+            });
+
+            card.querySelector("button").addEventListener("click", (e) => {
+                e.stopPropagation();
+                alert(\`Fase de compra en progreso. Pronto podrás comprar [${nombre}] por \${listing.pricePol} POL.\`);
+            });
+
+            grid.appendChild(card);
+        });
+
+    } catch (err) {
+        console.error("Error al cargar mercado:", err);
+        grid.innerHTML = \`<div style="grid-column: span 2; text-align: center; color: #ff5252; padding: 20px; font-size: 12px;">Error al conectar con la Red Nexo.</div>\`;
+    }
+};
+
+window.abrirDetalleMercadoRemoto = function(listing) {
+    const data = listing.itemData || {};
+    // Simularemos la apertura del modal existente
+    alert(`Inspeccionando a ${data.name || "Geno"} en venta por ${listing.pricePol} POL.`);
+};
+
+// =========================================
+// FUNCIONES DE ESCRITURA EN LA RED (NUBE)
+// =========================================
+
+window.publicarVentaEnNube = async function(ventaObj) {
+    if (!window.supabaseClient || !window.miUsuarioCloud) {
+        console.warn("Usuario no conectado. La venta solo será local.");
+        return;
+    }
+
+    const payload = {
+        saleId: ventaObj.saleId || ventaObj.id,
+        itemId: ventaObj.isItem ? ventaObj.itemData.id || "item" : ventaObj.id,
+        pricePol: parseFloat(ventaObj.pricePol),
+        sellerId: window.miUsuarioCloud.id,
+        status: 'active',
+        itemData: ventaObj.isItem ? ventaObj.itemData : ventaObj,
+        isItem: !!ventaObj.isItem
+    };
+
+    const { error } = await window.supabaseClient.from('market_listings').insert([payload]);
+    if (error) console.error("Error publicando en Supabase:", error);
+    else console.log("☁️ Venta registrada en la Red Nexo:", payload.saleId);
+};
+
+window.cancelarVentaEnNube = async function(saleId) {
+    if (!window.supabaseClient || !window.miUsuarioCloud) return;
+
+    const { error } = await window.supabaseClient
+        .from('market_listings')
+        .delete()
+        .eq('saleId', saleId)
+        .eq('sellerId', window.miUsuarioCloud.id);
+
+    if (error) console.error("Error cancelando venta en Supabase:", error);
+    else console.log("☁️ Venta retirada de la Red Nexo:", saleId);
 };
