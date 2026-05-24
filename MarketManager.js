@@ -282,6 +282,24 @@ window.abrirDetalleItem = function(itemBase, tipoAccion = 'publicar') {
             <button id="modal-btn-action-item" class="market-btn-neon" style="width: 100%; font-size: 14px; padding: 12px; background: #384a5e; box-shadow: none;">Cerrar Inspección</button>
         `;
         document.getElementById("modal-btn-action-item").onclick = () => { modal.style.display = "none"; };
+    } else if (tipoAccion === 'listado_compra') {
+        actionContainer.innerHTML = `
+            <div style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px; border: 1px solid #384a5e; margin-bottom: 15px;">
+                <div style="color: #cbd5e1; font-size: 12px; line-height: 1.5; margin-bottom: 5px;">Vendedor: ${itemBase.sellerId ? (itemBase.sellerId.substring(0,6) + "...") : "Desconocido"}</div>
+                <div style="color: #D500F9; font-size: 16px; font-weight: bold; text-align: center;">🔷 ${itemBase.pricePol} POL</div>
+            </div>
+            <button id="modal-btn-action-buy-item" class="market-btn-neon green" style="width: 100%; font-size: 14px; padding: 12px;">Comprar Objeto</button>
+        `;
+        document.getElementById("modal-btn-action-buy-item").onclick = () => {
+            const listingSimulado = {
+                id: itemBase.saleId,
+                sellerId: itemBase.sellerId,
+                pricePol: itemBase.pricePol,
+                isItem: true,
+                itemData: itemBase
+            };
+            if (typeof window.comprarListado === 'function') window.comprarListado(listingSimulado);
+        };
     }
 
     modal.style.display = "flex";
@@ -715,7 +733,7 @@ window.cargarMercadoGlobal = async function() {
 
             card.addEventListener("click", () => {
                 if (esObjeto) {
-                    window.abrirDetalleItem({ ...data, pricePol: listing.pricePol, listadoRemoto: true }, 'listado_compra');
+                    window.abrirDetalleItem({ ...data, pricePol: listing.pricePol, sellerId: listing.sellerId, saleId: listing.id, listadoRemoto: true }, 'listado_compra');
                 } else {
                     window.abrirDetalleMercadoRemoto(listing);
                 }
@@ -723,7 +741,11 @@ window.cargarMercadoGlobal = async function() {
 
             card.querySelector("button").addEventListener("click", (e) => {
                 e.stopPropagation();
-                alert(`Fase de compra en progreso. Pronto podrás comprar [${nombre}] por ${listing.pricePol} POL.`);
+                if (esObjeto) {
+                    window.abrirDetalleItem({ ...data, pricePol: listing.pricePol, sellerId: listing.sellerId, saleId: listing.id, listadoRemoto: true }, 'listado_compra');
+                } else {
+                    window.abrirDetalleMercadoRemoto(listing);
+                }
             });
 
             grid.appendChild(card);
@@ -757,7 +779,7 @@ window.abrirDetalleMercadoRemoto = function(listing) {
     `;
     
     document.getElementById("modal-btn-action-buy").onclick = () => {
-        alert(`Fase de compra en progreso. Pronto podrás comprar a [${data.name || "Geno"}] por ${data.pricePol} POL.`);
+        if (typeof window.comprarListado === 'function') window.comprarListado(listing);
     };
 };
 
@@ -797,4 +819,132 @@ window.cancelarVentaEnNube = async function(saleId) {
 
     if (error) console.error("Error cancelando venta en Supabase:", error);
     else console.log("☁️ Venta retirada de la Red Nexo:", saleId);
+};
+
+// =========================================
+// FUNCIONES DE COMPRA Y COBRO
+// =========================================
+window.comprarListado = async function(listing) {
+    if (!window.miUsuarioCloud) {
+        alert("⚠️ Debes iniciar sesión para comprar en la Red Nexo.");
+        return;
+    }
+    if (listing.sellerId === window.miUsuarioCloud.id) {
+        alert("⚠️ No puedes comprar tu propio artículo.");
+        return;
+    }
+    const precio = parseFloat(listing.pricePol);
+    if (!window.miWallet || window.miWallet.pol < precio) {
+        alert("⚠️ No tienes suficientes $POL para esta compra.");
+        return;
+    }
+
+    const btn = document.getElementById("modal-btn-action-buy") || document.getElementById("modal-btn-action-buy-item");
+    if(btn) {
+        btn.disabled = true;
+        btn.innerText = "PROCESANDO PAGO...";
+    }
+
+    try {
+        const { data, error } = await window.supabaseClient
+            .from('market_listings')
+            .update({ status: 'sold', buyer_id: window.miUsuarioCloud.id })
+            .eq('id', listing.id || listing.saleId)
+            .eq('status', 'active')
+            .select();
+
+        if (error || !data || data.length === 0) {
+            alert("⚠️ La compra falló. El artículo pudo haber sido vendido o retirado.");
+            if(btn) { btn.disabled = false; btn.innerText = "Comprar"; }
+            return;
+        }
+
+        window.miWallet.pol -= precio;
+
+        const dataObj = listing.itemData || {};
+        
+        if (listing.isItem) {
+            const itemLimpio = { ...dataObj };
+            delete itemLimpio.pricePol;
+            delete itemLimpio.listadoRemoto;
+            delete itemLimpio.sellerId;
+            delete itemLimpio.saleId;
+            if (window.miInventario && window.miInventario.addItem) {
+                window.miInventario.addItem(itemLimpio, itemLimpio.count || 1);
+            }
+        } else {
+            if (!window.misGenos) window.misGenos = [];
+            window.misGenos.push(dataObj);
+        }
+
+        alert(`🎉 ¡Compra exitosa! Se ha añadido [${dataObj.name || "Geno"}] a tu cuenta.`);
+        const modal = document.getElementById("market-detail-modal");
+        if (modal) modal.style.display = "none";
+        
+        window.cargarMercadoGlobal();
+        if (typeof window.actualizarPolUI === 'function') window.actualizarPolUI();
+        if (typeof window.forzarActualizacionMochila === 'function') window.forzarActualizacionMochila();
+        if (typeof window.respaldarEnNube === 'function') window.respaldarEnNube();
+
+    } catch (err) {
+        console.error("Error en la compra:", err);
+        alert("⚠️ Ocurrió un error al procesar el pago.");
+        if(btn) { btn.disabled = false; btn.innerText = "Comprar"; }
+    }
+};
+
+window.revisarVentasCompletadas = async function() {
+    if (!window.miUsuarioCloud || !window.supabaseClient) return;
+
+    try {
+        const { data, error } = await window.supabaseClient
+            .from('market_listings')
+            .select('*')
+            .eq('sellerId', window.miUsuarioCloud.id)
+            .eq('status', 'sold');
+
+        if (error || !data || data.length === 0) return;
+
+        let totalGanado = 0;
+        let totalBoveda = 0;
+        let nombresVendidos = [];
+
+        for (const venta of data) {
+            const precioTotal = parseFloat(venta.pricePol);
+            const comision = parseFloat((precioTotal * 0.035).toFixed(2));
+            const gananciaNeta = precioTotal - comision;
+
+            totalGanado += gananciaNeta;
+            totalBoveda += comision;
+            nombresVendidos.push(venta.itemData?.name || "Objeto");
+
+            // Borrar de la DB de Supabase
+            await window.supabaseClient
+                .from('market_listings')
+                .delete()
+                .eq('id', venta.id);
+                
+            // Limpiar listado local fantasma
+            if (window.misVentas) {
+                window.misVentas = window.misVentas.filter(v => (v.saleId || v.id) !== venta.id);
+            }
+        }
+
+        if (totalGanado > 0) {
+            if (!window.miWallet) window.miWallet = { pol: 0 };
+            window.miWallet.pol += totalGanado;
+            
+            // Bóveda Global track (local al jugador por ahora)
+            window.miWallet.bovedaAportada = (window.miWallet.bovedaAportada || 0) + totalBoveda;
+            
+            alert(`🎉 ¡Tus artículos se vendieron en el Mercado!\n\nHas vendido: ${nombresVendidos.join(', ')}.\nRecibes: ${totalGanado.toFixed(2)} POL netos.\n\n(Se aportó ${totalBoveda.toFixed(2)} POL de comisión a la Bóveda Global)`);
+            
+            if (typeof window.actualizarPolUI === 'function') window.actualizarPolUI();
+            if (typeof window.renderizarMisVentas === 'function') window.renderizarMisVentas();
+            if (typeof window.respaldarEnNube === 'function') window.respaldarEnNube();
+        }
+
+    } catch (err) {
+        console.error("Error revisando ventas completadas:", err);
+    }
 };

@@ -148,6 +148,11 @@ async function cargarDatosDeLaNube() {
         }
 
         if (typeof window.guardarLocalSilencioso === 'function') window.guardarLocalSilencioso();
+        
+        // ✨ Inyección Buzón de Cobro: Revisar si alguien nos compró algo mientras estábamos offline
+        if (typeof window.revisarVentasCompletadas === 'function') {
+            window.revisarVentasCompletadas();
+        }
 
         if (typeof window.actualizarHUD === 'function') window.actualizarHUD();
         if (typeof window.actualizarInventarioUI === 'function') window.actualizarInventarioUI();
