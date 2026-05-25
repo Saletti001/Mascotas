@@ -66,7 +66,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if(!g.level) g.level = 1;
         if(g.xp === undefined) g.xp = 0;
-        if(!g.xpNeeded) g.xpNeeded = 100;
+        
+        let baseXPNeeded = Math.floor(100 * Math.pow(1.2, g.level - 1));
+        let tieneAceleracion = window.tieneGenActivoV9 && window.tieneGenActivoV9(g, "aceleracion_final");
+        let maxLevel = (window.tieneGenActivoV9 && window.tieneGenActivoV9(g, "especialista_elite")) ? 55 : 50;
+        if (tieneAceleracion && g.level >= (maxLevel - 10)) {
+            g.xpNeeded = Math.floor(baseXPNeeded * 0.60);
+        } else {
+            g.xpNeeded = baseXPNeeded;
+        }
         if(!g.stats) g.stats = { hp: 50, atk: 15, def: 10, spd: 15, luk: 15 };
         if(g.statPoints === undefined) g.statPoints = 0;
 
@@ -323,14 +331,26 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     window.ganarXP = function(cantidad) {
-        if (!window.miMascota || window.miMascota.id === "temp" || window.miMascota.level >= 50) return; 
+        let maxLevel = 50;
+        if (window.tieneGenActivoV9 && window.tieneGenActivoV9(window.miMascota, "especialista_elite")) {
+            maxLevel = 55;
+        }
+        if (!window.miMascota || window.miMascota.id === "temp" || window.miMascota.level >= maxLevel) return; 
         
         window.miMascota.xp += cantidad;
         
         if (window.miMascota.xp >= window.miMascota.xpNeeded) {
             window.miMascota.level++;
             window.miMascota.xp -= window.miMascota.xpNeeded;
-            window.miMascota.xpNeeded = Math.floor(window.miMascota.xpNeeded * 1.2); 
+            
+            let baseXPNeeded = Math.floor(100 * Math.pow(1.2, window.miMascota.level - 1));
+            let tieneAceleracion = window.tieneGenActivoV9 && window.tieneGenActivoV9(window.miMascota, "aceleracion_final");
+            if (tieneAceleracion && window.miMascota.level >= (maxLevel - 10)) {
+                window.miMascota.xpNeeded = Math.floor(baseXPNeeded * 0.60);
+            } else {
+                window.miMascota.xpNeeded = baseXPNeeded;
+            }
+            
             window.miMascota.statPoints += 3; 
             
             const contenedor = document.getElementById("geno-container");
@@ -339,8 +359,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 contenedor.classList.add("happy-jump");
                 setTimeout(() => { contenedor.classList.remove("happy-jump"); contenedor.classList.add("geno-idle"); }, 500);
             }
+            let resonanciaMsg = "";
+            if (window.miMascota.level % 10 === 0 && window.tieneGenActivoV9 && window.tieneGenActivoV9(window.miMascota, "resonancia_nivel")) {
+                const keys = ["hp", "atk", "def", "spd", "luk"];
+                let highestKey = keys[0];
+                let highestVal = window.miMascota.stats[highestKey];
+                for (let i = 1; i < keys.length; i++) {
+                    if (window.miMascota.stats[keys[i]] > highestVal) {
+                        highestVal = window.miMascota.stats[keys[i]];
+                        highestKey = keys[i];
+                    }
+                }
+                window.miMascota.stats[highestKey] += 1;
+                if (window.miMascota.baseStats) {
+                    window.miMascota.baseStats[highestKey] += 1;
+                }
+                const nameMap = { hp: "HP", atk: "Ataque (ATK)", def: "Defensa (DEF)", spd: "Velocidad (SPD)", luk: "Suerte (LUK)" };
+                resonanciaMsg = `\n\n🧬 [Resonancia de Nivel] ¡Tu estadística líder (${nameMap[highestKey]}) aumentó +1 de forma permanente!`;
+            }
+
             if(window.Sonidos) window.Sonidos.play("heal"); 
-            alert(`¡Súper Evolución! 🌟\n${window.miMascota.name} ha alcanzado el Nivel ${window.miMascota.level}.\nTienes 3 Puntos de Atributo disponibles.`);
+            alert(`¡Súper Evolución! 🌟\n${window.miMascota.name} ha alcanzado el Nivel ${window.miMascota.level}.\nTienes 3 Puntos de Atributo disponibles.${resonanciaMsg}`);
 
             window.verificarUmbralDespertar(window.miMascota);
         }
