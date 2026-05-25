@@ -582,16 +582,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const tieneDominanciaP1 = window.tieneGenActivoV9 && window.tieneGenActivoV9(padre1, "dominancia_genetica");
                 const tieneDominanciaP2 = window.tieneGenActivoV9 && window.tieneGenActivoV9(padre2, "dominancia_genetica");
+                
+                const tieneMemoriaP1 = window.tieneGenActivoV9 && window.tieneGenActivoV9(padre1, "memoria_genetica");
+                const tieneMemoriaP2 = window.tieneGenActivoV9 && window.tieneGenActivoV9(padre2, "memoria_genetica");
 
                 const intentarHeredarSlot = (slotKey) => {
                     let g1 = padre1.hidden_genes ? padre1.hidden_genes[slotKey] : null;
                     let g2 = padre2.hidden_genes ? padre2.hidden_genes[slotKey] : null;
 
+                    // Gen Dominante Puro (100% de herencia si el padre lo tiene en este slot)
+                    if (g1 && g1.id === "gen_dominante_puro") return g1;
+                    if (g2 && g2.id === "gen_dominante_puro") return g2;
+
                     let probP1 = tieneDominanciaP1 ? 0.70 : 0.30;
                     let probP2 = tieneDominanciaP2 ? 0.70 : 0.30;
 
+                    // Memoria Genética (+20% de probabilidad de herencia)
+                    if (tieneMemoriaP1) probP1 = Math.min(0.95, probP1 + 0.20);
+                    if (tieneMemoriaP2) probP2 = Math.min(0.95, probP2 + 0.20);
+
                     if (g1 && g2 && g1.id === g2.id) {
-                        if (Math.random() <= 0.75) return g1;
+                        let chanceAmbos = (tieneMemoriaP1 || tieneMemoriaP2) ? 0.95 : 0.75;
+                        if (Math.random() <= chanceAmbos) return g1;
                     }
                     else if (g1 && g2) {
                         let rnd = Math.random();
@@ -619,6 +631,17 @@ document.addEventListener("DOMContentLoaded", () => {
                     hiddenGenesHeredados.C = null; 
                 }
 
+                // Cooldown Acelerado: -50% tiempo de incubación si padre1, padre2 o la cría tienen el gen
+                let duracionIncubacion = 120000;
+                const tieneAcelP1 = window.tieneGenActivoV9 && window.tieneGenActivoV9(padre1, "cooldown_acelerado");
+                const tieneAcelP2 = window.tieneGenActivoV9 && window.tieneGenActivoV9(padre2, "cooldown_acelerado");
+                const tieneAcelHijo = (hiddenGenesHeredados.A && hiddenGenesHeredados.A.id === "cooldown_acelerado") ||
+                                       (hiddenGenesHeredados.B && hiddenGenesHeredados.B.id === "cooldown_acelerado") ||
+                                       (hiddenGenesHeredados.C && hiddenGenesHeredados.C.id === "cooldown_acelerado");
+                if (tieneAcelP1 || tieneAcelP2 || tieneAcelHijo) {
+                    duracionIncubacion = 60000;
+                }
+
                 const colorHijo = Math.random() > 0.5 ? (padre1.color || padre1.base_color || "#77DD77") : (padre2.color || padre2.base_color || "#77DD77");
 
                 const prefijos = ["Neo", "Bio", "Geno", "Cyto", "Viro", "Rad", "Syn", "Evo", "Nexo", "Mut"];
@@ -630,7 +653,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     name: nombreHijo, 
                     isEgg: true, 
                     incubating: false, 
-                    hatchDuration: 120000, 
+                    hatchDuration: duracionIncubacion, 
                     hatchTime: 0, 
                     generation: genHijo, breedCount: 0, level: 1, xp: 0, xpNeeded: 100,
                     rarity: rarezaHijo, 
