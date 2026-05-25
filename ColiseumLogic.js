@@ -768,7 +768,7 @@ window.ColiseumLogic = {
         }
 
         // 2. Prioridad de Reserva por defecto (Fallback)
-        const order = ["definitivo", "tactica", "especial"];
+        const order = ["especial", "tactica", "definitivo"];
         for (const action of order) {
             const atk = entidad.ataquesEquipados[action];
             if (atk) {
