@@ -515,8 +515,18 @@ document.addEventListener("DOMContentLoaded", () => {
                     let tirada = Math.random() * 100;
                     let mensaje = "";
                     
-                    const limiteCritico = reglas.probCrit;
-                    const limiteNormal = limiteCritico + reglas.probNorm;
+                    let bonusCritico = 0;
+                    window.genosEnReactor.forEach(g => {
+                        if (window.tieneGenActivoV9 && window.tieneGenActivoV9(g, "catalizador_rareza")) {
+                            bonusCritico += 2.0;
+                        }
+                        if (window.tieneGenActivoV9 && window.tieneGenActivoV9(g, "catalizador_critico")) {
+                            bonusCritico += 2.0;
+                        }
+                    });
+
+                    const limiteCritico = reglas.probCrit + bonusCritico;
+                    const limiteNormal = Math.max(limiteCritico, (reglas.probCrit + reglas.probNorm));
                     const limiteEstancada = limiteNormal + reglas.probStag;
 
                     const tieneResistenciaColapso = window.genosEnReactor.some(g => window.tieneGenActivoV9 && window.tieneGenActivoV9(g, "resistencia_colapso"));
@@ -627,7 +637,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     if (tirada < limiteCritico) {
                         inyectarNuevoMutante(reglas.resCrit);
-                        mensaje = `¡ÉXITO CRÍTICO! 🌟\nEl Reactor ha creado una anomalía: [Geno ${reglas.resCrit.rarity}].`;
+                        let msgGen = "";
+                        const tieneCatalizadores = window.genosEnReactor.some(g => window.tieneGenActivoV9 && (window.tieneGenActivoV9(g, "catalizador_rareza") || window.tieneGenActivoV9(g, "catalizador_critico")));
+                        if (tieneCatalizadores) {
+                            msgGen = `🧬 [Catalizador Genético] ¡Los catalizadores aumentaron la probabilidad de éxito crítico!\n\n`;
+                        }
+                        mensaje = `${msgGen}¡ÉXITO CRÍTICO! 🌟\nEl Reactor ha creado una anomalía: [Geno ${reglas.resCrit.rarity}].`;
                     } else if (tirada < limiteNormal) { 
                         inyectarNuevoMutante(reglas.resNorm);
                         mensaje = `¡FUSIÓN ESTABLE! ✨\nHas obtenido un [Geno ${reglas.resNorm.rarity}].`;
