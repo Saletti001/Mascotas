@@ -61,6 +61,20 @@ window.ImplantsUI = {
                 position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 380px;
                 background: #1a2a36; border: 2px solid #00acc1; border-radius: 15px; padding: 20px; z-index: 10000; display: none; box-shadow: 0 0 100px rgba(0,0,0,0.9);
             }
+
+            .implants-screen .nexo-btn-container {
+                width: 100%; display: flex; justify-content: center; margin: 30px 0 20px;
+            }
+            .implants-screen .nexo-btn-container .fab-btn {
+                position: relative !important; bottom: auto !important; left: auto !important; transform: none !important;
+                width: 70% !important; max-width: 300px !important; margin: 0 auto !important;
+            }
+            .implants-screen .nexo-btn-container .fab-btn:hover {
+                transform: scale(1.05) !important;
+            }
+            .implants-screen .nexo-btn-container .fab-btn:active {
+                transform: scale(0.98) !important;
+            }
         `;
         document.head.appendChild(style);
     },
@@ -137,10 +151,12 @@ window.ImplantsUI = {
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="fab-btn" onclick="ImplantsManager.closeLab()" style="position: absolute !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; width: 70% !important; max-width: 300px !important; z-index: 100 !important;">
-                <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0;">VOLVER AL NEXO</div>
+                
+                <div class="nexo-btn-container">
+                    <div class="fab-btn" onclick="ImplantsManager.closeLab()">
+                        <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0;">VOLVER AL NEXO</div>
+                    </div>
+                </div>
             </div>
 
             <div id="lab-inventory-selector">
