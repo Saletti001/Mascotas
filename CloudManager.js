@@ -153,6 +153,15 @@ async function cargarDatosDeLaNube() {
         if (typeof window.revisarVentasCompletadas === 'function') {
             window.revisarVentasCompletadas();
         }
+        
+        // ✨ Activar WebSockets de Supabase para recibir pagos instantáneos
+        if (typeof window.iniciarMonitoreoRealtime === 'function') {
+            window.iniciarMonitoreoRealtime();
+        } else {
+            setTimeout(() => {
+                if (typeof window.iniciarMonitoreoRealtime === 'function') window.iniciarMonitoreoRealtime();
+            }, 1000); // Esperar a que MarketManager cargue si la red es muy rápida
+        }
 
         if (typeof window.actualizarHUD === 'function') window.actualizarHUD();
         if (typeof window.actualizarInventarioUI === 'function') window.actualizarInventarioUI();

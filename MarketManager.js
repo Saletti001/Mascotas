@@ -990,3 +990,41 @@ window.revisarVentasCompletadas = async function() {
         console.error("Error revisando ventas completadas:", err);
     }
 };
+
+// =========================================
+// MONITOREO AUTOMÁTICO DE VENTAS (REALTIME)
+// =========================================
+window.iniciarMonitoreoRealtime = function() {
+    if (!window.supabaseClient || !window.miUsuarioCloud) return;
+
+    if (window.marketRealtimeChannel) {
+        window.supabaseClient.removeChannel(window.marketRealtimeChannel);
+    }
+
+    console.log("📡 Iniciando conexión Supabase Realtime para el mercado...");
+    window.marketRealtimeChannel = window.supabaseClient
+        .channel('custom-market-channel')
+        .on(
+            'postgres_changes',
+            { 
+                event: '*', 
+                schema: 'public', 
+                table: 'market_listings' 
+            },
+            (payload) => {
+                console.log("⚡ Supabase Realtime Event:", payload);
+                if (payload.eventType === 'UPDATE' && payload.new && payload.new.status === 'sold') {
+                    if (payload.new.sellerId === window.miUsuarioCloud.id || payload.new.seller_id === window.miUsuarioCloud.id) {
+                        if (typeof window.revisarVentasCompletadas === 'function') {
+                            window.revisarVentasCompletadas();
+                        }
+                    }
+                }
+            }
+        )
+        .subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+                console.log("✅ Conectado a Supabase Realtime exitosamente.");
+            }
+        });
+};
