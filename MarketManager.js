@@ -924,7 +924,7 @@ window.comprarListado = async function(listing) {
         if (modal) modal.style.display = "none";
         
         window.cargarMercadoGlobal();
-        if (typeof window.actualizarPolUI === 'function') window.actualizarPolUI();
+        if (typeof window.WalletManager !== 'undefined') window.WalletManager.actualizarBoton();
         if (typeof window.forzarActualizacionMochila === 'function') window.forzarActualizacionMochila();
         if (typeof window.respaldarEnNube === 'function') window.respaldarEnNube();
 
@@ -981,7 +981,7 @@ window.revisarVentasCompletadas = async function() {
             
             alert(`🎉 ¡Tus artículos se vendieron en el Mercado!\n\nHas vendido: ${nombresVendidos.join(', ')}.\nRecibes: ${totalGanado.toFixed(2)} POL netos.\n\n(Se aportó ${totalBoveda.toFixed(2)} POL de comisión a la Bóveda Global)`);
             
-            if (typeof window.actualizarPolUI === 'function') window.actualizarPolUI();
+            if (typeof window.WalletManager !== 'undefined') window.WalletManager.actualizarBoton();
             if (typeof window.renderizarMisVentas === 'function') window.renderizarMisVentas();
             if (typeof window.respaldarEnNube === 'function') window.respaldarEnNube();
         }
