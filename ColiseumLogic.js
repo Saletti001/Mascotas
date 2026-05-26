@@ -6,6 +6,8 @@ window.ColiseumLogic = {
     player: null,
     enemy: null,
     turno: 1,
+    modoCombate: 'estandar', // 'estandar', 'clon', 'desafio'
+    npcDesafio: 'cyborg',    // 'cyborg', 'viral', 'sintetico'
 
     cName: function(fighter) {
         const color = fighter.isPlayer ? "#4dd0e1" : "#ff6b6b";
@@ -44,6 +46,185 @@ window.ColiseumLogic = {
     },
 
     generarRivalProcedural: function(nivelJugador) {
+        if (this.modoCombate === "clon") {
+            if (!window.miMascota) return;
+            const mascota = window.miMascota;
+            const pElemento = (mascota.genes && mascota.genes.afinidad) ? mascota.genes.afinidad.dom : (mascota.element || "Normal");
+            const pStats = {
+                hp: mascota.stats?.hp || 80,
+                atk: mascota.stats?.atk || 15,
+                def: mascota.stats?.def || 5,
+                spd: mascota.stats?.spd || 15,
+                luk: mascota.stats?.luk || 10
+            };
+            
+            let pGenB = (mascota.hidden_genes?.B?.id || "ninguno").toLowerCase(); 
+            let pGenC = (mascota.hidden_genes?.C?.id || "ninguno").toLowerCase();
+            
+            let pAtks = mascota.ataques || {};
+            let cloneAtaques = {
+                "ataque": this.obtenerAtaqueAleatorio(pElemento, "basicos"),
+                "especial": pAtks.atk_2 ? this.buscarAtaquePorNombre(pAtks.atk_2.nombre) : null,
+                "tactica": pAtks.atk_3 ? this.buscarAtaquePorNombre(pAtks.atk_3.nombre) : null,
+                "definitivo": pAtks.atk_4 ? this.buscarAtaquePorNombre(pAtks.atk_4.nombre) : null
+            };
+
+            const cloneAdn = JSON.parse(JSON.stringify(mascota));
+            cloneAdn.id = mascota.id + "_clon";
+            cloneAdn.name = "Clon de " + (mascota.name || "Geno");
+            cloneAdn.iftttRules = JSON.parse(JSON.stringify(mascota.iftttRules || []));
+
+            this.enemy = {
+                nombre: "Clon de " + (mascota.name || "Geno"),
+                isPlayer: false,
+                adn: cloneAdn,
+                maxHp: mascota.maxHp || pStats.hp,
+                hp: mascota.maxHp || pStats.hp,
+                atk: pStats.atk,
+                def: pStats.def || 5,
+                spd: pStats.spd,
+                luk: pStats.luk,
+                baseAtk: pStats.atk,
+                baseDef: pStats.def || 5,
+                baseSpd: pStats.spd,
+                baseLuk: pStats.luk,
+                element: pElemento,
+                rareza: mascota.rarity || mascota.rareza || "Común",
+                genesId: [pGenB, pGenC],
+                estados: [],
+                efectosActivos: [],
+                cooldowns: { especial: 0, tactica: 0, definitivo: 0 },
+                escudoCibernetico: pElemento === "Cibernético", 
+                crystalSkin: pGenB === "piel_cristal" || pGenC === "piel_cristal",
+                decoyUsado: false,
+                coreArUsado: false,
+                rachaGolpes: 0,
+                adaptativaStacks: 0,
+                ultimoElementoRecibido: null,
+                danoRecibidoEsteTurno: 0,
+                danoRecibidoTurnoAnterior: 0,
+                proxVenenoDoble: false,
+                ataquesEquipados: cloneAtaques
+            };
+            return;
+        }
+
+        if (this.modoCombate === "desafio") {
+            const npc = this.npcDesafio || "cyborg";
+            let npcName = "Cyborg Defensivo";
+            let npcElement = "Cibernético";
+            let npcRareza = "Épico";
+            let npcStats = { hp: 240, atk: 35, def: 45, spd: 25, luk: 20 };
+            let npcAttacks = {};
+            let npcRules = [];
+            let npcGenB = "armadura_adaptativa";
+            let npcGenC = "nucleo_coraza";
+
+            if (npc === "cyborg") {
+                npcName = "Cyborg Defensivo";
+                npcElement = "Cibernético";
+                npcRareza = "Épico";
+                npcStats = { hp: 240, atk: 35, def: 45, spd: 25, luk: 20 };
+                npcGenB = "armadura_adaptativa";
+                npcGenC = "nucleo_coraza";
+                npcAttacks = {
+                    "ataque": this.buscarAtaquePorNombre("Láser de Precisión"),
+                    "especial": this.buscarAtaquePorNombre("Descarga en Cadena"),
+                    "tactica": this.buscarAtaquePorNombre("Protocolo de Escudo"),
+                    "definitivo": null
+                };
+                npcRules = [
+                    { condition: "hp_under_30", action: "tactica" },
+                    { condition: "always", action: "especial" }
+                ];
+            } else if (npc === "viral") {
+                npcName = "Infeccioso Viral";
+                npcElement = "Viral";
+                npcRareza = "Épico";
+                npcStats = { hp: 220, atk: 45, def: 30, spd: 40, luk: 20 };
+                npcGenB = "vampirismo_genetico";
+                npcGenC = "esquiva_genetica";
+                npcAttacks = {
+                    "ataque": this.buscarAtaquePorNombre("Descarga Viral"),
+                    "especial": this.buscarAtaquePorNombre("Infección Aguda"),
+                    "tactica": this.buscarAtaquePorNombre("Niebla Viral"),
+                    "definitivo": this.buscarAtaquePorNombre("Pandemia Global")
+                };
+                npcRules = [
+                    { condition: "turn_1", action: "especial" },
+                    { condition: "rival_infected", action: "definitivo" },
+                    { condition: "always", action: "tactica" }
+                ];
+            } else if (npc === "sintetico") {
+                npcName = "Rápido Sintético";
+                npcElement = "Sintético";
+                npcRareza = "Épico";
+                npcStats = { hp: 200, atk: 40, def: 25, spd: 55, luk: 35 };
+                npcGenB = "velocidad_fantasma";
+                npcGenC = "reflejo_genetico";
+                npcAttacks = {
+                    "ataque": this.buscarAtaquePorNombre("Ráfaga Sintética"),
+                    "especial": this.buscarAtaquePorNombre("Impacto Total"),
+                    "tactica": this.buscarAtaquePorNombre("Aceleración Sintética"),
+                    "definitivo": null
+                };
+                npcRules = [
+                    { condition: "self_buffed_spd", action: "especial" },
+                    { condition: "always", action: "tactica" }
+                ];
+            }
+
+            const npcAdn = {
+                id: "npc_" + npc + "_" + Date.now(),
+                name: npcName,
+                rarity: npcRareza,
+                element: npcElement,
+                level: 25,
+                iftttRules: npcRules,
+                body_shape: "gota",
+                color: npc === "cyborg" ? "#ff8c00" : (npc === "viral" ? "#00acc1" : "#8A2BE2"),
+                eye_type: "cibernetico",
+                mouth_type: "colmillos",
+                wing_type: "ninguno",
+                hat_type: "ninguno",
+                stats: npcStats
+            };
+
+            this.enemy = {
+                nombre: npcName,
+                isPlayer: false,
+                adn: npcAdn,
+                maxHp: npcStats.hp,
+                hp: npcStats.hp,
+                atk: npcStats.atk,
+                def: npcStats.def,
+                spd: npcStats.spd,
+                luk: npcStats.luk,
+                baseAtk: npcStats.atk,
+                baseDef: npcStats.def,
+                baseSpd: npcStats.spd,
+                baseLuk: npcStats.luk,
+                element: npcElement,
+                rareza: npcRareza,
+                genesId: [npcGenB, npcGenC],
+                estados: [],
+                efectosActivos: [],
+                cooldowns: { especial: 0, tactica: 0, definitivo: 0 },
+                escudoCibernetico: npcElement === "Cibernético",
+                crystalSkin: false,
+                decoyUsado: false,
+                coreArUsado: false,
+                rachaGolpes: 0,
+                adaptativaStacks: 0,
+                ultimoElementoRecibido: null,
+                danoRecibidoEsteTurno: 0,
+                danoRecibidoTurnoAnterior: 0,
+                proxVenenoDoble: false,
+                ataquesEquipados: npcAttacks
+            };
+            return;
+        }
+
         let roll = Math.random();
         let eRareza = "Común"; 
         let pRareza = this.player ? (this.player.rareza || this.player.rarity || "Común") : "Común";

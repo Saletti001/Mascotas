@@ -1,6 +1,22 @@
-// =========================================
-// ColiseumManager.js - CONTROLADOR V11.10 (ANIMACIÓN DE DEBUFFS)
-// =========================================
+window.ColiseumManager = {
+    seleccionarModo: function(modo) {
+        if (!window.miMascota || window.miMascota.id === "temp") {
+            alert("No tienes un Geno activo para combatir.");
+            window.navegarA("room-area");
+            return;
+        }
+
+        window.ColiseumLogic.modoCombate = modo;
+        
+        if (modo === 'desafio') {
+            const selectEl = document.getElementById('lobby-npc-select');
+            window.ColiseumLogic.npcDesafio = selectEl ? selectEl.value : 'cyborg';
+        }
+
+        window.navegarA('coliseum-screen');
+        window.iniciarColiseo();
+    }
+};
 
 document.addEventListener("DOMContentLoaded", () => {
     ColiseumUI.inyectarCSS();

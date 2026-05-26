@@ -263,7 +263,7 @@ document.addEventListener("DOMContentLoaded", () => {
         'btn-alchemy': 'alchemy-screen',
         'btn-breeding': 'breeding-screen',
         'btn-arcade': 'arcade-menu',
-        'btn-coliseum': 'coliseum-screen',
+        'btn-coliseum': 'coliseum-lobby-screen',
         'btn-market': 'market-screen'
     };
 
@@ -275,7 +275,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 if(btnId === 'btn-sanctuary' && window.renderizarSantuario) window.renderizarSantuario();
                 if(btnId === 'btn-alchemy' && window.renderizarAlquimia) window.renderizarAlquimia();
                 if(btnId === 'btn-breeding' && window.iniciarSelectorCrianza) window.iniciarSelectorCrianza();
-                if(btnId === 'btn-coliseum' && window.iniciarColiseo) window.iniciarColiseo();
                 if(btnId === 'btn-market' && window.iniciarMercado) window.iniciarMercado();
             };
         }
