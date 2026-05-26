@@ -379,11 +379,16 @@
             </div>
         </div>
 
-        <div id="coliseum-lobby-screen" class="app-screen hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; box-sizing: border-box; background: linear-gradient(180deg, #4dd0e1 0%, #26c6da 100%) !important; padding: 15px !important; display: flex !important; flex-direction: column !important;">
+        <div id="coliseum-lobby-screen" class="app-screen hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; box-sizing: border-box; background: linear-gradient(180deg, #4dd0e1 0%, #26c6da 100%) !important;">
             <!-- Capa de scanlines (mismo que room-area y breeding) -->
             <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 2px, transparent 2px, transparent 8px); pointer-events: none; z-index: 2;"></div>
             
             <style>
+                #coliseum-lobby-screen:not(.hidden) {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    padding: 15px !important;
+                }
                 .lobby-card-container {
                     flex-grow: 1 !important; 
                     overflow-y: hidden !important; 
