@@ -361,7 +361,7 @@ window.ImplantsManager = {
         if (currentRulesCount === 0) {
             rulesListHtml = `
                 <div style="text-align: center; color: #888; font-size: 11px; padding: 15px; border: 1px dashed #334; border-radius: 8px;">
-                    No hay tácticas configuradas. El Geno atacará usando el comportamiento defensivo automático de reserva (priorizar Especiales y dejar el Básico para cuando todos estén en cooldown).
+                    No hay tácticas configuradas. El Geno atacará usando el comportamiento automático de reserva (priorizar Especiales y dejar el Básico para cuando todos estén en cooldown).
                 </div>
             `;
         } else {
@@ -416,11 +416,14 @@ window.ImplantsManager = {
         panel.innerHTML = `
             <div class="ifttt-container" style="background: rgba(0, 0, 0, 0.4); border: 2px solid #00acc1; border-radius: 16px; padding: 15px; box-shadow: 0 0 20px rgba(0, 172, 193, 0.2); color: #fff; display: flex; flex-direction: column; gap: 10px;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 style="color: #4dd0e1; margin: 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;">🤖 Tácticas Defensivas (IFTTT)</h3>
+                    <h3 style="color: #4dd0e1; margin: 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; display: flex; align-items: center;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4dd0e1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px;"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3"/></svg>
+                        Tácticas Automáticas
+                    </h3>
                     <button id="btn-add-rule" onclick="ImplantsManager.addIftttRule()" style="background: ${isAddDisabled ? '#334' : '#00acc1'}; border: none; color: ${isAddDisabled ? '#888' : 'white'}; padding: 5px 10px; border-radius: 6px; font-size: 10px; cursor: ${isAddDisabled ? 'not-allowed' : 'pointer'}; font-weight: bold; transition: 0.2s;" ${isAddDisabled ? 'disabled' : ''}>+ AÑADIR</button>
                 </div>
                 <p style="font-size: 10px; color: #888; margin: 0; line-height: 1.3;">
-                    Configura las reglas para cuando tu Geno combata automáticamente. Las reglas se evalúan de arriba a abajo. Si ninguna coincide o el ataque está en cooldown, se utilizará la prioridad de reserva (Definitivo > Soporte > Especial > Básico).
+                    Configura las reglas para cuando tu Geno combata automáticamente. Las reglas se evalúan de arriba a abajo. Si ninguna coincide o el ataque está en cooldown, se utilizará la prioridad de reserva (Especial > Soporte > Definitivo > Básico).
                 </p>
                 <div id="ifttt-rules-list" style="margin-top: 5px; display: flex; flex-direction: column; gap: 2px;">
                     ${rulesListHtml}
