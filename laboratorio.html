@@ -219,6 +219,17 @@
                     <button class="btn-secundario" style="flex: 1; padding: 8px; font-size: 11px;" onclick="cambiarFondoVis('cian')">🩵 Fondo Cian</button>
                     <button class="btn-secundario" style="flex: 1; padding: 8px; font-size: 11px;" onclick="cambiarFondoVis('blanco')">🤍 Fondo Blanco</button>
                 </div>
+                <div style="display: flex; flex-direction: column; gap: 4px; width: 100%;">
+                    <label style="color:#aaa; font-size: 9px; text-transform: uppercase;">Resolución de descarga</label>
+                    <select id="sel-export-res" style="padding: 6px; background: #0d1a24; color: #fff; border: 1px solid #333; border-radius: 6px; font-size: 11px; outline: none; cursor: pointer;">
+                        <option value="256">256 x 256 (Avatar / Mini)</option>
+                        <option value="512">512 x 512 (Pequeño)</option>
+                        <option value="1024" selected>1024 x 1024 (HD Estándar)</option>
+                        <option value="2048">2048 x 2048 (UHD / 2K)</option>
+                        <option value="4096">4096 x 4096 (Ultra HD / 4K)</option>
+                        <option value="8192">8192 x 8192 (Póster Gigante / 8K)</option>
+                    </select>
+                </div>
                 <button class="btn-secundario" style="background: linear-gradient(90deg, #4CAF50, #2E7D32); color: white; font-weight: bold; padding: 10px; width: 100%; border: none; border-radius: 6px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);" onclick="descargarGenoPNG()">
                     📥 DESCARGAR PNG SIN FONDO
                 </button>
@@ -727,6 +738,8 @@
                 return;
             }
             
+            const size = parseInt(document.getElementById("sel-export-res").value) || 1024;
+            
             const serializer = new XMLSerializer();
             let svgString = serializer.serializeToString(svgEl);
             
@@ -741,8 +754,8 @@
             const image = new Image();
             image.onload = function() {
                 const canvas = document.createElement("canvas");
-                canvas.width = 600;
-                canvas.height = 600;
+                canvas.width = size;
+                canvas.height = size;
                 const context = canvas.getContext("2d");
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 context.drawImage(image, 0, 0, canvas.width, canvas.height);
@@ -750,7 +763,7 @@
                 const pngURL = canvas.toDataURL("image/png");
                 const downloadLink = document.createElement("a");
                 downloadLink.href = pngURL;
-                downloadLink.download = `geno_${document.getElementById("sel-forma").value || "mascota"}.png`;
+                downloadLink.download = `geno_${document.getElementById("sel-forma").value || "mascota"}_${size}x${size}.png`;
                 document.body.appendChild(downloadLink);
                 downloadLink.click();
                 document.body.removeChild(downloadLink);
