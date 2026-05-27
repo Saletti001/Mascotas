@@ -69,6 +69,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     trigger.classList.remove('open');
                     optionsContainer.classList.remove('open');
                     wrapper.classList.remove('active-select');
+                    
+                    const card = wrapper.closest('.lobby-card');
+                    if (card) card.classList.remove('active-card');
 
                     selectEl.dispatchEvent(new Event('change'));
                 });
@@ -89,16 +92,23 @@ document.addEventListener("DOMContentLoaded", () => {
                         const otherContainer = otherTrigger.nextElementSibling;
                         if (otherContainer) otherContainer.classList.remove('open');
                         const otherWrapper = otherTrigger.parentNode;
-                        if (otherWrapper) otherWrapper.classList.remove('active-select');
+                        if (otherWrapper) {
+                            otherWrapper.classList.remove('active-select');
+                            const otherCard = otherWrapper.closest('.lobby-card');
+                            if (otherCard) otherCard.classList.remove('active-card');
+                        }
                     }
                 });
 
                 const isOpen = trigger.classList.toggle('open');
                 optionsContainer.classList.toggle('open');
+                const card = wrapper.closest('.lobby-card');
                 if (isOpen) {
                     wrapper.classList.add('active-select');
+                    if (card) card.classList.add('active-card');
                 } else {
                     wrapper.classList.remove('active-select');
+                    if (card) card.classList.remove('active-card');
                 }
             });
 
@@ -117,6 +127,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     const options = trigger.nextElementSibling;
                     if (options) options.classList.remove('open');
                     wrapper.classList.remove('active-select');
+                    const card = wrapper.closest('.lobby-card');
+                    if (card) card.classList.remove('active-card');
                 }
             });
         });
