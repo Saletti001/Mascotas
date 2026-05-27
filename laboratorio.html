@@ -740,8 +740,20 @@
             
             const size = parseInt(document.getElementById("sel-export-res").value) || 1024;
             
+            // Clonamos el SVG para modificar sus atributos de tamaño para la exportación sin alterar la UI de la pantalla
+            const svgClone = svgEl.cloneNode(true);
+            
+            // El viewBox del SVG es -20 0 200 160. Aspect ratio = 200 / 160 = 1.25 (5:4)
+            const aspect = 200 / 160;
+            const targetWidth = size;
+            const targetHeight = Math.round(size / aspect);
+            
+            // Establecemos el tamaño en píxeles absoluto en el SVG clonado para evitar estiramientos al cargarlo como imagen
+            svgClone.setAttribute("width", targetWidth);
+            svgClone.setAttribute("height", targetHeight);
+            
             const serializer = new XMLSerializer();
-            let svgString = serializer.serializeToString(svgEl);
+            let svgString = serializer.serializeToString(svgClone);
             
             if (!svgString.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)) {
                 svgString = svgString.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
@@ -754,16 +766,18 @@
             const image = new Image();
             image.onload = function() {
                 const canvas = document.createElement("canvas");
-                canvas.width = size;
-                canvas.height = size;
+                canvas.width = targetWidth;
+                canvas.height = targetHeight;
                 const context = canvas.getContext("2d");
                 context.clearRect(0, 0, canvas.width, canvas.height);
-                context.drawImage(image, 0, 0, canvas.width, canvas.height);
+                
+                // Dibujamos con las proporciones y escala correctas
+                context.drawImage(image, 0, 0, targetWidth, targetHeight);
                 
                 const pngURL = canvas.toDataURL("image/png");
                 const downloadLink = document.createElement("a");
                 downloadLink.href = pngURL;
-                downloadLink.download = `geno_${document.getElementById("sel-forma").value || "mascota"}_${size}x${size}.png`;
+                downloadLink.download = `geno_${document.getElementById("sel-forma").value || "mascota"}_${targetWidth}x${targetHeight}.png`;
                 document.body.appendChild(downloadLink);
                 downloadLink.click();
                 document.body.removeChild(downloadLink);
