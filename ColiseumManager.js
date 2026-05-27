@@ -68,6 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     trigger.classList.remove('open');
                     optionsContainer.classList.remove('open');
+                    wrapper.classList.remove('active-select');
 
                     selectEl.dispatchEvent(new Event('change'));
                 });
@@ -87,11 +88,18 @@ document.addEventListener("DOMContentLoaded", () => {
                         otherTrigger.classList.remove('open');
                         const otherContainer = otherTrigger.nextElementSibling;
                         if (otherContainer) otherContainer.classList.remove('open');
+                        const otherWrapper = otherTrigger.parentNode;
+                        if (otherWrapper) otherWrapper.classList.remove('active-select');
                     }
                 });
 
-                trigger.classList.toggle('open');
+                const isOpen = trigger.classList.toggle('open');
                 optionsContainer.classList.toggle('open');
+                if (isOpen) {
+                    wrapper.classList.add('active-select');
+                } else {
+                    wrapper.classList.remove('active-select');
+                }
             });
 
             wrapper.appendChild(trigger);
@@ -108,6 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     trigger.classList.remove('open');
                     const options = trigger.nextElementSibling;
                     if (options) options.classList.remove('open');
+                    wrapper.classList.remove('active-select');
                 }
             });
         });

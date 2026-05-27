@@ -466,6 +466,10 @@
                     user-select: none;
                 }
 
+                .coliseum-select-wrapper.active-select {
+                    z-index: 1010 !important;
+                }
+
                 .coliseum-select-trigger {
                     background-color: #0c1620 !important;
                     color: #fff !important;
@@ -537,6 +541,12 @@
                     overflow-y: auto;
                     max-height: 180px;
                     box-shadow: 0 8px 25px rgba(0,0,0,0.8);
+                    -ms-overflow-style: none !important;
+                    scrollbar-width: none !important;
+                }
+
+                .coliseum-select-options::-webkit-scrollbar {
+                    display: none !important;
                 }
 
                 .coliseum-select-options.open {
