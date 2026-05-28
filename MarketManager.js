@@ -318,11 +318,11 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
     if (typeof idGenoBuscar === "object" && idGenoBuscar !== null) {
         geno = idGenoBuscar;
     } else {
-        if (window.miMascota && window.miMascota.id === idGenoBuscar) geno = window.miMascota;
-        else if(window.misGenos) geno = window.misGenos.find(g => g.id === idGenoBuscar);
+        if (window.miMascota && String(window.miMascota.id) === String(idGenoBuscar)) geno = window.miMascota;
+        else if(window.misGenos) geno = window.misGenos.find(g => String(g.id) === String(idGenoBuscar));
         
         if(!geno && window.misVentas) {
-            let listado = window.misVentas.find(v => !v.isItem && v.id === idGenoBuscar);
+            let listado = window.misVentas.find(v => !v.isItem && String(v.id || v.saleId) === String(idGenoBuscar));
             if (listado) geno = listado;
         }
     }

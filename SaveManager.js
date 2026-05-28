@@ -9,14 +9,23 @@ window.cargarProgreso = function() {
     if (dataString) {
         const data = JSON.parse(dataString);
 
-        if (data.misGenos) window.misGenos = data.misGenos;
+        if (data.misGenos) {
+            const idsVistos = new Set();
+            window.misGenos = data.misGenos.filter(g => {
+                if (!g || !g.id) return false;
+                const idStr = String(g.id);
+                if (idsVistos.has(idStr)) return false;
+                idsVistos.add(idStr);
+                return true;
+            });
+        }
         if (data.miMascota) window.miMascota = data.miMascota;
         if (data.maxGenoSlots) window.maxGenoSlots = data.maxGenoSlots;
 
         // ✨ AUTO-REPARADOR DE GENOS
         if (window.miMascota && window.miMascota.id !== "temp") {
             if (!window.misGenos) window.misGenos = [];
-            const yaExiste = window.misGenos.find(g => g.id === window.miMascota.id);
+            const yaExiste = window.misGenos.find(g => String(g.id) === String(window.miMascota.id));
             if (!yaExiste) window.misGenos.push(window.miMascota);
         }
 
@@ -75,7 +84,18 @@ window.guardarLocalSilencioso = function() {
     if (!window.miMascota || !window.miMascota.id || window.miMascota.id === "temp") return;
 
     if (!window.misGenos) window.misGenos = [];
-    const yaExiste = window.misGenos.find(g => g.id === window.miMascota.id);
+
+    // De-duplicar misGenos antes de guardar
+    const idsVistos = new Set();
+    window.misGenos = window.misGenos.filter(g => {
+        if (!g || !g.id) return false;
+        const idStr = String(g.id);
+        if (idsVistos.has(idStr)) return false;
+        idsVistos.add(idStr);
+        return true;
+    });
+
+    const yaExiste = window.misGenos.find(g => String(g.id) === String(window.miMascota.id));
     if (!yaExiste) window.misGenos.push(window.miMascota);
 
     const dataToSave = {
