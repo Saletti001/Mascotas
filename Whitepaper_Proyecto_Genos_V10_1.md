@@ -121,7 +121,7 @@ Cada Geno posee acceso a cuatro ranuras de habilidad en combate:
 1. **Slot 1 (Ataque Básico):** Siempre disponible. Daño físico puro basado en la diferencia física. No recibe STAB ni bonus de ventaja elemental.
 2. **Slot 2 (Ataque Especial):** Habilidad de daño elemental desbloqueada desde nivel 1. Consume cooldowns y aplica STAB si corresponde.
 3. **Slot 3 (Soporte / Buff-Debuff):** Movimiento de control, curación o alteración de estado. Sin restricción de elemento.
-4. **Slot 4 (Definitivo):** Desbloqueable a nivel 25. El jugador selecciona 1 de los 3 ataques definitivos disponibles para su elemento nativo en el Dojo de Ataques, creando dinámicas de juego mental (*mind games*) ya que el oponente no sabe cuál de las opciones tiene equipadas.
+4. **Slot 4 (Definitivo):** Desbloqueable a nivel 25. El jugador selecciona 1 de los 3 ataques definitivos disponibles para su elemento nativo en el **Laboratorio de Implantes** (instalando el Módulo de Técnica - MT correspondiente), creando dinámicas de juego mental (*mind games*) ya que el oponente no sabe cuál de las opciones tiene equipadas.
 
 ### 4.3 Fórmula Real de Daño Base
 En el código de producción, el cálculo de daño utiliza un límite de daño mínimo controlado para garantizar el dinamismo de las rondas y evitar peleas infinitas contra defensas extremas:
@@ -220,7 +220,7 @@ El estado actual del proyecto se encuentra estructurado en base a las siguientes
 - [/] Motor de combate asíncrono 1v1 con cálculo de Defensa, ventaja/desventaja (+35% / -25%) y STAB (+20%).
 - [x] Sistema de 4 slots de ataque implementado en la lógica de combate.
 - [x] Lógica de Matchmaking estricto y aparición de Jefes de Liga (15% de probabilidad) con bono de +15% XP.
-- [ ] Implementación de la interfaz del Dojo de Ataques para el aprendizaje y olvido de las 60 técnicas especiales.
+- [x] Implementación de la interfaz del **Laboratorio de Implantes** para equipar/desequipar Módulos de Técnica (MT) y cosméticos.
 
 ### Fase 6: Expansión Web3 y Becas (PLANIFICADA)
 - [ ] Despliegue de contratos inteligentes de NFTs de Genos en la red Polygon.
@@ -237,7 +237,6 @@ El estado actual del proyecto se encuentra estructurado en base a las siguientes
 
 ## 7. Mecánicas Pendientes (Roadmap V10.1 "Hasta Dónde")
 Para delimitar con precisión el estado de desarrollo actual y los objetivos inmediatos de los próximos sprints, se detallan las siguientes mecánicas pendientes:
-1. **Dojo de Habilidades (Fase 5):** Falta implementar la interfaz visual del Dojo donde el jugador puede gastar Esencia Vital para aprender o cambiar movimientos del catálogo de 60 ataques.
-2. **Contratos e Integración Web3 (Fase 6):** Pendiente la subida a Testnet/Mainnet de los contratos ERC-721 y el contrato de depósito en garantía para las becas de juego.
-3. **Mecánica de Combate 3v3 (Fase 7):** La lógica de combate por equipos 3v3 (incluyendo el sistema de IFTTT de cambio y los relevos tácticos) está pendiente de codificación.
-4. **Torneos Temáticos (Fase 7):** La lógica del calendario rotativo mensual de torneos y el cobro automatizado de entradas en EV/$POL no ha sido integrada en la interfaz de la PWA.
+1. **Contratos e Integración Web3 (Fase 6):** Pendiente la subida a Testnet/Mainnet de los contratos ERC-721 y el contrato de depósito en garantía para las becas de juego.
+2. **Mecánica de Combate 3v3 (Fase 7):** La lógica de combate por equipos 3v3 (incluyendo el sistema de IFTTT de cambio y los relevos tácticos) está pendiente de codificación.
+3. **Torneos Temáticos (Fase 7):** La lógica del calendario rotativo mensual de torneos y el cobro automatizado de entradas en EV/$POL no ha sido integrada en la interfaz de la PWA.

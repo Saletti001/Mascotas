@@ -28,6 +28,56 @@ window.ColiseumManager = {
 document.addEventListener("DOMContentLoaded", () => {
     ColiseumUI.inyectarCSS();
 
+    // === SISTEMA DE AYUDA Y TUTORIAL DEL COLISEO ===
+    window.ColiseumManager.ayudaBajoNivelMostrada = false;
+
+    window.ColiseumManager.mostrarAyuda = function(destacarBajoNivel = false) {
+        const modal = document.getElementById("coliseum-help-modal");
+        if (!modal) return;
+        
+        modal.classList.remove("hidden");
+        
+        const lowLevelSec = document.getElementById("help-low-level-section");
+        if (lowLevelSec) {
+            if (destacarBajoNivel) {
+                lowLevelSec.style.animation = "lowLevelPulse 1.5s infinite alternate";
+                lowLevelSec.style.borderColor = "#69f0ae";
+                lowLevelSec.style.boxShadow = "0 0 15px rgba(105, 240, 174, 0.4)";
+            } else {
+                lowLevelSec.style.animation = "none";
+                lowLevelSec.style.borderColor = "rgba(105, 240, 174, 0.4)";
+                lowLevelSec.style.boxShadow = "none";
+            }
+        }
+    };
+
+    window.ColiseumManager.ocultarAyuda = function() {
+        const modal = document.getElementById("coliseum-help-modal");
+        if (modal) modal.classList.add("hidden");
+    };
+
+    window.iniciarLobbyColiseo = function() {
+        if (!window.miMascota || window.miMascota.id === "temp") {
+            return;
+        }
+        
+        const esBajoNivel = (window.miMascota.level || 1) < 5;
+        if (esBajoNivel && !window.ColiseumManager.ayudaBajoNivelMostrada) {
+            window.ColiseumManager.mostrarAyuda(true);
+            window.ColiseumManager.ayudaBajoNivelMostrada = true;
+        }
+    };
+
+    // Configurar manejadores de eventos para el modal
+    const btnHelp = document.getElementById("btn-coliseum-help");
+    if (btnHelp) btnHelp.onclick = () => window.ColiseumManager.mostrarAyuda(false);
+
+    const btnCloseHelp1 = document.getElementById("close-coliseum-help");
+    if (btnCloseHelp1) btnCloseHelp1.onclick = () => window.ColiseumManager.ocultarAyuda();
+
+    const btnCloseHelp2 = document.getElementById("btn-close-help-confirm");
+    if (btnCloseHelp2) btnCloseHelp2.onclick = () => window.ColiseumManager.ocultarAyuda();
+
     function initColiseumCustomSelects() {
         const selects = [
             { id: 'lobby-clone-element-select', theme: 'cyan-theme' },
@@ -225,6 +275,19 @@ document.addEventListener("DOMContentLoaded", () => {
         
         const p = ColiseumLogic.player;
         const e = ColiseumLogic.enemy;
+
+        const notificationBanner = document.getElementById("coliseum-battle-notification");
+        if (notificationBanner) {
+            if (ColiseumLogic.trainingSupportActive) {
+                notificationBanner.classList.remove("hidden");
+            } else {
+                notificationBanner.classList.add("hidden");
+            }
+        }
+
+        if (ColiseumLogic.trainingSupportActive) {
+            ColiseumUI.agregarLog(`<span style="color:#69f0ae; font-weight:bold;">🛡️ MODO ENTRENAMIENTO: Tu Geno es menor a nivel 5. Parámetros del oponente ajustados (-15% estadísticas base, nivel equilibrado).</span>`);
+        }
 
         let calidadEnemigo = "C";
         if (e.adn && e.adn.stats && e.adn.stats.pureza) {

@@ -226,6 +226,51 @@
             </div>
         </div>
 
+        <!-- Modal de Ayuda del Coliseo (Premium Cyberpunk Neon) -->
+        <div id="coliseum-help-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+            <div class="modal-content" style="background: linear-gradient(180deg, #0d1e2d 0%, #07111c 100%); border: 2px solid #4dd0e1; box-shadow: 0 0 25px rgba(77, 208, 225, 0.4), inset 0 0 15px rgba(77, 208, 225, 0.1); width: 85%; max-width: 320px; border-radius: 16px; padding: 25px 20px; box-sizing: border-box; position: relative; max-height: 85vh; display: flex; flex-direction: column;">
+                <button id="close-coliseum-help" style="position: absolute; top: 12px; right: 15px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 0; transition: transform 0.2s;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                
+                <div style="font-size: 38px; text-align: center; margin-bottom: 5px; filter: drop-shadow(0 0 8px rgba(77, 208, 225, 0.5));">🏆</div>
+                <h3 style="color: #4dd0e1; text-transform: uppercase; margin: 0 0 15px 0; font-size: 15px; letter-spacing: 1.5px; text-align: center; font-weight: bold;">Manual del Coliseo</h3>
+                
+                <div class="help-scroll-content" style="flex-grow: 1; overflow-y: auto; background: rgba(0,0,0,0.5); padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); font-size: 11px; line-height: 1.5; color: #cbd5e1; text-align: left; scrollbar-width: none; -ms-overflow-style: none;">
+                    <style>
+                        .help-scroll-content::-webkit-scrollbar { display: none; }
+                        .help-section-title { color: #ff9800; font-weight: bold; text-transform: uppercase; font-size: 10px; margin-top: 12px; margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
+                        .help-section-title:first-child { margin-top: 0; }
+                        @keyframes lowLevelPulse {
+                            0% { box-shadow: 0 0 5px rgba(105, 240, 174, 0.2); border-color: rgba(105, 240, 174, 0.4); }
+                            100% { box-shadow: 0 0 20px rgba(105, 240, 174, 0.8); border-color: rgba(105, 240, 174, 1); }
+                        }
+                    </style>
+                    
+                    <div class="help-section-title">⚔️ Dinámica del Combate</div>
+                    Duelos tácticos de 1v1. En cada turno seleccionas un ataque. El Geno más veloz suele golpear primero.
+                    
+                    <div class="help-section-title">⚡ Tabla de Ventajas</div>
+                    Los ataques elementales tienen una ventaja cíclica (+35% daño causado, -25% daño recibido):
+                    <div style="color: #00e5ff; font-weight: bold; margin: 4px 0; padding-left: 6px; border-left: 2px solid #00e5ff; font-size: 10px; line-height: 1.3;">
+                        Biomutante ➔ Sintético ➔ Tóxico ➔ Radiactivo ➔ Cibernético ➔ Viral ➔ Biomutante
+                    </div>
+                    
+                    <div class="help-section-title">💾 Tácticas IFTTT</div>
+                    En el laboratorio de implantes puedes configurar reglas automáticas de comportamiento para que tu IA luche de forma inteligente y automatizada.
+                    
+                    <!-- PROTOCOLO DE AYUDA DE BAJO NIVEL -->
+                    <div id="help-low-level-section" style="margin-top: 14px; padding: 10px; background: rgba(105, 240, 174, 0.08); border: 1px solid rgba(105, 240, 174, 0.4); border-radius: 8px; transition: 0.3s;">
+                        <div style="color: #69f0ae; font-weight: bold; text-transform: uppercase; font-size: 10px; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+                            🛡️ Asistencia de Recluta
+                        </div>
+                        <span style="color: #69f0ae; font-weight: 500;">¡Activo para Genos menor a Nivel 5!</span><br>
+                        Los oponentes de la arena se adaptarán a tu nivel, sus estadísticas base se reducirán en un **15%** y no tendrán bono de pureza. Además, tu Geno infligirá **+15% de daño extra** y recibirá **-15% de daño reducido** para asegurar tu aprendizaje sin frustraciones.
+                    </div>
+                </div>
+                
+                <button id="btn-close-help-confirm" style="background: linear-gradient(90deg, #4dd0e1, #00acc1); color: #07111c; font-weight: 900; border: none; padding: 10px; border-radius: 10px; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 15px; font-size: 11px; letter-spacing: 1px; box-shadow: 0 4px 12px rgba(77, 208, 225, 0.3);">Entendido</button>
+            </div>
+        </div>
+
         <div id="arcade-menu" class="app-screen hidden">
             <div class="arcade-card-container">
                 <h2 class="screen-title">Salón Arcade</h2>
@@ -624,8 +669,11 @@
 
             <!-- Recuadro oscuro para respetar la interfaz de la app (mismo estilo que Salon Arcade) -->
             <div class="lobby-card-container">
-                <!-- Título idéntico en formato al de Arcade (Cyan sobre oscuro) -->
-                <h2 class="screen-title" style="color: #4dd0e1 !important; text-shadow: none !important; text-transform: uppercase !important; letter-spacing: 2px !important; margin: 0 0 10px 0 !important; font-weight: bold !important; text-align: center !important; font-size: 14px !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; padding-bottom: 10px !important; flex-shrink: 0 !important;">TERMINAL DE COMBATE</h2>
+                <!-- Título idéntico en formato al de Arcade con botón de ayuda -->
+                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px; flex-shrink: 0;">
+                    <h2 class="screen-title" style="color: #4dd0e1 !important; text-shadow: none !important; text-transform: uppercase !important; letter-spacing: 2px !important; margin: 0 !important; font-weight: bold !important; font-size: 14px !important; border-bottom: none !important; padding-bottom: 0 !important;">TERMINAL DE COMBATE</h2>
+                    <button id="btn-coliseum-help" style="background: rgba(77, 208, 225, 0.15); border: 1px solid #4dd0e1; color: #4dd0e1; border-radius: 50%; width: 24px; height: 24px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 12px; box-shadow: 0 0 8px rgba(77,208,225,0.3); transition: 0.2s; outline: none;">?</button>
+                </div>
                 <p style="text-align: center; color: #cbd5e1 !important; font-size: 11px; margin: 0 0 15px 0 !important; padding: 0 10px; line-height: 1.4 !important; flex-shrink: 0 !important;">Selecciona la modalidad para entrar a la arena del Coliseo.</p>
 
                 <!-- Lista de tarjetas scrollable interna -->
@@ -729,6 +777,11 @@
             <h2 class="screen-title">Coliseo Nexo</h2>
             
             <div id="battle-area" class="coliseum-card">
+                <!-- Banner de Asistencia de Entrenamiento de Bajo Nivel -->
+                <div id="coliseum-battle-notification" class="hidden" style="width: calc(100% + 40px); margin: -25px -20px 15px -20px; padding: 8px 15px; background: rgba(105, 240, 174, 0.12); border-bottom: 2px solid #69f0ae; color: #69f0ae; font-size: 11px; font-weight: bold; text-align: center; text-transform: uppercase; letter-spacing: 1px; border-radius: 14px 14px 0 0; box-shadow: 0 4px 10px rgba(105,240,174,0.1); z-index: 10; box-sizing: border-box;">
+                    🛡️ Asistencia de Entrenamiento Activa (-15% Stats Enemigo)
+                </div>
+                
                 <div class="fighters-vs-container">
                     <div id="player-sprite-battle" class="fighter-left">
                         <div id="player-visual-box" class="fighter-sprite"></div>

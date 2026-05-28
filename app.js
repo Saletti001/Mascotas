@@ -276,6 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if(btnId === 'btn-alchemy' && window.renderizarAlquimia) window.renderizarAlquimia();
                 if(btnId === 'btn-breeding' && window.iniciarSelectorCrianza) window.iniciarSelectorCrianza();
                 if(btnId === 'btn-market' && window.iniciarMercado) window.iniciarMercado();
+                if(btnId === 'btn-coliseum' && window.iniciarLobbyColiseo) window.iniciarLobbyColiseo();
             };
         }
     }

@@ -7,7 +7,8 @@ window.ColiseumLogic = {
     enemy: null,
     turno: 1,
     modoCombate: 'estandar', // 'estandar', 'clon', 'desafio'
-    npcDesafio: 'cyborg',    // 'cyborg', 'viral', 'sintetico'
+    npcDesafio: 'cyborg',    // 'cyborg', 'viral', 'sintetico',
+    trainingSupportActive: false,
 
     cName: function(fighter) {
         const color = fighter.isPlayer ? "#4dd0e1" : "#ff6b6b";
@@ -320,6 +321,8 @@ window.ColiseumLogic = {
             eRareza = pRareza;
         }
         
+        this.trainingSupportActive = (nivelJugador < 5);
+
         const eStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(eRareza) : {hp: 120, atk: 12, def: 8, spd: 10, luk: 5};
         
         let rollCalidad = Math.random();
@@ -333,11 +336,26 @@ window.ColiseumLogic = {
         eStats.pureza = purezaEnemigo;
         
         let bonoPureza = purezaEnemigo >= 90 ? 4 : (purezaEnemigo >= 80 ? 3 : (purezaEnemigo >= 60 ? 1 : 0));
-        if (nivelJugador <= 8) bonoPureza = Math.floor(bonoPureza / 2);
+        if (this.trainingSupportActive) {
+            bonoPureza = 0; // Sin bono de pureza adicional para rivales de bajo nivel
+        } else if (nivelJugador <= 8) {
+            bonoPureza = Math.floor(bonoPureza / 2);
+        }
 
         eStats.hp += bonoPureza * 3; eStats.atk += bonoPureza; eStats.def += bonoPureza; eStats.spd += bonoPureza; eStats.luk += bonoPureza;
 
-        let nivelEnemigo = nivelJugador + (esJefeDeLiga ? 5 : 3);
+        let nivelEnemigo = this.trainingSupportActive 
+            ? (nivelJugador + (esJefeDeLiga ? 2 : 0)) 
+            : (nivelJugador + (esJefeDeLiga ? 5 : 3));
+        if (nivelEnemigo < 1) nivelEnemigo = 1;
+
+        if (this.trainingSupportActive) {
+            // Debilitar stats base un 15% para dar ventaja de entrenamiento
+            eStats.hp = Math.max(10, Math.round(eStats.hp * 0.85));
+            eStats.atk = Math.max(2, Math.round(eStats.atk * 0.85));
+            eStats.def = Math.max(1, Math.round(eStats.def * 0.85));
+            eStats.spd = Math.max(2, Math.round(eStats.spd * 0.85));
+        }
 
         // Multiplicador +20% HP/ATK para Jefes de nivel Legendario/Mítico
         if (esJefeDeLiga && (pRareza === "Legendario" || pRareza === "Mítico")) {
@@ -669,6 +687,15 @@ window.ColiseumLogic = {
                 let minDmgMultiplier = atacante.genesId.includes("min_dmg") ? 0.35 : 0.25;
                 let dmgMinimo = Math.floor(atkBruto * minDmgMultiplier);
                 let dmg = Math.floor(Math.max(atkBruto - defRival, dmgMinimo));
+
+                // Protocolo de Soporte de Entrenamiento (Nexo Acompañante)
+                if (this.trainingSupportActive && atkBruto > 0) {
+                    if (atacante.isPlayer) {
+                        dmg = Math.floor(dmg * 1.15); // +15% daño infligido
+                    } else if (defensor.isPlayer) {
+                        dmg = Math.floor(dmg * 0.85); // -15% daño recibido
+                    }
+                }
 
                 if (defensor.genesId.includes("adapt_a") && atkBruto > 0) {
                     if (defensor.ultimoElementoRecibido === ataqueReal.elemento) {
