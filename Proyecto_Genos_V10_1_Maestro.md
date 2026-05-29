@@ -150,6 +150,7 @@ Esencia Vital: off-chain. No vendible por $POL. Sin precio externo hasta Fase 6.
 - Cuidado Activo vs Reserva: Los Genos en reserva reducen sus necesidades 10x más despacio.
 - Bazar Consumibles: Ración Automática (🍱 costo: 2.00 EV, alimenta y congela Hambre de reservas por 24h) y Ducha de Plasma (🧼 costo: 1.00 EV, limpia Higiene al 100% de todos).
 - Interacciones y Cosecha: Caricias (requiere tocar 5 veces al Geno) añaden Amistad. Manchas de suciedad en pedestal se limpian frotando (mouseenter/click). Moneda dorada flotante aparece si evAcumulada >= 0.10 para recolectar EV pasiva.
+- Decaimiento por Negligencia (Amistad): Si cualquier necesidad del Geno cae por debajo del 20% (estado de Huelga/desatendido) durante más de 24 horas continuas, la Amistad disminuirá a razón de 1 punto por hora. Subir las necesidades sobre el 20% detiene el decaimiento y restablece el contador.
 - Impactos en Combate: "Estado Óptimo" (necesidades >80%) otorga +25 LUK (+5% crítico) y genera EV. "Huelga" (necesidades <20%) impide que el Geno luche en el Coliseo.
 
 Fase 3 — El Santuario y el Reactor Genetico
@@ -2555,6 +2556,7 @@ Para evitar la inflacion de Esencia Vital (EV), el juego integra barreras de act
 - Acariciar (requiere tocar 5 veces al Geno) una vez al dia al Geno Compañero otorga +10 XP y un boost de +20% en la recuperacion de Resistencia para el resto del dia.
 - El "Estado Optimo" (todas las necesidades > 80%) otorga un bonus de +25 LUK (+5% probabilidad de golpe critico) en el Coliseo y genera EV pasiva en el pedestal.
 - El estado "Huelga" (cualquier necesidad < 20%) inhabilita al Geno para combatir.
+- Decaimiento por Negligencia: Si el Geno permanece en estado de "Huelga" (necesidades < 20%) por más de 24 horas seguidas, perderá Amistad a razón de 1 punto por hora (24 puntos al día). Esto se detiene y el contador se restablece a cero al curar todas sus necesidades sobre el 20%.
 
 3. Sumideros de EV (Consumibles de Tienda):
 - Racion Automatica (🍱 - 2.00 EV): Alimenta y congela el Hambre de todos los Genos en reserva por 24 horas.

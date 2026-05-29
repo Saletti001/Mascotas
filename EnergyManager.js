@@ -132,6 +132,20 @@ window.NexoEnergyManager = {
                     
                     geno.evAcumulada = Math.min(10.0, (geno.evAcumulada || 0) + evRate * segundosTranscurridos);
                 }
+
+                // Decaimiento de amistad por negligencia (más de 24 horas desatendido)
+                const isNeglected = window.isGenoNeglected && window.isGenoNeglected(geno);
+                if (isNeglected) {
+                    geno.neglectedTime = (geno.neglectedTime || 0) + segundosTranscurridos;
+                    const secondsInGrace = 86400; // 24 horas de gracia
+                    if (geno.neglectedTime > secondsInGrace) {
+                        const decaySeconds = Math.min(segundosTranscurridos, geno.neglectedTime - secondsInGrace);
+                        const pointsLost = (1.0 / 3600) * decaySeconds; // 1 punto por hora
+                        geno.amistad = Math.max(0, (geno.amistad || 0) - pointsLost);
+                    }
+                } else {
+                    geno.neglectedTime = 0; // Restaurar al salir del estado de descuido/huelga
+                }
             });
         }
 
