@@ -212,6 +212,15 @@ class InventoryManager {
         document.getElementById("btn-release-all").addEventListener("click", () => {
             if (this.selectedIndex !== null) this.removeItem(this.selectedIndex, this.slots[this.selectedIndex].count);
         });
+        const btnUse = document.getElementById("btn-use-item");
+        if (btnUse) {
+            btnUse.addEventListener("click", () => {
+                if (this.selectedIndex !== null) {
+                    const item = this.slots[this.selectedIndex];
+                    this.usarItem(item);
+                }
+            });
+        }
         
         setInterval(() => {
             let hasExpiredItems = false;
@@ -246,6 +255,99 @@ class InventoryManager {
                 }
             }
         }, 1000);
+    }
+
+    usarItem(item) {
+        if (!item) return;
+
+        if (item.id === "apple_01") {
+            if (!window.miMascota || window.miMascota.id === "temp") {
+                alert("❌ Debes tener un Geno seleccionado como Compañero activo para alimentarlo.");
+                return;
+            }
+            if (window.miMascota.hambre === undefined) window.miMascota.hambre = 100;
+            if (window.miMascota.amistad === undefined) window.miMascota.amistad = 0;
+            
+            window.miMascota.hambre = Math.min(100, window.miMascota.hambre + 20);
+            window.miMascota.amistad = Math.min(100, window.miMascota.amistad + 2);
+            
+            // Sincronizar con misGenos
+            if (window.misGenos) {
+                const idx = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
+                if (idx !== -1) {
+                    window.misGenos[idx].hambre = window.miMascota.hambre;
+                    window.misGenos[idx].amistad = window.miMascota.amistad;
+                }
+            }
+            
+            this.consumeItem(item.id, 1);
+            alert(`🍱 Alimentaste a ${window.miMascota.name}. Hambre +20%, Amistad +2.`);
+            
+            if (window.NexoEnergyManager) window.NexoEnergyManager.actualizarUI();
+            this.guardarCambios();
+            
+            // Reproducir efecto y animación
+            const contenedor = document.getElementById("geno-container");
+            if (contenedor) {
+                contenedor.classList.remove("geno-idle");
+                contenedor.classList.add("happy-jump");
+                setTimeout(() => { contenedor.classList.remove("happy-jump"); contenedor.classList.add("geno-idle"); }, 500);
+            }
+            if (window.Sonidos) window.Sonidos.play("click");
+        } 
+        else if (item.id === "ration_auto") {
+            window.rationAutoActiveUntil = Date.now() + 24 * 3600 * 1000;
+            
+            // Set hunger to 100 for all reserve Genos
+            if (window.misGenos) {
+                window.misGenos.forEach(g => {
+                    const isActive = window.miMascota && String(window.miMascota.id) === String(g.id);
+                    if (!isActive) {
+                        g.hambre = 100;
+                    }
+                });
+            }
+            // Sincronizar miMascota
+            if (window.miMascota && window.miMascota.id !== "temp" && window.misGenos) {
+                const act = window.misGenos.find(g => String(g.id) === String(window.miMascota.id));
+                if (act) {
+                    window.miMascota.hambre = act.hambre;
+                }
+            }
+            
+            this.consumeItem(item.id, 1);
+            alert(`🍱 Ración Automática activada por 24h. Todos los Genos en reserva han sido alimentados.`);
+            
+            if (window.NexoEnergyManager) window.NexoEnergyManager.actualizarUI();
+            this.guardarCambios();
+            if (window.Sonidos) window.Sonidos.play("click");
+        } 
+        else if (item.id === "plasma_shower") {
+            // Set hygiene to 100 and Amistad +5 for all Genos
+            if (window.misGenos) {
+                window.misGenos.forEach(g => {
+                    g.higiene = 100;
+                    g.amistad = Math.min(100, (g.amistad || 0) + 5);
+                });
+            }
+            if (window.miMascota && window.miMascota.id !== "temp" && window.misGenos) {
+                const act = window.misGenos.find(g => String(g.id) === String(window.miMascota.id));
+                if (act) {
+                    window.miMascota.higiene = act.higiene;
+                    window.miMascota.amistad = act.amistad;
+                }
+            }
+            
+            this.consumeItem(item.id, 1);
+            alert(`🧼 Ducha de Plasma activada. Higiene al 100% y Amistad +5 para todos tus Genos.`);
+            
+            if (window.NexoEnergyManager) window.NexoEnergyManager.actualizarUI();
+            this.guardarCambios();
+            if (window.Sonidos) window.Sonidos.play("heal");
+        } 
+        else {
+            alert(`El objeto ${item.name} no se puede usar directamente.`);
+        }
     }
 
     injectDebugButton() {

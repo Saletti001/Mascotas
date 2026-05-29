@@ -325,11 +325,21 @@ document.addEventListener("DOMContentLoaded", () => {
                     window.ganarXP(10);
                 }
                 alert(`¡Has acariciado a ${window.miMascota.name || 'tu Geno'}! Cuidado diario activado: +10 XP y +20% de velocidad de recuperación de resistencia para hoy.`);
-                if (window.NexoEnergyManager) {
-                    window.NexoEnergyManager.actualizarUI();
-                }
-                if (window.guardarProgreso) window.guardarProgreso();
             }
+
+            // Incrementar Amistad por caricia (+5, tope 100)
+            window.miMascota.amistad = Math.min(100, (window.miMascota.amistad || 0) + 5);
+            if (window.misGenos) {
+                const idx = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
+                if (idx !== -1) {
+                    window.misGenos[idx].amistad = window.miMascota.amistad;
+                }
+            }
+            if (window.NexoEnergyManager) {
+                window.NexoEnergyManager.actualizarUI();
+            }
+            if (window.guardarProgreso) window.guardarProgreso();
+            else if (window.guardarJuego) window.guardarJuego();
 
             const heart = document.createElement("div");
             heart.className = "heart-particle";
@@ -640,3 +650,263 @@ function iniciarSecuenciaBienvenida() {
         if(typeof window.guardarProgreso === 'function') window.guardarProgreso();
     };
 }
+
+// =========================================
+// SISTEMA DE CUIDADO (TAMAGOTCHI) Y EV PASIVA
+// =========================================
+(function() {
+    const style = document.createElement("style");
+    style.innerHTML = `
+        .dirt-spot {
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: radial-gradient(circle, rgba(141,110,99,0.9) 0%, rgba(93,64,55,0.95) 70%);
+            border-radius: 40% 60% 50% 50% / 50% 60% 40% 50%;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset 0 2px 2px rgba(255,255,255,0.1);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)) blur(0.5px);
+            cursor: pointer;
+            z-index: 100;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+            animation: pulseDirt 3s infinite alternate ease-in-out;
+        }
+        .dirt-spot:hover {
+            transform: scale(1.2);
+        }
+        @keyframes pulseDirt {
+            0% { transform: scale(1) rotate(0deg); opacity: 0.85; }
+            100% { transform: scale(1.08) rotate(15deg); opacity: 0.95; }
+        }
+        
+        .floating-ev-coin {
+            position: absolute;
+            width: 38px;
+            height: 38px;
+            background: radial-gradient(circle, #ffd700 0%, #ff8f00 100%);
+            border: 2.5px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 15px #ffd700, inset 0 2px 4px rgba(255,255,255,0.5);
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 120;
+            animation: floatCoin 2.5s infinite alternate ease-in-out, spinCoin 4s infinite linear;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+        .floating-ev-coin:hover {
+            filter: brightness(1.2);
+            box-shadow: 0 0 22px #ffd700;
+        }
+        @keyframes floatCoin {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+        @keyframes spinCoin {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+
+        .clean-sparkle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #00e5ff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 110;
+            animation: sparkleAnimation 0.5s forwards ease-out;
+            box-shadow: 0 0 6px #00e5ff;
+        }
+        @keyframes sparkleAnimation {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--dx), var(--dy)) scale(0); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+
+    function crearChispasLimpieza(x, y, parent) {
+        for (let i = 0; i < 8; i++) {
+            const sparkle = document.createElement("div");
+            sparkle.className = "clean-sparkle";
+            const angle = Math.random() * Math.PI * 2;
+            const dist = 15 + Math.random() * 30;
+            const dx = Math.cos(angle) * dist;
+            const dy = Math.sin(angle) * dist;
+            sparkle.style.setProperty("--dx", `${dx}px`);
+            sparkle.style.setProperty("--dy", `${dy}px`);
+            sparkle.style.left = `${x}px`;
+            sparkle.style.top = `${y}px`;
+            parent.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 500);
+        }
+    }
+
+    window.actualizarSuciedadVisual = function() {
+        const pedestal = document.getElementById("geno-container");
+        if (!pedestal || !window.miMascota || window.miMascota.id === "temp") return;
+
+        const higiene = window.miMascota.higiene !== undefined ? window.miMascota.higiene : 100;
+        
+        let targetSpots = 0;
+        if (higiene < 20) targetSpots = 4;
+        else if (higiene < 40) targetSpots = 3;
+        else if (higiene < 60) targetSpots = 2;
+        else if (higiene < 80) targetSpots = 1;
+
+        let currentSpots = pedestal.querySelectorAll(".dirt-spot");
+        
+        if (currentSpots.length > targetSpots) {
+            for (let i = targetSpots; i < currentSpots.length; i++) {
+                currentSpots[i].remove();
+            }
+            currentSpots = pedestal.querySelectorAll(".dirt-spot");
+        }
+
+        const needed = targetSpots - currentSpots.length;
+        for (let i = 0; i < needed; i++) {
+            const spot = document.createElement("div");
+            spot.className = "dirt-spot";
+            
+            const randomTop = 15 + Math.random() * 45;
+            const randomLeft = 20 + Math.random() * 60;
+            
+            spot.style.top = `${randomTop}%`;
+            spot.style.left = `${randomLeft}%`;
+
+            const limpiarHandler = (e) => {
+                e.stopPropagation();
+                const rect = spot.getBoundingClientRect();
+                const parentRect = pedestal.getBoundingClientRect();
+                const posX = rect.left + rect.width / 2 - parentRect.left;
+                const posY = rect.top + rect.height / 2 - parentRect.top;
+                
+                crearChispasLimpieza(posX, posY, pedestal);
+                spot.remove();
+                
+                window.miMascota.higiene = Math.min(100, (window.miMascota.higiene || 0) + 15);
+                window.miMascota.amistad = Math.min(100, (window.miMascota.amistad || 0) + 5);
+                
+                if (window.misGenos) {
+                    const idx = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
+                    if (idx !== -1) {
+                        window.misGenos[idx].higiene = window.miMascota.higiene;
+                        window.misGenos[idx].amistad = window.miMascota.amistad;
+                    }
+                }
+                
+                if (window.NexoEnergyManager) {
+                    window.NexoEnergyManager.actualizarUI();
+                }
+                
+                if (window.guardarProgreso) window.guardarProgreso();
+                else if (window.guardarJuego) window.guardarJuego();
+                
+                if (window.Sonidos) window.Sonidos.play("click");
+            };
+
+            spot.addEventListener("mouseenter", limpiarHandler);
+            spot.addEventListener("click", limpiarHandler);
+            spot.addEventListener("touchstart", limpiarHandler);
+
+            pedestal.appendChild(spot);
+        }
+    };
+
+    window.actualizarMonedaEvFlotante = function() {
+        const pedestal = document.getElementById("geno-container");
+        if (!pedestal || !window.miMascota || window.miMascota.id === "temp") {
+            const existingCoin = document.getElementById("floating-ev-coin");
+            if (existingCoin) existingCoin.remove();
+            return;
+        }
+
+        const evAcumulada = window.miMascota.evAcumulada !== undefined ? window.miMascota.evAcumulada : 0;
+        
+        let coin = document.getElementById("floating-ev-coin");
+
+        if (evAcumulada >= 0.10) {
+            if (!coin) {
+                coin = document.createElement("div");
+                coin.id = "floating-ev-coin";
+                coin.className = "floating-ev-coin";
+                coin.innerText = "✨";
+                
+                coin.style.top = "20%";
+                coin.style.right = "10%";
+
+                coin.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const evARecolectar = window.miMascota.evAcumulada || 0;
+                    
+                    if (window.miInventario) {
+                        window.miInventario.addEssence(evARecolectar);
+                        window.miInventario.updateUI();
+                        window.miInventario.renderGrid();
+                    }
+                    
+                    alert(`✨ ¡Has cosechado ${evARecolectar.toFixed(2)} EV de tu Geno!`);
+
+                    window.miMascota.evAcumulada = 0;
+                    if (window.misGenos) {
+                        const idx = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
+                        if (idx !== -1) {
+                            window.misGenos[idx].evAcumulada = 0;
+                        }
+                    }
+
+                    coin.style.animation = "none";
+                    coin.style.transition = "all 0.5s ease-in";
+                    coin.style.transform = "translateY(-50px) scale(0)";
+                    coin.style.opacity = "0";
+                    
+                    setTimeout(() => {
+                        if (coin) coin.remove();
+                        if (window.NexoEnergyManager) {
+                            window.NexoEnergyManager.actualizarUI();
+                        }
+                    }, 500);
+
+                    if (window.Sonidos) window.Sonidos.play("click");
+                    if (window.guardarProgreso) window.guardarProgreso();
+                    else if (window.guardarJuego) window.guardarJuego();
+                });
+
+                pedestal.appendChild(coin);
+            }
+        } else {
+            if (coin) {
+                coin.remove();
+            }
+        }
+    };
+
+    // Registrar eventos para el manual de cuidado
+    document.addEventListener("DOMContentLoaded", () => {
+        const needsHud = document.getElementById("needs-hud");
+        const needsInfoModal = document.getElementById("needs-info-modal");
+        const closeBtn = document.getElementById("close-needs-info");
+        const confirmBtn = document.getElementById("btn-close-needs-info-confirm");
+
+        if (needsHud && needsInfoModal) {
+            needsHud.style.cursor = "pointer";
+            needsHud.addEventListener("click", () => {
+                needsInfoModal.classList.remove("hidden");
+                if (window.Sonidos) window.Sonidos.play("click");
+            });
+        }
+
+        if (needsInfoModal) {
+            const cerrarModal = (e) => {
+                e.stopPropagation();
+                needsInfoModal.classList.add("hidden");
+                if (window.Sonidos) window.Sonidos.play("click");
+            };
+            if (closeBtn) closeBtn.addEventListener("click", cerrarModal);
+            if (confirmBtn) confirmBtn.addEventListener("click", cerrarModal);
+        }
+    });
+})();

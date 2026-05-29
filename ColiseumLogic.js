@@ -478,6 +478,11 @@ window.ColiseumLogic = {
         const pElemento = (mascota.genes && mascota.genes.afinidad) ? mascota.genes.afinidad.dom : (mascota.element || "Normal");
         const pStats = { hp: mascota.stats?.hp || 80, atk: mascota.stats?.atk || 15, def: mascota.stats?.def || 5, spd: mascota.stats?.spd || 15, luk: mascota.stats?.luk || 10 };
         
+        // Bonus de Estado Óptimo (>80% en todas las necesidades)
+        if (window.isGenoHappy && window.isGenoHappy(mascota)) {
+            pStats.luk += 25;
+        }
+
         let pGenB = (mascota.hidden_genes?.B?.id || "ninguno").toLowerCase(); 
         let pGenC = (mascota.hidden_genes?.C?.id || "ninguno").toLowerCase();
         

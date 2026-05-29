@@ -423,6 +423,8 @@ window.ShopManager = {
         const items = [
             { id: "bio_nucleo_basico", name: "Bio-Núcleo Básico", icon: iconoBioNucleo, type: "egg", price: 200, currency: "EV", desc: "Espécimen base (Común) inyectado aleatoriamente. Ideal para iniciar nuevas líneas de sangre." },
             { id: "incubator_01", name: "Incubadora Térmica", icon: this.iconosSVG["incubator_01"], type: "consumable", price: 0.20, currency: "POL", desc: "Batería térmica de alta capacidad. Proporciona la energía necesaria para incubar un Bio-Núcleo." },
+            { id: "ration_auto", name: "Ración Automática", icon: "🍱", type: "consumable", price: 2.00, currency: "EV", desc: "Alimenta automáticamente a todos tus Genos en reserva por 24 horas." },
+            { id: "plasma_shower", name: "Ducha de Plasma", icon: "🧼", type: "consumable", price: 1.00, currency: "EV", desc: "Limpia a todo tu inventario de mascotas a 100% de Higiene." },
             { id: "escaner_basico", name: "Escáner Básico", icon: this.iconosSVG["escaner_basico"], type: "basic", price: 0.15, currency: "EV", desc: "Revela slots activos del Geno." },
             { id: "escaner_completo", name: "Escáner Completo", icon: this.iconosSVG["escaner_completo"], type: "basic", price: 0.50, currency: "EV", desc: "Revela la genética exacta S-D." },
             { id: "antidoto_uni", name: "Antídoto Universal", icon: this.iconosSVG["antidoto_uni"], type: "consumable", price: 0.10, currency: "EV", desc: "Limpia cualquier estado alterado." }
@@ -431,6 +433,8 @@ window.ShopManager = {
         items.forEach(item => {
             if(item.id === "bio_nucleo_basico") grid.appendChild(this.crearTarjeta(item, "#00d2ff", "#005c8a", "EV"));
             else if (item.id === "incubator_01") grid.appendChild(this.crearTarjeta(item, "#ff9800", "#e65100", "POL"));
+            else if (item.id === "ration_auto") grid.appendChild(this.crearTarjeta(item, "#FF8A80", "#C62828", "EV"));
+            else if (item.id === "plasma_shower") grid.appendChild(this.crearTarjeta(item, "#80D8FF", "#1565C0", "EV"));
             else grid.appendChild(this.crearTarjeta(item, "#69F0AE", "#2E7D32", "EV"));
         });
     },

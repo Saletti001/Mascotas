@@ -277,6 +277,10 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("Tu Geno activo no tiene suficiente Resistencia.");
             return;
         }
+        if (window.isGenoNeglected && window.isGenoNeglected(window.miMascota)) {
+            alert("⚠️ Tu Geno activo está en huelga (necesidades básicas por debajo del 20%) y se niega a combatir. ¡Cuídalo en el Laboratorio!");
+            return;
+        }
 
         if (window.NexoEnergyManager) {
             window.NexoEnergyManager.descontarEnergia(10);
@@ -580,6 +584,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
             ColiseumUI.agregarLog(`<span style="color:#aaa">Ganaste ${xpGanada} XP.</span>`);
             if (window.ganarXP) window.ganarXP(xpGanada);
+
+            // Cuidado / Necesidades: +15 Diversión, +3 Amistad
+            if (window.miMascota) {
+                if (window.miMascota.diversion === undefined) window.miMascota.diversion = 100;
+                if (window.miMascota.amistad === undefined) window.miMascota.amistad = 0;
+                window.miMascota.diversion = Math.min(100, window.miMascota.diversion + 15);
+                window.miMascota.amistad = Math.min(100, window.miMascota.amistad + 3);
+                if (window.misGenos) {
+                    const idx = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
+                    if (idx !== -1) {
+                        window.misGenos[idx].diversion = window.miMascota.diversion;
+                        window.misGenos[idx].amistad = window.miMascota.amistad;
+                    }
+                }
+                if (window.NexoEnergyManager) {
+                    window.NexoEnergyManager.actualizarUI();
+                }
+                if (window.guardarJuego) window.guardarJuego();
+                else if (window.guardarProgreso) window.guardarProgreso();
+            }
         } else {
             ColiseumUI.agregarLog(`<span style="color:#f44336">💀 DERROTA. Tu Geno debe descansar.</span>`);
         }

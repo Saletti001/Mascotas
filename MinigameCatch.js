@@ -1,5 +1,6 @@
 class MinigameCatch {
     constructor() {
+        window.minigameCatch = this;
         this.screen = document.getElementById("minigame-screen");
         this.arcadeMenu = document.getElementById("arcade-menu");
         this.playArea = document.getElementById("play-area");
@@ -23,6 +24,10 @@ class MinigameCatch {
         this.keys = { ArrowLeft: false, ArrowRight: false, a: false, d: false };
 
         this.initEvents();
+    }
+
+    start() {
+        this.startGame();
     }
 
     initEvents() {
@@ -164,6 +169,26 @@ class MinigameCatch {
                     maxStack: 20,
                     count: reward 
                 });
+            }
+
+            // Afectar necesidades del Geno activo
+            if (window.miMascota && window.miMascota.id && window.miMascota.id !== "temp") {
+                if (window.miMascota.diversion === undefined) window.miMascota.diversion = 100;
+                if (window.miMascota.amistad === undefined) window.miMascota.amistad = 0;
+                window.miMascota.diversion = Math.min(100, window.miMascota.diversion + 20);
+                window.miMascota.amistad = Math.min(100, window.miMascota.amistad + 2);
+                if (window.misGenos) {
+                    const idx = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
+                    if (idx !== -1) {
+                        window.misGenos[idx].diversion = window.miMascota.diversion;
+                        window.misGenos[idx].amistad = window.miMascota.amistad;
+                    }
+                }
+                if (window.NexoEnergyManager) {
+                    window.NexoEnergyManager.actualizarUI();
+                }
+                if (window.guardarJuego) window.guardarJuego();
+                else if (window.guardarProgreso) window.guardarProgreso();
             }
         }
         
