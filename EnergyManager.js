@@ -249,23 +249,40 @@ window.NexoEnergyManager = {
                 if (hygieneFill) hygieneFill.style.width = `${higiene}%`;
                 if (energyFill) energyFill.style.width = `${resistencia}%`;
 
-                const statusBanner = document.getElementById("needs-status-banner");
-                if (statusBanner) {
-                    if (window.isGenoNeglected && window.isGenoNeglected(window.miMascota)) {
-                        statusBanner.innerText = "EN HUELGA";
-                        statusBanner.style.background = "rgba(244, 67, 54, 0.2)";
-                        statusBanner.style.border = "1.5px solid #f44336";
-                        statusBanner.style.color = "#f44336";
-                    } else if (window.isGenoHappy && window.isGenoHappy(window.miMascota)) {
-                        statusBanner.innerText = "ESTADO ÓPTIMO";
-                        statusBanner.style.background = "rgba(76, 175, 80, 0.2)";
-                        statusBanner.style.border = "1.5px solid #4CAF50";
-                        statusBanner.style.color = "#4CAF50";
+                // Actualizar burbuja de alerta flotante sobre el Geno
+                const alertBubble = document.getElementById("geno-alert-bubble");
+                if (alertBubble) {
+                    let alertText = "";
+                    let alertColor = "#ff7043";
+
+                    if (hambre < 20) {
+                        alertText = "Tengo Hambre";
+                        alertColor = "#ff7043";
+                    } else if (diversion < 20) {
+                        alertText = "Quiero Jugar";
+                        alertColor = "#29b6f6";
+                    } else if (higiene < 20) {
+                        alertText = "Necesito un Baño";
+                        alertColor = "#ab47bc";
+                    } else if (resistencia < 20) {
+                        alertText = "Estoy Cansado";
+                        alertColor = "#4CAF50";
+                    }
+
+                    if (alertText) {
+                        alertBubble.classList.remove("hidden");
+                        const alertTextEl = document.getElementById("geno-alert-text");
+                        if (alertTextEl) alertTextEl.innerText = alertText;
+                        alertBubble.style.borderColor = alertColor;
+                        alertBubble.style.boxShadow = `0 0 8px ${alertColor}`;
+                        
+                        const arrow = typeof alertBubble.querySelector === 'function' ? alertBubble.querySelector(".bubble-arrow") : null;
+                        if (arrow) arrow.style.borderTopColor = alertColor;
+                        
+                        const svg = typeof alertBubble.querySelector === 'function' ? alertBubble.querySelector(".alert-icon") : null;
+                        if (svg) svg.setAttribute("stroke", alertColor);
                     } else {
-                        statusBanner.innerText = "NEUTRAL";
-                        statusBanner.style.background = "rgba(128, 128, 128, 0.2)";
-                        statusBanner.style.border = "1.5px solid #888888";
-                        statusBanner.style.color = "#888888";
+                        alertBubble.classList.add("hidden");
                     }
                 }
             } else {

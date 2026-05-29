@@ -68,3 +68,8 @@ body {
     position: absolute; color: #E91E63; font-size: 24px; pointer-events: none; 
     animation: floatUpHeart 1s ease-out forwards; z-index: 20; text-shadow: 0 2px 4px rgba(0,0,0,0.2); 
 }
+
+@keyframes floatBubble {
+    0%, 100% { transform: translate(-50%, 0); }
+    50% { transform: translate(-50%, -4px); }
+}

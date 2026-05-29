@@ -90,7 +90,6 @@
 
             <!-- HUD de Necesidades (Pou-Tamagotchi) -->
             <div id="needs-hud" class="hidden" style="position: absolute; top: 175px; right: 15px; z-index: 45; width: 140px; background: rgba(26, 26, 46, 0.9); border: 2px solid #2a2a4a; border-radius: 14px; padding: 8px 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); backdrop-filter: blur(5px); display: flex; flex-direction: column; gap: 6px; font-family: monospace; font-size: 10px; color: #fff; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-                <div id="needs-status-banner" style="font-size: 9px; font-weight: bold; text-align: center; text-transform: uppercase; border-radius: 6px; padding: 3px 5px; background: rgba(128, 128, 128, 0.2); border: 1.5px solid #888888; color: #888888; text-shadow: 0 0 5px rgba(0,0,0,0.5);">NEUTRAL</div>
                 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
                     <span style="display: flex; align-items: center; gap: 4px;">
@@ -193,59 +192,59 @@
                     <!-- Cuadrícula 2x2 para las 4 Necesidades Core -->
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; margin-top: 10px;">
                         <!-- Resistencia -->
-                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: space-between; min-height: 48px;">
-                            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #aaa; margin-bottom: 2px;">
+                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 40px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #aaa;">
                                 <span style="display: flex; align-items: center; gap: 4px;">
                                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"></rect><line x1="22" y1="11" x2="22" y2="13"></line></svg>
                                     Resistencia
                                 </span>
+                                <span id="geno-resistance" style="font-weight: bold; color: #fff;">100/100</span>
                             </div>
-                            <div style="background: rgba(0, 0, 0, 0.4); border-radius: 2px; height: 4px; overflow: hidden; margin-bottom: 3px; width: 100%;">
+                            <div style="background: rgba(0, 0, 0, 0.4); border-radius: 2px; height: 4px; overflow: hidden; width: 100%;">
                                 <div id="geno-resistance-fill" style="background: #4CAF50; height: 100%; width: 100%; transition: width 0.3s;"></div>
                             </div>
-                            <div style="text-align: right; font-size: 10px; font-weight: bold; color: #fff;" id="geno-resistance">100/100</div>
                         </div>
 
                         <!-- Hambre -->
-                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: space-between; min-height: 48px;">
-                            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #aaa; margin-bottom: 2px;">
+                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 40px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #aaa;">
                                 <span style="display: flex; align-items: center; gap: 4px;">
                                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ff7043" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 0 18 0"></path><path d="M3 12h18"></path><path d="M8 7V3M12 7V3M16 7V3"></path></svg>
                                     Hambre
                                 </span>
+                                <span id="geno-hunger" style="font-weight: bold; color: #fff;">100/100</span>
                             </div>
-                            <div style="background: rgba(0, 0, 0, 0.4); border-radius: 2px; height: 4px; overflow: hidden; margin-bottom: 3px; width: 100%;">
+                            <div style="background: rgba(0, 0, 0, 0.4); border-radius: 2px; height: 4px; overflow: hidden; width: 100%;">
                                 <div id="geno-hunger-fill" style="background: #ff7043; height: 100%; width: 100%; transition: width 0.3s;"></div>
                             </div>
-                            <div style="text-align: right; font-size: 10px; font-weight: bold; color: #fff;" id="geno-hunger">100/100</div>
                         </div>
 
                         <!-- Diversión -->
-                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: space-between; min-height: 48px;">
-                            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #aaa; margin-bottom: 2px;">
+                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 40px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #aaa;">
                                 <span style="display: flex; align-items: center; gap: 4px;">
                                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#29b6f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="3"></rect><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="15" y1="12" x2="15.01" y2="12"></line><line x1="18" y1="12" x2="18.01" y2="12"></line></svg>
                                     Diversión
                                 </span>
+                                <span id="geno-fun" style="font-weight: bold; color: #fff;">100/100</span>
                             </div>
-                            <div style="background: rgba(0, 0, 0, 0.4); border-radius: 2px; height: 4px; overflow: hidden; margin-bottom: 3px; width: 100%;">
+                            <div style="background: rgba(0, 0, 0, 0.4); border-radius: 2px; height: 4px; overflow: hidden; width: 100%;">
                                 <div id="geno-fun-fill" style="background: #29b6f6; height: 100%; width: 100%; transition: width 0.3s;"></div>
                             </div>
-                            <div style="text-align: right; font-size: 10px; font-weight: bold; color: #fff;" id="geno-fun">100/100</div>
                         </div>
 
                         <!-- Higiene -->
-                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: space-between; min-height: 48px;">
-                            <div style="display: flex; justify-content: space-between; font-size: 11px; color: #aaa; margin-bottom: 2px;">
+                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 40px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #aaa;">
                                 <span style="display: flex; align-items: center; gap: 4px;">
                                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ab47bc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="5"></circle><circle cx="17" cy="17" r="3"></circle><circle cx="12" cy="7" r="4"></circle></svg>
                                     Higiene
                                 </span>
+                                <span id="geno-hygiene" style="font-weight: bold; color: #fff;">100/100</span>
                             </div>
-                            <div style="background: rgba(0, 0, 0, 0.4); border-radius: 2px; height: 4px; overflow: hidden; margin-bottom: 3px; width: 100%;">
+                            <div style="background: rgba(0, 0, 0, 0.4); border-radius: 2px; height: 4px; overflow: hidden; width: 100%;">
                                 <div id="geno-hygiene-fill" style="background: #ab47bc; height: 100%; width: 100%; transition: width 0.3s;"></div>
                             </div>
-                            <div style="text-align: right; font-size: 10px; font-weight: bold; color: #fff;" id="geno-hygiene">100/100</div>
                         </div>
                     </div>
 
@@ -370,6 +369,15 @@
             </div>
 
             <div id="incubator-capsule">
+                <!-- Burbuja de Alerta flotante sobre el Geno -->
+                <div id="geno-alert-bubble" class="hidden" style="position: absolute; top: 15px; left: 50%; transform: translateX(-50%); z-index: 100; background: rgba(25, 25, 38, 0.95); border: 1.5px solid #ff7043; border-radius: 8px; padding: 4px 10px; color: #fff; font-family: monospace; font-size: 9px; font-weight: bold; text-align: center; white-space: nowrap; box-shadow: 0 0 8px rgba(255, 112, 67, 0.5); pointer-events: none; animation: floatBubble 2s ease-in-out infinite;">
+                    <span style="display: flex; align-items: center; gap: 4px;">
+                        <svg class="alert-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ff7043" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        <span id="geno-alert-text">Tengo Hambre</span>
+                    </span>
+                    <!-- Flecha hacia abajo -->
+                    <div class="bubble-arrow" style="position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 5px solid #ff7043;"></div>
+                </div>
                 <div class="energy-beam">
                     <div class="energy-particle" style="left: 20%; animation-duration: 2.5s; animation-delay: 0s;"></div>
                     <div class="energy-particle" style="left: 50%; animation-duration: 3s; animation-delay: 1s;"></div>
