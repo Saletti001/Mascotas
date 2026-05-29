@@ -304,6 +304,17 @@ document.addEventListener("DOMContentLoaded", () => {
         contenedorGenoMain.addEventListener("click", (e) => {
             if (!window.miMascota || window.miMascota.id === "temp") return;
             
+            // Crear un pequeño corazón flotante en cada toque
+            const heart = document.createElement("div");
+            heart.className = "heart-particle";
+            heart.innerText = "❤️";
+            heart.style.fontSize = "16px";
+            const rect = contenedorGenoMain.getBoundingClientRect();
+            heart.style.left = `${e.clientX - rect.left}px`;
+            heart.style.top = `${e.clientY - rect.top}px`;
+            contenedorGenoMain.appendChild(heart);
+            setTimeout(() => heart.remove(), 1000);
+
             // Incrementar toques para acariciar (mínimo 5)
             window.cariciasCount = (window.cariciasCount || 0) + 1;
             if (window.cariciasCount < 5) {
@@ -355,15 +366,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             if (window.guardarProgreso) window.guardarProgreso();
             else if (window.guardarJuego) window.guardarJuego();
-
-            const heart = document.createElement("div");
-            heart.className = "heart-particle";
-            heart.innerText = "❤️";
-            const rect = contenedorGenoMain.getBoundingClientRect();
-            heart.style.left = `${e.clientX - rect.left}px`;
-            heart.style.top = `${e.clientY - rect.top}px`;
-            contenedorGenoMain.appendChild(heart);
-            setTimeout(() => heart.remove(), 1000);
         });
     }
 

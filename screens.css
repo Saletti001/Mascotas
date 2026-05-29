@@ -49,6 +49,12 @@
 .arcade-grid { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
 .arcade-card { background: #0d1a24; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; border: 1px solid #4dd0e1; cursor: pointer; color: white;}
 .arcade-card.locked { opacity: 0.5; filter: grayscale(1); cursor: not-allowed; border-color: #555;}
+#minigame-screen {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+    overflow: hidden !important;
+}
 #play-area { flex: 1; position: relative; overflow: hidden; background: #0a1118; }
 #falling-object { position: absolute; font-size: 30px; transition: none !important; }
 #player-basket { position: absolute; font-size: 40px; bottom: 20px; transition: left 0.1s linear; }
