@@ -303,6 +303,21 @@ document.addEventListener("DOMContentLoaded", () => {
     if (contenedorGenoMain) {
         contenedorGenoMain.addEventListener("click", (e) => {
             if (!window.miMascota || window.miMascota.id === "temp") return;
+            
+            // Incrementar toques para acariciar (mínimo 5)
+            window.cariciasCount = (window.cariciasCount || 0) + 1;
+            if (window.cariciasCount < 5) {
+                if (window.Sonidos) window.Sonidos.play("click");
+                contenedorGenoMain.classList.remove("geno-idle");
+                contenedorGenoMain.classList.add("wobble-light");
+                setTimeout(() => {
+                    contenedorGenoMain.classList.remove("wobble-light");
+                    contenedorGenoMain.classList.add("geno-idle");
+                }, 150);
+                return;
+            }
+            window.cariciasCount = 0; // Resetear contador de caricias
+
             if (window.Sonidos) window.Sonidos.play("click");
             contenedorGenoMain.classList.remove("geno-idle");
             contenedorGenoMain.classList.add("happy-jump");

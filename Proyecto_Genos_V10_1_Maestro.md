@@ -149,7 +149,7 @@ Esencia Vital: off-chain. No vendible por $POL. Sin precio externo hasta Fase 6.
 - Barras de Necesidades: Hambre (vacía en 12h), Diversión (vacía en 16h), Higiene (vacía en 24h) y Resistencia.
 - Cuidado Activo vs Reserva: Los Genos en reserva reducen sus necesidades 10x más despacio.
 - Bazar Consumibles: Ración Automática (🍱 costo: 2.00 EV, alimenta y congela Hambre de reservas por 24h) y Ducha de Plasma (🧼 costo: 1.00 EV, limpia Higiene al 100% de todos).
-- Interacciones y Cosecha: Caricias añaden Amistad. Manchas de suciedad en pedestal se limpian frotando (mouseenter/click). Moneda dorada flotante aparece si evAcumulada >= 0.10 para recolectar EV pasiva.
+- Interacciones y Cosecha: Caricias (requiere tocar 5 veces al Geno) añaden Amistad. Manchas de suciedad en pedestal se limpian frotando (mouseenter/click). Moneda dorada flotante aparece si evAcumulada >= 0.10 para recolectar EV pasiva.
 - Impactos en Combate: "Estado Óptimo" (necesidades >80%) otorga +25 LUK (+5% crítico) y genera EV. "Huelga" (necesidades <20%) impide que el Geno luche en el Coliseo.
 
 Fase 3 — El Santuario y el Reactor Genetico
@@ -2552,7 +2552,7 @@ Para evitar la inflacion de Esencia Vital (EV), el juego integra barreras de act
 - Si un Geno tiene 0 de Resistencia, entra en estado (DESCANSANDO) y no puede ser seleccionado.
 
 2. Cuidado Diario e Incentivos:
-- Acariciar una vez al dia al Geno Compañero otorga +10 XP y un boost de +20% en la recuperacion de Resistencia para el resto del dia.
+- Acariciar (requiere tocar 5 veces al Geno) una vez al dia al Geno Compañero otorga +10 XP y un boost de +20% en la recuperacion de Resistencia para el resto del dia.
 - El "Estado Optimo" (todas las necesidades > 80%) otorga un bonus de +25 LUK (+5% probabilidad de golpe critico) en el Coliseo y genera EV pasiva en el pedestal.
 - El estado "Huelga" (cualquier necesidad < 20%) inhabilita al Geno para combatir.
 

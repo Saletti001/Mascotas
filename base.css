@@ -54,6 +54,12 @@ body {
 }
 .happy-jump { animation: happyJump 0.5s ease-in-out !important; }
 
+@keyframes wobbleLight { 
+    0%, 100% { transform: translate(-50%, -50%) scale(1); } 
+    50% { transform: translate(-50%, -50%) scale(0.96); } 
+}
+.wobble-light { animation: wobbleLight 0.15s ease-in-out; }
+
 @keyframes floatUpHeart { 
     0% { opacity: 1; transform: translateY(0) scale(1); } 
     100% { opacity: 0; transform: translateY(-40px) scale(1.5); } 
