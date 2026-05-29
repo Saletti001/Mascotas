@@ -908,13 +908,16 @@ function iniciarSecuenciaBienvenida() {
         const closeBtn = document.getElementById("close-needs-info");
         const confirmBtn = document.getElementById("btn-close-needs-info-confirm");
 
-        if (needsHud && needsInfoModal) {
-            needsHud.style.cursor = "pointer";
-            needsHud.addEventListener("click", () => {
-                needsInfoModal.classList.remove("hidden");
-                if (window.Sonidos) window.Sonidos.play("click");
+        // Abrir el manual de cuidado al presionar cualquiera de los estados en la cuadrícula del modal de stats
+        const clickableNeedCards = document.querySelectorAll(".need-card-clickable");
+        clickableNeedCards.forEach(card => {
+            card.addEventListener("click", () => {
+                if (needsInfoModal) {
+                    needsInfoModal.classList.remove("hidden");
+                    if (window.Sonidos) window.Sonidos.play("click");
+                }
             });
-        }
+        });
 
         if (needsInfoModal) {
             const cerrarModal = (e) => {

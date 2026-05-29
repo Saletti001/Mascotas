@@ -88,8 +88,8 @@
                 </div>
             </div>
 
-            <!-- HUD de Necesidades (Pou-Tamagotchi) -->
-            <div id="needs-hud" class="hidden" style="position: absolute; top: 175px; right: 15px; z-index: 45; width: 140px; background: rgba(26, 26, 46, 0.9); border: 2px solid #2a2a4a; border-radius: 14px; padding: 8px 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); backdrop-filter: blur(5px); display: flex; flex-direction: column; gap: 6px; font-family: monospace; font-size: 10px; color: #fff; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+            <!-- HUD de Necesidades (Pou-Tamagotchi) - Oculto de la interfaz principal -->
+            <div id="needs-hud" class="hidden" style="display: none !important; position: absolute; top: 175px; right: 15px; z-index: 45; width: 140px; background: rgba(26, 26, 46, 0.9); border: 2px solid #2a2a4a; border-radius: 14px; padding: 8px 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); backdrop-filter: blur(5px); flex-direction: column; gap: 6px; font-family: monospace; font-size: 10px; color: #fff; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
                 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
                     <span style="display: flex; align-items: center; gap: 4px;">
@@ -192,7 +192,7 @@
                     <!-- Cuadrícula 2x2 para las 4 Necesidades Core -->
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; margin-top: 10px;">
                         <!-- Resistencia -->
-                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 40px;">
+                        <div class="need-card-clickable" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 40px; cursor: pointer;" title="Ver manual de cuidado">
                             <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #aaa;">
                                 <span style="display: flex; align-items: center; gap: 4px;">
                                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="16" height="10" rx="2" ry="2"></rect><line x1="22" y1="11" x2="22" y2="13"></line></svg>
@@ -206,7 +206,7 @@
                         </div>
 
                         <!-- Hambre -->
-                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 40px;">
+                        <div class="need-card-clickable" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 40px; cursor: pointer;" title="Ver manual de cuidado">
                             <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #aaa;">
                                 <span style="display: flex; align-items: center; gap: 4px;">
                                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ff7043" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 0 18 0"></path><path d="M3 12h18"></path><path d="M8 7V3M12 7V3M16 7V3"></path></svg>
@@ -220,7 +220,7 @@
                         </div>
 
                         <!-- Diversión -->
-                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 40px;">
+                        <div class="need-card-clickable" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 40px; cursor: pointer;" title="Ver manual de cuidado">
                             <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #aaa;">
                                 <span style="display: flex; align-items: center; gap: 4px;">
                                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#29b6f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="3"></rect><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="15" y1="12" x2="15.01" y2="12"></line><line x1="18" y1="12" x2="18.01" y2="12"></line></svg>
@@ -234,7 +234,7 @@
                         </div>
 
                         <!-- Higiene -->
-                        <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 40px;">
+                        <div class="need-card-clickable" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 40px; cursor: pointer;" title="Ver manual de cuidado">
                             <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #aaa;">
                                 <span style="display: flex; align-items: center; gap: 4px;">
                                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ab47bc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="5"></circle><circle cx="17" cy="17" r="3"></circle><circle cx="12" cy="7" r="4"></circle></svg>

@@ -219,7 +219,7 @@ window.NexoEnergyManager = {
         const needsHud = document.getElementById("needs-hud");
         if (needsHud) {
             if (window.miMascota && window.miMascota.id && window.miMascota.id !== "temp") {
-                needsHud.classList.remove("hidden");
+                needsHud.classList.add("hidden");
                 
                 const hambre = Math.floor(window.miMascota.hambre !== undefined ? window.miMascota.hambre : 100);
                 const diversion = Math.floor(window.miMascota.diversion !== undefined ? window.miMascota.diversion : 100);
