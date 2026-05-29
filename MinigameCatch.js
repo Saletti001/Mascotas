@@ -157,10 +157,8 @@ class MinigameCatch {
         
         if (!quit) {
             const reward = Math.floor(this.score / 5);
-            alert(`¡Tiempo terminado!\nAtrapaste ${this.score} manzanas.\nRatio 5:1 = Ganas ${reward} 🍎 para tu inventario.`);
             
             if (reward > 0 && window.miInventario) {
-                // SOLUCIÓN DEL BUG: Ahora pasamos "count: reward" dentro de las propiedades del objeto
                 window.miInventario.addItem({
                     id: "apple_01",
                     name: "Manzana",
@@ -176,12 +174,22 @@ class MinigameCatch {
                 if (window.miMascota.diversion === undefined) window.miMascota.diversion = 100;
                 if (window.miMascota.amistad === undefined) window.miMascota.amistad = 0;
                 window.miMascota.diversion = Math.min(100, window.miMascota.diversion + 20);
-                window.miMascota.amistad = Math.min(100, window.miMascota.amistad + 2);
+                
+                const hoy = new Date().toDateString();
+                if (!window.miMascota.registroAmistadDiaria) window.miMascota.registroAmistadDiaria = {};
+                let gananciaExplicita = 0;
+                if (window.miMascota.registroAmistadDiaria.arcade !== hoy) {
+                    window.miMascota.registroAmistadDiaria.arcade = hoy;
+                    gananciaExplicita = Math.floor(Math.random() * 3) + 1;
+                    window.miMascota.amistad = Math.min(100, window.miMascota.amistad + gananciaExplicita);
+                }
+
                 if (window.misGenos) {
                     const idx = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
                     if (idx !== -1) {
                         window.misGenos[idx].diversion = window.miMascota.diversion;
                         window.misGenos[idx].amistad = window.miMascota.amistad;
+                        window.misGenos[idx].registroAmistadDiaria = window.miMascota.registroAmistadDiaria;
                     }
                 }
                 if (window.NexoEnergyManager) {
@@ -189,6 +197,14 @@ class MinigameCatch {
                 }
                 if (window.guardarJuego) window.guardarJuego();
                 else if (window.guardarProgreso) window.guardarProgreso();
+
+                if (gananciaExplicita > 0) {
+                    alert(`¡Tiempo terminado!\nAtrapaste ${this.score} manzanas.\nRatio 5:1 = Ganas ${reward} 🍎.\n¡Diversión +20% y Amistad +${gananciaExplicita}!`);
+                } else {
+                    alert(`¡Tiempo terminado!\nAtrapaste ${this.score} manzanas.\nRatio 5:1 = Ganas ${reward} 🍎.\n¡Diversión +20%! (Amistad por Arcade ya obtenida hoy)`);
+                }
+            } else {
+                alert(`¡Tiempo terminado!\nAtrapaste ${this.score} manzanas.\nRatio 5:1 = Ganas ${reward} 🍎.`);
             }
         }
         

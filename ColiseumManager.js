@@ -216,8 +216,8 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         const activeGenoRes = window.miMascota ? (window.miMascota.resistencia !== undefined ? window.miMascota.resistencia : 100) : 100;
-        if (activeGenoRes < 25) {
-            alert("Tu Geno activo no tiene suficiente Resistencia. Se requieren 25 de Resistencia para combatir (Tiene: " + Math.floor(activeGenoRes) + ").");
+        if (activeGenoRes < 20) {
+            alert("Tu Geno activo no tiene suficiente Resistencia. Se requieren 20 de Resistencia para combatir (Tiene: " + Math.floor(activeGenoRes) + ").");
             return;
         }
 
@@ -273,7 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         const activeGenoRes = window.miMascota ? (window.miMascota.resistencia !== undefined ? window.miMascota.resistencia : 100) : 100;
-        if (activeGenoRes < 25) {
+        if (activeGenoRes < 20) {
             alert("Tu Geno activo no tiene suficiente Resistencia.");
             return;
         }
@@ -284,7 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (window.NexoEnergyManager) {
             window.NexoEnergyManager.descontarEnergia(10);
-            window.NexoEnergyManager.descontarResistenciaGeno(window.miMascota, 25);
+            window.NexoEnergyManager.descontarResistenciaGeno(window.miMascota, 20);
         }
 
         let btnStart = document.getElementById("btn-start-battle");
@@ -585,19 +585,36 @@ document.addEventListener("DOMContentLoaded", () => {
             ColiseumUI.agregarLog(`<span style="color:#aaa">Ganaste ${xpGanada} XP.</span>`);
             if (window.ganarXP) window.ganarXP(xpGanada);
 
-            // Cuidado / Necesidades: +15 Diversión, +3 Amistad
+            // Cuidado / Necesidades: +15 Diversión, e Incrementar Amistad por combate (1 a 3, una vez al día)
             if (window.miMascota) {
                 if (window.miMascota.diversion === undefined) window.miMascota.diversion = 100;
                 if (window.miMascota.amistad === undefined) window.miMascota.amistad = 0;
                 window.miMascota.diversion = Math.min(100, window.miMascota.diversion + 15);
-                window.miMascota.amistad = Math.min(100, window.miMascota.amistad + 3);
+                
+                const hoy = new Date().toDateString();
+                if (!window.miMascota.registroAmistadDiaria) window.miMascota.registroAmistadDiaria = {};
+                let gananciaExplicita = 0;
+                if (window.miMascota.registroAmistadDiaria.combate !== hoy) {
+                    window.miMascota.registroAmistadDiaria.combate = hoy;
+                    gananciaExplicita = Math.floor(Math.random() * 3) + 1;
+                    window.miMascota.amistad = Math.min(100, window.miMascota.amistad + gananciaExplicita);
+                }
+
                 if (window.misGenos) {
                     const idx = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
                     if (idx !== -1) {
                         window.misGenos[idx].diversion = window.miMascota.diversion;
                         window.misGenos[idx].amistad = window.miMascota.amistad;
+                        window.misGenos[idx].registroAmistadDiaria = window.miMascota.registroAmistadDiaria;
                     }
                 }
+                
+                if (gananciaExplicita > 0) {
+                    ColiseumUI.agregarLog(`<span style="color:#ec407a">💖 ¡Tu Geno se siente más unido a ti! Amistad +${gananciaExplicita}.</span>`);
+                } else {
+                    ColiseumUI.agregarLog(`<span style="color:#aaa">💖 Victoria del Geno. (Amistad por combate ya obtenida hoy).</span>`);
+                }
+
                 if (window.NexoEnergyManager) {
                     window.NexoEnergyManager.actualizarUI();
                 }

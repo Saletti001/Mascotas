@@ -90,9 +90,9 @@ window.NexoEnergyManager = {
                 if (geno.amistad === undefined) geno.amistad = 0;
                 if (geno.evAcumulada === undefined) geno.evAcumulada = 0;
 
-                // Compañero activo principal o reserva (10 veces más lento)
+                // Compañero activo principal o reserva (5 veces más lento)
                 const isActive = window.miMascota && String(window.miMascota.id) === String(geno.id);
-                const drainMultiplier = isActive ? 1.0 : 0.1;
+                const drainMultiplier = isActive ? 1.0 : 0.2;
 
                 // Consumo de Hambre (12 horas completo)
                 let hungerRate = (100 / 43200) * drainMultiplier;

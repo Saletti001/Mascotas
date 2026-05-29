@@ -304,11 +304,10 @@ document.addEventListener("DOMContentLoaded", () => {
         contenedorGenoMain.addEventListener("click", (e) => {
             if (!window.miMascota || window.miMascota.id === "temp") return;
             
-            // Crear un pequeño corazón flotante en cada toque
+            // Crear un pequeño corazón flotante en cada toque (usando SVG)
             const heart = document.createElement("div");
             heart.className = "heart-particle";
-            heart.innerText = "❤️";
-            heart.style.fontSize = "16px";
+            heart.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#ff007f" stroke="none" style="filter: drop-shadow(0 0 4px rgba(255, 0, 127, 0.6));"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
             const rect = contenedorGenoMain.getBoundingClientRect();
             heart.style.left = `${e.clientX - rect.left}px`;
             heart.style.top = `${e.clientY - rect.top}px`;
@@ -337,8 +336,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 contenedorGenoMain.classList.add("geno-idle");
             }, 300);
 
-            // Cuidado Diario
+            // Cuidado Diario e Incrementar Amistad por caricia (1 a 3, una vez al día)
             const hoy = new Date().toDateString();
+            if (!window.miMascota.registroAmistadDiaria) window.miMascota.registroAmistadDiaria = {};
+            
+            let gananciaExplicita = 0;
+            if (window.miMascota.registroAmistadDiaria.caricia !== hoy) {
+                window.miMascota.registroAmistadDiaria.caricia = hoy;
+                gananciaExplicita = Math.floor(Math.random() * 3) + 1;
+                window.miMascota.amistad = Math.min(100, (window.miMascota.amistad || 0) + gananciaExplicita);
+            }
+
             if (window.miMascota.ultimoCuidadoDiario !== hoy) {
                 window.miMascota.ultimoCuidadoDiario = hoy;
                 if (window.misGenos) {
@@ -350,15 +358,20 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (window.ganarXP) {
                     window.ganarXP(10);
                 }
-                alert(`¡Has acariciado a ${window.miMascota.name || 'tu Geno'}! Cuidado diario activado: +10 XP y +20% de velocidad de recuperación de resistencia para hoy.`);
+                let msg = `¡Has acariciado a ${window.miMascota.name || 'tu Geno'}! Cuidado diario activado: +10 XP y +20% de velocidad de recuperación de resistencia para hoy.`;
+                if (gananciaExplicita > 0) {
+                    msg += ` ¡Amistad +${gananciaExplicita}!`;
+                }
+                alert(msg);
+            } else if (gananciaExplicita > 0) {
+                alert(`¡Amistad +${gananciaExplicita} con ${window.miMascota.name || 'tu Geno'}!`);
             }
 
-            // Incrementar Amistad por caricia (+5, tope 100)
-            window.miMascota.amistad = Math.min(100, (window.miMascota.amistad || 0) + 5);
             if (window.misGenos) {
                 const idx = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
                 if (idx !== -1) {
                     window.misGenos[idx].amistad = window.miMascota.amistad;
+                    window.misGenos[idx].registroAmistadDiaria = window.miMascota.registroAmistadDiaria;
                 }
             }
             if (window.NexoEnergyManager) {
@@ -805,13 +818,26 @@ function iniciarSecuenciaBienvenida() {
                 spot.remove();
                 
                 window.miMascota.higiene = Math.min(100, (window.miMascota.higiene || 0) + 15);
-                window.miMascota.amistad = Math.min(100, (window.miMascota.amistad || 0) + 5);
+                
+                const hoy = new Date().toDateString();
+                if (!window.miMascota.registroAmistadDiaria) window.miMascota.registroAmistadDiaria = {};
+                
+                let gananciaExplicita = 0;
+                if (window.miMascota.registroAmistadDiaria.limpieza !== hoy) {
+                    window.miMascota.registroAmistadDiaria.limpieza = hoy;
+                    gananciaExplicita = Math.floor(Math.random() * 3) + 1;
+                    window.miMascota.amistad = Math.min(100, (window.miMascota.amistad || 0) + gananciaExplicita);
+                    alert(`🧼 Limpiaste la suciedad de ${window.miMascota.name}. Higiene +15%, ¡Amistad +${gananciaExplicita}!`);
+                } else {
+                    alert(`🧼 Limpiaste la suciedad de ${window.miMascota.name}. Higiene +15%. (Amistad ya obtenida hoy)`);
+                }
                 
                 if (window.misGenos) {
                     const idx = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
                     if (idx !== -1) {
                         window.misGenos[idx].higiene = window.miMascota.higiene;
                         window.misGenos[idx].amistad = window.miMascota.amistad;
+                        window.misGenos[idx].registroAmistadDiaria = window.miMascota.registroAmistadDiaria;
                     }
                 }
                 
@@ -921,7 +947,9 @@ function iniciarSecuenciaBienvenida() {
 
         if (needsInfoModal) {
             const cerrarModal = (e) => {
-                e.stopPropagation();
+                if (e && typeof e.stopPropagation === 'function') {
+                    e.stopPropagation();
+                }
                 needsInfoModal.classList.add("hidden");
                 if (window.Sonidos) window.Sonidos.play("click");
             };

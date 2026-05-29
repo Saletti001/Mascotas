@@ -205,7 +205,7 @@ Es una barra de energía global asociada a la cuenta del jugador (máximo 100 pu
 
 #### 2. Fatiga y Resistencia (Por Geno)
 Cada Geno cuenta con su propia barra individual de resistencia de **0 a 100 puntos**. Combatir gasta la resistencia física de la criatura:
-- **Combate en el Coliseo:** reduce **25 resistencia** del Geno.
+- **Combate en el Coliseo:** reduce **20 resistencia** del Geno.
 - **Batalla en la Torre PvE:** reduce **15 resistencia** del Geno.
 - **Estado de Descanso:** Cuando la resistencia de un Geno llega a 0, entra en estado de descanso y no puede ser seleccionado para combatir hasta que recupere energía.
 - **Tasa de Recuperación:** Recupera **25 de resistencia por hora** de descanso completo (requiere 4 horas para regenerarse tras agotarse por completo).

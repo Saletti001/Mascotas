@@ -430,47 +430,46 @@
             </div>
         </div>
 
-        <!-- Modal de Información del Sistema de Cuidado (Tamagotchi) -->
         <div id="needs-info-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
             <div class="modal-content" style="background: linear-gradient(180deg, #101524 0%, #080b12 100%); border: 2px solid #ff007f; box-shadow: 0 0 25px rgba(255, 0, 127, 0.4), inset 0 0 15px rgba(255, 0, 127, 0.1); width: 85%; max-width: 320px; border-radius: 16px; padding: 20px 18px; box-sizing: border-box; position: relative; max-height: 85vh; display: flex; flex-direction: column; font-family: sans-serif;">
-                <button id="close-needs-info" style="position: absolute; top: 12px; right: 15px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 0; transition: transform 0.2s;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                <button id="close-needs-info" style="position: absolute; top: 12px; right: 15px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 10px; z-index: 10; transition: transform 0.2s;"><svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
                 
-                <div style="font-size: 32px; text-align: center; margin-bottom: 5px; filter: drop-shadow(0 0 8px rgba(255, 0, 127, 0.5));">🧼</div>
+                <div style="display: flex; justify-content: center; margin-bottom: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#ff007f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 8px rgba(255, 0, 127, 0.6));"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></div>
                 <h3 style="color: #ff007f; text-transform: uppercase; margin: 0 0 12px 0; font-size: 14px; letter-spacing: 1.5px; text-align: center; font-weight: bold;">Manual de Cuidado</h3>
                 
                 <div class="help-scroll-content" style="flex: 1; overflow-y: auto; font-size: 11.5px; color: #cbd5e1; line-height: 1.4; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; text-align: left; scrollbar-width: none; -ms-overflow-style: none;">
                     <p style="margin: 0; text-align: center; color: #80deea; font-weight: bold;">¡El estado de tu Geno Compañero influye en el combate y la economía!</p>
                     
                     <div style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px;">
-                        <span style="color: #ff7043; font-weight: bold;">🍗 Hambre:</span> Se vacía en 12h. Dále de comer manzanas farmeadas en Arcade. Los portadores de <span style="color: #4dd0e1;">Reactor Instintivo</span> la consumen 30% más lento.
+                        <span style="color: #ff7043; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ff7043" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a5 5 0 0 0-5 5v3a5 5 0 0 0 1.25 3.25l-2.5 2.5a2.5 2.5 0 0 0 3.5 3.5l2.5-2.5A5 5 0 0 0 17 12V7a5 5 0 0 0-5-5z"></path></svg> Hambre:</span> Se vacía en 12h. Dále de comer manzanas farmeadas en Arcade. Los portadores de <span style="color: #4dd0e1;">Reactor Instintivo</span> la consumen 30% más lento.
                     </div>
                     
                     <div style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px;">
-                        <span style="color: #29b6f6; font-weight: bold;">⚽ Diversión:</span> Se vacía en 16h. Juega al Arcade o gana en el Coliseo. El gen <span style="color: #4dd0e1;">Conexión Empática</span> previene su caída si tienes 2 o más portadores.
+                        <span style="color: #29b6f6; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#29b6f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="3"></rect><path d="M6 12h4M8 10v4M15 11h.01M18 13h.01"></path></svg> Diversión:</span> Se vacía en 16h. Juega al Arcade o gana en el Coliseo. El gen <span style="color: #4dd0e1;">Conexión Empática</span> previene su caída si tienes 2 o más portadores.
                     </div>
                     
                     <div style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px;">
-                        <span style="color: #ab47bc; font-weight: bold;">🧼 Higiene:</span> Se vacía en 24h. Spawnea manchas de suciedad. Frotalas con el dedo/mouse en el Laboratorio para limpiarlas.
+                        <span style="color: #ab47bc; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ab47bc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-11-7-11S5 10.7 5 15a7 7 0 0 0 7 7z"></path></svg> Higiene:</span> Se vacía en 24h. Spawnea manchas de suciedad. Frotalas con el dedo/mouse en el Laboratorio para limpiarlas.
                     </div>
                     
                     <div style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px;">
-                        <span style="color: #4CAF50; font-weight: bold;">🔋 Energía (Resistencia):</span> Se gasta combatiendo (25 resistencia). Se recupera descansando o con Cuidado Diario (+20% velocidad).
+                        <span style="color: #4CAF50; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg> Energía (Resistencia):</span> Se gasta combatiendo (20% resistencia). Se recupera descansando o con Cuidado Diario (+20% velocidad).
                     </div>
 
                     <div style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px;">
-                        <span style="color: #ec407a; font-weight: bold;">❤️ Amistad:</span> Sube al acariciar (+5), limpiar (+5), alimentar (+2), ganar combates (+3) o jugar arcade (+2). Aumenta la Esencia pasiva generada.
+                        <span style="color: #ec407a; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ec407a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg> Amistad:</span> Sube de 1 a 3 puntos (máx. una vez al día por acción) al acariciar, limpiar, alimentar, ganar combates o jugar arcade. Aumenta la Esencia pasiva generada.
                     </div>
                     
                     <div style="background: rgba(76, 175, 80, 0.15); border: 1px solid #4CAF50; border-radius: 8px; padding: 8px; margin-top: 4px;">
-                        <strong style="color: #4CAF50;">⚔️ Estado Óptimo (Barras &gt; 80%):</strong> +5% de probabilidad Crítica (+25 LUK stat) y genera EV pasiva cada segundo (aparecen monedas flotantes sobre el Geno).
+                        <strong style="color: #4CAF50; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M16 16l3 3M19 13l2 2"/></svg> Estado Óptimo (Barras &gt; 80%):</strong> +5% de probabilidad Crítica (+25 LUK stat) y genera EV pasiva cada segundo (aparecen monedas flotantes sobre el Geno).
                     </div>
                     
                     <div style="background: rgba(244, 67, 54, 0.15); border: 1px solid #f44336; border-radius: 8px; padding: 8px;">
-                        <strong style="color: #f44336;">⚠️ Depresión/Huelga (Barras &lt; 20%):</strong> ¡El Geno se negará a pelear en el Coliseo!
+                        <strong style="color: #f44336; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f44336" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> Depresión/Huelga (Barras &lt; 20%):</strong> ¡El Geno se negará a pelear en el Coliseo!
                     </div>
 
                     <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px; font-size: 11px;">
-                        <strong style="color: #e2e8f0;">💤 Reserva:</strong> Las necesidades de los Genos en reserva (no activos) bajan 10 veces más despacio. Puedes automatizar su cuidado usando consumibles de la tienda de Esencia.
+                        <strong style="color: #e2e8f0; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> Reserva:</strong> Las necesidades de los Genos en reserva (no activos) bajan 5 veces más despacio. Puedes automatizar su cuidado usando consumibles de la tienda de Esencia.
                     </div>
                 </div>
                 
@@ -481,9 +480,9 @@
         <!-- Modal de Ayuda del Coliseo (Premium Cyberpunk Neon) -->
         <div id="coliseum-help-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
             <div class="modal-content" style="background: linear-gradient(180deg, #0d1e2d 0%, #07111c 100%); border: 2px solid #4dd0e1; box-shadow: 0 0 25px rgba(77, 208, 225, 0.4), inset 0 0 15px rgba(77, 208, 225, 0.1); width: 85%; max-width: 320px; border-radius: 16px; padding: 25px 20px; box-sizing: border-box; position: relative; max-height: 85vh; display: flex; flex-direction: column;">
-                <button id="close-coliseum-help" style="position: absolute; top: 12px; right: 15px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 0; transition: transform 0.2s;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                <button id="close-coliseum-help" style="position: absolute; top: 12px; right: 15px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 10px; z-index: 10; transition: transform 0.2s;"><svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
                 
-                <div style="font-size: 38px; text-align: center; margin-bottom: 5px; filter: drop-shadow(0 0 8px rgba(77, 208, 225, 0.5));">🏆</div>
+                <div style="display: flex; justify-content: center; margin-bottom: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#4dd0e1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 8px rgba(77, 208, 225, 0.6));"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34"></path><path d="M12 2a8.26 8.26 0 0 0-8 8h16a8.26 8.26 0 0 0-8-8z"></path></svg></div>
                 <h3 style="color: #4dd0e1; text-transform: uppercase; margin: 0 0 15px 0; font-size: 15px; letter-spacing: 1.5px; text-align: center; font-weight: bold;">Manual del Coliseo</h3>
                 
                 <div class="help-scroll-content" style="flex-grow: 1; overflow-y: auto; background: rgba(0,0,0,0.5); padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); font-size: 11px; line-height: 1.5; color: #cbd5e1; text-align: left; scrollbar-width: none; -ms-overflow-style: none;">
@@ -497,23 +496,21 @@
                         }
                     </style>
                     
-                    <div class="help-section-title">⚔️ Dinámica del Combate</div>
+                    <div class="help-section-title"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ff9800" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M16 16l3 3M19 13l2 2"/></svg> Dinámica del Combate</div>
                     Duelos tácticos de 1v1. En cada turno seleccionas un ataque. El Geno más veloz suele golpear primero.
                     
-                    <div class="help-section-title">⚡ Tabla de Ventajas</div>
+                    <div class="help-section-title"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ff9800" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Tabla de Ventajas</div>
                     Los ataques elementales tienen una ventaja cíclica (+35% daño causado, -25% daño recibido):
                     <div style="color: #00e5ff; font-weight: bold; margin: 4px 0; padding-left: 6px; border-left: 2px solid #00e5ff; font-size: 10px; line-height: 1.3;">
                         Biomutante ➔ Sintético ➔ Tóxico ➔ Radiactivo ➔ Cibernético ➔ Viral ➔ Biomutante
                     </div>
                     
-                    <div class="help-section-title">💾 Tácticas IFTTT</div>
+                    <div class="help-section-title"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ff9800" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> Tácticas IFTTT</div>
                     En el laboratorio de implantes puedes configurar reglas automáticas de comportamiento para que tu IA luche de forma inteligente y automatizada.
                     
                     <!-- PROTOCOLO DE AYUDA DE BAJO NIVEL -->
                     <div id="help-low-level-section" style="margin-top: 14px; padding: 10px; background: rgba(105, 240, 174, 0.08); border: 1px solid rgba(105, 240, 174, 0.4); border-radius: 8px; transition: 0.3s;">
-                        <div style="color: #69f0ae; font-weight: bold; text-transform: uppercase; font-size: 10px; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;">
-                            🛡️ Asistencia de Recluta
-                        </div>
+                        <div style="color: #69f0ae; font-weight: bold; text-transform: uppercase; font-size: 10px; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#69f0ae" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> Asistencia de Recluta</div>
                         <span style="color: #69f0ae; font-weight: 500;">¡Activo para Genos menor a Nivel 5!</span><br>
                         Los oponentes de la arena se adaptarán a tu nivel, sus estadísticas base se reducirán en un **15%** y no tendrán bono de pureza. Además, tu Geno infligirá **+15% de daño extra** y recibirá **-15% de daño reducido** para asegurar tu aprendizaje sin frustraciones.
                     </div>

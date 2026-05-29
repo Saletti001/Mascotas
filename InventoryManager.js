@@ -269,7 +269,16 @@ class InventoryManager {
             if (window.miMascota.amistad === undefined) window.miMascota.amistad = 0;
             
             window.miMascota.hambre = Math.min(100, window.miMascota.hambre + 20);
-            window.miMascota.amistad = Math.min(100, window.miMascota.amistad + 2);
+            
+            const hoy = new Date().toDateString();
+            if (!window.miMascota.registroAmistadDiaria) window.miMascota.registroAmistadDiaria = {};
+            
+            let gananciaExplicita = 0;
+            if (window.miMascota.registroAmistadDiaria.alimentacion !== hoy) {
+                window.miMascota.registroAmistadDiaria.alimentacion = hoy;
+                gananciaExplicita = Math.floor(Math.random() * 3) + 1;
+                window.miMascota.amistad = Math.min(100, (window.miMascota.amistad || 0) + gananciaExplicita);
+            }
             
             // Sincronizar con misGenos
             if (window.misGenos) {
@@ -277,11 +286,16 @@ class InventoryManager {
                 if (idx !== -1) {
                     window.misGenos[idx].hambre = window.miMascota.hambre;
                     window.misGenos[idx].amistad = window.miMascota.amistad;
+                    window.misGenos[idx].registroAmistadDiaria = window.miMascota.registroAmistadDiaria;
                 }
             }
             
             this.consumeItem(item.id, 1);
-            alert(`🍱 Alimentaste a ${window.miMascota.name}. Hambre +20%, Amistad +2.`);
+            if (gananciaExplicita > 0) {
+                alert(`🍱 Alimentaste a ${window.miMascota.name}. Hambre +20%, ¡Amistad +${gananciaExplicita}!`);
+            } else {
+                alert(`🍱 Alimentaste a ${window.miMascota.name}. Hambre +20%. (Amistad ya obtenida hoy)`);
+            }
             
             if (window.NexoEnergyManager) window.NexoEnergyManager.actualizarUI();
             this.guardarCambios();
@@ -323,11 +337,17 @@ class InventoryManager {
             if (window.Sonidos) window.Sonidos.play("click");
         } 
         else if (item.id === "plasma_shower") {
-            // Set hygiene to 100 and Amistad +5 for all Genos
+            // Set hygiene to 100 and Amistad (1-3) for all Genos once per day
+            const hoy = new Date().toDateString();
             if (window.misGenos) {
                 window.misGenos.forEach(g => {
                     g.higiene = 100;
-                    g.amistad = Math.min(100, (g.amistad || 0) + 5);
+                    if (!g.registroAmistadDiaria) g.registroAmistadDiaria = {};
+                    if (g.registroAmistadDiaria.ducha !== hoy) {
+                        g.registroAmistadDiaria.ducha = hoy;
+                        const ganancia = Math.floor(Math.random() * 3) + 1;
+                        g.amistad = Math.min(100, (g.amistad || 0) + ganancia);
+                    }
                 });
             }
             if (window.miMascota && window.miMascota.id !== "temp" && window.misGenos) {
@@ -335,11 +355,12 @@ class InventoryManager {
                 if (act) {
                     window.miMascota.higiene = act.higiene;
                     window.miMascota.amistad = act.amistad;
+                    window.miMascota.registroAmistadDiaria = act.registroAmistadDiaria;
                 }
             }
             
             this.consumeItem(item.id, 1);
-            alert(`🧼 Ducha de Plasma activada. Higiene al 100% y Amistad +5 para todos tus Genos.`);
+            alert(`🧼 Ducha de Plasma activada. Higiene al 100% y Amistad (1-3 pts) para todos tus Genos elegibles hoy.`);
             
             if (window.NexoEnergyManager) window.NexoEnergyManager.actualizarUI();
             this.guardarCambios();
