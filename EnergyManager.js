@@ -238,17 +238,17 @@ window.NexoEnergyManager = {
                 const statusBanner = document.getElementById("needs-status-banner");
                 if (statusBanner) {
                     if (window.isGenoNeglected && window.isGenoNeglected(window.miMascota)) {
-                        statusBanner.innerText = "EN HUELGA ⚠️";
+                        statusBanner.innerText = "EN HUELGA";
                         statusBanner.style.background = "rgba(244, 67, 54, 0.2)";
                         statusBanner.style.border = "1.5px solid #f44336";
                         statusBanner.style.color = "#f44336";
                     } else if (window.isGenoHappy && window.isGenoHappy(window.miMascota)) {
-                        statusBanner.innerText = "ESTADO ÓPTIMO ⚔️";
+                        statusBanner.innerText = "ESTADO ÓPTIMO";
                         statusBanner.style.background = "rgba(76, 175, 80, 0.2)";
                         statusBanner.style.border = "1.5px solid #4CAF50";
                         statusBanner.style.color = "#4CAF50";
                     } else {
-                        statusBanner.innerText = "NEUTRAL 💤";
+                        statusBanner.innerText = "NEUTRAL";
                         statusBanner.style.background = "rgba(128, 128, 128, 0.2)";
                         statusBanner.style.border = "1.5px solid #888888";
                         statusBanner.style.color = "#888888";
