@@ -66,7 +66,9 @@ window.BASE_DATOS_GENES_V9 = {
     ],
     social: [
         { id: "gen_mentor", name: "Gen Mentor", desc: "+15% XP para becados" },
-        { id: "aura_liderazgo", name: "Aura de Liderazgo", desc: "+10% ATK a todo el equipo" }
+        { id: "aura_liderazgo", name: "Aura de Liderazgo", desc: "+10% ATK a todo el equipo" },
+        { id: "reactor_instintivo", name: "Reactor Instintivo", desc: "Reduce el consumo de Hambre de la mascota en un 30%." },
+        { id: "conexion_empatica", name: "Conexión Empática", desc: "Si hay dos Genos con este gen en el Laboratorio, su barra de Diversión no baja." }
     ]
 };
 

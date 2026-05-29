@@ -1,6 +1,20 @@
-// =========================================
-// EnergyManager.js - GESTIÓN DE ENERGÍA NEXO Y RESISTENCIA DE GENOS
-// =========================================
+window.isGenoHappy = function(geno) {
+    if (!geno) return false;
+    const hambre = geno.hambre !== undefined ? geno.hambre : 100;
+    const diversion = geno.diversion !== undefined ? geno.diversion : 100;
+    const higiene = geno.higiene !== undefined ? geno.higiene : 100;
+    const resistencia = geno.resistencia !== undefined ? geno.resistencia : 100;
+    return hambre >= 80 && diversion >= 80 && higiene >= 80 && resistencia >= 80;
+};
+
+window.isGenoNeglected = function(geno) {
+    if (!geno) return false;
+    const hambre = geno.hambre !== undefined ? geno.hambre : 100;
+    const diversion = geno.diversion !== undefined ? geno.diversion : 100;
+    const higiene = geno.higiene !== undefined ? geno.higiene : 100;
+    const resistencia = geno.resistencia !== undefined ? geno.resistencia : 100;
+    return hambre < 20 || diversion < 20 || higiene < 20 || resistencia < 20;
+};
 
 window.NexoEnergyManager = {
     energiaMax: 100,
@@ -54,27 +68,83 @@ window.NexoEnergyManager = {
         const recuperacionEnergia = segundosTranscurridos / 720;
         window.nexoEnergy = Math.min(this.energiaMax, (window.nexoEnergy || 100) + recuperacionEnergia);
 
-        // 25 de resistencia por hora = 25 / 3600 por segundo = 1 / 144 por segundo
         const hoy = new Date().toDateString();
 
         if (window.misGenos) {
+            // Contar genes de conexion_empatica
+            let countEmpatica = 0;
+            window.misGenos.forEach(g => {
+                if (window.tieneGenActivoV9 && window.tieneGenActivoV9(g, "conexion_empatica")) {
+                    countEmpatica++;
+                }
+            });
+            const hasEmpaticaSynergy = countEmpatica >= 2;
+
+            const isRationAutoActive = window.rationAutoActiveUntil && window.rationAutoActiveUntil > Date.now();
+
             window.misGenos.forEach(geno => {
                 if (geno.resistencia === undefined) geno.resistencia = 100;
+                if (geno.hambre === undefined) geno.hambre = 100;
+                if (geno.diversion === undefined) geno.diversion = 100;
+                if (geno.higiene === undefined) geno.higiene = 100;
+                if (geno.amistad === undefined) geno.amistad = 0;
+                if (geno.evAcumulada === undefined) geno.evAcumulada = 0;
 
-                // El cuidado diario incrementa un 20% la velocidad de recuperación (de 25 a 30 por hora)
+                // Compañero activo principal o reserva (10 veces más lento)
+                const isActive = window.miMascota && String(window.miMascota.id) === String(geno.id);
+                const drainMultiplier = isActive ? 1.0 : 0.1;
+
+                // Consumo de Hambre (12 horas completo)
+                let hungerRate = (100 / 43200) * drainMultiplier;
+                if (window.tieneGenActivoV9 && window.tieneGenActivoV9(geno, "reactor_instintivo")) {
+                    hungerRate *= 0.7; // Reducción del 30%
+                }
+                if (!isActive && isRationAutoActive) {
+                    hungerRate = 0;
+                    geno.hambre = 100;
+                }
+                geno.hambre = Math.max(0, geno.hambre - hungerRate * segundosTranscurridos);
+
+                // Consumo de Diversión (16 horas completo)
+                let funRate = (100 / 57600) * drainMultiplier;
+                if (hasEmpaticaSynergy && window.tieneGenActivoV9 && window.tieneGenActivoV9(geno, "conexion_empatica")) {
+                    funRate = 0; // Inmunidad
+                }
+                geno.diversion = Math.max(0, geno.diversion - funRate * segundosTranscurridos);
+
+                // Consumo de Higiene (24 horas completo)
+                const hygieneRate = (100 / 86400) * drainMultiplier;
+                geno.higiene = Math.max(0, geno.higiene - hygieneRate * segundosTranscurridos);
+
+                // Recuperación de Resistencia
                 const tieneCuidado = geno.ultimoCuidadoDiario === hoy;
                 const tasaRecuperacion = tieneCuidado ? (25 * 1.20) : 25;
                 const recuperacionResistencia = (tasaRecuperacion / 3600) * segundosTranscurridos;
-
                 geno.resistencia = Math.min(100, geno.resistencia + recuperacionResistencia);
+
+                // Generación de Esencia Pasiva
+                if (window.isGenoHappy && window.isGenoHappy(geno)) {
+                    const baseEvRate = 0.1 / 3600; // 0.1 EV/h en segundos
+                    const essCMultiplier = (window.tieneGenActivoV9 && window.tieneGenActivoV9(geno, "esencia_concentrada")) ? 2.0 : 1.0;
+                    const friendshipMultiplier = 1.0 + ((geno.amistad || 0) / 100.0);
+                    const happyMultiplier = 2.0;
+                    const evRate = baseEvRate * happyMultiplier * essCMultiplier * friendshipMultiplier;
+                    
+                    geno.evAcumulada = Math.min(10.0, (geno.evAcumulada || 0) + evRate * segundosTranscurridos);
+                }
             });
         }
 
-        // Sincronizar la resistencia del Geno activo
+        // Sincronizar el Geno activo
         if (window.miMascota && window.miMascota.id !== "temp" && window.misGenos) {
             const activoOriginal = window.misGenos.find(g => String(g.id) === String(window.miMascota.id));
             if (activoOriginal) {
                 window.miMascota.resistencia = activoOriginal.resistencia;
+                window.miMascota.hambre = activoOriginal.hambre;
+                window.miMascota.diversion = activoOriginal.diversion;
+                window.miMascota.higiene = activoOriginal.higiene;
+                window.miMascota.amistad = activoOriginal.amistad;
+                window.miMascota.evAcumulada = activoOriginal.evAcumulada;
             }
         }
 
@@ -118,7 +188,7 @@ window.NexoEnergyManager = {
         if (energyText) energyText.innerText = `${currentEnergy} / ${this.energiaMax}`;
         if (energyFill) energyFill.style.width = `${currentEnergy}%`;
 
-        // Actualizar la resistencia del Geno activo en el panel RPG
+        // Actualizar la resistencia en el panel RPG
         if (window.miMascota && window.miMascota.id !== "temp") {
             const resVal = Math.floor(window.miMascota.resistencia !== undefined ? window.miMascota.resistencia : 100);
             const resText = document.getElementById("geno-resistance");
@@ -130,5 +200,95 @@ window.NexoEnergyManager = {
                 resFill.style.backgroundColor = resColor;
             }
         }
+
+        // Actualizar el HUD de Cuidado del Geno activo
+        const needsHud = document.getElementById("needs-hud");
+        if (needsHud) {
+            if (window.miMascota && window.miMascota.id && window.miMascota.id !== "temp") {
+                needsHud.classList.remove("hidden");
+                
+                const hambre = Math.floor(window.miMascota.hambre !== undefined ? window.miMascota.hambre : 100);
+                const diversion = Math.floor(window.miMascota.diversion !== undefined ? window.miMascota.diversion : 100);
+                const higiene = Math.floor(window.miMascota.higiene !== undefined ? window.miMascota.higiene : 100);
+                const resistencia = Math.floor(window.miMascota.resistencia !== undefined ? window.miMascota.resistencia : 100);
+                const amistad = Math.floor(window.miMascota.amistad !== undefined ? window.miMascota.amistad : 0);
+
+                const hungerVal = document.getElementById("needs-hunger-val");
+                const funVal = document.getElementById("needs-fun-val");
+                const hygieneVal = document.getElementById("needs-hygiene-val");
+                const energyVal = document.getElementById("needs-energy-val");
+                const friendshipVal = document.getElementById("needs-friendship-val");
+
+                if (hungerVal) hungerVal.innerText = `${hambre}%`;
+                if (funVal) funVal.innerText = `${diversion}%`;
+                if (hygieneVal) hygieneVal.innerText = `${higiene}%`;
+                if (energyVal) energyVal.innerText = `${resistencia}%`;
+                if (friendshipVal) friendshipVal.innerText = `${amistad}%`;
+
+                const hungerFill = document.getElementById("needs-hunger-fill");
+                const funFill = document.getElementById("needs-fun-fill");
+                const hygieneFill = document.getElementById("needs-hygiene-fill");
+                const energyFill = document.getElementById("needs-energy-fill");
+
+                if (hungerFill) hungerFill.style.width = `${hambre}%`;
+                if (funFill) funFill.style.width = `${diversion}%`;
+                if (hygieneFill) hygieneFill.style.width = `${higiene}%`;
+                if (energyFill) energyFill.style.width = `${resistencia}%`;
+
+                const statusBanner = document.getElementById("needs-status-banner");
+                if (statusBanner) {
+                    if (window.isGenoNeglected && window.isGenoNeglected(window.miMascota)) {
+                        statusBanner.innerText = "EN HUELGA ⚠️";
+                        statusBanner.style.background = "rgba(244, 67, 54, 0.2)";
+                        statusBanner.style.border = "1.5px solid #f44336";
+                        statusBanner.style.color = "#f44336";
+                    } else if (window.isGenoHappy && window.isGenoHappy(window.miMascota)) {
+                        statusBanner.innerText = "ESTADO ÓPTIMO ⚔️";
+                        statusBanner.style.background = "rgba(76, 175, 80, 0.2)";
+                        statusBanner.style.border = "1.5px solid #4CAF50";
+                        statusBanner.style.color = "#4CAF50";
+                    } else {
+                        statusBanner.innerText = "NEUTRAL 💤";
+                        statusBanner.style.background = "rgba(128, 128, 128, 0.2)";
+                        statusBanner.style.border = "1.5px solid #888888";
+                        statusBanner.style.color = "#888888";
+                    }
+                }
+            } else {
+                needsHud.classList.add("hidden");
+            }
+        }
+
+        // Actualizar el modal de stats si está abierto
+        if (window.miMascota && window.miMascota.id !== "temp") {
+            const hambre = Math.floor(window.miMascota.hambre !== undefined ? window.miMascota.hambre : 100);
+            const diversion = Math.floor(window.miMascota.diversion !== undefined ? window.miMascota.diversion : 100);
+            const higiene = Math.floor(window.miMascota.higiene !== undefined ? window.miMascota.higiene : 100);
+            const amistad = Math.floor(window.miMascota.amistad !== undefined ? window.miMascota.amistad : 0);
+            const evAcumulada = window.miMascota.evAcumulada !== undefined ? window.miMascota.evAcumulada : 0;
+
+            const gHunger = document.getElementById("geno-hunger");
+            const gHungerFill = document.getElementById("geno-hunger-fill");
+            const gFun = document.getElementById("geno-fun");
+            const gFunFill = document.getElementById("geno-fun-fill");
+            const gHygiene = document.getElementById("geno-hygiene");
+            const gHygieneFill = document.getElementById("geno-hygiene-fill");
+            const gFriendship = document.getElementById("geno-friendship");
+            const gFriendshipFill = document.getElementById("geno-friendship-fill");
+            const gEvAccum = document.getElementById("geno-ev-accumulated");
+
+            if (gHunger) gHunger.innerText = `${hambre}/100`;
+            if (gHungerFill) gHungerFill.style.width = `${hambre}%`;
+            if (gFun) gFun.innerText = `${diversion}/100`;
+            if (gFunFill) gFunFill.style.width = `${diversion}%`;
+            if (gHygiene) gHygiene.innerText = `${higiene}/100`;
+            if (gHygieneFill) gHygieneFill.style.width = `${higiene}%`;
+            if (gFriendship) gFriendship.innerText = `${amistad}/100`;
+            if (gFriendshipFill) gFriendshipFill.style.width = `${amistad}%`;
+            if (gEvAccum) gEvAccum.innerText = `${evAcumulada.toFixed(2)} EV`;
+        }
+
+        if (typeof window.actualizarSuciedadVisual === 'function') window.actualizarSuciedadVisual();
+        if (typeof window.actualizarMonedaEvFlotante === 'function') window.actualizarMonedaEvFlotante();
     }
 };

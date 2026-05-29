@@ -9,17 +9,66 @@ window.cargarProgreso = function() {
     if (dataString) {
         const data = JSON.parse(dataString);
 
+        const getTempId = () => {
+            if (typeof window.generarNuevoID === 'function') {
+                return window.generarNuevoID();
+            }
+            let maxId = 0;
+            if (data.misGenos) {
+                data.misGenos.forEach(g => {
+                    if (g && g.id) {
+                        const num = parseInt(g.id, 10);
+                        if (!isNaN(num) && num > maxId) maxId = num;
+                    }
+                });
+            }
+            let counterVal = parseInt(localStorage.getItem('genoGlobalCounter') || '0', 10);
+            if (counterVal > maxId) maxId = counterVal;
+            const nextId = maxId + 1;
+            localStorage.setItem('genoGlobalCounter', nextId);
+            return String(nextId).padStart(6, '0');
+        };
+
         if (data.misGenos) {
             const idsVistos = new Set();
-            window.misGenos = data.misGenos.filter(g => {
-                if (!g || !g.id) return false;
+            const uniqueGenos = [];
+            data.misGenos.forEach(g => {
+                if (!g || !g.id) return;
                 const idStr = String(g.id);
-                if (idsVistos.has(idStr)) return false;
-                idsVistos.add(idStr);
-                return true;
+                if (idsVistos.has(idStr)) {
+                    const oldId = g.id;
+                    const newId = getTempId();
+                    g.id = newId;
+                    console.log(`[DEDUPLICATOR] Geno duplicado detectado. Reasignando ID de ${oldId} a ${newId}`);
+                    
+                    // Renombrar bionucleo en inventario
+                    const oldBionucleoId = "bionucleo_" + oldId;
+                    const newBionucleoId = "bionucleo_" + newId;
+                    if (data.inventarioItems) {
+                        data.inventarioItems.forEach(item => {
+                            if (item && item.id === oldBionucleoId) {
+                                item.id = newBionucleoId;
+                                console.log(`[DEDUPLICATOR] Renombrado item de inventario ${oldBionucleoId} a ${newBionucleoId}`);
+                            }
+                        });
+                    }
+                }
+                idsVistos.add(String(g.id));
+                uniqueGenos.push(g);
             });
+            window.misGenos = uniqueGenos;
         }
-        if (data.miMascota) window.miMascota = data.miMascota;
+        
+        if (data.miMascota) {
+            window.miMascota = data.miMascota;
+            // Alinear referencia de miMascota con el de misGenos
+            if (window.misGenos && window.miMascota.id !== "temp") {
+                const matchingGeno = window.misGenos.find(g => String(g.id) === String(window.miMascota.id));
+                if (matchingGeno) {
+                    window.miMascota = matchingGeno;
+                }
+            }
+        }
         if (data.maxGenoSlots) window.maxGenoSlots = data.maxGenoSlots;
 
         // ✨ AUTO-REPARADOR DE GENOS
@@ -34,6 +83,7 @@ window.cargarProgreso = function() {
         if (data.esencia !== undefined) window.miInventario.vitalEssence = data.esencia;
 
         if (data.nexoEnergy !== undefined) window.nexoEnergy = data.nexoEnergy;
+        if (data.rationAutoActiveUntil !== undefined) window.rationAutoActiveUntil = data.rationAutoActiveUntil;
         if (window.NexoEnergyManager && data.lastActiveTime) {
             window.NexoEnergyManager.aplicarRecuperacionPasiva(data.lastActiveTime);
         }
@@ -106,6 +156,7 @@ window.guardarLocalSilencioso = function() {
         pol: window.miWallet ? window.miWallet.pol : 10.0,
         inventarioItems: window.miInventario ? (window.miInventario.items || window.miInventario.slots || []) : [],
         nexoEnergy: window.nexoEnergy !== undefined ? window.nexoEnergy : 100,
+        rationAutoActiveUntil: window.rationAutoActiveUntil !== undefined ? window.rationAutoActiveUntil : 0,
         lastActiveTime: Date.now()
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(dataToSave));

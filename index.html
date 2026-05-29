@@ -88,6 +88,56 @@
                 </div>
             </div>
 
+            <!-- HUD de Necesidades (Pou-Tamagotchi) -->
+            <div id="needs-hud" class="hidden" style="position: absolute; top: 175px; right: 15px; z-index: 45; width: 140px; background: rgba(26, 26, 46, 0.9); border: 2px solid #2a2a4a; border-radius: 14px; padding: 8px 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); backdrop-filter: blur(5px); display: flex; flex-direction: column; gap: 6px; font-family: monospace; font-size: 10px; color: #fff; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                <div id="needs-status-banner" style="font-size: 9px; font-weight: bold; text-align: center; text-transform: uppercase; border-radius: 6px; padding: 3px 5px; background: rgba(128, 128, 128, 0.2); border: 1.5px solid #888888; color: #888888; text-shadow: 0 0 5px rgba(0,0,0,0.5);">NEUTRAL 💤</div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                    <span>Amistad ❤️</span>
+                    <span id="needs-friendship-val" style="font-weight: bold; color: #ec407a;">0%</span>
+                </div>
+                
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                        <span>🍗 Hambre</span>
+                        <span id="needs-hunger-val">100%</span>
+                    </div>
+                    <div style="width: 100%; height: 4px; background: rgba(0,0,0,0.4); border-radius: 2px; overflow: hidden;">
+                        <div id="needs-hunger-fill" style="width: 100%; height: 100%; background: #ff7043; transition: width 0.3s;"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                        <span>⚽ Diversión</span>
+                        <span id="needs-fun-val">100%</span>
+                    </div>
+                    <div style="width: 100%; height: 4px; background: rgba(0,0,0,0.4); border-radius: 2px; overflow: hidden;">
+                        <div id="needs-fun-fill" style="width: 100%; height: 100%; background: #29b6f6; transition: width 0.3s;"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                        <span>🧼 Higiene</span>
+                        <span id="needs-hygiene-val">100%</span>
+                    </div>
+                    <div style="width: 100%; height: 4px; background: rgba(0,0,0,0.4); border-radius: 2px; overflow: hidden;">
+                        <div id="needs-hygiene-fill" style="width: 100%; height: 100%; background: #ab47bc; transition: width 0.3s;"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                        <span>🔋 Energía</span>
+                        <span id="needs-energy-val">100%</span>
+                    </div>
+                    <div style="width: 100%; height: 4px; background: rgba(0,0,0,0.4); border-radius: 2px; overflow: hidden;">
+                        <div id="needs-energy-fill" style="width: 100%; height: 100%; background: #4CAF50; transition: width 0.3s;"></div>
+                    </div>
+                </div>
+            </div>
+
             <div id="stats-modal-overlay" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 2000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);">
                 <div class="modal-content" style="max-height: 85vh; overflow-y: auto; width: 85%; max-width: 350px;">
                     <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;">
@@ -124,6 +174,38 @@
                     </div>
                     <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 3px; height: 6px; overflow: hidden; margin-bottom: 10px; width: 100%; box-sizing: border-box;">
                         <div id="geno-resistance-fill" style="background: #4CAF50; height: 100%; width: 100%; transition: width 0.3s;"></div>
+                    </div>
+
+                    <div class="stat-info" style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 2px;">
+                        <span>Hambre:</span> <span id="geno-hunger" style="color: #fff; font-weight: bold;">100/100</span>
+                    </div>
+                    <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 3px; height: 6px; overflow: hidden; margin-bottom: 10px; width: 100%; box-sizing: border-box;">
+                        <div id="geno-hunger-fill" style="background: #ff7043; height: 100%; width: 100%; transition: width 0.3s;"></div>
+                    </div>
+
+                    <div class="stat-info" style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 2px;">
+                        <span>Diversión:</span> <span id="geno-fun" style="color: #fff; font-weight: bold;">100/100</span>
+                    </div>
+                    <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 3px; height: 6px; overflow: hidden; margin-bottom: 10px; width: 100%; box-sizing: border-box;">
+                        <div id="geno-fun-fill" style="background: #29b6f6; height: 100%; width: 100%; transition: width 0.3s;"></div>
+                    </div>
+
+                    <div class="stat-info" style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 2px;">
+                        <span>Higiene:</span> <span id="geno-hygiene" style="color: #fff; font-weight: bold;">100/100</span>
+                    </div>
+                    <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 3px; height: 6px; overflow: hidden; margin-bottom: 10px; width: 100%; box-sizing: border-box;">
+                        <div id="geno-hygiene-fill" style="background: #ab47bc; height: 100%; width: 100%; transition: width 0.3s;"></div>
+                    </div>
+
+                    <div class="stat-info" style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 2px;">
+                        <span>Amistad:</span> <span id="geno-friendship" style="color: #fff; font-weight: bold;">0/100</span>
+                    </div>
+                    <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255,255,255,0.05); border-radius: 3px; height: 6px; overflow: hidden; margin-bottom: 10px; width: 100%; box-sizing: border-box;">
+                        <div id="geno-friendship-fill" style="background: #ec407a; height: 100%; width: 0%; transition: width 0.3s;"></div>
+                    </div>
+
+                    <div class="stat-info" style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
+                        <span>Esencia Acumulada:</span> <span id="geno-ev-accumulated" style="color: #00e5ff; font-weight: bold;">0.00 EV</span>
                     </div>
                     
                     <div class="stat-info" style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-top: 10px; padding-top: 10px; border-top: 1px dashed rgba(255,255,255,0.1);">
@@ -215,9 +297,10 @@
                     <div id="inventory-grid"></div>
                     <div id="item-actions" class="hidden">
                         <div id="selected-item-info">Seleccionado: --</div>
-                        <div class="action-buttons">
-                            <button id="btn-release-one" class="release-btn">Destruir 1</button>
-                            <button id="btn-release-all" class="release-btn danger">Vaciar</button>
+                        <div class="action-buttons" style="display: flex; gap: 8px; width: 100%; box-sizing: border-box;">
+                            <button id="btn-use-item" style="flex: 1.5; background: linear-gradient(90deg, #4CAF50, #8bc34a); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Usar 🍱</button>
+                            <button id="btn-release-one" class="release-btn" style="flex: 1; padding: 10px; font-size: 12px; margin: 0;">Destruir 1</button>
+                            <button id="btn-release-all" class="release-btn danger" style="flex: 1; padding: 10px; font-size: 12px; margin: 0;">Vaciar</button>
                         </div>
                     </div>
                 </div>
@@ -277,6 +360,54 @@
                 </div>
                 
                 <button id="btn-close-energy-info-confirm" style="margin-top: 15px; background: linear-gradient(135deg, #00d2ff, #008be2); color: white; border: none; border-radius: 10px; padding: 10px 0; font-weight: bold; font-size: 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,210,255,0.3); transition: 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">Entendido</button>
+            </div>
+        </div>
+
+        <!-- Modal de Información del Sistema de Cuidado (Tamagotchi) -->
+        <div id="needs-info-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+            <div class="modal-content" style="background: linear-gradient(180deg, #101524 0%, #080b12 100%); border: 2px solid #ff007f; box-shadow: 0 0 25px rgba(255, 0, 127, 0.4), inset 0 0 15px rgba(255, 0, 127, 0.1); width: 85%; max-width: 320px; border-radius: 16px; padding: 20px 18px; box-sizing: border-box; position: relative; max-height: 85vh; display: flex; flex-direction: column; font-family: sans-serif;">
+                <button id="close-needs-info" style="position: absolute; top: 12px; right: 15px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 0; transition: transform 0.2s;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                
+                <div style="font-size: 32px; text-align: center; margin-bottom: 5px; filter: drop-shadow(0 0 8px rgba(255, 0, 127, 0.5));">🧼</div>
+                <h3 style="color: #ff007f; text-transform: uppercase; margin: 0 0 12px 0; font-size: 14px; letter-spacing: 1.5px; text-align: center; font-weight: bold;">Manual de Cuidado</h3>
+                
+                <div class="help-scroll-content" style="flex: 1; overflow-y: auto; font-size: 11.5px; color: #cbd5e1; line-height: 1.4; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; text-align: left; scrollbar-width: none; -ms-overflow-style: none;">
+                    <p style="margin: 0; text-align: center; color: #80deea; font-weight: bold;">¡El estado de tu Geno Compañero influye en el combate y la economía!</p>
+                    
+                    <div style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px;">
+                        <span style="color: #ff7043; font-weight: bold;">🍗 Hambre:</span> Se vacía en 12h. Dále de comer manzanas farmeadas en Arcade. Los portadores de <span style="color: #4dd0e1;">Reactor Instintivo</span> la consumen 30% más lento.
+                    </div>
+                    
+                    <div style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px;">
+                        <span style="color: #29b6f6; font-weight: bold;">⚽ Diversión:</span> Se vacía en 16h. Juega al Arcade o gana en el Coliseo. El gen <span style="color: #4dd0e1;">Conexión Empática</span> previene su caída si tienes 2 o más portadores.
+                    </div>
+                    
+                    <div style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px;">
+                        <span style="color: #ab47bc; font-weight: bold;">🧼 Higiene:</span> Se vacía en 24h. Spawnea manchas de suciedad. Frotalas con el dedo/mouse en el Laboratorio para limpiarlas.
+                    </div>
+                    
+                    <div style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px;">
+                        <span style="color: #4CAF50; font-weight: bold;">🔋 Energía (Resistencia):</span> Se gasta combatiendo (25 resistencia). Se recupera descansando o con Cuidado Diario (+20% velocidad).
+                    </div>
+
+                    <div style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px;">
+                        <span style="color: #ec407a; font-weight: bold;">❤️ Amistad:</span> Sube al acariciar (+5), limpiar (+5), alimentar (+2), ganar combates (+3) o jugar arcade (+2). Aumenta la Esencia pasiva generada.
+                    </div>
+                    
+                    <div style="background: rgba(76, 175, 80, 0.15); border: 1px solid #4CAF50; border-radius: 8px; padding: 8px; margin-top: 4px;">
+                        <strong style="color: #4CAF50;">⚔️ Estado Óptimo (Barras &gt; 80%):</strong> +5% de probabilidad Crítica (+25 LUK stat) y genera EV pasiva cada segundo (aparecen monedas flotantes sobre el Geno).
+                    </div>
+                    
+                    <div style="background: rgba(244, 67, 54, 0.15); border: 1px solid #f44336; border-radius: 8px; padding: 8px;">
+                        <strong style="color: #f44336;">⚠️ Depresión/Huelga (Barras &lt; 20%):</strong> ¡El Geno se negará a pelear en el Coliseo!
+                    </div>
+
+                    <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px; font-size: 11px;">
+                        <strong style="color: #e2e8f0;">💤 Reserva:</strong> Las necesidades de los Genos en reserva (no activos) bajan 10 veces más despacio. Puedes automatizar su cuidado usando consumibles de la tienda de Esencia.
+                    </div>
+                </div>
+                
+                <button id="btn-close-needs-info-confirm" style="background: linear-gradient(90deg, #ff007f, #8A2BE2); color: #fff; font-weight: bold; border: none; padding: 10px; border-radius: 10px; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 15px; font-size: 12px; letter-spacing: 0.5px;">Entendido</button>
             </div>
         </div>
 
