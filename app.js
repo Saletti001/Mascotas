@@ -931,7 +931,7 @@ function iniciarSecuenciaBienvenida() {
         }
 
         if (container) {
-            container.innerHTML = `<div class="geno-idle" style="color: ${window.miMascota.color}; display: flex; justify-content: center; align-items: center; width: 100%; height: 100%;">${window.miMascota.svg}</div>`;
+            container.innerHTML = `<div class="geno-idle" style="color: ${window.miMascota.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${window.miMascota.svg}</div>`;
         }
 
         const higiene = Math.floor(window.miMascota.higiene !== undefined ? window.miMascota.higiene : 100);
