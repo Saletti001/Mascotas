@@ -939,6 +939,7 @@ function iniciarSecuenciaBienvenida() {
         const higiene = Math.floor(window.miMascota.higiene !== undefined ? window.miMascota.higiene : 100);
         const hambre = Math.floor(window.miMascota.hambre !== undefined ? window.miMascota.hambre : 100);
         const resistencia = Math.floor(window.miMascota.resistencia !== undefined ? window.miMascota.resistencia : 100);
+        const diversion = Math.floor(window.miMascota.diversion !== undefined ? window.miMascota.diversion : 100);
 
         const hygieneText = document.getElementById("bath-hygiene-text");
         const hygieneFill = document.getElementById("bath-hygiene-fill");
@@ -955,7 +956,12 @@ function iniciarSecuenciaBienvenida() {
         if (resText) resText.innerText = `${resistencia}%`;
         if (resFill) resFill.style.width = `${resistencia}%`;
 
-        // Actualizar estado del botón Descansar (cooldown 2h)
+        const funText = document.getElementById("bath-fun-text");
+        const funFill = document.getElementById("bath-fun-fill");
+        if (funText) funText.innerText = `${diversion}%`;
+        if (funFill) funFill.style.width = `${diversion}%`;
+
+        // Actualizar estado del botón Descansar (cooldown 4h)
         window.actualizarBotonDescansar();
     };
 
@@ -970,7 +976,7 @@ function iniciarSecuenciaBienvenida() {
 
         const ahora = typeof window.obtenerTiempoSeguro === 'function' ? window.obtenerTiempoSeguro() : Date.now();
         const ultimoDescanso = geno.ultimoDescanso || 0;
-        const cooldownMs = 2 * 60 * 60 * 1000; // 2 horas
+        const cooldownMs = 4 * 60 * 60 * 1000; // 4 horas
         const restante = Math.max(0, cooldownMs - (ahora - ultimoDescanso));
 
         if (restante > 0) {
@@ -980,8 +986,12 @@ function iniciarSecuenciaBienvenida() {
             const m = mins % 60;
             label.innerText = h > 0 ? `${h}h ${m}m` : `${m}m`;
         } else {
+            const wasDisabled = btn.disabled;
             btn.disabled = false;
             label.innerText = "Descansar";
+            if (wasDisabled && typeof window.actualizarGenoBaño === 'function') {
+                window.actualizarGenoBaño();
+            }
         }
     };
 
@@ -1301,7 +1311,7 @@ function iniciarSecuenciaBienvenida() {
             });
         }
 
-        // --- Botón DESCANSAR: +50 Resistencia con cooldown de 2h ---
+        // --- Botón DESCANSAR: 100% Resistencia con cooldown de 4h ---
         const btnCareRest = document.getElementById("btn-care-rest");
         if (btnCareRest) {
             btnCareRest.addEventListener("click", () => {
@@ -1312,15 +1322,15 @@ function iniciarSecuenciaBienvenida() {
 
                 const ahora = typeof window.obtenerTiempoSeguro === 'function' ? window.obtenerTiempoSeguro() : Date.now();
                 const ultimoDescanso = window.miMascota.ultimoDescanso || 0;
-                const cooldownMs = 2 * 60 * 60 * 1000;
+                const cooldownMs = 4 * 60 * 60 * 1000;
 
                 if (ahora - ultimoDescanso < cooldownMs) {
                     alert("Tu Geno ya ha descansado recientemente. Espera a que se recupere.");
                     return;
                 }
 
-                // Aplicar +50 Resistencia
-                window.miMascota.resistencia = Math.min(100, (window.miMascota.resistencia || 0) + 50);
+                // Aplicar 100% Resistencia (Reestablecer toda la energía)
+                window.miMascota.resistencia = 100;
                 window.miMascota.ultimoDescanso = ahora;
 
                 // Sincronizar en misGenos
