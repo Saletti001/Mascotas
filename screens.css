@@ -223,25 +223,6 @@
 #bathroom-screen {
     min-height: 100% !important;
     overflow-y: auto !important;
-    padding-bottom: 40px !important; /* Espacio extra abajo para permitir scroll holgado */
-}
-
-/* El botón volver al laboratorio en el baño debe fluir de forma relativa */
-#bathroom-screen .btn-go-home {
-    position: relative !important;
-    bottom: auto !important;
-    left: 0 !important;
-    transform: none !important;
-    margin: 20px auto 10px auto !important;
-    width: 70% !important;
-    max-width: 300px !important;
-    flex-shrink: 0 !important;
-}
-#bathroom-screen .btn-go-home:hover {
-    transform: scale(1.05) !important;
-}
-#bathroom-screen .btn-go-home:active {
-    transform: scale(0.98) !important;
 }
 
 .bg-bubble {

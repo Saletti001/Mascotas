@@ -537,6 +537,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(geno) : '';
                     pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center; color: ${pColor};">${svgPedestal}</div>`;
                 }
+                if (typeof window.actualizarGenoBaño === 'function') {
+                    window.actualizarGenoBaño();
+                }
                 const nameEl = document.getElementById('geno-name');
                 if (nameEl) nameEl.innerText = `${geno.name} #${geno.id}`;
                 if(typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
