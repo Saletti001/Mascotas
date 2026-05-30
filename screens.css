@@ -61,6 +61,7 @@
     /* Estas dos líneas son la clave: fuerzan un tamaño físico de 140x140px */
     width: 140px; 
     height: 140px;
+}
 .geno-idle { animation: floatIdle 4s ease-in-out infinite; position: absolute; cursor: pointer; z-index: 10; width: 100%; height: 100%;}
 @keyframes floatIdle { 0%, 100% { transform: translate(-50%, -50%); } 50% { transform: translate(-50%, -60px); } }
 /* 2. ARCADE */
