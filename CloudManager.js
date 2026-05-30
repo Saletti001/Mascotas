@@ -9,7 +9,32 @@ const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 window.supabaseClient = supabaseClient;
 window.miUsuarioCloud = null;
 
+window.clockOffset = 0;
+
+window.obtenerHoraServidor = async function() {
+    try {
+        const respuesta = await fetch(supabaseUrl, { method: 'HEAD' });
+        const fechaHeader = respuesta.headers.get('Date');
+        if (fechaHeader) {
+            return new Date(fechaHeader).getTime();
+        }
+    } catch (e) {
+        console.warn("[TIME SYNC] No se pudo obtener la hora del servidor, usando hora local:", e);
+    }
+    return Date.now();
+};
+
+window.obtenerTiempoSeguro = function() {
+    return Date.now() + (window.clockOffset || 0);
+};
+
 document.addEventListener("DOMContentLoaded", async () => {
+    // Sincronizar el reloj del servidor de Supabase inmediatamente
+    window.obtenerHoraServidor().then(serverTime => {
+        window.clockOffset = serverTime - Date.now();
+        console.log(`[TIME SYNC] Sincronización inicial. Offset: ${window.clockOffset} ms`);
+    });
+
     window.LoginUI.inyectar();
 
     const btnIniciar = document.getElementById("btn-iniciar");
@@ -103,7 +128,10 @@ window.respaldarEnNube = async function() {
         } : null,
         wallet: window.miWallet || null,
         genosGuardados: window.misGenos || [],
-        ventasActivas: window.misVentas || []
+        ventasActivas: window.misVentas || [],
+        nexoEnergy: window.nexoEnergy !== undefined ? window.nexoEnergy : 100,
+        rationAutoActiveUntil: window.rationAutoActiveUntil !== undefined ? window.rationAutoActiveUntil : 0,
+        lastActiveTime: window.obtenerTiempoSeguro()
     };
 
     const { error } = await supabaseClient
@@ -116,6 +144,11 @@ window.respaldarEnNube = async function() {
 
 async function cargarDatosDeLaNube() {
     if (!window.miUsuarioCloud) return;
+
+    // Sincronización fresca antes de descargar y aplicar la recuperación pasiva
+    const serverTime = await window.obtenerHoraServidor();
+    window.clockOffset = serverTime - Date.now();
+    console.log(`[TIME SYNC] Carga de nube: Offset refrescado: ${window.clockOffset} ms`);
 
     const { data, error } = await supabaseClient
         .from('jugadores')
@@ -137,6 +170,12 @@ async function cargarDatosDeLaNube() {
         if (dj.wallet) window.miWallet = dj.wallet;
         if (dj.genosGuardados) window.misGenos = dj.genosGuardados;
         if (dj.ventasActivas) window.misVentas = dj.ventasActivas;
+        
+        if (dj.nexoEnergy !== undefined) window.nexoEnergy = dj.nexoEnergy;
+        if (dj.rationAutoActiveUntil !== undefined) window.rationAutoActiveUntil = dj.rationAutoActiveUntil;
+        if (window.NexoEnergyManager && dj.lastActiveTime) {
+            window.NexoEnergyManager.aplicarRecuperacionPasiva(dj.lastActiveTime);
+        }
 
         if (window.misGenos) {
             window.misGenos.forEach(geno => {

@@ -157,7 +157,7 @@ window.guardarLocalSilencioso = function() {
         inventarioItems: window.miInventario ? (window.miInventario.items || window.miInventario.slots || []) : [],
         nexoEnergy: window.nexoEnergy !== undefined ? window.nexoEnergy : 100,
         rationAutoActiveUntil: window.rationAutoActiveUntil !== undefined ? window.rationAutoActiveUntil : 0,
-        lastActiveTime: Date.now()
+        lastActiveTime: typeof window.obtenerTiempoSeguro === 'function' ? window.obtenerTiempoSeguro() : Date.now()
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(dataToSave));
 };

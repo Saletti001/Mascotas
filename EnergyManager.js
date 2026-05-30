@@ -24,10 +24,10 @@ window.NexoEnergyManager = {
             window.nexoEnergy = 100;
         }
 
-        // Loop de recuperación activa cada 10 segundos (calculando delta real)
-        let ultimaVezTick = Date.now();
+        // Loop de recuperación activa cada 10 segundos (calculando delta real de performance.now)
+        let ultimaVezTick = performance.now();
         setInterval(() => {
-            const ahora = Date.now();
+            const ahora = performance.now();
             const deltaSegundos = Math.max(0, (ahora - ultimaVezTick) / 1000);
             ultimaVezTick = ahora;
             this.recuperar(deltaSegundos);
@@ -174,7 +174,8 @@ window.NexoEnergyManager = {
     },
 
     aplicarRecuperacionPasiva: function(timestampUltimaVez) {
-        const segundosTranscurridos = Math.max(0, (Date.now() - timestampUltimaVez) / 1000);
+        const tiempoActual = typeof window.obtenerTiempoSeguro === 'function' ? window.obtenerTiempoSeguro() : Date.now();
+        const segundosTranscurridos = Math.max(0, (tiempoActual - timestampUltimaVez) / 1000);
         this.recuperar(segundosTranscurridos);
     },
 
