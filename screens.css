@@ -63,7 +63,7 @@
     height: 140px;
 }
 .geno-idle { animation: floatIdle 4s ease-in-out infinite; position: absolute; cursor: pointer; z-index: 10; width: 100%; height: 100%;}
-@keyframes floatIdle { 0%, 100% { transform: translate(-50%, -50%); } 50% { transform: translate(-50%, -60px); } }
+@keyframes floatIdle { 0%, 100% { transform: translate(-50%, -50%); } 50% { transform: translate(-50%, -57%); } }
 /* 2. ARCADE */
 .arcade-grid { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
 .arcade-card { background: #0d1a24; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; border: 1px solid #4dd0e1; cursor: pointer; color: white;}
@@ -223,6 +223,25 @@
 #bathroom-screen {
     min-height: 100% !important;
     overflow-y: auto !important;
+    padding-bottom: 40px !important; /* Espacio extra abajo para permitir scroll holgado */
+}
+
+/* El botón volver al laboratorio en el baño debe fluir de forma relativa */
+#bathroom-screen .btn-go-home {
+    position: relative !important;
+    bottom: auto !important;
+    left: 0 !important;
+    transform: none !important;
+    margin: 20px auto 10px auto !important;
+    width: 70% !important;
+    max-width: 300px !important;
+    flex-shrink: 0 !important;
+}
+#bathroom-screen .btn-go-home:hover {
+    transform: scale(1.05) !important;
+}
+#bathroom-screen .btn-go-home:active {
+    transform: scale(0.98) !important;
 }
 
 .bg-bubble {
