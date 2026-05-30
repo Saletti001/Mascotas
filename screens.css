@@ -318,3 +318,105 @@
     transition: none !important;
     filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
 }
+
+/* ========================================= */
+/* CENTRO DE CUIDADO: BOTONES DE ACCIÓN      */
+/* ========================================= */
+
+.care-action-btn {
+    flex: 1;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 9px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: inherit;
+    padding: 0;
+}
+
+.care-action-btn svg {
+    filter: drop-shadow(0 0 3px currentColor);
+    pointer-events: none;
+}
+
+.care-action-btn:active {
+    transform: scale(0.95);
+}
+
+.care-action-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.care-btn-pink {
+    color: #ff007f;
+    background: rgba(255, 0, 127, 0.08);
+    border: 1.5px solid rgba(255, 0, 127, 0.4);
+}
+.care-btn-pink:hover:not(:disabled) {
+    background: rgba(255, 0, 127, 0.2);
+    border-color: #ff007f;
+    box-shadow: 0 0 12px rgba(255, 0, 127, 0.3);
+}
+
+.care-btn-orange {
+    color: #ff7043;
+    background: rgba(255, 112, 67, 0.08);
+    border: 1.5px solid rgba(255, 112, 67, 0.4);
+}
+.care-btn-orange:hover:not(:disabled) {
+    background: rgba(255, 112, 67, 0.2);
+    border-color: #ff7043;
+    box-shadow: 0 0 12px rgba(255, 112, 67, 0.3);
+}
+
+.care-btn-green {
+    color: #4CAF50;
+    background: rgba(76, 175, 80, 0.08);
+    border: 1.5px solid rgba(76, 175, 80, 0.4);
+}
+.care-btn-green:hover:not(:disabled) {
+    background: rgba(76, 175, 80, 0.2);
+    border-color: #4CAF50;
+    box-shadow: 0 0 12px rgba(76, 175, 80, 0.3);
+}
+
+/* Partículas Zzz para la acción Descansar */
+.zzz-particle {
+    position: absolute;
+    color: #81c784;
+    font-weight: 900;
+    font-family: monospace;
+    pointer-events: none;
+    z-index: 100;
+    text-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+    animation: zzzFloat 1.5s ease-out forwards;
+}
+
+@keyframes zzzFloat {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(0.7) rotate(0deg);
+    }
+    50% {
+        opacity: 0.8;
+        transform: translateY(-30px) scale(1) rotate(-10deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-60px) scale(1.2) rotate(10deg);
+    }
+}
+
+/* Sub-panel de limpieza: ocultar con clase hidden */
+#care-clean-tools.hidden {
+    display: none !important;
+}

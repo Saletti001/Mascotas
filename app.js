@@ -918,12 +918,10 @@ function iniciarSecuenciaBienvenida() {
     };
 
     // ========================================================
-    // CUIDADO DIARIO: MECÁNICA DEL BAÑO INTERACTIVO (ESTILO POU)
+    // CENTRO DE CUIDADO: ACTUALIZACIÓN DE UI
     // ========================================================
     window.actualizarGenoBaño = function() {
         const container = document.getElementById("geno-container-bathroom");
-        const hygieneText = document.getElementById("bath-hygiene-text");
-        const hygieneFill = document.getElementById("bath-hygiene-fill");
 
         if (!window.miMascota || window.miMascota.id === "temp") return;
 
@@ -937,9 +935,54 @@ function iniciarSecuenciaBienvenida() {
             container.innerHTML = `<div class="geno-idle" style="color: ${window.miMascota.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${window.miMascota.svg}</div>`;
         }
 
+        // Actualizar barras de estado del Centro de Cuidado
         const higiene = Math.floor(window.miMascota.higiene !== undefined ? window.miMascota.higiene : 100);
+        const hambre = Math.floor(window.miMascota.hambre !== undefined ? window.miMascota.hambre : 100);
+        const resistencia = Math.floor(window.miMascota.resistencia !== undefined ? window.miMascota.resistencia : 100);
+
+        const hygieneText = document.getElementById("bath-hygiene-text");
+        const hygieneFill = document.getElementById("bath-hygiene-fill");
         if (hygieneText) hygieneText.innerText = `${higiene}%`;
         if (hygieneFill) hygieneFill.style.width = `${higiene}%`;
+
+        const hungerText = document.getElementById("bath-hunger-text");
+        const hungerFill = document.getElementById("bath-hunger-fill");
+        if (hungerText) hungerText.innerText = `${hambre}%`;
+        if (hungerFill) hungerFill.style.width = `${hambre}%`;
+
+        const resText = document.getElementById("bath-resistance-text");
+        const resFill = document.getElementById("bath-resistance-fill");
+        if (resText) resText.innerText = `${resistencia}%`;
+        if (resFill) resFill.style.width = `${resistencia}%`;
+
+        // Actualizar estado del botón Descansar (cooldown 2h)
+        window.actualizarBotonDescansar();
+    };
+
+    // Función para actualizar el estado visual del botón Descansar
+    window.actualizarBotonDescansar = function() {
+        const btn = document.getElementById("btn-care-rest");
+        const label = document.getElementById("btn-care-rest-label");
+        if (!btn || !label) return;
+
+        const geno = window.miMascota;
+        if (!geno || geno.id === "temp") return;
+
+        const ahora = typeof window.obtenerTiempoSeguro === 'function' ? window.obtenerTiempoSeguro() : Date.now();
+        const ultimoDescanso = geno.ultimoDescanso || 0;
+        const cooldownMs = 2 * 60 * 60 * 1000; // 2 horas
+        const restante = Math.max(0, cooldownMs - (ahora - ultimoDescanso));
+
+        if (restante > 0) {
+            btn.disabled = true;
+            const mins = Math.ceil(restante / 60000);
+            const h = Math.floor(mins / 60);
+            const m = mins % 60;
+            label.innerText = h > 0 ? `${h}h ${m}m` : `${m}m`;
+        } else {
+            btn.disabled = false;
+            label.innerText = "Descansar";
+        }
     };
 
     // Registrar eventos para el manual de cuidado y el cuarto de baño
@@ -1202,6 +1245,123 @@ function iniciarSecuenciaBienvenida() {
         window.addEventListener("mouseup", stopDrag);
         window.addEventListener("touchend", stopDrag);
 
+        // ========================================================
+        // CENTRO DE CUIDADO: BOTONES DE ACCIÓN
+        // ========================================================
+
+        // --- Botón LIMPIAR: Toggle sub-panel de herramientas ---
+        const btnCareClean = document.getElementById("btn-care-clean");
+        const careCleanTools = document.getElementById("care-clean-tools");
+        const btnCareCleanClose = document.getElementById("btn-care-clean-close");
+
+        if (btnCareClean && careCleanTools) {
+            btnCareClean.addEventListener("click", () => {
+                careCleanTools.classList.toggle("hidden");
+                if (window.Sonidos) window.Sonidos.play("click");
+            });
+        }
+        if (btnCareCleanClose && careCleanTools) {
+            btnCareCleanClose.addEventListener("click", () => {
+                careCleanTools.classList.add("hidden");
+                if (window.Sonidos) window.Sonidos.play("click");
+            });
+        }
+
+        // --- Botón ALIMENTAR: Consumir manzana del inventario ---
+        const btnCareFeed = document.getElementById("btn-care-feed");
+        if (btnCareFeed) {
+            btnCareFeed.addEventListener("click", () => {
+                if (!window.miMascota || window.miMascota.id === "temp") {
+                    alert("No tienes un Geno activo.");
+                    return;
+                }
+                if (window.miInventario && window.miInventario.consumeItem("apple_01", 1)) {
+                    // Aplicar efecto de alimentación
+                    window.miMascota.hambre = Math.min(100, (window.miMascota.hambre || 0) + 20);
+                    // Sincronizar en misGenos
+                    if (window.misGenos) {
+                        const idx = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
+                        if (idx !== -1) window.misGenos[idx].hambre = window.miMascota.hambre;
+                    }
+                    // Animación happy-jump
+                    const bathContainer = document.getElementById("geno-container-bathroom");
+                    if (bathContainer) {
+                        bathContainer.classList.add("happy-jump");
+                        setTimeout(() => bathContainer.classList.remove("happy-jump"), 500);
+                    }
+                    // XP
+                    const multiplicador = typeof window.getMultiplicadorXP === 'function' ? window.getMultiplicadorXP(window.miMascota) : 1.0;
+                    if (window.ganarXP) window.ganarXP(Math.floor(25 * multiplicador));
+                    if (window.Sonidos) window.Sonidos.play("click");
+                    window.actualizarGenoBaño();
+                    if (window.guardarLocalSilencioso) window.guardarLocalSilencioso();
+                } else {
+                    alert("No tienes manzanas en tu inventario. Compra en el Bazar.");
+                }
+            });
+        }
+
+        // --- Botón DESCANSAR: +50 Resistencia con cooldown de 2h ---
+        const btnCareRest = document.getElementById("btn-care-rest");
+        if (btnCareRest) {
+            btnCareRest.addEventListener("click", () => {
+                if (!window.miMascota || window.miMascota.id === "temp") {
+                    alert("No tienes un Geno activo.");
+                    return;
+                }
+
+                const ahora = typeof window.obtenerTiempoSeguro === 'function' ? window.obtenerTiempoSeguro() : Date.now();
+                const ultimoDescanso = window.miMascota.ultimoDescanso || 0;
+                const cooldownMs = 2 * 60 * 60 * 1000;
+
+                if (ahora - ultimoDescanso < cooldownMs) {
+                    alert("Tu Geno ya ha descansado recientemente. Espera a que se recupere.");
+                    return;
+                }
+
+                // Aplicar +50 Resistencia
+                window.miMascota.resistencia = Math.min(100, (window.miMascota.resistencia || 0) + 50);
+                window.miMascota.ultimoDescanso = ahora;
+
+                // Sincronizar en misGenos
+                if (window.misGenos) {
+                    const idx = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
+                    if (idx !== -1) {
+                        window.misGenos[idx].resistencia = window.miMascota.resistencia;
+                        window.misGenos[idx].ultimoDescanso = window.miMascota.ultimoDescanso;
+                    }
+                }
+
+                // Animación Zzz flotante sobre el Geno
+                const bathGeno = document.getElementById("geno-container-bathroom");
+                if (bathGeno) {
+                    for (let i = 0; i < 5; i++) {
+                        setTimeout(() => {
+                            const zzz = document.createElement("div");
+                            zzz.className = "zzz-particle";
+                            zzz.innerText = "Z";
+                            zzz.style.fontSize = `${14 + i * 4}px`;
+                            zzz.style.left = `${40 + Math.random() * 120}px`;
+                            zzz.style.top = `${20 + Math.random() * 40}px`;
+                            bathGeno.appendChild(zzz);
+                            setTimeout(() => zzz.remove(), 1500);
+                        }, i * 200);
+                    }
+                }
+
+                if (window.Sonidos) window.Sonidos.play("click");
+                window.actualizarGenoBaño();
+                if (window.guardarProgreso) window.guardarProgreso();
+            });
+        }
+
+        // Actualizar timer del botón Descansar cada minuto
+        setInterval(() => {
+            if (typeof window.actualizarBotonDescansar === 'function') {
+                window.actualizarBotonDescansar();
+            }
+        }, 60000);
+
         // --- GESTOS DE DESLIZAMIENTO HASTA EL BAÑO ---
         let swipeStartX = 0;
         let swipeStartY = 0;
@@ -1218,7 +1378,9 @@ function iniciarSecuenciaBienvenida() {
                     target.closest("#geno-container") ||
                     target.closest("#geno-container-bathroom") ||
                     target.closest(".need-card-clickable") ||
-                    target.closest(".tool-btn")
+                    target.closest(".tool-btn") ||
+                    target.closest(".care-action-btn") ||
+                    target.closest("#care-clean-tools")
                 ) {
                     return;
                 }
