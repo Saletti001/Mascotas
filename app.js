@@ -1204,6 +1204,10 @@ function iniciarSecuenciaBienvenida() {
                 }
 
                 if (isOverGeno) {
+                    // Resetear el tiempo de lavado de ducha al aplicar jabón
+                    window.tiempoLavadoDucha = 0;
+                    window.notificacionBanoMostrada = false;
+
                     if (!window.miMascota.soapySpots) window.miMascota.soapySpots = [];
                     
                     // Solo agregar espuma dentro de la bounding box del cuerpo
@@ -1247,6 +1251,18 @@ function iniciarSecuenciaBienvenida() {
                 if (isOverGeno) {
                     let cleanedAny = false;
 
+                    // Acumular tiempo de lavado de ducha activo sobre el Geno
+                    const ahora = Date.now();
+                    if (!window.ultimoRegistroDucha) {
+                        window.ultimoRegistroDucha = ahora;
+                    } else {
+                        const diff = ahora - window.ultimoRegistroDucha;
+                        if (diff > 0 && diff < 500) {
+                            window.tiempoLavadoDucha = (window.tiempoLavadoDucha || 0) + diff;
+                        }
+                        window.ultimoRegistroDucha = ahora;
+                    }
+
                     // Enjuagar espuma cercana
                     if (window.miMascota.soapySpots) {
                         const oldLength = window.miMascota.soapySpots.length;
@@ -1277,8 +1293,8 @@ function iniciarSecuenciaBienvenida() {
                         const cleanedCount = originalLength - window.miMascota.dirtSpots.length;
                         if (cleanedCount > 0) {
                             cleanedAny = true;
-                            // Incrementar higiene
-                            window.miMascota.higiene = Math.min(100, (window.miMascota.higiene || 0) + (cleanedCount * 25));
+                            // Incrementar higiene (capado al 99% hasta terminar el enjuague de 8s)
+                            window.miMascota.higiene = Math.min(99, (window.miMascota.higiene || 0) + (cleanedCount * 25));
                             
                             if (window.misGenos) {
                                 const idx = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
@@ -1287,49 +1303,69 @@ function iniciarSecuenciaBienvenida() {
                                     window.misGenos[idx].dirtSpots = window.miMascota.dirtSpots;
                                 }
                             }
+                        }
+                    }
 
-                            // Feedback de limpieza completa de todo el Geno
-                            if (window.miMascota.dirtSpots.length === 0) {
-                                window.miMascota.higiene = 100;
+                    // Actualizar el título de la herramienta en tiempo real
+                    const labelTools = document.querySelector("#care-clean-tools span");
+                    if (window.miMascota.dirtSpots && window.miMascota.dirtSpots.length === 0) {
+                        if ((window.tiempoLavadoDucha || 0) < 8000) {
+                            if (labelTools) {
+                                const segsRestantes = Math.max(0, Math.ceil((8000 - window.tiempoLavadoDucha) / 1000));
+                                labelTools.innerText = `🧼 ¡Casi listo! Enjuaga por ${segsRestantes}s más...`;
+                            }
+                        } else if (!window.notificacionBanoMostrada) {
+                            window.notificacionBanoMostrada = true;
+                            if (labelTools) labelTools.innerText = "Selecciona herramienta y arrastra sobre el Geno";
+
+                            window.miMascota.higiene = 100;
+                            if (window.misGenos) {
+                                const idx = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
+                                if (idx !== -1) window.misGenos[idx].higiene = 100;
+                            }
+
+                            const hoy = new Date().toDateString();
+                            if (!window.miMascota.registroAmistadDiaria) window.miMascota.registroAmistadDiaria = {};
+                            
+                            let gananciaExplicita = 0;
+                            if (window.miMascota.registroAmistadDiaria.limpieza !== hoy) {
+                                window.miMascota.registroAmistadDiaria.limpieza = hoy;
+                                gananciaExplicita = Math.floor(Math.random() * 3) + 1;
+                                window.miMascota.amistad = Math.min(100, (window.miMascota.amistad || 0) + gananciaExplicita);
                                 if (window.misGenos) {
                                     const idx = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
-                                    if (idx !== -1) window.misGenos[idx].higiene = 100;
-                                }
-
-                                const hoy = new Date().toDateString();
-                                if (!window.miMascota.registroAmistadDiaria) window.miMascota.registroAmistadDiaria = {};
-                                
-                                let gananciaExplicita = 0;
-                                if (window.miMascota.registroAmistadDiaria.limpieza !== hoy) {
-                                    window.miMascota.registroAmistadDiaria.limpieza = hoy;
-                                    gananciaExplicita = Math.floor(Math.random() * 3) + 1;
-                                    window.miMascota.amistad = Math.min(100, (window.miMascota.amistad || 0) + gananciaExplicita);
-                                    if (window.misGenos) {
-                                        const idx = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
-                                        if (idx !== -1) {
-                                            window.misGenos[idx].amistad = window.miMascota.amistad;
-                                            window.misGenos[idx].registroAmistadDiaria = window.miMascota.registroAmistadDiaria;
-                                        }
+                                    if (idx !== -1) {
+                                        window.misGenos[idx].amistad = window.miMascota.amistad;
+                                        window.misGenos[idx].registroAmistadDiaria = window.miMascota.registroAmistadDiaria;
                                     }
-                                    alert(`🧼 ¡Has bañado por completo a ${window.miMascota.name}! Higiene al 100% y ¡Amistad +${gananciaExplicita}!`);
-                                } else {
-                                    alert(`🧼 ¡Has bañado por completo a ${window.miMascota.name}! Higiene al 100%. (Amistad por limpieza ya obtenida hoy)`);
                                 }
-
-                                if (window.Sonidos) window.Sonidos.play("click");
-                                const targetWrapper = bathContainer ? bathContainer.querySelector(".geno-float-wrapper") : null;
-                                if (targetWrapper) {
-                                     targetWrapper.classList.add("happy-jump");
-                                     setTimeout(() => targetWrapper.classList.remove("happy-jump"), 500);
-                                }
-
-                                if (window.guardarProgreso) window.guardarProgreso();
+                                alert(`🧼 ¡Has bañado por completo a ${window.miMascota.name}! Higiene al 100% y ¡Amistad +${gananciaExplicita}!`);
+                            } else {
+                                alert(`🧼 ¡Has bañado por completo a ${window.miMascota.name}! Higiene al 100%. (Amistad por limpieza ya obtenida hoy)`);
                             }
+
+                            if (window.Sonidos) window.Sonidos.play("click");
+                            const targetWrapper = bathContainer ? bathContainer.querySelector(".geno-float-wrapper") : null;
+                            if (targetWrapper) {
+                                 targetWrapper.classList.add("happy-jump");
+                                 setTimeout(() => targetWrapper.classList.remove("happy-jump"), 500);
+                            }
+
+                            if (window.guardarProgreso) window.guardarProgreso();
+                            cleanedAny = true;
                         }
+                    } else {
+                        if (labelTools) labelTools.innerText = "Rociando agua sobre el Geno...";
                     }
 
                     if (cleanedAny) {
                         window.actualizarGenoBaño();
+                    }
+                } else {
+                    window.ultimoRegistroDucha = null;
+                    const labelTools = document.querySelector("#care-clean-tools span");
+                    if (labelTools && window.activeTool === "shower") {
+                        labelTools.innerText = "Selecciona herramienta y arrastra sobre el Geno";
                     }
                 }
             }
@@ -1339,6 +1375,7 @@ function iniciarSecuenciaBienvenida() {
             if (!window.activeTool) return;
             window.activeTool = null;
             follower.style.display = "none";
+            window.ultimoRegistroDucha = null;
         };
 
         window.addEventListener("mousemove", handleMove);
@@ -1357,6 +1394,13 @@ function iniciarSecuenciaBienvenida() {
             btnCareClean.addEventListener("click", () => {
                 careCleanTools.classList.toggle("hidden");
                 if (window.Sonidos) window.Sonidos.play("click");
+                // Resetear tiempos de lavado al abrir el panel
+                if (!careCleanTools.classList.contains("hidden")) {
+                    window.tiempoLavadoDucha = 0;
+                    window.notificacionBanoMostrada = false;
+                    const labelTools = document.querySelector("#care-clean-tools span");
+                    if (labelTools) labelTools.innerText = "Selecciona herramienta y arrastra sobre el Geno";
+                }
             });
         }
 
