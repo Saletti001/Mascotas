@@ -506,7 +506,7 @@ document.addEventListener("DOMContentLoaded", () => {
         todos.forEach(geno => {
             const card = document.createElement("div");
             const rColor = rarityColors[geno.rarity || "Común"] || rarityColors["Común"];
-            card.style.cssText = `background: #1a2a36; border: 1.5px solid ${rColor.border}; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.4), 0 0 6px ${rColor.glow}, inset 0 0 8px ${rColor.glow}; position: relative; box-sizing: border-box; height: 165px;`;
+            card.style.cssText = `background: #1a2a36; border: 1.5px solid ${rColor.border}; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.4), inset 0 0 8px ${rColor.glow}; position: relative; box-sizing: border-box; height: 165px; -webkit-tap-highlight-color: transparent; outline: none;`;
             
             if (window.miMascota && String(window.miMascota.id) === String(geno.id)) {
                 card.classList.add("selected-card-glow");
@@ -514,12 +514,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 card.style.setProperty("--rarity-color-glow", rColor.glow);
             } else {
                 card.onmouseover = () => {
-                    card.style.boxShadow = `0 0 15px ${rColor.border}`;
-                    card.style.borderColor = rColor.border;
+                    card.style.transform = "translateY(-2px)";
+                    card.style.boxShadow = `0 6px 15px rgba(0,0,0,0.5), inset 0 0 12px ${rColor.glow}`;
                 };
                 card.onmouseout = () => {
-                    card.style.boxShadow = `0 4px 10px rgba(0,0,0,0.4), 0 0 6px ${rColor.glow}, inset 0 0 8px ${rColor.glow}`;
-                    card.style.borderColor = rColor.border;
+                    card.style.transform = "none";
+                    card.style.boxShadow = `0 4px 10px rgba(0,0,0,0.4), inset 0 0 8px ${rColor.glow}`;
                 };
             }
 
