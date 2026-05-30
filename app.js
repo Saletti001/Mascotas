@@ -846,8 +846,16 @@ function iniciarSecuenciaBienvenida() {
         window.sincronizarDirtSpots(window.miMascota);
 
         if (typeof generarSvgGeno === 'function') {
-            window.miMascota.svg = generarSvgGeno(window.miMascota);
-            pedestal.innerHTML = `<div class="geno-idle" style="color: ${window.miMascota.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${window.miMascota.svg}</div>`;
+            const nuevoSvg = generarSvgGeno(window.miMascota);
+            window.miMascota.svg = nuevoSvg;
+            const targetDiv = pedestal.querySelector(".geno-idle");
+            if (targetDiv) {
+                if (targetDiv.innerHTML !== nuevoSvg) {
+                    targetDiv.innerHTML = nuevoSvg;
+                }
+            } else {
+                pedestal.innerHTML = `<div class="geno-idle" style="color: ${window.miMascota.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">${nuevoSvg}</div>`;
+            }
         }
     };
 
@@ -929,18 +937,27 @@ function iniciarSecuenciaBienvenida() {
 
         window.sincronizarDirtSpots(window.miMascota);
 
+        let nuevoSvg = "";
         if (typeof generarSvgGeno === 'function') {
-            window.miMascota.svg = generarSvgGeno(window.miMascota);
+            nuevoSvg = generarSvgGeno(window.miMascota);
+            window.miMascota.svg = nuevoSvg;
         }
 
         if (container) {
-            container.innerHTML = `
-                <div class="geno-float-wrapper" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center; width: 140px; height: 140px; z-index: 10;">
-                    <div class="geno-idle" style="color: ${window.miMascota.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">
-                        ${window.miMascota.svg}
+            const targetIdle = container.querySelector(".geno-idle");
+            if (targetIdle) {
+                if (targetIdle.innerHTML !== nuevoSvg) {
+                    targetIdle.innerHTML = nuevoSvg;
+                }
+            } else {
+                container.innerHTML = `
+                    <div class="geno-float-wrapper" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center; width: 140px; height: 140px; z-index: 10;">
+                        <div class="geno-idle" style="color: ${window.miMascota.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;">
+                            ${nuevoSvg}
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
         }
 
         // Actualizar barras de estado del Centro de Cuidado
