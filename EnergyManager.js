@@ -91,6 +91,16 @@ window.NexoEnergyManager = {
             const isRationAutoActive = window.rationAutoActiveUntil && window.rationAutoActiveUntil > Date.now();
 
             window.misGenos.forEach(geno => {
+                if (geno.isEgg) {
+                    geno.resistencia = 100;
+                    geno.hambre = 100;
+                    geno.diversion = 100;
+                    geno.higiene = 100;
+                    geno.amistad = 0;
+                    geno.evAcumulada = 0;
+                    return;
+                }
+
                 if (geno.resistencia === undefined) geno.resistencia = 100;
                 if (geno.hambre === undefined) geno.hambre = 100;
                 if (geno.diversion === undefined) geno.diversion = 100;
