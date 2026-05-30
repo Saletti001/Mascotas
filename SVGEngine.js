@@ -70,7 +70,7 @@ function generarSvgGeno(genesVisuales) {
     // =========================================
     const color = safeData.base_color || "#77DD77";
     const shape = safeData.body_shape || "frijol";
-    const rndId = Math.floor(Math.random() * 100000);
+    const rndId = safeData.id !== undefined ? safeData.id : "preview";
     const gradId = `grad-${rndId}`;
     const maskId = `mask-cuerpo-${rndId}`; 
 
