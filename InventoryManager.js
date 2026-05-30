@@ -122,8 +122,8 @@ class InventoryManager {
         
         const essenceDisplay = document.getElementById("vital-essence-amount");
         if (essenceDisplay) {
-            // Inyectamos solo el número, el SVG ya vive en el index.html
-            essenceDisplay.innerText = this.vitalEssence;
+            // Inyectamos solo el número, el SVG ya vive en el index.html y limitamos a un máximo de 1 decimal
+            essenceDisplay.innerText = parseFloat(Number(this.vitalEssence || 0).toFixed(1));
         }
     }
 
