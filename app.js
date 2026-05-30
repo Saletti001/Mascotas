@@ -1229,8 +1229,11 @@ function iniciarSecuenciaBienvenida() {
                                 }
 
                                 if (window.Sonidos) window.Sonidos.play("click");
-                                bathContainer.classList.add("happy-jump");
-                                setTimeout(() => bathContainer.classList.remove("happy-jump"), 500);
+                                const targetGeno = bathContainer ? bathContainer.querySelector(".geno-idle") : null;
+                                if (targetGeno) {
+                                    targetGeno.classList.add("happy-jump");
+                                    setTimeout(() => targetGeno.classList.remove("happy-jump"), 500);
+                                }
 
                                 if (window.guardarProgreso) window.guardarProgreso();
                             }
@@ -1296,8 +1299,11 @@ function iniciarSecuenciaBienvenida() {
                     // Animación happy-jump
                     const bathContainer = document.getElementById("geno-container-bathroom");
                     if (bathContainer) {
-                        bathContainer.classList.add("happy-jump");
-                        setTimeout(() => bathContainer.classList.remove("happy-jump"), 500);
+                        const targetGeno = bathContainer.querySelector(".geno-idle");
+                        if (targetGeno) {
+                            targetGeno.classList.add("happy-jump");
+                            setTimeout(() => targetGeno.classList.remove("happy-jump"), 500);
+                        }
                     }
                     // XP
                     const multiplicador = typeof window.getMultiplicadorXP === 'function' ? window.getMultiplicadorXP(window.miMascota) : 1.0;
