@@ -385,7 +385,8 @@ window.ShopManager = {
                 
                 window.miWallet.pol -= item.price;
                 window.miInventario.maxSlots = item.value;
-                document.getElementById("pol-amount").innerText = `${window.miWallet.pol.toFixed(1)} POL`;
+                if (typeof window.WalletManager !== 'undefined') window.WalletManager.actualizarBoton();
+                else document.getElementById("pol-amount").innerText = `${window.miWallet.pol.toFixed(1)} POL`;
                 window.miInventario.updateUI();
                 
                 alert(`🎒 ¡Mochila expandida permanentemente a ${item.value} ranuras!`);
@@ -398,8 +399,11 @@ window.ShopManager = {
                 
                 if (agregadoExitosamente) {
                     window.miWallet.pol -= item.price;
-                    const polText = document.getElementById("pol-amount");
-                    if(polText) polText.innerText = `${window.miWallet.pol.toFixed(1)} POL`;
+                    if (typeof window.WalletManager !== 'undefined') window.WalletManager.actualizarBoton();
+                    else {
+                        const polText = document.getElementById("pol-amount");
+                        if(polText) polText.innerText = `${window.miWallet.pol.toFixed(1)} POL`;
+                    }
                     window.miInventario.updateUI();
                     alert(`✅ Has comprado: ${item.name}`);
                     if(window.guardarJuego) window.guardarJuego();

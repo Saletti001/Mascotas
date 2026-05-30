@@ -657,6 +657,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 window.miWallet.pol -= costoExpansion;
                 window.maxGenoSlots += 1;
                 if(typeof window.actualizarHUD === 'function') window.actualizarHUD();
+                if (typeof window.WalletManager !== 'undefined') window.WalletManager.actualizarBoton();
                 renderizarInventarioGenos(); 
                 if (typeof window.guardarJuego === 'function') window.guardarJuego();
                 else if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
