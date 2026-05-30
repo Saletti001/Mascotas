@@ -447,38 +447,41 @@
             <!-- Geno Container (sin cápsula, nítido) -->
             <div id="geno-container-bathroom" style="width: 200px; height: 190px; display: flex; justify-content: center; align-items: center; z-index: 2; position: relative;"></div>
 
-            <!-- Sub-panel de herramientas de limpieza (oculto por defecto) -->
-            <div id="care-clean-tools" class="hidden" style="width: 92%; max-width: 340px; background: #1a1a2e; border: 2px solid rgba(255, 0, 127, 0.35); border-radius: 14px; padding: 10px 12px; z-index: 2; box-shadow: 0 4px 15px rgba(255, 0, 127, 0.15); display: flex; flex-direction: column; align-items: center; gap: 8px;">
-                <span style="font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: #ff80bf; font-weight: bold;">Selecciona herramienta y arrastra sobre el Geno</span>
-                <div style="display: flex; justify-content: space-around; width: 100%; gap: 10px;">
-                    <div class="tool-btn" id="btn-tool-soap" style="flex: 1; height: 48px; background: rgba(255, 0, 127, 0.08); border: 1.5px solid rgba(255, 0, 127, 0.4); border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(255, 0, 127, 0.2)'; this.style.borderColor='#ff007f';" onmouseout="this.style.background='rgba(255, 0, 127, 0.08)'; this.style.borderColor='rgba(255, 0, 127, 0.4)';">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff007f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 3px rgba(255, 0, 127, 0.4));"><rect x="2" y="7" width="20" height="10" rx="3"/><path d="M6 10h1M16 14h2"/><circle cx="12" cy="12" r="1"/></svg>
-                        <span style="font-size: 10px; color: #ff007f; font-weight: bold; text-transform: uppercase;">Jabón</span>
+            <!-- Contenedor unificado para empujar las acciones y herramientas abajo -->
+            <div style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: auto; z-index: 2;">
+                <!-- Sub-panel de herramientas de limpieza (oculto por defecto) -->
+                <div id="care-clean-tools" class="hidden" style="width: 92%; max-width: 340px; background: #1a1a2e; border: 2px solid rgba(0, 210, 255, 0.35); border-radius: 14px; padding: 10px 12px; box-shadow: 0 4px 15px rgba(0, 210, 255, 0.15); display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                    <span style="font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: #80deea; font-weight: bold;">Selecciona herramienta y arrastra sobre el Geno</span>
+                    <div style="display: flex; justify-content: space-around; width: 100%; gap: 10px;">
+                        <div class="tool-btn" id="btn-tool-soap" style="flex: 1; height: 48px; background: rgba(255, 0, 127, 0.08); border: 1.5px solid rgba(255, 0, 127, 0.4); border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(255, 0, 127, 0.2)'; this.style.borderColor='#ff007f';" onmouseout="this.style.background='rgba(255, 0, 127, 0.08)'; this.style.borderColor='rgba(255, 0, 127, 0.4)';">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff007f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 3px rgba(255, 0, 127, 0.4));"><rect x="2" y="7" width="20" height="10" rx="3"/><path d="M6 10h1M16 14h2"/><circle cx="12" cy="12" r="1"/></svg>
+                            <span style="font-size: 10px; color: #ff007f; font-weight: bold; text-transform: uppercase;">Jabón</span>
+                        </div>
+                        <div class="tool-btn" id="btn-tool-shower" style="flex: 1; height: 48px; background: rgba(0, 229, 255, 0.08); border: 1.5px solid rgba(0, 229, 255, 0.4); border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(0, 229, 255, 0.2)'; this.style.borderColor='#00e5ff';" onmouseout="this.style.background='rgba(0, 229, 255, 0.08)'; this.style.borderColor='rgba(0, 229, 255, 0.4)';">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 3px rgba(0, 229, 255, 0.4));"><path d="M4 4h7a4 4 0 0 1 4 4v12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V8a4 4 0 0 1-4-4Z"/><path d="M15 12h5m-5 4h3"/><circle cx="21" cy="12" r="0.5" fill="#00e5ff"/><circle cx="19" cy="16" r="0.5" fill="#00e5ff"/></svg>
+                            <span style="font-size: 10px; color: #00e5ff; font-weight: bold; text-transform: uppercase;">Ducha</span>
+                        </div>
                     </div>
-                    <div class="tool-btn" id="btn-tool-shower" style="flex: 1; height: 48px; background: rgba(0, 229, 255, 0.08); border: 1.5px solid rgba(0, 229, 255, 0.4); border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(0, 229, 255, 0.2)'; this.style.borderColor='#00e5ff';" onmouseout="this.style.background='rgba(0, 229, 255, 0.08)'; this.style.borderColor='rgba(0, 229, 255, 0.4)';">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 3px rgba(0, 229, 255, 0.4));"><path d="M4 4h7a4 4 0 0 1 4 4v12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V8a4 4 0 0 1-4-4Z"/><path d="M15 12h5m-5 4h3"/><circle cx="21" cy="12" r="0.5" fill="#00e5ff"/><circle cx="19" cy="16" r="0.5" fill="#00e5ff"/></svg>
-                        <span style="font-size: 10px; color: #00e5ff; font-weight: bold; text-transform: uppercase;">Ducha</span>
-                    </div>
+                    <button id="btn-care-clean-close" style="background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #aaa; font-size: 9px; padding: 5px 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.3)'; this.style.color='#fff';" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)'; this.style.color='#aaa';">Cerrar</button>
                 </div>
-                <button id="btn-care-clean-close" style="background: transparent; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #aaa; font-size: 9px; padding: 5px 16px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.3)'; this.style.color='#fff';" onmouseout="this.style.borderColor='rgba(255,255,255,0.15)'; this.style.color='#aaa';">Cerrar</button>
-            </div>
 
-            <!-- Panel de Acciones de Cuidado -->
-            <div style="width: 92%; max-width: 340px; background: #1a1a2e; border: 2px solid #2a2a4a; border-radius: 16px; padding: 10px 12px; z-index: 2; box-shadow: 0 4px 15px rgba(0,0,0,0.4); display: flex; flex-direction: column; gap: 8px; margin-top: auto;">
-                <span style="font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: #80deea; font-weight: bold; text-align: center;">Acciones de Cuidado</span>
-                <div style="display: flex; justify-content: space-between; gap: 8px;">
-                    <button id="btn-care-clean" class="care-action-btn care-btn-pink">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-11-7-11S5 10.7 5 15a7 7 0 0 0 7 7z"/></svg>
-                        <span>Limpiar</span>
-                    </button>
-                    <button id="btn-care-feed" class="care-action-btn care-btn-orange">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/><path d="M10 2c1 .5 2 2 2 5"/></svg>
-                        <span>Alimentar</span>
-                    </button>
-                    <button id="btn-care-rest" class="care-action-btn care-btn-green">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-                        <span id="btn-care-rest-label">Descansar</span>
-                    </button>
+                <!-- Panel de Acciones de Cuidado -->
+                <div style="width: 100%; background: #1a1a2e; border: 2px solid #2a2a4a; border-radius: 16px; padding: 10px 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); display: flex; flex-direction: column; gap: 8px; margin-top: 0;">
+                    <span style="font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: #80deea; font-weight: bold; text-align: center;">Acciones de Cuidado</span>
+                    <div style="display: flex; justify-content: space-between; gap: 8px;">
+                        <button id="btn-care-clean" class="care-action-btn care-btn-blue">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-11-7-11S5 10.7 5 15a7 7 0 0 0 7 7z"/></svg>
+                            <span>Limpiar</span>
+                        </button>
+                        <button id="btn-care-feed" class="care-action-btn care-btn-orange">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/><path d="M10 2c1 .5 2 2 2 5"/></svg>
+                            <span>Alimentar</span>
+                        </button>
+                        <button id="btn-care-rest" class="care-action-btn care-btn-green">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                            <span id="btn-care-rest-label">Descansar</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -710,8 +713,18 @@
         <div id="breeding-screen" class="app-screen hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; box-sizing: border-box;">
             <div style="width: 100%; height: 100%; overflow-y: auto; padding-bottom: 100px;">
                 <div class="alchemy-panel" style="background: #1a2a36; border: 1px solid #333; border-radius: 16px; padding: 20px; margin: 25px 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
-                    <div class="drawer-header" style="justify-content: center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px;">
-                        <h3 style="font-size: 16px !important; color: #80deea !important; text-transform: uppercase !important; letter-spacing: 1px !important; margin: 0 !important; font-weight: bold !important; text-shadow: none !important;">CENTRO DE CRIANZA</h3>
+                    <div class="drawer-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px;">
+                        <div style="width: 34px;"></div>
+                        <h3 style="font-size: 16px !important; color: #80deea !important; text-transform: uppercase !important; letter-spacing: 1px !important; margin: 0 !important; font-weight: bold !important; text-shadow: none !important; text-align: center; flex: 1;">CENTRO DE CRIANZA</h3>
+                        <button id="btn-breeding-change-geno" style="width: 34px; height: 34px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1.5px solid #2a2a4a; background: rgba(77, 208, 225, 0.1); cursor: pointer; transition: 0.2s; flex-shrink: 0;" title="Cambiar Geno" onclick="const btn = document.getElementById('btn-show-genos'); if(btn) btn.click();" onmouseover="this.style.background='rgba(77, 208, 225, 0.25)'; this.style.borderColor='#4dd0e1';" onmouseout="this.style.background='rgba(77, 208, 225, 0.1)'; this.style.borderColor='#2a2a4a';">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4dd0e1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3.5" fill="currentColor"></circle>
+                                <path d="M 12 2 C 17.5 2, 22 6.5, 22 12 C 22 17.5, 17.5 22, 12 22"></path> <path d="M 12 2 C 6.5 2, 2 6.5, 2 12"></path> <path d="M 12 22 C 6.5 22, 2 17.5, 2 12"></path> <line x1="2" y1="12" x2="6.5" y2="12"></line>
+                                <line x1="17.5" y1="12" x2="22" y2="12"></line>
+                                <line x1="12" y1="2" x2="12" y2="6.5"></line>
+                                <line x1="12" y1="18.5" x2="12" y2="22"></line>
+                            </svg>
+                        </button>
                     </div>
                     
                     <p style="text-align: center; color: #aaa !important; font-size: 10px !important; text-transform: uppercase !important; letter-spacing: 1px !important; padding: 0 15px !important; margin-bottom: 25px !important; text-shadow: none !important; display: block; line-height: 1.5;">

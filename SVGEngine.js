@@ -309,9 +309,13 @@ function generarSvgGeno(genesVisuales) {
             @keyframes rotarAura { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
             @keyframes deslizarHolograma { 0% { transform: translateY(-20px); opacity: 0.3; } 50% { opacity: 0.8; } 100% { transform: translateY(20px); opacity: 0.3; } }
             @keyframes flotarDron { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+            @keyframes masticar { 0%, 100% { transform: scaleY(1) scaleX(1); } 50% { transform: scaleY(0.3) scaleX(1.3) translateY(3px); } }
             
             .g-cuerpo { transform-origin: 80px 136px; animation: respirar 3.5s ease-in-out infinite; }
             .g-ojos { transform-origin: 80px 85px; animation: parpadear 5s infinite; }
+            .g-boca { transform-origin: 80px 110px; }
+            .eating .g-boca { animation: masticar 0.15s infinite alternate ease-in-out; }
+            
             .anim-flotar { animation: respirar 3s ease-in-out infinite; }
             .anim-fuego { animation: propulsor 0.1s infinite alternate ease-in-out; }
             .anim-aura { transform-origin: 80px 85px; animation: rotarAura 15s linear infinite; }

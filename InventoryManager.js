@@ -305,7 +305,9 @@ class InventoryManager {
             if (contenedor) {
                 contenedor.classList.remove("geno-idle");
                 contenedor.classList.add("happy-jump");
-                setTimeout(() => { contenedor.classList.remove("happy-jump"); contenedor.classList.add("geno-idle"); }, 500);
+                contenedor.classList.add("eating");
+                setTimeout(() => { contenedor.classList.remove("happy-jump"); }, 500);
+                setTimeout(() => { contenedor.classList.remove("eating"); contenedor.classList.add("geno-idle"); }, 1500);
             }
             if (window.Sonidos) window.Sonidos.play("click");
         } 

@@ -320,7 +320,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 const contenedor = document.getElementById("geno-container");
                 if(contenedor) {
                     contenedor.classList.add("happy-jump");
+                    contenedor.classList.add("eating");
                     setTimeout(() => contenedor.classList.remove("happy-jump"), 500);
+                    setTimeout(() => contenedor.classList.remove("eating"), 1500);
                 }
                 const multiplicador = typeof window.getMultiplicadorXP === 'function' ? window.getMultiplicadorXP(window.miMascota) : 1.0;
                 if(window.ganarXP) window.ganarXP(Math.floor(25 * multiplicador));
@@ -1302,7 +1304,9 @@ function iniciarSecuenciaBienvenida() {
                         const targetGeno = bathContainer.querySelector(".geno-idle");
                         if (targetGeno) {
                             targetGeno.classList.add("happy-jump");
+                            targetGeno.classList.add("eating");
                             setTimeout(() => targetGeno.classList.remove("happy-jump"), 500);
+                            setTimeout(() => targetGeno.classList.remove("eating"), 1500);
                         }
                     }
                     // XP

@@ -367,6 +367,17 @@
     box-shadow: 0 0 12px rgba(255, 0, 127, 0.3);
 }
 
+.care-btn-blue {
+    color: #00d2ff;
+    background: rgba(0, 210, 255, 0.08);
+    border: 1.5px solid rgba(0, 210, 255, 0.4);
+}
+.care-btn-blue:hover:not(:disabled) {
+    background: rgba(0, 210, 255, 0.2);
+    border-color: #00d2ff;
+    box-shadow: 0 0 12px rgba(0, 210, 255, 0.3);
+}
+
 .care-btn-orange {
     color: #ff7043;
     background: rgba(255, 112, 67, 0.08);
