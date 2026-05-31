@@ -145,6 +145,7 @@ window.NexoEnergyManager = {
                         geno.descansandoDesde = null;
                         // Notificar en la UI si es el Geno activo
                         if (window.miMascota && String(window.miMascota.id) === String(geno.id)) {
+                            window.miMascota.descansandoDesde = null;
                             if (typeof window.actualizarBotonDescansar === 'function') window.actualizarBotonDescansar();
                             if (typeof window.actualizarAnimacionDescanso === 'function') window.actualizarAnimacionDescanso();
                         }
@@ -188,6 +189,8 @@ window.NexoEnergyManager = {
                 window.miMascota.higiene = activoOriginal.higiene;
                 window.miMascota.amistad = activoOriginal.amistad;
                 window.miMascota.evAcumulada = activoOriginal.evAcumulada;
+                window.miMascota.descansandoDesde = activoOriginal.descansandoDesde;
+                window.miMascota.descansoCancelado = activoOriginal.descansoCancelado;
             }
         }
 

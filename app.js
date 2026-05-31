@@ -1637,22 +1637,7 @@ function iniciarSecuenciaBienvenida() {
                     }
                 }
 
-                // Animación Zzz flotante de inicio
-                const bathGeno = document.getElementById("geno-container-bathroom");
-                if (bathGeno) {
-                    for (let i = 0; i < 4; i++) {
-                        setTimeout(() => {
-                            const zzz = document.createElement("div");
-                            zzz.className = "zzz-particle";
-                            zzz.innerText = "Z";
-                            zzz.style.fontSize = `${14 + i * 4}px`;
-                            zzz.style.left     = `${40 + Math.random() * 90}px`;
-                            zzz.style.top      = `${20 + Math.random() * 40}px`;
-                            bathGeno.appendChild(zzz);
-                            setTimeout(() => zzz.remove(), 1500);
-                        }, i * 250);
-                    }
-                }
+
 
                 if (window.Sonidos) window.Sonidos.play("click");
                 window.actualizarBotonDescansar();
