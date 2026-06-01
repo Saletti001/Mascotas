@@ -916,8 +916,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    }
-
     // === SISTEMA DE SELECCIÓN DE EQUIPO 3v3 ===
     let teamSelection = [null, null, null];
     let activeSlotIndex = 0;
