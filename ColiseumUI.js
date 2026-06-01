@@ -31,8 +31,8 @@ window.ColiseumUI = {
             z-index: 10; }
 
             #player-sprite-battle, #enemy-sprite-battle, .fighter-left, .fighter-right { background: rgba(45, 62, 79, 0.98) !important;
-            padding: 20px 10px 15px 10px !important; width: 42% !important; position: relative; display: flex !important; flex-direction: column !important; justify-content: flex-end !important;
-            align-items: center !important; min-height: 250px !important; backdrop-filter: blur(5px); overflow: visible !important; transition: 0.3s ease-out !important; border-radius: 12px !important;
+            padding: 40px 10px 15px 10px !important; width: 42% !important; position: relative; display: flex !important; flex-direction: column !important; justify-content: flex-end !important;
+            align-items: center !important; min-height: 200px !important; backdrop-filter: blur(5px); overflow: visible !important; transition: 0.3s ease-out !important; border-radius: 12px !important;
             }
             
             @keyframes pulseGlowP { 0% { box-shadow: -8px 8px 20px rgba(0,0,0,0.7), 0 0 15px rgba(77,208,225,0.4);
@@ -53,14 +53,14 @@ window.ColiseumUI = {
             #enemy-sprite-battle:hover, .fighter-right:hover { transform: translateY(-5px) scale(1.02) !important;
             }
 
-            #player-visual-box, #enemy-visual-box, .fighter-sprite { width: 120px !important;
-            height: 120px !important; margin: auto !important; display: flex; justify-content: center; align-items: center; position: relative; overflow: visible !important;
+            #player-visual-box, #enemy-visual-box, .fighter-sprite { width: 100px !important;
+            height: 100px !important; margin: 0 auto 5px auto !important; display: flex; justify-content: center; align-items: center; position: relative; overflow: visible !important;
             filter: drop-shadow(0 8px 6px rgba(0,0,0,0.6)); transition: 0.2s ease-in-out; }
             #player-visual-box svg, #enemy-visual-box svg, .fighter-sprite svg { width: 100% !important;
             height: 100% !important; overflow: visible !important; transition: 0.2s; }
 
             .fighter-name { font-size: 13px !important;
-            text-transform: uppercase; letter-spacing: 1px; margin-top: 10px !important; text-align: center !important; width: 100% !important; line-height: 1.3 !important;
+            text-transform: uppercase; letter-spacing: 1px; margin-top: 5px !important; text-align: center !important; width: 100% !important; line-height: 1.3 !important;
             }
             .fighter-left .fighter-name, #battle-player-name { color: #4dd0e1 !important;
             }
@@ -69,7 +69,7 @@ window.ColiseumUI = {
 
             .hp-bar-container, #player-sprite-battle > div:nth-child(3), #enemy-sprite-battle > div:nth-child(3) { background: #000 !important;
             border: 1px solid #333 !important; box-shadow: inset 0 0 5px rgba(0,0,0,0.8) !important; height: 12px !important; border-radius: 6px !important;
-            width: 90% !important; margin: 8px auto 0 auto !important; }
+            width: 90% !important; margin: 6px auto 0 auto !important; }
             .hp-bar-fill-green, #player-hp-bar { background: linear-gradient(90deg, #00d2ff, #4dd0e1) !important;
             box-shadow: 0 0 10px rgba(77,208,225,0.6) !important; height: 100%; border-radius: 6px;
             transition: width 0.3s;}
@@ -328,22 +328,25 @@ window.ColiseumUI = {
             }
             
             #battle-area {
-                padding: 15px 15px 15px 15px !important;
+                padding: 15px 15px 20px 15px !important;
             }
             #battle-log, .battle-log-container {
-                height: 110px !important;
-                margin: 10px -30px 10px -30px !important;
-                padding: 10px !important;
+                height: 130px !important;
+                margin: 15px -30px 10px -30px !important;
+                padding: 15px !important;
+            }
+            #battle-controls {
+                margin-bottom: 10px !important;
             }
             #battle-controls.mode-3v3 {
                 grid-template-columns: repeat(3, 1fr) !important;
                 gap: 8px !important;
             }
             #battle-controls.mode-3v3 .battle-btn {
-                padding: 10px 4px !important;
-                font-size: 8px !important;
+                padding: 12px 4px !important;
+                font-size: 8.5px !important;
                 letter-spacing: 0.2px !important;
-                height: 38px !important;
+                height: 44px !important;
                 display: flex !important;
                 align-items: center !important;
                 justify-content: center !important;
