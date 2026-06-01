@@ -108,6 +108,8 @@ window.ColiseumUI = {
             color: #4dd0e1 !important; } .slot-2 { border: 1px solid #ff6b6b !important; color: #ff6b6b !important;
             } .slot-3 { border: 1px solid #4CAF50 !important; color: #4CAF50 !important; } .slot-4 { border: 1px solid #555 !important;
             color: #888 !important; background: #0a0f14 !important; } 
+            .swap-btn { border: 1px dashed #a855f7 !important; color: #a855f7 !important; background: rgba(138, 43, 226, 0.05) !important; }
+            .swap-btn:hover:not(:disabled) { background: rgba(138, 43, 226, 0.15) !important; border-color: #ba55d3 !important; color: #fff !important; }
             .battle-btn:active { transform: scale(0.95) !important;
             } .battle-btn:disabled { opacity: 0.5 !important; cursor: not-allowed !important; transform: none !important; box-shadow: none !important;
             }
@@ -359,9 +361,14 @@ window.ColiseumUI = {
                 <button id="btn-atk-1" class="battle-btn slot-1">BÁSICO</button>
                 <button id="btn-atk-2" class="battle-btn slot-2">VACÍO</button>
                 <button id="btn-atk-3" class="battle-btn slot-3">VACÍO</button>
-                <button id="btn-atk-4" class="battle-btn slot-4" disabled>🔒 NV.
-            25+</button>
+                <button id="btn-atk-4" class="battle-btn slot-4" disabled>🔒 NV. 25+</button>
             `;
+            if (window.ColiseumLogic.modoCombate === '3v3') {
+                controls.innerHTML += `
+                    <button id="btn-swap-a" class="battle-btn swap-btn" style="grid-column: span 1;">🔄 RELEVO</button>
+                    <button id="btn-swap-b" class="battle-btn swap-btn" style="grid-column: span 1;">🔄 CIERRE</button>
+                `;
+            }
             controls.style.setProperty("display", "none", "important");
         }
 
@@ -403,6 +410,39 @@ window.ColiseumUI = {
                 btn4.style.border = ""; btn4.style.color = ""; }
             }
         }
+
+        if (window.ColiseumLogic.modoCombate === '3v3') {
+            const btnSwapA = document.getElementById("btn-swap-a");
+            const btnSwapB = document.getElementById("btn-swap-b");
+            
+            if (btnSwapA && btnSwapB && window.ColiseumLogic.playerTeam) {
+                const activeIdx = window.ColiseumLogic.playerActiveIndex;
+                const team = window.ColiseumLogic.playerTeam;
+                
+                let idxA = activeIdx === 0 ? 1 : (activeIdx === 1 ? 0 : 0);
+                let idxB = activeIdx === 0 ? 2 : (activeIdx === 1 ? 2 : 1);
+                
+                const genoA = team[idxA];
+                const genoB = team[idxB];
+                
+                const labelA = idxA === 0 ? "Abridor" : (idxA === 1 ? "Relevo" : "Cierre");
+                const labelB = idxB === 0 ? "Abridor" : (idxB === 1 ? "Relevo" : "Cierre");
+                
+                btnSwapA.innerText = `🔄 ${labelA}: ${(genoA.nombre || "").toUpperCase()}`;
+                btnSwapB.innerText = `🔄 ${labelB}: ${(genoB.nombre || "").toUpperCase()}`;
+                
+                btnSwapA.disabled = (genoA.hp <= 0);
+                btnSwapB.disabled = (genoB.hp <= 0);
+                
+                const activeGeno = team[activeIdx];
+                if (activeGeno && activeGeno.estados.includes("Enredado")) {
+                    btnSwapA.disabled = true;
+                    btnSwapB.disabled = true;
+                    btnSwapA.innerText = "❌ ENREDADO";
+                    btnSwapB.innerText = "❌ ENREDADO";
+                }
+            }
+        }
     },
 
     actualizarGraficos: function(p, e) {
@@ -433,6 +473,8 @@ window.ColiseumUI = {
         let pSide = document.getElementById("player-sprite-battle") || document.querySelector(".fighter-left"); let eSide = document.getElementById("enemy-sprite-battle") || document.querySelector(".fighter-right");
         if(pSide) pSide.style.filter = p.hp <= 0 ? "grayscale(1) brightness(0.3)" : "none"; if(eSide) eSide.style.filter = e.hp <= 0 ?
         "grayscale(1) brightness(0.3)" : "none";
+        
+        this.actualizarMiniEquipo();
     },
 
     actualizarEstados: function(player, enemy) {
@@ -645,5 +687,119 @@ window.ColiseumUI = {
         if (svgEl) { svgEl.setAttribute('width', '100%');
         svgEl.setAttribute('height', '100%'); svgEl.setAttribute('viewBox', '-20 -20 200 200'); svgEl.style.overflow = 'visible'; }
         return tempDiv.innerHTML;
+    },
+
+    actualizarMiniEquipo: function() {
+        if (window.ColiseumLogic.modoCombate !== '3v3') {
+            const pTray = document.querySelector(".fighter-left .team-mini-tray");
+            const eTray = document.querySelector(".fighter-right .team-mini-tray");
+            if (pTray) pTray.remove();
+            if (eTray) eTray.remove();
+            return;
+        }
+
+        const elementColors = {
+            "Biomutante": "#69f0ae",
+            "Viral": "#00e5ff",
+            "Cibernético": "#ff8c00",
+            "Radiactivo": "#ff3d00",
+            "Tóxico": "#d500f9",
+            "Sintético": "#b85cff",
+            "Normal": "#ffffff"
+        };
+
+        const elementLetters = {
+            "Biomutante": "B",
+            "Viral": "V",
+            "Cibernético": "C",
+            "Radiactivo": "R",
+            "Tóxico": "T",
+            "Sintético": "S",
+            "Normal": "N"
+        };
+
+        function renderMiniTray(team, activeIndex, isPlayer) {
+            const sideContainer = isPlayer ? 
+                (document.getElementById("player-sprite-battle") || document.querySelector(".fighter-left")) : 
+                (document.getElementById("enemy-sprite-battle") || document.querySelector(".fighter-right"));
+            if (!sideContainer) return;
+
+            let tray = sideContainer.querySelector(".team-mini-tray");
+            if (!tray) {
+                tray = document.createElement("div");
+                tray.className = "team-mini-tray";
+                tray.style.position = "absolute";
+                tray.style.top = "15px";
+                tray.style.right = "15px";
+                tray.style.display = "flex";
+                tray.style.flexDirection = "column";
+                tray.style.gap = "6px";
+                tray.style.zIndex = "25";
+                sideContainer.appendChild(tray);
+            }
+
+            tray.innerHTML = "";
+
+            team.forEach((fighter, idx) => {
+                const isActive = idx === activeIndex;
+                const hpPercent = Math.max(0, (fighter.hp / fighter.maxHp) * 100);
+                const elColor = elementColors[fighter.element] || "#ffffff";
+                const elLetter = elementLetters[fighter.element] || "N";
+                const isFainted = fighter.hp <= 0;
+
+                const item = document.createElement("div");
+                item.style.display = "flex";
+                item.style.flexDirection = "column";
+                item.style.alignItems = "center";
+                item.style.opacity = isFainted ? "0.4" : "1";
+
+                const dot = document.createElement("div");
+                dot.style.width = "22px";
+                dot.style.height = "22px";
+                dot.style.borderRadius = "50%";
+                dot.style.border = `2px solid ${isFainted ? '#f44336' : elColor}`;
+                dot.style.background = isActive ? `rgba(0, 255, 0, 0.2)` : `rgba(0,0,0,0.6)`;
+                dot.style.boxShadow = isActive ? `0 0 10px ${elColor}` : "none";
+                dot.style.display = "flex";
+                dot.style.alignItems = "center";
+                dot.style.justifyContent = "center";
+                dot.style.fontSize = "9px";
+                dot.style.fontWeight = "bold";
+                dot.style.color = "#fff";
+                dot.title = `${fighter.nombre} (HP: ${Math.floor(fighter.hp)}/${fighter.maxHp})`;
+                
+                if (isFainted) {
+                    dot.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="#f44336" stroke-width="3" style="width:12px; height:12px;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+                } else {
+                    dot.innerText = elLetter;
+                }
+
+                const hpBarBg = document.createElement("div");
+                hpBarBg.style.width = "22px";
+                hpBarBg.style.height = "4px";
+                hpBarBg.style.background = "#000";
+                hpBarBg.style.border = "1px solid rgba(255,255,255,0.1)";
+                hpBarBg.style.marginTop = "2px";
+                hpBarBg.style.borderRadius = "2px";
+                hpBarBg.style.overflow = "hidden";
+
+                const hpBarFill = document.createElement("div");
+                hpBarFill.style.width = `${hpPercent}%`;
+                hpBarFill.style.height = "100%";
+                hpBarFill.style.background = hpPercent > 50 ? "#4CAF50" : (hpPercent > 20 ? "#ff9800" : "#f44336");
+                hpBarBg.appendChild(hpBarFill);
+
+                item.appendChild(dot);
+                item.appendChild(hpBarBg);
+                tray.appendChild(item);
+            });
+        }
+
+        if (window.ColiseumLogic.playerTeam) {
+            renderMiniTray(window.ColiseumLogic.playerTeam, window.ColiseumLogic.playerActiveIndex, true);
+        }
+        if (window.ColiseumLogic.enemyTeam) {
+            renderMiniTray(window.ColiseumLogic.enemyTeam, window.ColiseumLogic.enemyActiveIndex, false);
+        }
     }
 };

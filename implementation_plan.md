@@ -1,78 +1,94 @@
-# Hito B: Panel IFTTT Individual para Combate Offline
+# Plan de Implementación: Combate por Equipos 3v3 en el Coliseo
 
-Implementación de la inteligencia artificial programable (sistema IFTTT: *If This Then That*) para la defensa offline de los Genos de acuerdo con el documento maestro **V10.2 (Coliseo)**. Esto permite a los jugadores programar de forma táctica cómo actuará su Geno en combates asíncronos y probar sus configuraciones en un simulador integrado.
-
-## Proposed Changes
+Este plan detalla la implementación de la modalidad de combate 3v3 ("Opción 1") en el Coliseo, manteniendo intactos los modos 1v1 existentes y cumpliendo con todas las reglas y balance descritos en la especificación técnica.
 
 ---
 
-### 1. Estructura de Datos (Esquema de Reglas)
-Cada Geno guardará sus reglas en una propiedad persistente `iftttRules` dentro de su objeto principal. De esta forma, el progreso se almacena localmente y en la nube de forma transparente sin modificar la base de datos externa.
+## Modificaciones Propuestas
 
-#### Esquema de regla individual:
-```json
-{
-  "condition": "hp_under_30",
-  "action": "use_definitivo"
-}
-```
-
-*Por defecto, si un Geno no tiene reglas configuradas, se inicializará con:*
-`[ { "condition": "always", "action": "use_ataque" } ]` (Usar ataque básico siempre).
-
----
-
-### 2. Motor de Resolución IFTTT
-Modificaremos [ColiseumLogic.js](file:///c:/Users/STT/Documents/GitHub/Mascotas/ColiseumLogic.js) y [ColiseumManager.js](file:///c:/Users/STT/Documents/GitHub/Mascotas/ColiseumManager.js) para integrar el motor de evaluación de reglas.
-
-#### Condiciones Disponibles:
-1. `always`: Siempre (Por defecto)
-2. `turn_1`: En el Turno 1
-3. `hp_under_30`: Mi HP < 30%
-4. `hp_under_50`: Mi HP < 50%
-5. `hp_under_80`: Mi HP < 80%
-6. `rival_element_[Elemento]`: El elemento del rival es `Biomutante`, `Viral`, `Cibernético`, `Radiactivo`, `Tóxico` o `Sintético`.
-7. `rival_infected`: El rival tiene el estado *Infección* activo.
-8. `rival_buffed_atk`: El rival tiene un aumento de daño (ATK) activo.
-9. `self_buffed_spd`: Tengo un aumento de velocidad (SPD) activo.
-
-#### Acciones Disponibles:
-- `use_ataque`: Usar Ataque Básico (Slot 1)
-- `use_especial`: Usar Ataque Especial (Slot 2)
-- `use_tactica`: Usar Ataque Táctico (Slot 3)
-- `use_definitivo`: Usar Ataque Definitivo (Slot 4)
-
-#### Flujo de Resolución del Turno:
-El motor evalúa las reglas en orden de prioridad (1 a 5). Ejecuta la **primera regla** cuya condición sea verdadera **y cuyo ataque no esté en cooldown**. Si la acción está en cooldown, pasa a la siguiente regla. Si ninguna regla se cumple o todas sus acciones están bloqueadas por cooldown, ejecuta el ataque básico por defecto.
+### 1. Interfaz del Lobby del Coliseo y Modal de Selección de Equipo
+#### [MODIFY] [index.html](file:///c:/Users/STT/Documents/GitHub/Mascotas/index.html)
+* **Añadir tarjeta 3v3 en el Lobby**:
+  * Insertar `#lobby-card-3v3` con diseño Cyberpunk neón cian y morado en la lista scrollable del lobby.
+  * Añadir un control de acceso: si `window.misGenos.length < 3`, la tarjeta se muestra deshabilitada o muestra una advertencia al hacer clic.
+* **Crear Modal de Selección de Equipo `#coliseum-team-modal`**:
+  * Diseñar un modal con vidrio esmerilado (glassmorphism) para configurar el equipo:
+    * Slot 1: **Abridor** (Cian)
+    * Slot 2: **Relevo** (Morado)
+    * Slot 3: **Cierre** (Rosa neón)
+  * Renderizar los Genos del jugador en una lista interactiva. Al hacer clic en un Geno, se asigna al slot activo. Al hacer clic en un slot, se activa para asignación o se desasigna.
+  * Cargar y guardar la selección del equipo en `localStorage` (`coliseum_3v3_team`) para comodidad del usuario.
+  * Botón "Confirmar Equipo" habilitado solo cuando los 3 slots contengan Genos únicos.
 
 ---
 
-### 3. Interfaz de Configuración IFTTT (UI sin código)
-Crearemos un panel de programación visual neon-cyberpunk dentro de la vista de estadísticas de los Genos ([RPGManager.js](file:///c:/Users/STT/Documents/GitHub/Mascotas/RPGManager.js)).
-
-- **Botón de Acceso:** Añadir `🤖 CONFIGURAR TÁCTICA IFTTT` en el modal de estadísticas.
-- **Formulario Dinámico:**
-  - Selector de condiciones con nombres explicativos en español.
-  - Selector de acciones que muestra dinámicamente los ataques equipados en ese slot (ej. *Usar Especial [Espinas Óseas]*).
-  - Controles para ordenar la prioridad de las reglas (flechas 🔼 y 🔽).
-  - Botón de guardado rápido con feedback visual.
-
----
-
-### 4. Integración y Pruebas en el Coliseo (Simulador de Práctica)
-Para verificar la efectividad estratégica del IFTTT, añadiremos una nueva sección en el Coliseo Nexo:
-
-- **Modo Práctica:** Permitirá simular un combate contra:
-  1. **Tu propio clon:** Un clon de tu Geno controlado por las reglas IFTTT que acabas de configurar (ideal para depurar tu propia estrategia).
-  2. **Rival Pre-configurado (IFTTT):** NPCs con tácticas preprogramadas (ej. un cyborg defensivo que cura bajo 35% o un atacante radiactivo que inicia con veneno).
+### 2. Motor de Combate y Estado del Equipo
+#### [MODIFY] [ColiseumLogic.js](file:///c:/Users/STT/Documents/GitHub/Mascotas/ColiseumLogic.js)
+* **Variables del Estado del Equipo**:
+  * `playerTeam`: Array de objetos de luchador correspondientes al equipo del jugador.
+  * `enemyTeam`: Array de objetos de luchador para el rival procedural.
+  * `playerActiveIndex` y `enemyActiveIndex`: Enteros (0, 1 o 2) que apuntan al luchador activo actual.
+  * Redirigir por referencia `ColiseumLogic.player = ColiseumLogic.playerTeam[playerActiveIndex]` y `ColiseumLogic.enemy = ColiseumLogic.enemyTeam[enemyActiveIndex]`.
+* **Inicialización de Equipos**:
+  * Adaptar `prepararJugador` para recibir un array de 3 Genos y mapear sus estadísticas y ataques a `playerTeam`.
+  * Adaptar `generarRivalProcedural` para 3v3:
+    * Encontrar la rareza y el nivel máximo en el equipo del jugador.
+    * Generar 3 enemigos procedurales simétricos con esa rareza y nivel equivalente, almacenándolos en `enemyTeam`.
+* **Reglas de Intercambio (Swapping)**:
+  * Implementar refresco de habilidades pasivas al entrar: `crystalSkin = true` si tiene el gen `piel_cristal`, y `sangreFriaUsada = false` si tiene el gen `sangre_fria`.
+  * Comprobar el bloqueo de intercambio si el Geno activo tiene el estado `Enredado`.
+  * La reducción por corrosión de ataque de los rivales afectará a todos los Genos del equipo (se hereda al cambiar).
 
 ---
 
-## Verification Plan
+### 3. Interfaz Visual en Combate
+#### [MODIFY] [ColiseumUI.js](file:///c:/Users/STT/Documents/GitHub/Mascotas/ColiseumUI.js)
+* **Mini Indicadores de Equipo**:
+  * Renderizar en cada lado del combate (sobre las tarjetas de los combatientes) una fila vertical con 3 burbujas que representen a los miembros del equipo:
+    * Borde del color elemental del Geno (ej: verde para Biomutante, violeta para Sintético).
+    * Inicial del elemento (B, V, C, R, T, S).
+    * Una pequeña barra horizontal debajo que refleje la proporción de HP del Geno.
+    * Indicador visual luminoso (sombra neón) para el Geno actualmente activo.
+    * Grayscale o cruz de derrota si el miembro está caído (0 HP).
+* **Botones de Relevo Voluntario**:
+  * Añadir en la grilla de controles `#battle-controls` dos botones de intercambio dinámicos `#btn-swap-a` y `#btn-swap-b` when in 3v3 mode.
+  * Estos botones mostrarán el nombre y el slot del Geno benched correspondiente (ej. `🔄 RELEVO: Sparky`).
+  * Estarían deshabilitados si el Geno objetivo tiene 0 HP, o si el Geno activo tiene el estado "Enredado".
 
-### Automated Tests
-- Crear un script `test_ifttt.js` para simular turnos de combate e inyectar configuraciones IFTTT específicas (ej: asegurar que si se cumple `hp_under_30` se ejecuta `use_definitivo` en lugar del básico, y que respeta el cooldown de 5 turnos).
+---
 
-### Manual Verification
-- Configurar una regla en el nuevo panel visual del Geno.
-- Iniciar un combate de práctica contra tu Clon en el Coliseo y comprobar mediante el Log de combate que el oponente ejecuta los ataques siguiendo al pie de la letra las reglas lógicas programadas.
+### 4. Flujo del Turno y Controladores
+#### [MODIFY] [ColiseumManager.js](file:///c:/Users/STT/Documents/GitHub/Mascotas/ColiseumManager.js)
+* **Mapeo de Rutas**:
+  * Añadir `ColiseumManager.abrirSeleccion3v3` para validar resistencia/número de Genos y abrir el modal.
+  * Modificar `iniciarPeleaConfirmada` para descontar resistencia a los 3 Genos seleccionados si es 3v3.
+* **Controlador de Turno con Relevo**:
+  * Al presionar un botón de intercambio voluntario, se desencadena `procesarRonda("swap_X")` (donde X es el índice de equipo de destino).
+  * En `procesarRonda`, si la acción del jugador es un swap:
+    * Se ejecuta el cambio voluntario inmediatamente (antes de cualquier acción enemiga).
+    * Consume el turno del jugador: el Geno entrante no ataca.
+    * El enemigo realiza su acción contra el nuevo Geno activo.
+* **Cambio Forzado**:
+  * Al finalizar cada ronda (en `finalizarRonda`), si el Geno activo cae a 0 HP, se verifica si hay reservas disponibles.
+  * Si quedan reservas, se realiza un cambio forzado automático al siguiente Geno en orden secuencial sin consumir turno.
+  * Si no quedan reservas, se declara la derrota/victoria.
+
+---
+
+## Plan de Verificación
+
+### Pruebas Manuales
+1. **Validación del Lobby**:
+   * Verificar que la tarjeta 3v3 muestra un aviso si el jugador tiene menos de 3 Genos.
+   * Si tiene 3 o más, verificar que se abre el Modal de Selección de Equipo.
+2. **Modal de Configuración**:
+   * Probar a seleccionar 3 Genos y comprobar que se asignan a Abridor, Relevo y Cierre correspondientemente.
+   * Probar a cambiar el orden o deseleccionar. Confirmar que el botón "Confirmar" se habilita únicamente con 3 Genos válidos y distintos.
+3. **Inicio de Combate**:
+   * Iniciar combate 3v3 y verificar que los 3 Genos tienen descontados 20 de resistencia.
+   * Verificar la correcta visualización de los mini indicadores de equipo a ambos lados.
+4. **Flujo de Batalla**:
+   * Probar el intercambio voluntario en el turno del jugador. Verificar que se ejecuta el cambio, se registra en el log y el enemigo ataca al nuevo Geno activo inmediatamente.
+   * Probar que si el Geno activo es afectado por "Raíz Enredadora" (Enredado), los botones de swap voluntario se bloquean.
+   * Probar que si el Geno activo cae a 0 HP, entra el siguiente miembro automáticamente sin costo de turno y la batalla sigue.
+   * Verificar la victoria cuando los 3 rivales caen a 0 HP, y la derrota cuando nuestros 3 Genos caen.

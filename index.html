@@ -765,6 +765,53 @@
             </div>
         </div>
 
+        <!-- Modal de Selección de Equipo 3v3 (Glassmorphism Cyberpunk) -->
+        <div id="coliseum-team-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+            <div class="modal-content" style="background: linear-gradient(180deg, #101524 0%, #080b12 100%); border: 2px solid #00e5ff; box-shadow: 0 0 25px rgba(0, 229, 255, 0.4), inset 0 0 15px rgba(0, 229, 255, 0.1); width: 90%; max-width: 360px; border-radius: 16px; padding: 20px 18px; box-sizing: border-box; position: relative; max-height: 90vh; display: flex; flex-direction: column; font-family: sans-serif; color: white;">
+                <button id="close-coliseum-team" style="position: absolute; top: 12px; right: 15px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 10px; z-index: 10; transition: transform 0.2s;"><svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                
+                <h3 style="color: #00e5ff; text-transform: uppercase; margin: 0 0 4px 0; font-size: 14px; letter-spacing: 1.5px; text-align: center; font-weight: bold;">Configurar Equipo 3v3</h3>
+                <p style="font-size: 10px; color: #80deea; text-align: center; margin: 0 0 15px 0; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Asigna tus Genos a los slots tácticos</p>
+
+                <!-- Slots del Equipo -->
+                <div style="display: flex; justify-content: space-between; gap: 8px; margin-bottom: 15px;">
+                    <!-- Slot 1: Abridor -->
+                    <div id="team-slot-0" class="team-slot active-slot" style="flex: 1; aspect-ratio: 1/1.2; background: rgba(13, 22, 30, 0.6); border: 2px solid #00e5ff; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px; cursor: pointer; transition: 0.2s; position: relative;">
+                        <span style="font-size: 9px; font-weight: bold; color: #00e5ff; text-transform: uppercase; margin-bottom: 5px;">Abridor</span>
+                        <div class="slot-preview-svg" style="width: 46px; height: 46px; display: flex; justify-content: center; align-items: center; pointer-events: none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(0, 229, 255, 0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        </div>
+                        <span class="slot-preview-name" style="font-size: 9px; color: #aaa; text-align: center; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">Vacío</span>
+                    </div>
+
+                    <!-- Slot 2: Relevo -->
+                    <div id="team-slot-1" class="team-slot" style="flex: 1; aspect-ratio: 1/1.2; background: rgba(13, 22, 30, 0.4); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px; cursor: pointer; transition: 0.2s; position: relative;">
+                        <span style="font-size: 9px; font-weight: bold; color: #a855f7; text-transform: uppercase; margin-bottom: 5px;">Relevo</span>
+                        <div class="slot-preview-svg" style="width: 46px; height: 46px; display: flex; justify-content: center; align-items: center; pointer-events: none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(168, 85, 247, 0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        </div>
+                        <span class="slot-preview-name" style="font-size: 9px; color: #aaa; text-align: center; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">Vacío</span>
+                    </div>
+
+                    <!-- Slot 3: Cierre -->
+                    <div id="team-slot-2" class="team-slot" style="flex: 1; aspect-ratio: 1/1.2; background: rgba(13, 22, 30, 0.4); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px; cursor: pointer; transition: 0.2s; position: relative;">
+                        <span style="font-size: 9px; font-weight: bold; color: #ff007f; text-transform: uppercase; margin-bottom: 5px;">Cierre</span>
+                        <div class="slot-preview-svg" style="width: 46px; height: 46px; display: flex; justify-content: center; align-items: center; pointer-events: none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255, 0, 127, 0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        </div>
+                        <span class="slot-preview-name" style="font-size: 9px; color: #aaa; text-align: center; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">Vacío</span>
+                    </div>
+                </div>
+
+                <!-- Lista de Genos Seleccionables -->
+                <div style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; max-height: 45vh; scrollbar-width: none; -ms-overflow-style: none;" id="coliseum-team-genos-list">
+                    <!-- Inyectado dinámicamente -->
+                </div>
+
+                <button id="btn-confirm-team-3v3" style="background: linear-gradient(90deg, #00d2ff, #8A2BE2); color: #fff; font-weight: bold; border: none; padding: 12px; border-radius: 10px; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 15px; font-size: 12px; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(0,210,255,0.3); transition: 0.2s;" disabled>Confirmar Equipo</button>
+            </div>
+        </div>
+
         <!-- Modal de Ayuda del Coliseo (Premium Cyberpunk Neon) -->
         <div id="coliseum-help-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
             <div class="modal-content" style="background: linear-gradient(180deg, #0d1e2d 0%, #07111c 100%); border: 2px solid #4dd0e1; box-shadow: 0 0 25px rgba(77, 208, 225, 0.4), inset 0 0 15px rgba(77, 208, 225, 0.1); width: 85%; max-width: 320px; border-radius: 16px; padding: 25px 20px; box-sizing: border-box; position: relative; max-height: 85vh; display: flex; flex-direction: column;">
@@ -1038,6 +1085,16 @@
                     border-color: #ba55d3 !important;
                     box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.08), 0 8px 25px rgba(138, 43, 226, 0.35), 0 0 15px rgba(138, 43, 226, 0.15) !important;
                 }
+                .lobby-card.card-3v3 {
+                    border: 2px solid #00e5ff !important;
+                    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.05), 0 4px 15px rgba(0, 0, 0, 0.4), 0 0 12px rgba(0, 229, 255, 0.05);
+                }
+                .lobby-card.card-3v3:hover {
+                    transform: translateY(-3px);
+                    background: linear-gradient(135deg, #182e42 0%, #0b1720 100%) !important;
+                    border-color: #8A2BE2 !important;
+                    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.08), 0 8px 25px rgba(138, 43, 226, 0.35), 0 0 15px rgba(0, 229, 255, 0.15) !important;
+                }
                 .lobby-scroll-list::-webkit-scrollbar {
                     display: none !important;
                 }
@@ -1307,6 +1364,22 @@
                                 <option value="40">Nivel 40 (Difícil)</option>
                                 <option value="50">Nivel 50 (Élite)</option>
                             </select>
+                        </div>
+                    </div>
+
+                    <!-- CARD 4: 3v3 TEAM BATTLES -->
+                    <div class="lobby-card card-3v3" onclick="ColiseumManager.abrirSeleccion3v3()">
+                        <div style="background: rgba(0, 229, 255, 0.1); border: 1px solid #00e5ff; border-radius: 10px; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg>
+                        </div>
+                        <div style="flex: 1;">
+                            <h3 style="color: #00e5ff; margin: 0 0 3px 0; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Combate 3v3 de Equipos</h3>
+                            <p style="color: #cbd5e1; margin: 0; font-size: 11px; line-height: 1.25;">Enfrentamiento táctico con un equipo de 3 Genos. Domina la arena con relevos estratégicos y sinergias.</p>
                         </div>
                     </div>
                 </div>

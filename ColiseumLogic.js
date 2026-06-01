@@ -47,6 +47,34 @@ window.ColiseumLogic = {
     },
 
     generarRivalProcedural: function(nivelJugador, esJefeDeLiga = false) {
+        if (this.modoCombate === '3v3') {
+            const raritiesOrder = { "Común": 1, "Raro": 2, "Épico": 3, "Legendario": 4, "Mítico": 5 };
+            let maxRarityVal = 0;
+            let maxRarity = "Común";
+            let maxLevel = 1;
+
+            this.playerTeam.forEach(fighter => {
+                const rareza = fighter.rareza || "Común";
+                const val = raritiesOrder[rareza] || 1;
+                if (val > maxRarityVal) {
+                    maxRarityVal = val;
+                    maxRarity = rareza;
+                }
+                if (fighter.adn.level > maxLevel) {
+                    maxLevel = fighter.adn.level;
+                }
+            });
+
+            this.enemyTeam = [];
+            for (let i = 0; i < 3; i++) {
+                const rivalGeno = this.crearRivalObjeto(maxLevel, maxRarity, esJefeDeLiga && i === 2);
+                this.enemyTeam.push(rivalGeno);
+            }
+            this.enemyActiveIndex = 0;
+            this.enemy = this.enemyTeam[0];
+            return;
+        }
+
         if (this.modoCombate === "clon") {
             if (!window.miMascota) return;
             const mascota = window.miMascota;
@@ -475,6 +503,49 @@ window.ColiseumLogic = {
     },
 
     prepararJugador: function(mascota) {
+        if (this.modoCombate === '3v3') {
+            const teamGenos = (this.playerTeamIds || []).map(id => window.misGenos.find(g => String(g.id) === String(id))).filter(Boolean);
+            if (teamGenos.length === 3) {
+                this.playerTeam = teamGenos.map(m => {
+                    const pElemento = (m.genes && m.genes.afinidad) ? m.genes.afinidad.dom : (m.element || "Normal");
+                    const pStats = { hp: m.stats?.hp || 80, atk: m.stats?.atk || 15, def: m.stats?.def || 5, spd: m.stats?.spd || 15, luk: m.stats?.luk || 10 };
+                    
+                    if (window.isGenoHappy && window.isGenoHappy(m)) {
+                        pStats.luk += 25;
+                    }
+
+                    let pGenB = (m.hidden_genes?.B?.id || "ninguno").toLowerCase(); 
+                    let pGenC = (m.hidden_genes?.C?.id || "ninguno").toLowerCase();
+                    
+                    let pAtks = m.ataques || {};
+                    let playerAtaques = {
+                        "ataque": this.obtenerAtaqueAleatorio(pElemento, "basicos"),
+                        "especial": pAtks.atk_2 ? this.buscarAtaquePorNombre(pAtks.atk_2.nombre) : null,
+                        "tactica": pAtks.atk_3 ? this.buscarAtaquePorNombre(pAtks.atk_3.nombre) : null,
+                        "definitivo": pAtks.atk_4 ? this.buscarAtaquePorNombre(pAtks.atk_4.nombre) : null
+                    };
+
+                    return {
+                        nombre: m.alias || m.apodo || m.nombre || m.name || "Tu Geno", 
+                        isPlayer: true, adn: m,
+                        maxHp: m.maxHp || pStats.hp, hp: m.hp || pStats.hp, atk: pStats.atk, def: pStats.def, spd: pStats.spd, luk: pStats.luk,
+                        baseAtk: pStats.atk, baseDef: pStats.def, baseSpd: pStats.spd, baseLuk: pStats.luk,
+                        element: pElemento, rareza: m.rarity || m.rareza || "Común", genesId: [pGenB, pGenC], 
+                        estados: [], efectosActivos: [], cooldowns: { especial: 0, tactica: 0, definitivo: 0 },
+                        escudoCibernetico: pElemento === "Cibernético", 
+                        crystalSkin: pGenB === "piel_cristal" || pGenC === "piel_cristal",
+                        decoyUsado: false, coreArUsado: false, rachaGolpes: 0, adaptativaStacks: 0, ultimoElementoRecibido: null,
+                        danoRecibidoEsteTurno: 0, danoRecibidoTurnoAnterior: 0, proxVenenoDoble: false,
+                        ataquesEquipados: playerAtaques
+                    };
+                });
+                this.playerActiveIndex = 0;
+                this.player = this.playerTeam[0];
+                this.turno = 1;
+                return;
+            }
+        }
+
         const pElemento = (mascota.genes && mascota.genes.afinidad) ? mascota.genes.afinidad.dom : (mascota.element || "Normal");
         const pStats = { hp: mascota.stats?.hp || 80, atk: mascota.stats?.atk || 15, def: mascota.stats?.def || 5, spd: mascota.stats?.spd || 15, luk: mascota.stats?.luk || 10 };
         
@@ -1076,5 +1147,195 @@ window.ColiseumLogic = {
         }
 
         return "ataque";
+    },
+
+    crearRivalObjeto: function(nivelJugador, rarezaJugador, esJefeDeLiga = false) {
+        let eRareza = "Común";
+        if (esJefeDeLiga) {
+            if (rarezaJugador === "Común") eRareza = "Raro";
+            else if (rarezaJugador === "Raro") eRareza = "Épico";
+            else if (rarezaJugador === "Épico") eRareza = "Legendario";
+            else eRareza = "Legendario";
+        } else {
+            eRareza = rarezaJugador;
+        }
+
+        const trainingSupport = (nivelJugador < 5);
+        const eStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(eRareza) : {hp: 120, atk: 12, def: 8, spd: 10, luk: 5};
+        
+        let rollCalidad = Math.random();
+        let purezaEnemigo = 60; 
+        if (rollCalidad < 0.25) purezaEnemigo = 95; 
+        else if (rollCalidad < 0.65) purezaEnemigo = 85; 
+        else if (rollCalidad < 0.90) purezaEnemigo = 70; 
+        else purezaEnemigo = 40; 
+
+        eStats.pureza = purezaEnemigo;
+        
+        let bonoPureza = purezaEnemigo >= 90 ? 4 : (purezaEnemigo >= 80 ? 3 : (purezaEnemigo >= 60 ? 1 : 0));
+        if (trainingSupport) {
+            bonoPureza = 0; 
+        } else if (nivelJugador <= 8) {
+            bonoPureza = Math.floor(bonoPureza / 2);
+        }
+
+        eStats.hp += bonoPureza * 3; eStats.atk += bonoPureza; eStats.def += bonoPureza; eStats.spd += bonoPureza; eStats.luk += bonoPureza;
+
+        let nivelEnemigo = trainingSupport 
+            ? (nivelJugador + (esJefeDeLiga ? 2 : 0)) 
+            : (nivelJugador + (esJefeDeLiga ? 5 : 3));
+        if (nivelEnemigo < 1) nivelEnemigo = 1;
+
+        if (trainingSupport) {
+            eStats.hp = Math.max(10, Math.round(eStats.hp * 0.85));
+            eStats.atk = Math.max(2, Math.round(eStats.atk * 0.85));
+            eStats.def = Math.max(1, Math.round(eStats.def * 0.85));
+            eStats.spd = Math.max(2, Math.round(eStats.spd * 0.85));
+        }
+
+        if (esJefeDeLiga && (rarezaJugador === "Legendario" || rarezaJugador === "Mítico")) {
+            eStats.hp = Math.round(eStats.hp * 1.2);
+            eStats.atk = Math.round(eStats.atk * 1.2);
+        }
+
+        const elementos = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
+        const eElemento = elementos[Math.floor(Math.random() * elementos.length)];
+        
+        let eHiddenGenes = {A: null, B: null, C: null};
+        if (typeof window.generarGenesV9 === 'function') eHiddenGenes = window.generarGenesV9(eRareza);
+        let gB = (eHiddenGenes.B?.id || "ninguno").toLowerCase();
+        let gC = (eHiddenGenes.C?.id || "ninguno").toLowerCase();
+        const genesEnemigo = [gB, gC];
+
+        let pesos = { hp: 20, atk: 20, def: 20, spd: 20, luk: 20 };
+        if (eElemento === "Biomutante") { pesos.hp += 40; pesos.def += 20; pesos.spd -= 10; }
+        else if (eElemento === "Sintético") { pesos.spd += 40; pesos.luk += 30; pesos.def -= 10; }
+        else if (eElemento === "Cibernético") { pesos.def += 40; pesos.atk += 20; pesos.luk -= 10; }
+        else if (eElemento === "Viral") { pesos.spd += 25; pesos.atk += 25; pesos.hp += 10; }
+        else if (eElemento === "Radiactivo") { pesos.atk += 40; pesos.hp += 20; pesos.def -= 10; }
+        else if (eElemento === "Tóxico") { pesos.hp += 30; pesos.def += 30; pesos.atk -= 10; }
+
+        if (genesEnemigo.includes("velocidad_fantasma") || genesEnemigo.includes("esquiva_genetica")) pesos.spd += 50;
+        if (genesEnemigo.includes("vampirismo_genetico") || genesEnemigo.includes("instinto_caza") || genesEnemigo.includes("ruptura_defensiva")) pesos.atk += 50;
+        if (genesEnemigo.includes("armadura_adaptativa") || genesEnemigo.includes("postura_inquebrantable") || genesEnemigo.includes("nucleo_coraza")) pesos.def += 50;
+        if (genesEnemigo.includes("resiliencia_ultima") || genesEnemigo.includes("frenesi") || genesEnemigo.includes("barrera_limite")) { pesos.hp += 40; pesos.atk += 20; }
+        if (genesEnemigo.includes("reflejo_genetico")) pesos.luk += 50;
+
+        for (let stat in pesos) if (pesos[stat] < 1) pesos[stat] = 1;
+
+        let bolsaStats = [];
+        for (let stat in pesos) for (let i = 0; i < pesos[stat]; i++) bolsaStats.push(stat);
+
+        let puntosExtra = (nivelEnemigo > 1) ? (nivelEnemigo - 1) * 3 : 0;
+        for(let i=0; i<puntosExtra; i++) {
+            let rStat = bolsaStats[Math.floor(Math.random() * bolsaStats.length)];
+            if(rStat === 'hp') eStats.hp += 5; else eStats[rStat] += 1;
+        }
+            
+        const formas = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "rayo"];
+        const colores = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77", "#ff9800", "#ffb347", "#a8e6cf"];
+        const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry", "cibernetico", "alien", "ojeras"];
+        const opcionesBocas = typeof dicBocas !== 'undefined' ? Object.keys(dicBocas) : ["estandar", "feliz", "colmillos", "abierta", "sorpresa", "lengua"];
+        
+        const opcionesSombreros = typeof dicSombreros !== 'undefined' ? Object.keys(dicSombreros).filter(k => k !== "ninguno") : ["gorra", "corona", "casco", "cinta"];
+        const opcionesAlas = typeof dicAlas !== 'undefined' ? Object.keys(dicAlas).filter(k => k !== "ninguno") : ["alas_angel", "alas_murcielago", "jetpack", "capa"];
+        const opcionesGafas = typeof dicGafas !== 'undefined' ? Object.keys(dicGafas).filter(k => k !== "ninguno") : ["lentes", "parche", "visor", "monoculo"];
+        const opcionesExtras = typeof dicExtras !== 'undefined' ? Object.keys(dicExtras).filter(k => k !== "ninguno") : ["bufanda", "collar", "auriculares", "corbata"];
+
+        let probBase = eRareza === "Legendario" ? 0.85 : (eRareza === "Épico" ? 0.65 : (eRareza === "Raro" ? 0.40 : 0.15));
+        let cantidadAccesorios = 0;
+        if (Math.random() < probBase) {
+            cantidadAccesorios = 1;
+            let probExtra = probBase * 0.6; 
+            if (Math.random() < probExtra) {
+                cantidadAccesorios = 2;
+                if (Math.random() < (probExtra * 0.5)) { 
+                    cantidadAccesorios = 3;
+                    if (Math.random() < (probExtra * 0.25)) cantidadAccesorios = 4; 
+                }
+            }
+        }
+
+        let eHat = "ninguno", eWing = "ninguno", eGlasses = "ninguno", eExtra = "ninguno";
+        if (cantidadAccesorios > 0) {
+            let slotsDisponibles = ["hat", "wing", "glasses", "extra"].sort(() => 0.5 - Math.random()).slice(0, cantidadAccesorios);
+            if (slotsDisponibles.includes("hat") && opcionesSombreros.length > 0) eHat = opcionesSombreros[Math.floor(Math.random() * opcionesSombreros.length)];
+            if (slotsDisponibles.includes("wing") && opcionesAlas.length > 0) eWing = opcionesAlas[Math.floor(Math.random() * opcionesAlas.length)];
+            if (slotsDisponibles.includes("glasses") && opcionesGafas.length > 0) eGlasses = opcionesGafas[Math.floor(Math.random() * opcionesGafas.length)];
+            if (slotsDisponibles.includes("extra") && opcionesExtras.length > 0) eExtra = opcionesExtras[Math.floor(Math.random() * opcionesExtras.length)];
+        }
+
+        const adn = { 
+            id: 888, scanned: true, rarity: eRareza, stats: eStats, element: eElemento,
+            body_shape: formas[Math.floor(Math.random() * formas.length)], color: colores[Math.floor(Math.random() * colores.length)],
+            eye_type: opcionesOjos[Math.floor(Math.random() * opcionesOjos.length)], mouth_type: opcionesBocas[Math.floor(Math.random() * opcionesBocas.length)], 
+            wing_type: eWing, hat_type: eHat, glasses_type: eGlasses, extra_type: eExtra,
+            hidden_genes: eHiddenGenes, level: nivelEnemigo
+        };
+
+        let pAtks = window.miMascota && window.miMascota.ataques ? window.miMascota.ataques : {};
+        const counterDelJugador = { "Biomutante": "Viral", "Sintético": "Biomutante", "Tóxico": "Sintético", "Radiactivo": "Tóxico", "Cibernético": "Radiactivo", "Viral": "Cibernético" };
+        let pElement = this.player ? this.player.element : "Normal";
+        let elementoCounter = counterDelJugador[pElement] || eElemento;
+
+        let atkEsp = pAtks.atk_2 ? this.obtenerAtaqueAleatorio(eElemento, "especiales") : null;
+        let atkTac = pAtks.atk_3 ? this.obtenerAtaqueAleatorio(eElemento, "soportes") : null;
+
+        if (pAtks.atk_2 && pAtks.atk_3) {
+            if (Math.random() < 0.5) atkEsp = this.obtenerAtaqueAleatorio(elementoCounter, "especiales");
+            else atkTac = this.obtenerAtaqueAleatorio(elementoCounter, "soportes");
+        } else if (pAtks.atk_2) atkEsp = this.obtenerAtaqueAleatorio(elementoCounter, "especiales");
+
+        let enemyAtaques = {
+            "ataque": this.obtenerAtaqueAleatorio(eElemento, "basicos"),
+            "especial": atkEsp, "tactica": atkTac,
+            "definitivo": (pAtks.atk_4 && nivelEnemigo >= 25) ? this.obtenerAtaqueAleatorio(eElemento, "definitivos") : null
+        };
+        
+        return {
+            nombre: (esJefeDeLiga ? "[JEFE] " : "") + this.generarNombreAleatorio(), isPlayer: false, adn: adn,
+            maxHp: eStats.hp, hp: eStats.hp, atk: eStats.atk, def: eStats.def || 5, spd: eStats.spd, luk: eStats.luk,
+            baseAtk: eStats.atk, baseDef: eStats.def || 5, baseSpd: eStats.spd, baseLuk: eStats.luk,
+            element: eElemento, rareza: eRareza, genesId: genesEnemigo,
+            estados: [], efectosActivos: [], cooldowns: { especial: 0, tactica: 0, definitivo: 0 },
+            escudoCibernetico: eElemento === "Cibernético", 
+            crystalSkin: gB === "piel_cristal" || gC === "piel_cristal",
+            decoyUsado: false, coreArUsado: false, rachaGolpes: 0, adaptativaStacks: 0, ultimoElementoRecibido: null,
+            danoRecibidoEsteTurno: 0, danoRecibidoTurnoAnterior: 0, proxVenenoDoble: false,
+            ataquesEquipados: enemyAtaques,
+            esJefeDeLiga: esJefeDeLiga
+        };
+    },
+
+    swapGeno: function(isPlayer, newIndex) {
+        if (isPlayer) {
+            this.playerActiveIndex = newIndex;
+            this.player = this.playerTeam[newIndex];
+            
+            const gB = (this.player.adn.hidden_genes?.B?.id || "ninguno").toLowerCase();
+            const gC = (this.player.adn.hidden_genes?.C?.id || "ninguno").toLowerCase();
+            if (gB === "piel_cristal" || gC === "piel_cristal") {
+                this.player.crystalSkin = true;
+            } else {
+                this.player.crystalSkin = false;
+            }
+            if (gB === "sangre_fria" || gC === "sangre_fria") {
+                this.player.sangreFriaUsada = false;
+            }
+        } else {
+            this.enemyActiveIndex = newIndex;
+            this.enemy = this.enemyTeam[newIndex];
+            
+            const gB = (this.enemy.adn.hidden_genes?.B?.id || "ninguno").toLowerCase();
+            const gC = (this.enemy.adn.hidden_genes?.C?.id || "ninguno").toLowerCase();
+            if (gB === "piel_cristal" || gC === "piel_cristal") {
+                this.enemy.crystalSkin = true;
+            } else {
+                this.enemy.crystalSkin = false;
+            }
+            if (gB === "sangre_fria" || gC === "sangre_fria") {
+                this.enemy.sangreFriaUsada = false;
+            }
+        }
     }
 };
