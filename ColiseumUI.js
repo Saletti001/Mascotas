@@ -336,21 +336,7 @@ window.ColiseumUI = {
                 padding: 15px !important;
             }
             #battle-controls {
-                margin-bottom: 10px !important;
-            }
-            #battle-controls.mode-3v3 {
-                grid-template-columns: repeat(3, 1fr) !important;
-                gap: 8px !important;
-            }
-            #battle-controls.mode-3v3 .battle-btn {
-                padding: 12px 4px !important;
-                font-size: 8.5px !important;
-                letter-spacing: 0.2px !important;
-                height: 44px !important;
-                display: flex !important;
-                align-items: center !important;
-                justify-content: center !important;
-                line-height: 1.1 !important;
+                margin-bottom: 15px !important;
             }
         `;
         document.head.appendChild(style);
@@ -382,8 +368,8 @@ window.ColiseumUI = {
         document.querySelector(".controls-container");
         if (controls) {
             area.appendChild(controls); controls.id = "battle-controls";
+            controls.className = "controls-container";
             if (window.ColiseumLogic.modoCombate === '3v3') {
-                controls.className = "controls-container mode-3v3";
                 controls.innerHTML = `
                     <button id="btn-atk-1" class="battle-btn slot-1">BÁSICO</button>
                     <button id="btn-atk-2" class="battle-btn slot-2">VACÍO</button>
@@ -393,7 +379,6 @@ window.ColiseumUI = {
                     <button id="btn-swap-b" class="battle-btn swap-btn">🔄 CIERRE</button>
                 `;
             } else {
-                controls.className = "controls-container";
                 controls.innerHTML = `
                     <button id="btn-atk-1" class="battle-btn slot-1">BÁSICO</button>
                     <button id="btn-atk-2" class="battle-btn slot-2">VACÍO</button>
