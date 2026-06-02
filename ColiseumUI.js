@@ -26,6 +26,9 @@ window.ColiseumUI = {
             text-align: center !important; font-size: 18px !important; margin-top: 0 !important; margin-bottom: 25px !important; text-transform: uppercase !important; font-weight: bold !important;
             letter-spacing: 2px !important; width: 100% !important; border-bottom: 1px dashed rgba(77, 208, 225, 0.3); padding-bottom: 10px; display: block !important;
             }
+            .coliseum-title-inside.hidden {
+                display: none !important;
+            }
             .fighters-wrapper { display: flex !important; align-items: center !important;
             justify-content: space-between !important; width: calc(100% + 60px) !important; margin: 0 -30px 15px -30px !important; position: relative; overflow: visible !important;
             z-index: 10; }
