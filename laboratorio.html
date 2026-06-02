@@ -733,6 +733,8 @@
                         <button class="btn-action" style="background: #0d161c; border: 1px solid #ff3333; color: #ff3333; font-size: 11px; padding: 8px;" onclick="testTextoFlotante('text-dmg')">Daño (-50)</button>
                         <button class="btn-action" style="background: #0d161c; border: 1px solid #4CAF50; color: #4CAF50; font-size: 11px; padding: 8px;" onclick="testTextoFlotante('text-heal')">Curación (+30)</button>
                         <button class="btn-action" style="background: #0d161c; border: 1px solid #ffcc00; color: #ffcc00; font-size: 11px; padding: 8px;" onclick="testTextoFlotante('text-crit')">Crítico (¡CRÍTICO!)</button>
+                        <button class="btn-action" style="background: #0d161c; border: 1px solid #ffb300; color: #ffb300; font-size: 11px; padding: 8px;" onclick="testTextoFlotante('text-crit-crit')">Crítico Ant. (CRIT)</button>
+                        <button class="btn-action" style="background: #0d161c; border: 1px solid #ffa000; color: #ffa000; font-size: 11px; padding: 8px;" onclick="testTextoFlotante('text-crit-critical')">Crítico Ant. (CRITICAL!)</button>
                         <button class="btn-action" style="background: #0d161c; border: 1px solid #80deea; color: #80deea; font-size: 11px; padding: 8px;" onclick="testTextoFlotante('text-block')">Bloqueo (BLOCKED!)</button>
                         <button class="btn-action" style="background: #0d161c; border: 1px solid #e0e0e0; color: #e0e0e0; font-size: 11px; padding: 8px;" onclick="testTextoFlotante('text-evade')">Evasión (EVADED!)</button>
                         <button class="btn-action" style="background: #0d161c; border: 1px solid #ff9800; color: #ff9800; font-size: 11px; padding: 8px;" onclick="testHitFlash()">Destello Golpe (Flash)</button>
@@ -1129,13 +1131,22 @@
             const targetEsJugador = (target === "player");
             
             let texto = "";
+            let claseEfectiva = claseAdicional;
             if (claseAdicional === 'text-dmg') texto = "-50";
             else if (claseAdicional === 'text-heal') texto = "+30";
             else if (claseAdicional === 'text-crit') texto = "¡CRÍTICO!";
+            else if (claseAdicional === 'text-crit-crit') {
+                texto = "CRIT";
+                claseEfectiva = "text-crit";
+            }
+            else if (claseAdicional === 'text-crit-critical') {
+                texto = "CRITICAL!";
+                claseEfectiva = "text-crit";
+            }
             else if (claseAdicional === 'text-block') texto = "BLOCKED!";
             else if (claseAdicional === 'text-evade') texto = "EVADED!";
             
-            mostrarTextoFlotante(targetEsJugador, texto, claseAdicional);
+            mostrarTextoFlotante(targetEsJugador, texto, claseEfectiva);
         }
 
         function testHitFlash() {
