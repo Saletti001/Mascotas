@@ -378,8 +378,8 @@ window.ColiseumUI = {
                     <button id="btn-atk-2" class="battle-btn slot-2">VACÍO</button>
                     <button id="btn-atk-3" class="battle-btn slot-3">VACÍO</button>
                     <button id="btn-atk-4" class="battle-btn slot-4" disabled>🔒 NV. 25+</button>
-                    <button id="btn-swap-a" class="battle-btn swap-btn">🔄 RELEVO</button>
-                    <button id="btn-swap-b" class="battle-btn swap-btn">🔄 CIERRE</button>
+                    <button id="btn-swap-a" class="battle-btn swap-btn">🔄 ENTRAR</button>
+                    <button id="btn-swap-b" class="battle-btn swap-btn">🔄 ENTRAR</button>
                 `;
             } else {
                 controls.innerHTML = `
@@ -445,11 +445,8 @@ window.ColiseumUI = {
                 const genoA = team[idxA];
                 const genoB = team[idxB];
                 
-                const labelA = idxA === 0 ? "Abridor" : (idxA === 1 ? "Relevo" : "Cierre");
-                const labelB = idxB === 0 ? "Abridor" : (idxB === 1 ? "Relevo" : "Cierre");
-                
-                btnSwapA.innerText = `🔄 ${labelA}: ${(genoA.nombre || "").toUpperCase()}`;
-                btnSwapB.innerText = `🔄 ${labelB}: ${(genoB.nombre || "").toUpperCase()}`;
+                btnSwapA.innerText = `🔄 ENTRAR: ${(genoA.nombre || "").toUpperCase()}`;
+                btnSwapB.innerText = `🔄 ENTRAR: ${(genoB.nombre || "").toUpperCase()}`;
                 
                 btnSwapA.disabled = (genoA.hp <= 0);
                 btnSwapB.disabled = (genoB.hp <= 0);
@@ -739,7 +736,7 @@ window.ColiseumUI = {
                 tray = document.createElement("div");
                 tray.className = "team-mini-tray";
                 tray.style.position = "absolute";
-                tray.style.top = "-45px";
+                tray.style.top = "-58px";
                 tray.style.left = "50%";
                 tray.style.transform = "translateX(-50%)";
                 tray.style.display = "flex";
@@ -747,6 +744,8 @@ window.ColiseumUI = {
                 tray.style.gap = "8px";
                 tray.style.zIndex = "25";
                 sideContainer.appendChild(tray);
+            } else {
+                tray.style.top = "-58px";
             }
 
             tray.innerHTML = "";
