@@ -331,6 +331,235 @@
             15% { opacity: 1; }
             100% { transform: translate(-50%, -50%) scale(1.3); opacity: 0; }
         }
+
+        /* ==========================================
+           === ANIMACIONES GRUPO 2: ADVANCED / PREMIUM ===
+           ========================================== */
+
+        /* 1. Corte V2 (Doble Tajo Cruzado con Flash) */
+        .custom-slash-v2 {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            pointer-events: none;
+            z-index: 52;
+            animation: slashFlashV2 0.7s cubic-bezier(0.15, 0.85, 0.3, 1) forwards;
+        }
+        @keyframes slashFlashV2 {
+            0% { opacity: 0; filter: brightness(3); }
+            15% { opacity: 1; filter: none; }
+            85% { opacity: 1; }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.15); }
+        }
+        .slash-line-1 {
+            stroke-dasharray: 200;
+            stroke-dashoffset: 200;
+            animation: drawSlashV2 0.3s ease-out forwards;
+        }
+        .slash-line-2 {
+            stroke-dasharray: 200;
+            stroke-dashoffset: 200;
+            animation: drawSlashV2 0.3s ease-out 0.15s forwards;
+        }
+        @keyframes drawSlashV2 {
+            100% { stroke-dashoffset: 0; }
+        }
+
+        /* 2. Electricidad V2 (Rayos Bifurcados y Expansión Radial) */
+        .custom-electric-v2 {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 170px;
+            height: 170px;
+            pointer-events: none;
+            z-index: 52;
+            animation: electricSparksV2 0.85s ease-out forwards;
+        }
+        @keyframes electricSparksV2 {
+            0% { transform: translate(-50%, -50%) scale(0.3) rotate(0deg); opacity: 0; }
+            15% { opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(1.0) rotate(90deg); filter: hue-rotate(30deg); }
+            100% { transform: translate(-50%, -50%) scale(1.2) rotate(180deg); opacity: 0; }
+        }
+        .electric-bolt-v2 {
+            stroke-dasharray: 100;
+            stroke-dashoffset: 100;
+            animation: strikeBoltV2 0.25s linear forwards;
+        }
+        @keyframes strikeBoltV2 {
+            100% { stroke-dashoffset: 0; }
+        }
+
+        /* 3. Veneno V2 (Salpicadura Ácida y Gas Efervescente) */
+        .custom-poison-drip-v2 {
+            position: absolute;
+            width: 18px;
+            height: 22px;
+            background: radial-gradient(ellipse at center, #00ff88 0%, #aa00ff 80%);
+            clip-path: polygon(50% 0%, 100% 70%, 50% 100%, 0% 70%);
+            box-shadow: 0 0 12px #aa00ff, 0 0 4px #00ff88;
+            pointer-events: none;
+            z-index: 52;
+            animation: poisonDripV2 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        @keyframes poisonDripV2 {
+            0% { transform: translateY(-70px) scale(0.4); opacity: 0; }
+            15% { opacity: 1; }
+            70% { transform: translateY(40px) scale(1.1); opacity: 0.95; }
+            100% { transform: translateY(70px) scale(0.8) scaleY(0.2); opacity: 0; }
+        }
+        .custom-poison-mist-v2 {
+            position: absolute;
+            width: 25px;
+            height: 25px;
+            background: radial-gradient(circle, rgba(170,0,255,0.7) 0%, rgba(0,230,118,0) 70%);
+            border-radius: 50%;
+            filter: blur(2px);
+            pointer-events: none;
+            z-index: 51;
+            animation: poisonMistV2 1.4s ease-out forwards;
+        }
+        @keyframes poisonMistV2 {
+            0% { transform: translateY(60px) scale(0.2); opacity: 0; }
+            20% { opacity: 0.8; }
+            100% { transform: translateY(-80px) scale(2.2); opacity: 0; }
+        }
+
+        /* 4. Fuego V2 (Llamarada en Espiral / Ráfaga Solar) */
+        .custom-fire-sparks-v2 {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #ffea00 0%, #ff3d00 60%, rgba(244,67,54,0) 100%);
+            clip-path: polygon(50% 0%, 90% 40%, 70% 100%, 30% 100%, 10% 40%);
+            box-shadow: 0 0 15px #ff3d00;
+            pointer-events: none;
+            z-index: 52;
+            animation: fireSpiralV2 1.1s cubic-bezier(0.1, 0.8, 0.2, 1) forwards;
+        }
+        @keyframes fireSpiralV2 {
+            0% { transform: translate(0, 50px) scale(0.3) rotate(0deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translate(var(--dx), var(--dy)) scale(1.4) rotate(360deg); opacity: 0; }
+        }
+
+        /* 5. Hielo V2 (Picos Glaciales y Fragmentación) */
+        .custom-ice-spike-v2 {
+            position: absolute;
+            bottom: 10px;
+            width: 24px;
+            height: 60px;
+            background: linear-gradient(to top, rgba(0, 176, 255, 0.8), rgba(167, 255, 235, 0.9));
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+            filter: drop-shadow(0 0 8px rgba(0, 176, 255, 0.6));
+            border-left: 1px solid rgba(255, 255, 255, 0.8);
+            pointer-events: none;
+            z-index: 53;
+            transform-origin: bottom center;
+            animation: iceSpikeGrowV2 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        @keyframes iceSpikeGrowV2 {
+            0% { transform: scaleY(0) rotate(var(--rot)); opacity: 0; }
+            25% { opacity: 1; }
+            75% { transform: scaleY(1.05) rotate(var(--rot)); opacity: 1; }
+            100% { transform: scaleY(1.0) rotate(var(--rot)); opacity: 0; filter: brightness(1.8) blur(1px); }
+        }
+
+        /* 6. Escudo V2 (Domo Holográfico Hexagonal Pulsante) */
+        .custom-shield-v2 {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 160px;
+            height: 160px;
+            pointer-events: none;
+            z-index: 52;
+            animation: shieldPulseV2 0.9s ease-out forwards;
+        }
+        @keyframes shieldPulseV2 {
+            0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
+            15% { opacity: 1; }
+            40% { transform: translate(-50%, -50%) scale(1.05); filter: brightness(1.2); }
+            80% { opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1.1); opacity: 0; }
+        }
+
+        /* 7. Curación V2 (Aura Sagrada de Luz y Estrellas) */
+        .custom-heal-ring-v2 {
+            position: absolute;
+            left: 50%;
+            top: 60%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 30px;
+            border: 2px solid rgba(0, 230, 118, 0.8);
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(0, 230, 118, 0.5), inset 0 0 10px rgba(0, 230, 118, 0.5);
+            pointer-events: none;
+            z-index: 51;
+            animation: healRingV2 1.3s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+        @keyframes healRingV2 {
+            0% { transform: translate(-50%, -50%) scale(0.4); opacity: 0; }
+            20% { opacity: 0.9; }
+            100% { transform: translate(-50%, -100px) scale(1.3); opacity: 0; }
+        }
+        .custom-heal-star-v2 {
+            position: absolute;
+            color: #ffd600;
+            filter: drop-shadow(0 0 6px #ffd600);
+            pointer-events: none;
+            z-index: 52;
+            animation: healStarV2 1.2s ease-out forwards;
+        }
+        @keyframes healStarV2 {
+            0% { transform: translateY(40px) scale(0.3) rotate(0deg); opacity: 0; }
+            30% { opacity: 1; }
+            100% { transform: translateY(-70px) scale(1.4) rotate(270deg); opacity: 0; }
+        }
+
+        /* 8. Bio V2 (Tornado / Torbellino de Hojas en Espiral) */
+        .custom-bio-vort-v2 {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            color: #76ff03;
+            filter: drop-shadow(0 0 5px #00c853);
+            pointer-events: none;
+            z-index: 52;
+            animation: bioTornadoV2 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+        @keyframes bioTornadoV2 {
+            0% { transform: translate(var(--startX), 60px) scale(0.3) rotate(0deg); opacity: 0; }
+            15% { opacity: 1; }
+            100% { transform: translate(var(--endX), -80px) scale(1.3) rotate(720deg); opacity: 0; }
+        }
+
+        /* 9. Supernova V2 (Implosión Gravitacional y Gran Estallido) */
+        .custom-impact-v2 {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 180px;
+            height: 180px;
+            pointer-events: none;
+            z-index: 52;
+            animation: supernovaV2 0.75s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+        }
+        @keyframes supernovaV2 {
+            0% { transform: translate(-50%, -50%) scale(0.1); opacity: 0; filter: saturate(0.5) brightness(2); }
+            20% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            25% { transform: translate(-50%, -50%) scale(0.3); opacity: 1; filter: brightness(4); }
+            35% { transform: translate(-50%, -50%) scale(1.4); opacity: 1; filter: none; }
+            100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -612,6 +841,11 @@
                 <option value="Mítico">Forzado: Mítico</option>
             </select>
             
+            <select id="sel-combat-anims-group" onchange="sincronizarGrupoAnimaciones(this.value)" style="flex: 1; min-width: 160px; padding: 12px; background: #0d1a24; color: #ffcc00; border: 1px solid #ffcc00; border-radius: 8px; font-weight: bold; outline: none; cursor: pointer; text-transform: uppercase;">
+                <option value="1" selected>Animaciones: Grupo 1 (Clásico)</option>
+                <option value="2">Animaciones: Grupo 2 (Premium)</option>
+            </select>
+            
             <button id="btn-generar-combate" class="btn-fight" style="flex: 1.5; min-width: 180px; padding: 12px;">⚔️ GENERAR ARENA</button>
         </div>
         
@@ -667,6 +901,11 @@
                 <select id="sel-animtest-target" style="width: 170px; padding: 8px; background: #0d1a24; color: #fff; border: 1px solid #4dd0e1; border-radius: 6px; font-size: 12px; outline: none; cursor: pointer;">
                     <option value="player" selected>Tu Geno (Izquierda)</option>
                     <option value="enemy">Geno Rival (Derecha)</option>
+                </select>
+                <label style="color:#aaa; font-size:11px; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; margin-left: 10px;">Estilo:</label>
+                <select id="sel-animtest-group" onchange="sincronizarGrupoAnimaciones(this.value)" style="width: 185px; padding: 8px; background: #0d1a24; color: #ffcc00; border: 1px solid #ffcc00; border-radius: 6px; font-size: 12px; outline: none; cursor: pointer; font-weight: bold;">
+                    <option value="1" selected>Grupo 1 (Estándar)</option>
+                    <option value="2">Grupo 2 (Premium)</option>
                 </select>
                 <button class="btn-secundario" onclick="cargarGenosPreviewTest()" style="padding: 8px 15px; font-size: 12px; font-weight: bold;">🔄 Recargar Genos</button>
             </div>
@@ -746,6 +985,16 @@
 
     <script>
         const engine = window.ColiseumLogic;
+        window.currentAnimGroup = 1;
+
+        function sincronizarGrupoAnimaciones(val) {
+            const g = parseInt(val) || 1;
+            window.currentAnimGroup = g;
+            const elCombat = document.getElementById("sel-combat-anims-group");
+            const elTest = document.getElementById("sel-animtest-group");
+            if (elCombat && elCombat.value !== String(g)) elCombat.value = String(g);
+            if (elTest && elTest.value !== String(g)) elTest.value = String(g);
+        }
 
         function switchTab(tabId, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -930,6 +1179,174 @@
             const container = document.getElementById(containerId);
             if (!container) return;
 
+            if (window.currentAnimGroup === 2) {
+                // ==========================================
+                // === ANIMACIONES GRUPO 2 (PREMIUM) ===
+                // ==========================================
+                if (tipoAnimacion === 'corte') {
+                    const overlay = document.createElement("div");
+                    overlay.className = "custom-slash-v2";
+                    overlay.innerHTML = `
+                        <svg viewBox="0 0 100 100" width="100%" height="100%">
+                            <path class="slash-line-1" d="M 15 15 L 85 85" stroke="#ff1744" stroke-width="6" stroke-linecap="round" fill="none" filter="drop-shadow(0 0 8px #ff1744)"/>
+                            <path class="slash-line-2" d="M 85 15 L 15 85" stroke="#ff9100" stroke-width="6" stroke-linecap="round" fill="none" filter="drop-shadow(0 0 8px #ff9100)"/>
+                            <circle cx="50" cy="50" r="8" fill="#fff" filter="drop-shadow(0 0 12px #fff)" style="animation: slashFlashV2 0.3s ease-out forwards;"/>
+                        </svg>
+                    `;
+                    container.appendChild(overlay);
+                    setTimeout(() => overlay.remove(), 700);
+                } 
+                else if (tipoAnimacion === 'electricidad') {
+                    const overlay = document.createElement("div");
+                    overlay.className = "custom-electric-v2";
+                    overlay.innerHTML = `
+                        <svg viewBox="0 0 120 120" width="100%" height="100%">
+                            <circle cx="60" cy="60" r="45" stroke="#d500f9" stroke-width="3" stroke-dasharray="12 8" fill="none" opacity="0.7"/>
+                            <path class="electric-bolt-v2" d="M 60 10 L 55 40 L 70 45 L 60 85 L 55 80 L 60 110" stroke="#00e5ff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="drop-shadow(0 0 10px #00e5ff)"/>
+                            <path class="electric-bolt-v2" d="M 10 60 L 40 55 L 45 70 L 85 60 L 80 55 L 110 60" stroke="#d500f9" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="drop-shadow(0 0 8px #d500f9)" style="animation-delay: 0.15s;"/>
+                        </svg>
+                    `;
+                    container.appendChild(overlay);
+                    setTimeout(() => overlay.remove(), 850);
+                }
+                else if (tipoAnimacion === 'hielo') {
+                    const angles = [-25, 0, 25];
+                    const offsets = [-35, 0, 35];
+                    const spikeContainer = document.createElement("div");
+                    spikeContainer.style.position = "absolute";
+                    spikeContainer.style.width = "100%";
+                    spikeContainer.style.height = "100%";
+                    spikeContainer.style.top = "0";
+                    spikeContainer.style.left = "0";
+                    spikeContainer.style.pointerEvents = "none";
+                    spikeContainer.style.zIndex = "52";
+                    
+                    for (let i = 0; i < 3; i++) {
+                        const spike = document.createElement("div");
+                        spike.className = "custom-ice-spike-v2";
+                        spike.style.setProperty("--rot", `${angles[i]}deg`);
+                        spike.style.left = `calc(50% + ${offsets[i]}px - 12px)`;
+                        spike.style.animationDelay = `${i * 80}ms`;
+                        spikeContainer.appendChild(spike);
+                    }
+                    container.appendChild(spikeContainer);
+                    setTimeout(() => spikeContainer.remove(), 1100);
+                }
+                else if (tipoAnimacion === 'escudo') {
+                    const overlay = document.createElement("div");
+                    overlay.className = "custom-shield-v2";
+                    overlay.innerHTML = `
+                        <svg viewBox="0 0 100 100" width="100%" height="100%">
+                            <polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5" fill="rgba(100, 255, 218, 0.15)" stroke="#64ffda" stroke-width="4.5" filter="drop-shadow(0 0 10px #64ffda)"/>
+                            <polygon points="50,15 85,32.5 85,67.5 50,85 15,67.5 15,32.5" fill="none" stroke="#2979ff" stroke-width="2" stroke-dasharray="6 4" opacity="0.8"/>
+                            <line x1="50" y1="5" x2="50" y2="95" stroke="#fff" stroke-width="1.5" opacity="0.3"/>
+                            <line x1="5" y1="50" x2="95" y2="50" stroke="#fff" stroke-width="1.5" opacity="0.3"/>
+                        </svg>
+                    `;
+                    container.appendChild(overlay);
+                    setTimeout(() => overlay.remove(), 900);
+                }
+                else if (tipoAnimacion === 'impacto') {
+                    const overlay = document.createElement("div");
+                    overlay.className = "custom-impact-v2";
+                    overlay.innerHTML = `
+                        <svg viewBox="0 0 100 100" width="100%" height="100%">
+                            <circle cx="50" cy="50" r="4" fill="#fff" filter="drop-shadow(0 0 15px #fff)"/>
+                            <circle cx="50" cy="50" r="25" fill="none" stroke="#ff007f" stroke-width="5" opacity="0.9" filter="drop-shadow(0 0 8px #ff007f)"/>
+                            <circle cx="50" cy="50" r="40" fill="none" stroke="#304ffe" stroke-width="3" opacity="0.7" stroke-dasharray="15 10"/>
+                            <path d="M 50 10 L 50 25 M 50 90 L 50 75 M 10 50 L 25 50 M 90 50 L 75 50 M 22 22 L 32 32 M 78 78 L 68 68 M 78 22 L 68 32 M 22 78 L 32 68" stroke="#ffea00" stroke-width="4.5" stroke-linecap="round"/>
+                        </svg>
+                    `;
+                    container.appendChild(overlay);
+                    setTimeout(() => overlay.remove(), 750);
+                }
+                else if (tipoAnimacion === 'fuego') {
+                    for (let i = 0; i < 12; i++) {
+                        setTimeout(() => {
+                            const spark = document.createElement("div");
+                            spark.className = "custom-fire-sparks-v2";
+                            const angle = (i * 30 + Math.random() * 20) * (Math.PI / 180);
+                            const dist = 60 + Math.random() * 50;
+                            const dx = Math.cos(angle) * dist;
+                            const dy = Math.sin(angle) * dist - 30;
+                            spark.style.setProperty("--dx", `${dx}px`);
+                            spark.style.setProperty("--dy", `${dy}px`);
+                            spark.style.left = "50%";
+                            spark.style.top = "50%";
+                            container.appendChild(spark);
+                            setTimeout(() => spark.remove(), 1100);
+                        }, i * 40);
+                    }
+                }
+                else if (tipoAnimacion === 'veneno') {
+                    for (let i = 0; i < 5; i++) {
+                        setTimeout(() => {
+                            const drip = document.createElement("div");
+                            drip.className = "custom-poison-drip-v2";
+                            const rx = (Math.random() - 0.5) * 100;
+                            drip.style.left = `calc(50% + ${rx}px)`;
+                            drip.style.top = "20%";
+                            container.appendChild(drip);
+                            setTimeout(() => drip.remove(), 1200);
+                        }, i * 150);
+                    }
+                    for (let i = 0; i < 4; i++) {
+                        setTimeout(() => {
+                            const mist = document.createElement("div");
+                            mist.className = "custom-poison-mist-v2";
+                            const rx = (Math.random() - 0.5) * 80;
+                            mist.style.left = `calc(50% + ${rx}px - 12px)`;
+                            mist.style.top = "40%";
+                            container.appendChild(mist);
+                            setTimeout(() => mist.remove(), 1400);
+                        }, i * 200 + 100);
+                    }
+                }
+                else if (tipoAnimacion === 'curacion') {
+                    for (let i = 0; i < 3; i++) {
+                        setTimeout(() => {
+                            const ring = document.createElement("div");
+                            ring.className = "custom-heal-ring-v2";
+                            container.appendChild(ring);
+                            setTimeout(() => ring.remove(), 1300);
+                        }, i * 350);
+                    }
+                    for (let i = 0; i < 6; i++) {
+                        setTimeout(() => {
+                            const star = document.createElement("div");
+                            star.className = "custom-heal-star-v2";
+                            star.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.21l8.2-1.192L12 .587z"/></svg>`;
+                            const rx = (Math.random() - 0.5) * 110;
+                            star.style.left = `calc(50% + ${rx}px)`;
+                            star.style.top = "60%";
+                            container.appendChild(star);
+                            setTimeout(() => star.remove(), 1200);
+                        }, i * 150);
+                    }
+                }
+                else if (tipoAnimacion === 'bio') {
+                    for (let i = 0; i < 12; i++) {
+                        setTimeout(() => {
+                            const leaf = document.createElement("div");
+                            leaf.className = "custom-bio-vort-v2";
+                            leaf.innerHTML = `<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 22 2c-2.48 5-3 6.5-4.1 12.2A7 7 0 0 1 11 20z"/></svg>`;
+                            const startX = (Math.random() - 0.5) * 120;
+                            const endX = startX + (Math.random() > 0.5 ? 80 : -80);
+                            leaf.style.setProperty("--startX", `${startX}px`);
+                            leaf.style.setProperty("--endX", `${endX}px`);
+                            leaf.style.left = "50%";
+                            leaf.style.top = "50%";
+                            container.appendChild(leaf);
+                            setTimeout(() => leaf.remove(), 1200);
+                        }, i * 80);
+                    }
+                }
+                return;
+            }
+
+            // ==========================================
+            // === ANIMACIONES GRUPO 1 (ESTÁNDAR) ===
+            // ==========================================
             if (tipoAnimacion === 'corte') {
                 const overlay = document.createElement("div");
                 overlay.className = "custom-slash-overlay";
@@ -1043,6 +1460,64 @@
             const container = document.getElementById(containerId);
             if (!container) return;
 
+            if (window.currentAnimGroup === 2) {
+                // ==========================================
+                // === PARTÍCULAS GRUPO 2 (PREMIUM) ===
+                // ==========================================
+                if (tipoEstado === 'veneno') {
+                    for (let i = 0; i < 5; i++) {
+                        setTimeout(() => {
+                            const mist = document.createElement("div");
+                            mist.className = "custom-poison-mist-v2";
+                            const rx = (Math.random() - 0.5) * 80;
+                            mist.style.left = `calc(50% + ${rx}px - 12px)`;
+                            mist.style.top = "45%";
+                            container.appendChild(mist);
+                            setTimeout(() => mist.remove(), 1400);
+                        }, i * 180);
+                    }
+                } else if (tipoEstado === 'fuego') {
+                    for (let i = 0; i < 8; i++) {
+                        setTimeout(() => {
+                            const spark = document.createElement("div");
+                            spark.className = "custom-fire-sparks-v2";
+                            const angle = (i * 45 + Math.random() * 15) * (Math.PI / 180);
+                            const dist = 50 + Math.random() * 40;
+                            const dx = Math.cos(angle) * dist;
+                            const dy = Math.sin(angle) * dist - 25;
+                            spark.style.setProperty("--dx", `${dx}px`);
+                            spark.style.setProperty("--dy", `${dy}px`);
+                            spark.style.left = "50%";
+                            spark.style.top = "50%";
+                            container.appendChild(spark);
+                            setTimeout(() => spark.remove(), 1100);
+                        }, i * 100);
+                    }
+                } else if (tipoEstado === 'curacion') {
+                    const ring = document.createElement("div");
+                    ring.className = "custom-heal-ring-v2";
+                    container.appendChild(ring);
+                    setTimeout(() => ring.remove(), 1300);
+
+                    for (let i = 0; i < 4; i++) {
+                        setTimeout(() => {
+                            const star = document.createElement("div");
+                            star.className = "custom-heal-star-v2";
+                            star.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.21l8.2-1.192L12 .587z"/></svg>`;
+                            const rx = (Math.random() - 0.5) * 90;
+                            star.style.left = `calc(50% + ${rx}px)`;
+                            star.style.top = "60%";
+                            container.appendChild(star);
+                            setTimeout(() => star.remove(), 1200);
+                        }, i * 200);
+                    }
+                }
+                return;
+            }
+
+            // ==========================================
+            // === PARTÍCULAS GRUPO 1 (ESTÁNDAR) ===
+            // ==========================================
             let className = "";
             let htmlContent = "";
             let count = 6;
