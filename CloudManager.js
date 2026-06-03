@@ -133,12 +133,38 @@ window.respaldarEnNube = async function() {
         rationAutoActiveUntil: window.rationAutoActiveUntil !== undefined ? window.rationAutoActiveUntil : 0,
         dailyLogin: window.dailyLoginData || null,
         newsMailbox: window.newsMailboxData || null,
+        // Guardar nivel de laboratorio en JSONB como respaldo
+        labLevel: window.labLevel || 1,
+        labXP: window.labXP || 0,
+        comercioDesbloqueado: window.comercioDesbloqueado || false,
         lastActiveTime: window.obtenerTiempoSeguro()
     };
 
-    const { error } = await supabaseClient
+    const payload = {
+        id: window.miUsuarioCloud.id,
+        email: window.miUsuarioCloud.email,
+        datos_juego: datosJuego,
+        lab_level: window.labLevel || 1,
+        lab_xp: window.labXP || 0,
+        comercio_desbloqueado: window.comercioDesbloqueado || false
+    };
+
+    let { error } = await supabaseClient
         .from('jugadores')
-        .upsert({ id: window.miUsuarioCloud.id, email: window.miUsuarioCloud.email, datos_juego: datosJuego });
+        .upsert(payload);
+
+    // Fallback resiliente si las columnas dedicadas no existen en la base de datos
+    if (error && error.message && error.message.includes("column")) {
+        console.warn("[CloudManager] Las columnas lab_* no existen en 'jugadores'. Guardando solo datos_juego...");
+        const fallbackRes = await supabaseClient
+            .from('jugadores')
+            .upsert({
+                id: window.miUsuarioCloud.id,
+                email: window.miUsuarioCloud.email,
+                datos_juego: datosJuego
+            });
+        error = fallbackRes.error;
+    }
 
     if (error) console.error("Error al guardar en la nube:", error);
     else console.log("☁️ Progreso guardado en la Nube.");
@@ -152,17 +178,41 @@ async function cargarDatosDeLaNube() {
     window.clockOffset = serverTime - Date.now();
     console.log(`[TIME SYNC] Carga de nube: Offset refrescado: ${window.clockOffset} ms`);
 
-    const { data, error } = await supabaseClient
+    let result = await supabaseClient
         .from('jugadores')
-        .select('datos_juego')
+        .select('datos_juego, lab_level, lab_xp, comercio_desbloqueado')
         .eq('id', window.miUsuarioCloud.id)
         .single();
+
+    let data = result.data;
+    let error = result.error;
+
+    // Fallback resiliente si las columnas no están creadas en Supabase
+    if (error && error.message && error.message.includes("column")) {
+        console.warn("[CloudManager] Columnas lab_* no encontradas en la consulta select. Recuperando solo datos_juego...");
+        const fallbackRes = await supabaseClient
+            .from('jugadores')
+            .select('datos_juego')
+            .eq('id', window.miUsuarioCloud.id)
+            .single();
+        data = fallbackRes.data;
+        error = fallbackRes.error;
+    }
 
     if (error) return console.log("Perfil nuevo o error. Iniciando partida fresca.");
 
     if (data && data.datos_juego) {
         console.log("☁️ Descargando progreso del jugador desde la Red Nexo...");
         const dj = data.datos_juego;
+        
+        // Cargar variables de laboratorio con prioridad de columna y fallback a JSONB
+        window.labLevel = data.lab_level !== undefined && data.lab_level !== null ? data.lab_level : (dj.labLevel || 1);
+        window.labXP = data.lab_xp !== undefined && data.lab_xp !== null ? data.lab_xp : (dj.labXP || 0);
+        window.comercioDesbloqueado = data.comercio_desbloqueado !== undefined && data.comercio_desbloqueado !== null ? data.comercio_desbloqueado : (dj.comercioDesbloqueado || false);
+
+        if (typeof window.actualizarHUDLaboratorio === 'function') {
+            window.actualizarHUDLaboratorio();
+        }
         
         if (dj.mascotaActiva) window.miMascota = dj.mascotaActiva;
         if (dj.inventario && window.miInventario) {

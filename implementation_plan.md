@@ -1,94 +1,142 @@
-# Plan de Implementación: Combate por Equipos 3v3 en el Coliseo
+# Plan de Implementación: Sistema de Meta-Progresión (Nivel del Laboratorio) - Actualizado
 
-Este plan detalla la implementación de la modalidad de combate 3v3 ("Opción 1") en el Coliseo, manteniendo intactos los modos 1v1 existentes y cumpliendo con todas las reglas y balance descritos en la especificación técnica.
+Este plan detalla el diseño e implementación del Nivel de Laboratorio y el progreso de experiencia del jugador. La meta-progresión es off-chain y se sincroniza con la base de datos Supabase, vinculando directamente las recompensas de Arcade, Coliseo y el Cuidado Diario a la cuenta del usuario para desbloquear la Licencia de Comercio.
 
 ---
 
-## Modificaciones Propuestas
+## Modificaciones de Base de Datos (Acción del Usuario)
 
-### 1. Interfaz del Lobby del Coliseo y Modal de Selección de Equipo
+> [!NOTE]
+> Debido a que la terminal y el contenedor del asistente de IA están aislados de internet y tienen el tráfico saliente restringido (sandbox de seguridad), no puedo conectarme directamente por TCP al puerto 5432 de Supabase para alterar las tablas.
+> 
+> Por favor, ejecuta la siguiente consulta SQL en el **SQL Editor** de tu consola de Supabase:
+> 
+> ```sql
+> ALTER TABLE jugadores 
+> ADD COLUMN IF NOT EXISTS lab_level INTEGER DEFAULT 1,
+> ADD COLUMN IF NOT EXISTS lab_xp INTEGER DEFAULT 0,
+> ADD COLUMN IF NOT EXISTS comercio_desbloqueado BOOLEAN DEFAULT false;
+> ```
+> 
+> *Nota: La lógica en JavaScript se diseñará con un sistema de doble vía (resiliente). Si las columnas no existen en la base de datos (por ejemplo, antes de ejecutar el SQL), el juego guardará y leerá automáticamente estos tres valores dentro del campo JSONB `datos_juego`. Esto previene cualquier error de red o de base de datos.*
+
+---
+
+## Proposed Changes
+
+### [Núcleo de Datos y Sincronización]
+
+#### [NEW] [LabManager.js](file:///c:/Users/STT/Documents/GitHub/Mascotas/LabManager.js)
+* **Estado Global del Laboratorio**:
+  * Definir variables globales reactivas: `window.labLevel = 1;`, `window.labXP = 0;`, `window.comercioDesbloqueado = false;`.
+* **Fórmula Matemática**:
+  * Implementar la progresión $XP\_Requerida = 100 \times L^{1.5}$ mediante:
+    ```javascript
+    window.obtenerXPRequeridaLaboratorio = function(level) {
+        return Math.floor(100 * Math.pow(level, 1.5));
+    };
+    ```
+* **Distribución de XP**:
+  * Implementar `window.ganarXPLaboratorio(cantidad, motivo)`:
+    * Acumula experiencia y maneja subidas de nivel consecutivas.
+    * Si sube de nivel, reproduce el sonido de evolución y muestra una alerta emergente Cyberpunk indicando el nuevo nivel del laboratorio.
+    * Actualiza la interfaz del HUD y ejecuta el guardado en la nube.
+* **Ganancia Genérica en Arcade (Soporte Multi-minijuegos)**:
+  * Para evitar código duplicado y facilitar la expansión de la lista de minijuegos, implementamos la función genérica:
+    ```javascript
+    window.completarMinijuegoArcade = function(nombreMiniguego) {
+        const xpRandom = Math.floor(Math.random() * 6) + 10; // Rango 10 a 15
+        if (window.ganarXPLaboratorio) {
+            window.ganarXPLaboratorio(xpRandom, `Minijuego Arcade: ${nombreMiniguego}`);
+        }
+        return xpRandom;
+    };
+    ```
+* **Cuidado Diario Pasivo**:
+  * Implementar `window.verificarCuidadoDiarioXP(geno)`:
+    * Comprueba si el Geno tiene registradas las tres necesidades completadas hoy (`limpieza`, `caricia` y `alimentacion` en `registroAmistadDiaria`).
+    * Admite el estado de "Ración Automática" activa como alimentación completada.
+    * Otorga **30 de Laboratorio XP** una vez al día por criatura.
+
+#### [MODIFY] [CloudManager.js](file:///c:/Users/STT/Documents/GitHub/Mascotas/CloudManager.js)
+* **Guardar en la Nube (`window.respaldarEnNube`)**:
+  * Añadir campos `labLevel`, `labXP`, `comercioDesbloqueado` al objeto `datosJuego` (JSONB) para respaldo.
+  * Incluir los atributos de columna `lab_level`, `lab_xp` y `comercio_desbloqueado` en el payload de `upsert`.
+  * Si el upsert falla por falta de las columnas SQL, realizar fallback re-intentando guardar solo en la columna JSONB `datos_juego`.
+* **Cargar de la Nube (`cargarDatosDeLaNube`)**:
+  * Modificar la consulta `select` para incluir las nuevas columnas.
+  * Si la consulta falla por columnas inexistentes, re-intentar seleccionando únicamente `datos_juego`.
+  * Cargar las variables globales leyendo de las columnas específicas y, si son indefinidas/nulas, realizar fallback al objeto JSONB `datosJuego`.
+  * Refrescar la interfaz HUD al cargar de la nube.
+
+---
+
+### [Interfaz del HUD e Inserción del Script]
+
 #### [MODIFY] [index.html](file:///c:/Users/STT/Documents/GitHub/Mascotas/index.html)
-* **Añadir tarjeta 3v3 en el Lobby**:
-  * Insertar `#lobby-card-3v3` con diseño Cyberpunk neón cian y morado en la lista scrollable del lobby.
-  * Añadir un control de acceso: si `window.misGenos.length < 3`, la tarjeta se muestra deshabilitada o muestra una advertencia al hacer clic.
-* **Crear Modal de Selección de Equipo `#coliseum-team-modal`**:
-  * Diseñar un modal con vidrio esmerilado (glassmorphism) para configurar el equipo:
-    * Slot 1: **Abridor** (Cian)
-    * Slot 2: **Relevo** (Morado)
-    * Slot 3: **Cierre** (Rosa neón)
-  * Renderizar los Genos del jugador en una lista interactiva. Al hacer clic en un Geno, se asigna al slot activo. Al hacer clic en un slot, se activa para asignación o se desasigna.
-  * Cargar y guardar la selección del equipo en `localStorage` (`coliseum_3v3_team`) para comodidad del usuario.
-  * Botón "Confirmar Equipo" habilitado solo cuando los 3 slots contengan Genos únicos.
+* **HUD del Nivel de Laboratorio**:
+  * Insertar un nuevo bloque `#hud-lab-container` al final de la tarjeta principal `#top-hud` (línea 101 aprox).
+  * Usar estética Cyberpunk neón verde menta (`#69f0ae`) con una barra de progreso que refleje `window.labXP / window.obtenerXPRequeridaLaboratorio(window.labLevel)`.
+* **Import de Script**:
+  * Importar el archivo `<script src="LabManager.js"></script>` justo antes de `app.js`.
 
 ---
 
-### 2. Motor de Combate y Estado del Equipo
-#### [MODIFY] [ColiseumLogic.js](file:///c:/Users/STT/Documents/GitHub/Mascotas/ColiseumLogic.js)
-* **Variables del Estado del Equipo**:
-  * `playerTeam`: Array de objetos de luchador correspondientes al equipo del jugador.
-  * `enemyTeam`: Array de objetos de luchador para el rival procedural.
-  * `playerActiveIndex` y `enemyActiveIndex`: Enteros (0, 1 o 2) que apuntan al luchador activo actual.
-  * Redirigir por referencia `ColiseumLogic.player = ColiseumLogic.playerTeam[playerActiveIndex]` y `ColiseumLogic.enemy = ColiseumLogic.enemyTeam[enemyActiveIndex]`.
-* **Inicialización de Equipos**:
-  * Adaptar `prepararJugador` para recibir un array de 3 Genos y mapear sus estadísticas y ataques a `playerTeam`.
-  * Adaptar `generarRivalProcedural` para 3v3:
-    * Encontrar la rareza y el nivel máximo en el equipo del jugador.
-    * Generar 3 enemigos procedurales simétricos con esa rareza y nivel equivalente, almacenándolos en `enemyTeam`.
-* **Reglas de Intercambio (Swapping)**:
-  * Implementar refresco de habilidades pasivas al entrar: `crystalSkin = true` si tiene el gen `piel_cristal`, y `sangreFriaUsada = false` si tiene el gen `sangre_fria`.
-  * Comprobar el bloqueo de intercambio si el Geno activo tiene el estado `Enredado`.
-  * La reducción por corrosión de ataque de los rivales afectará a todos los Genos del equipo (se hereda al cambiar).
+### [Eventos del Juego que Aportan XP]
 
----
+#### [MODIFY] [MinigameCatch.js](file:///c:/Users/STT/Documents/GitHub/Mascotas/MinigameCatch.js)
+* **Arcade (Lluvia de Manzanas)**:
+  * Al finalizar la sesión del miniguego con éxito (en `endGame` con `quit = false`), invocar la función genérica:
+    ```javascript
+    const xpObtenida = window.completarMinijuegoArcade("Lluvia de Manzanas");
+    ```
+  * Mostrar la cantidad de XP de laboratorio obtenida en la alerta de fin de partida.
 
-### 3. Interfaz Visual en Combate
-#### [MODIFY] [ColiseumUI.js](file:///c:/Users/STT/Documents/GitHub/Mascotas/ColiseumUI.js)
-* **Mini Indicadores de Equipo**:
-  * Renderizar en cada lado del combate (sobre las tarjetas de los combatientes) una fila vertical con 3 burbujas que representen a los miembros del equipo:
-    * Borde del color elemental del Geno (ej: verde para Biomutante, violeta para Sintético).
-    * Inicial del elemento (B, V, C, R, T, S).
-    * Una pequeña barra horizontal debajo que refleje la proporción de HP del Geno.
-    * Indicador visual luminoso (sombra neón) para el Geno actualmente activo.
-    * Grayscale o cruz de derrota si el miembro está caído (0 HP).
-* **Botones de Relevo Voluntario**:
-  * Añadir en la grilla de controles `#battle-controls` dos botones de intercambio dinámicos `#btn-swap-a` y `#btn-swap-b` when in 3v3 mode.
-  * Estos botones mostrarán el nombre y el slot del Geno benched correspondiente (ej. `🔄 RELEVO: Sparky`).
-  * Estarían deshabilitados si el Geno objetivo tiene 0 HP, o si el Geno activo tiene el estado "Enredado".
-
----
-
-### 4. Flujo del Turno y Controladores
 #### [MODIFY] [ColiseumManager.js](file:///c:/Users/STT/Documents/GitHub/Mascotas/ColiseumManager.js)
-* **Mapeo de Rutas**:
-  * Añadir `ColiseumManager.abrirSeleccion3v3` para validar resistencia/número de Genos y abrir el modal.
-  * Modificar `iniciarPeleaConfirmada` para descontar resistencia a los 3 Genos seleccionados si es 3v3.
-* **Controlador de Turno con Relevo**:
-  * Al presionar un botón de intercambio voluntario, se desencadena `procesarRonda("swap_X")` (donde X es el índice de equipo de destino).
-  * En `procesarRonda`, si la acción del jugador es un swap:
-    * Se ejecuta el cambio voluntario inmediatamente (antes de cualquier acción enemiga).
-    * Consume el turno del jugador: el Geno entrante no ataca.
-    * El enemigo realiza su acción contra el nuevo Geno activo.
-* **Cambio Forzado**:
-  * Al finalizar cada ronda (en `finalizarRonda`), si el Geno activo cae a 0 HP, se verifica si hay reservas disponibles.
-  * Si quedan reservas, se realiza un cambio forzado automático al siguiente Geno en orden secuencial sin consumir turno.
-  * Si no quedan reservas, se declara la derrota/victoria.
+* **Coliseo (1v1 y 3v3)**:
+  * Al final de la batalla en `terminarCombate()`, comprobar el resultado:
+    * **Victoria**: Invocar `window.ganarXPLaboratorio(25, "Victoria en el Coliseo")` y añadir al log de batalla `🏆 ¡+25 XP de Laboratorio!`.
+    * **Derrota**: Invocar `window.ganarXPLaboratorio(5, "Derrota en el Coliseo")` y añadir al log de batalla `💀 +5 XP de Laboratorio.`.
+
+#### [MODIFY] [app.js](file:///c:/Users/STT/Documents/GitHub/Mascotas/app.js)
+* **Cuidado Diario y Alimentación**:
+  * Registrar la alimentación diaria cuando el jugador presiona "Alimentar":
+    * Añadir `window.miMascota.registroAmistadDiaria.alimentacion = hoy;` y sincronizarlo al array `misGenos`.
+  * Invocar `window.verificarCuidadoDiarioXP(window.miMascota)` al final de cada evento de cuidado exitoso (Ducha, Alimentar, Acariciar).
 
 ---
 
-## Plan de Verificación
+### [Bazar y Licencia de Comercio]
+
+#### [MODIFY] [ShopManager.js](file:///c:/Users/STT/Documents/GitHub/Mascotas/ShopManager.js)
+* **Licencia en Bazar**:
+  * En `renderBazar()`, añadir el ítem `"Permiso de Comercio"` (`id: "comercio_licencia"`) al catálogo por un coste de **15.00 EV**.
+  * Mostrar la tarjeta con un color amarillo/dorado.
+  * Si la licencia está adquirida (`window.comercioDesbloqueado === true`), desactivar el botón y cambiar su texto a "Adquirido".
+  * Si el nivel de laboratorio es menor que 5, desactivar el botón y cambiar su texto a "Bloqueado (Nv. 5)".
+* **Acción de Compra**:
+  * En `procesarCompra()`, añadir el handler para `comercio_licencia`:
+    * Validar que `window.labLevel >= 5`.
+    * Deducir 15.00 EV de `window.miInventario.vitalEssence`.
+    * Establecer `window.comercioDesbloqueado = true` y actualizar la interfaz.
+
+---
+
+## Verification Plan
+
+### Pruebas Automatizadas
+1. **Verificación de Sintaxis**:
+   * Ejecutar un script de validación de sintaxis Node.js en los archivos modificados para evitar fallos antes de cargar el navegador.
 
 ### Pruebas Manuales
-1. **Validación del Lobby**:
-   * Verificar que la tarjeta 3v3 muestra un aviso si el jugador tiene menos de 3 Genos.
-   * Si tiene 3 o más, verificar que se abre el Modal de Selección de Equipo.
-2. **Modal de Configuración**:
-   * Probar a seleccionar 3 Genos y comprobar que se asignan a Abridor, Relevo y Cierre correspondientemente.
-   * Probar a cambiar el orden o deseleccionar. Confirmar que el botón "Confirmar" se habilita únicamente con 3 Genos válidos y distintos.
-3. **Inicio de Combate**:
-   * Iniciar combate 3v3 y verificar que los 3 Genos tienen descontados 20 de resistencia.
-   * Verificar la correcta visualización de los mini indicadores de equipo a ambos lados.
-4. **Flujo de Batalla**:
-   * Probar el intercambio voluntario en el turno del jugador. Verificar que se ejecuta el cambio, se registra en el log y el enemigo ataca al nuevo Geno activo inmediatamente.
-   * Probar que si el Geno activo es afectado por "Raíz Enredadora" (Enredado), los botones de swap voluntario se bloquean.
-   * Probar que si el Geno activo cae a 0 HP, entra el siguiente miembro automáticamente sin costo de turno y la batalla sigue.
-   * Verificar la victoria cuando los 3 rivales caen a 0 HP, y la derrota cuando nuestros 3 Genos caen.
+1. **Prueba de Carga y Guardado Resiliente**:
+   * Iniciar sesión en el juego sin haber ejecutado la migración SQL. Verificar que el juego carga y guarda progreso normalmente en la columna JSONB.
+   * Ejecutar la migración en Supabase y verificar que las columnas específicas `lab_level`, `lab_xp` y `comercio_desbloqueado` se actualizan y cargan en sincronía.
+2. **Progreso y Subidas de Nivel**:
+   * Completar una partida de Arcade y verificar la obtención de 10-15 XP de Laboratorio en el HUD.
+   * Terminar combates en el Coliseo (ganar/perder) y verificar la ganancia de 25 XP / 5 XP correspondientemente.
+   * Realizar Ducha, Caricia y Alimentación a un Geno en el mismo día, verificar la alerta de Cuidado Diario y la suma de +30 XP.
+   * Simular la obtención de suficiente experiencia para subir de nivel y validar que el nivel y el exceso de XP se calculan según la fórmula y se actualizan en el HUD.
+3. **Tienda y Licencia**:
+   * Tratar de comprar el "Permiso de Comercio" en el Bazar siendo Nivel 1. Confirmar que el botón aparece bloqueado como "Bloqueado (Nv. 5)".
+   * Aumentar el nivel de laboratorio a 5, verificar que el botón se habilita, comprarlo con 15.00 EV y constatar que pasa a estado "Adquirido" y desbloquea el estado `window.comercioDesbloqueado`.

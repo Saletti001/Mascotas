@@ -268,6 +268,30 @@ window.ShopManager = {
                 return;
             }
             
+            if (item.id === "comercio_licencia") {
+                if (window.labLevel < 5) {
+                    alert("❌ Bloqueado: Tu Nivel de Laboratorio debe ser 5 o superior.");
+                    return;
+                }
+                if (window.comercioDesbloqueado) {
+                    alert("✉️ Ya has adquirido esta Licencia de Comercio.");
+                    return;
+                }
+                
+                window.miInventario.vitalEssence -= item.price;
+                window.comercioDesbloqueado = true;
+                window.miInventario.updateUI();
+                
+                // Re-renderizar el Bazar para actualizar visualmente la tarjeta de la licencia
+                this.renderBazar();
+                
+                alert("🎉 ¡Licencia de Comercio adquirida con éxito!\nHas desbloqueado el acceso completo a la Red de Comercio.");
+                
+                if (window.guardarJuego) window.guardarJuego();
+                else if (window.guardarProgreso) window.guardarProgreso();
+                return;
+            }
+
             if (item.id === "bio_nucleo_basico") {
                 const maxSlots = window.miInventario.maxSlots || 10;
                 const slotsCount = window.miInventario.slots ? window.miInventario.slots.length : 0;
@@ -431,15 +455,41 @@ window.ShopManager = {
             { id: "plasma_shower", name: "Ducha de Plasma", icon: "🧼", type: "consumable", price: 1.00, currency: "EV", desc: "Limpia a todo tu inventario de mascotas a 100% de Higiene." },
             { id: "escaner_basico", name: "Escáner Básico", icon: this.iconosSVG["escaner_basico"], type: "basic", price: 0.15, currency: "EV", desc: "Revela slots activos del Geno." },
             { id: "escaner_completo", name: "Escáner Completo", icon: this.iconosSVG["escaner_completo"], type: "basic", price: 0.50, currency: "EV", desc: "Revela la genética exacta S-D." },
-            { id: "antidoto_uni", name: "Antídoto Universal", icon: this.iconosSVG["antidoto_uni"], type: "consumable", price: 0.10, currency: "EV", desc: "Limpia cualquier estado alterado." }
+            { id: "antidoto_uni", name: "Antídoto Universal", icon: this.iconosSVG["antidoto_uni"], type: "consumable", price: 0.10, currency: "EV", desc: "Limpia cualquier estado alterado." },
+            { id: "comercio_licencia", name: "Permiso de Comercio", icon: "📜", type: "consumable", price: 15.00, currency: "EV", desc: "Permiso de Acceso a la Red de Comercio del Bazar. Permite depositar, retirar y vender Genos. (Requiere Laboratorio Nv. 5)" }
         ];
 
         items.forEach(item => {
-            if(item.id === "bio_nucleo_basico") grid.appendChild(this.crearTarjeta(item, "#00d2ff", "#005c8a", "EV"));
-            else if (item.id === "incubator_01") grid.appendChild(this.crearTarjeta(item, "#ff9800", "#e65100", "POL"));
-            else if (item.id === "ration_auto") grid.appendChild(this.crearTarjeta(item, "#FF8A80", "#C62828", "EV"));
-            else if (item.id === "plasma_shower") grid.appendChild(this.crearTarjeta(item, "#80D8FF", "#1565C0", "EV"));
-            else grid.appendChild(this.crearTarjeta(item, "#69F0AE", "#2E7D32", "EV"));
+            let tarjeta;
+            if(item.id === "bio_nucleo_basico") tarjeta = this.crearTarjeta(item, "#00d2ff", "#005c8a", "EV");
+            else if (item.id === "incubator_01") tarjeta = this.crearTarjeta(item, "#ff9800", "#e65100", "POL");
+            else if (item.id === "ration_auto") tarjeta = this.crearTarjeta(item, "#FF8A80", "#C62828", "EV");
+            else if (item.id === "plasma_shower") tarjeta = this.crearTarjeta(item, "#80D8FF", "#1565C0", "EV");
+            else if (item.id === "comercio_licencia") tarjeta = this.crearTarjeta(item, "#FFD700", "#9A7B00", "EV");
+            else tarjeta = this.crearTarjeta(item, "#69F0AE", "#2E7D32", "EV");
+            
+            // Estilos especiales de bloqueo/adquisición para el Permiso de Comercio
+            if (item.id === "comercio_licencia") {
+                if (window.comercioDesbloqueado) {
+                    let btn = tarjeta.querySelector("button");
+                    btn.innerText = "Adquirido";
+                    btn.style.background = "#384a5e";
+                    btn.style.boxShadow = "none";
+                    btn.style.color = "#888";
+                    btn.style.cursor = "not-allowed";
+                    tarjeta.style.opacity = "0.6";
+                } else if (window.labLevel < 5) {
+                    let btn = tarjeta.querySelector("button");
+                    btn.innerText = "Bloqueado (Nv. 5)";
+                    btn.style.background = "#5e3838";
+                    btn.style.boxShadow = "none";
+                    btn.style.color = "#ff8888";
+                    btn.style.cursor = "not-allowed";
+                    tarjeta.style.opacity = "0.7";
+                }
+            }
+
+            grid.appendChild(tarjeta);
         });
     },
 

@@ -401,6 +401,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 window.miMascota.amistad = Math.min(100, (window.miMascota.amistad || 0) + gananciaExplicita);
             }
 
+            if (typeof window.verificarCuidadoDiarioXP === 'function') {
+                window.verificarCuidadoDiarioXP(window.miMascota);
+            }
+
             if (window.miMascota.ultimoCuidadoDiario !== hoy) {
                 window.miMascota.ultimoCuidadoDiario = hoy;
                 if (window.misGenos) {
@@ -1508,6 +1512,10 @@ function iniciarSecuenciaBienvenida() {
                                 alert(`🧼 ¡Has bañado por completo a ${window.miMascota.name}! Higiene al 100%. (Amistad por limpieza ya obtenida hoy)`);
                             }
 
+                            if (typeof window.verificarCuidadoDiarioXP === 'function') {
+                                window.verificarCuidadoDiarioXP(window.miMascota);
+                            }
+
                             if (window.Sonidos) window.Sonidos.play("click");
                             const targetWrapper = bathContainer ? bathContainer.querySelector(".geno-float-wrapper") : null;
                             if (targetWrapper) {
@@ -1579,10 +1587,22 @@ function iniciarSecuenciaBienvenida() {
                 if (window.miInventario && window.miInventario.consumeItem("apple_01", 1)) {
                     // Aplicar efecto de alimentación
                     window.miMascota.hambre = Math.min(100, (window.miMascota.hambre || 0) + 20);
+                    
+                    const hoy = new Date().toDateString();
+                    if (!window.miMascota.registroAmistadDiaria) window.miMascota.registroAmistadDiaria = {};
+                    window.miMascota.registroAmistadDiaria.alimentacion = hoy;
+
                     // Sincronizar en misGenos
                     if (window.misGenos) {
                         const idx = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
-                        if (idx !== -1) window.misGenos[idx].hambre = window.miMascota.hambre;
+                        if (idx !== -1) {
+                            window.misGenos[idx].hambre = window.miMascota.hambre;
+                            window.misGenos[idx].registroAmistadDiaria = window.miMascota.registroAmistadDiaria;
+                        }
+                    }
+
+                    if (typeof window.verificarCuidadoDiarioXP === 'function') {
+                        window.verificarCuidadoDiarioXP(window.miMascota);
                     }
                     // Animación happy-jump
                     const bathContainer = document.getElementById("geno-container-bathroom");

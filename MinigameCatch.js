@@ -218,6 +218,10 @@ class MinigameCatch {
                 });
             }
 
+            const xpObtenida = typeof window.completarMinijuegoArcade === 'function' 
+                ? window.completarMinijuegoArcade("Lluvia de Manzanas") 
+                : 0;
+
             // Afectar necesidades del Geno activo
             if (window.miMascota && window.miMascota.id && window.miMascota.id !== "temp") {
                 if (window.miMascota.diversion === undefined) window.miMascota.diversion = 100;
@@ -254,11 +258,14 @@ class MinigameCatch {
 
                 let msg = `¡Tiempo terminado!\nAtrapaste ${this.score} manzana(s).\nRatio 5:1 = Ganas ${reward} 🍎.`;
                 if (this.evGanada > 0) msg += `\n⚡ +${this.evGanada.toFixed(2)} EV atrapada(s)!`;
+                if (xpObtenida > 0) msg += `\n🧪 +${xpObtenida} XP de Laboratorio!`;
                 if (gananciaExplicita > 0) msg += `\n¡Diversión +20% y Amistad +${gananciaExplicita}!`;
                 else                       msg += `\n¡Diversión +20%! (Amistad por Arcade ya obtenida hoy)`;
                 alert(msg);
             } else {
-                alert(`¡Tiempo terminado!\nAtrapaste ${this.score} manzana(s).\nRatio 5:1 = Ganas ${reward} 🍎.`);
+                let msg = `¡Tiempo terminado!\nAtrapaste ${this.score} manzana(s).\nRatio 5:1 = Ganas ${reward} 🍎.`;
+                if (xpObtenida > 0) msg += `\n🧪 +${xpObtenida} XP de Laboratorio!`;
+                alert(msg);
             }
         }
         
