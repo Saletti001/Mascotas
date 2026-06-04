@@ -379,27 +379,37 @@ window.iniciarMercado = function() {
     });
 
     const tabBuy = document.getElementById("tab-market-buy");
+    const tabScholarships = document.getElementById("tab-market-scholarships");
     const tabSell = document.getElementById("tab-market-sell");
     const tabVault = document.getElementById("tab-market-vault");
     const viewBuy = document.getElementById("market-buy-view");
+    const viewScholarships = document.getElementById("market-scholarships-view");
     const viewSell = document.getElementById("market-sell-view");
     const viewVault = document.getElementById("market-vault-view");
 
     tabBuy.addEventListener("click", () => {
-        tabBuy.classList.add("active"); tabSell.classList.remove("active"); tabVault.classList.remove("active");
-        viewBuy.classList.remove("hidden"); viewSell.classList.add("hidden"); viewVault.classList.add("hidden");
+        tabBuy.classList.add("active"); if(tabScholarships) tabScholarships.classList.remove("active"); tabSell.classList.remove("active"); tabVault.classList.remove("active");
+        viewBuy.classList.remove("hidden"); if(viewScholarships) viewScholarships.classList.add("hidden"); viewSell.classList.add("hidden"); viewVault.classList.add("hidden");
         if (typeof window.cargarMercadoGlobal === 'function') window.cargarMercadoGlobal();
     });
 
+    if (tabScholarships) {
+        tabScholarships.addEventListener("click", () => {
+            tabScholarships.classList.add("active"); tabBuy.classList.remove("active"); tabSell.classList.remove("active"); tabVault.classList.remove("active");
+            viewScholarships.classList.remove("hidden"); viewBuy.classList.add("hidden"); viewSell.classList.add("hidden"); viewVault.classList.add("hidden");
+            window.renderizarPlazaBecas();
+        });
+    }
+
     tabSell.addEventListener("click", () => {
-        tabSell.classList.add("active"); tabBuy.classList.remove("active"); tabVault.classList.remove("active");
-        viewSell.classList.remove("hidden"); viewBuy.classList.add("hidden"); viewVault.classList.add("hidden");
+        tabSell.classList.add("active"); tabBuy.classList.remove("active"); if(tabScholarships) tabScholarships.classList.remove("active"); tabVault.classList.remove("active");
+        viewSell.classList.remove("hidden"); viewBuy.classList.add("hidden"); if(viewScholarships) viewScholarships.classList.add("hidden"); viewVault.classList.add("hidden");
         window.renderizarMisVentas();
     });
 
     tabVault.addEventListener("click", () => {
-        tabVault.classList.add("active"); tabBuy.classList.remove("active"); tabSell.classList.remove("active");
-        viewVault.classList.remove("hidden"); viewBuy.classList.add("hidden"); viewSell.classList.add("hidden");
+        tabVault.classList.add("active"); tabBuy.classList.remove("active"); if(tabScholarships) tabScholarships.classList.remove("active"); tabSell.classList.remove("active");
+        viewVault.classList.remove("hidden"); viewBuy.classList.add("hidden"); if(viewScholarships) viewScholarships.classList.add("hidden"); viewSell.classList.add("hidden");
         window.actualizarVistaBaul();
     });
 
@@ -411,6 +421,32 @@ window.iniciarMercado = function() {
         btnHistory.onclick = () => {
             const panel = document.getElementById("vault-history-panel");
             if (panel) panel.classList.toggle("hidden");
+        };
+    }
+
+    // Configurar botones del modal de ofrecer beca
+    const modalBeca = document.getElementById("modal-ofrecer-beca");
+    const btnCloseBeca = document.getElementById("close-ofrecer-beca");
+    const btnConfirmBeca = document.getElementById("btn-confirm-ofrecer-beca");
+
+    if (btnCloseBeca && modalBeca) {
+        btnCloseBeca.onclick = () => {
+            modalBeca.classList.add("hidden");
+        };
+    }
+
+    if (btnConfirmBeca && modalBeca) {
+        btnConfirmBeca.onclick = () => {
+            const genoId = document.getElementById("beca-target-geno-id").value;
+            const minLabLevel = parseInt(document.getElementById("beca-req-level").value, 10) || 1;
+            const splitOwner = parseInt(document.getElementById("beca-split-ratio").value, 10) || 70;
+
+            const res = window.ScholarshipManager.publicarGenoEnBeca(genoId, minLabLevel, splitOwner);
+            alert(res.message);
+            if (res.success) {
+                modalBeca.classList.add("hidden");
+                window.renderizarMisVentas();
+            }
         };
     }
 
@@ -672,13 +708,23 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
 
     if (tipoAccion === 'publicar') {
         actionContainer.innerHTML = `
-            <div style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px; border: 1px solid #384a5e; margin-bottom: 15px;">
-                <div style="color: #cbd5e1; font-size: 12px; line-height: 1.5;">Precio en $POL para listar este espécimen.</div>
+            <div style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px; border: 1px solid #384a5e; margin-bottom: 12px; text-align: left; font-size: 11px;">
+                <div style="color: #cbd5e1; font-weight: bold; margin-bottom: 4px; text-transform: uppercase; color: #ff007f;">Opción A: Venta Directa</div>
+                <div style="color: #94a3b8; line-height: 1.3;">Ponle un precio en $POL para vender la propiedad total.</div>
             </div>
-            <input type="number" id="modal-input-price" class="hide-spinners" placeholder="Precio en POL" style="width: 100%; box-sizing: border-box; padding: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.4); border: 1px solid #D500F9; border-radius: 8px; text-align: center; color: #fff; font-weight: bold; outline: none; font-size: 16px;" step="0.1" min="0.1">
-            <button id="modal-btn-action" class="market-btn-neon green" style="width: 100%; font-size: 14px; padding: 12px;">Publicar en la Red</button>
+            <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                <input type="number" id="modal-input-price" class="hide-spinners" placeholder="POL" style="flex: 1; padding: 10px; background: rgba(0,0,0,0.4); border: 1px solid #D500F9; border-radius: 8px; text-align: center; color: #fff; font-weight: bold; outline: none; font-size: 14px;" step="0.1" min="0.1">
+                <button id="modal-btn-sell-direct" class="market-btn-neon green" style="flex: 2; font-size: 11px; padding: 10px 5px; margin: 0;">Publicar Venta</button>
+            </div>
+            
+            <div style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px; border: 1px solid #384a5e; margin-bottom: 12px; text-align: left; font-size: 11px; margin-top: 15px;">
+                <div style="color: #cbd5e1; font-weight: bold; margin-bottom: 4px; text-transform: uppercase; color: #00e5ff;">Opción B: Becar / Alquilar</div>
+                <div style="color: #94a3b8; line-height: 1.3;">Conserva la propiedad y permite que otro juegue para dividir premios en $POL.</div>
+            </div>
+            <button id="modal-btn-open-beca" class="market-btn-neon" style="width: 100%; font-size: 12px; padding: 12px; background: linear-gradient(90deg, #8A2BE2, #a855f7); margin-top: 0; box-shadow: 0 4px 10px rgba(138,43,226,0.3);">Ofrecer en Beca</button>
         `;
-        document.getElementById("modal-btn-action").onclick = () => {
+        
+        document.getElementById("modal-btn-sell-direct").onclick = () => {
             if (!window.miUsuarioCloud) { alert("⚠️ Debes iniciar sesión (Vincular) para poder interactuar con la Red Nexo global."); return; }
             const precio = parseFloat(document.getElementById("modal-input-price").value);
             if (isNaN(precio) || precio <= 0) { alert("⚠️ Introduce un precio válido mayor a 0."); return; }
@@ -693,6 +739,79 @@ window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
             modal.style.display = "none";
             window.renderizarMisVentas();
             if(window.guardarProgreso) window.guardarProgreso();
+        };
+
+        document.getElementById("modal-btn-open-beca").onclick = () => {
+            modal.style.display = "none";
+            document.getElementById("beca-target-geno-id").value = geno.id;
+            document.getElementById("beca-req-level").value = "1";
+            document.getElementById("beca-split-ratio").value = "70";
+            document.getElementById("modal-ofrecer-beca").classList.remove("hidden");
+        };
+    } else if (tipoAccion === 'alquiler_plaza') {
+        const reqLvl = geno.scholarship.minLabLevel || 1;
+        const reqMet = (window.labLevel || 1) >= reqLvl;
+        actionContainer.innerHTML = `
+            <div style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px; border: 1px solid #384a5e; margin-bottom: 15px; text-align: left; font-size: 11px;">
+                <div style="color: #cbd5e1; font-weight: bold; margin-bottom: 5px; text-transform: uppercase;">Detalles del Alquiler</div>
+                <div style="margin-bottom: 3px;">• Dueño: <span style="font-family: monospace; color: #ff007f;">${geno.scholarship.ownerAddress}</span></div>
+                <div style="margin-bottom: 3px;">• Split: <span style="color: #00e5ff; font-weight: bold;">${100 - geno.scholarship.splitOwner}% para ti</span> / ${geno.scholarship.splitOwner}% dueño</div>
+                <div>• Requisito Lab: <span style="color: ${reqMet ? '#4CAF50' : '#ff5252'}; font-weight: bold;">Nv. ${reqLvl} ${reqMet ? '(Cumplido)' : '(Insuficiente)'}</span></div>
+            </div>
+            <button id="modal-btn-alquilar-exec" class="market-btn-neon green" style="width: 100%; font-size: 14px; padding: 12px;" ${reqMet ? '' : 'disabled'}>
+                ${reqMet ? 'Alquilar Geno' : `Requieres Lab Nv. ${reqLvl}`}
+            </button>
+        `;
+        document.getElementById("modal-btn-alquilar-exec").onclick = () => {
+            const res = window.ScholarshipManager.alquilarGeno(geno.id);
+            alert(res.message);
+            if (res.success) {
+                modal.style.display = "none";
+                window.renderizarPlazaBecas();
+            }
+        };
+    } else if (tipoAccion === 'becado') {
+        actionContainer.innerHTML = `
+            <div style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px; border: 1px solid #384a5e; margin-bottom: 15px; text-align: left; font-size: 11px;">
+                <div style="color: #cbd5e1; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; color: #00e5ff;">Alquiler Activo</div>
+                <div style="margin-bottom: 3px;">• Propietario: <span style="font-family: monospace; color: #a855f7;">${geno.scholarship.ownerAddress || 'NPC'}</span></div>
+                <div>• Split Premios: <span style="color: #ffcc00; font-weight: bold;">${100 - geno.scholarship.splitOwner}% para ti</span> / ${geno.scholarship.splitOwner}% para dueño</div>
+            </div>
+            <button id="modal-btn-devolver-exec" class="market-btn-neon red" style="width: 100%; font-size: 13px; padding: 12px;">Devolver Alquiler</button>
+        `;
+        document.getElementById("modal-btn-devolver-exec").onclick = () => {
+            const res = window.ScholarshipManager.devolverGenoAlquilado(geno.id);
+            alert(res.message);
+            if (res.success) {
+                modal.style.display = "none";
+                window.renderizarMisVentas();
+            }
+        };
+    } else if (tipoAccion === 'becado_dueño') {
+        const isRented = geno.scholarship.status === 'rented';
+        actionContainer.innerHTML = `
+            <div style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px; border: 1px solid #384a5e; margin-bottom: 15px; text-align: left; font-size: 11px;">
+                <div style="color: #cbd5e1; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; color: #ff007f;">Tu Geno en Beca</div>
+                <div style="margin-bottom: 3px;">• Estado: <span style="color: ${isRented ? '#69f0ae' : '#ffcc00'}; font-weight: bold;">${isRented ? `Rentado por ${geno.scholarship.scholarId}` : 'Disponible en Plaza'}</span></div>
+                <div style="margin-bottom: 3px;">• Requisito Lab: <span style="color: #fff;">Nv. ${geno.scholarship.minLabLevel}</span></div>
+                <div>• Tu Split: <span style="color: #00e5ff; font-weight: bold;">${geno.scholarship.splitOwner}%</span> / ${100 - geno.scholarship.splitOwner}% becado</div>
+            </div>
+            <button id="modal-btn-reclamar-exec" class="market-btn-neon" style="width: 100%; font-size: 13px; padding: 12px; background: linear-gradient(90deg, #6A1B9A, #D500F9);">
+                ${isRented ? 'Reclamar / Finalizar Beca' : 'Retirar de la Plaza'}
+            </button>
+        `;
+        document.getElementById("modal-btn-reclamar-exec").onclick = () => {
+            let res;
+            if (isRented) {
+                res = window.ScholarshipManager.reclamarGenoRentado(geno.id);
+            } else {
+                res = window.ScholarshipManager.retirarGenoDeBeca(geno.id);
+            }
+            alert(res.message);
+            if (res.success) {
+                modal.style.display = "none";
+                window.renderizarMisVentas();
+            }
         };
     } else if (tipoAccion === 'listado') {
         actionContainer.innerHTML = `
@@ -752,7 +871,7 @@ window.renderizarMisVentas = async function() {
     grid.innerHTML = "";
     let hayCosasParaVender = false;
     
-    const genosVendibles = (window.misGenos || []).filter(g => !g.isEgg && (!window.miMascota || g.id !== window.miMascota.id));
+    const genosVendibles = (window.misGenos || []).filter(g => !g.isEgg && (!window.miMascota || g.id !== window.miMascota.id) && !g.scholarship);
     
     if (genosVendibles.length === 0 && window.miMascota) {
         const avisoGeno = document.createElement("div");
@@ -882,6 +1001,95 @@ window.renderizarMisVentas = async function() {
                 if(window.guardarProgreso) window.guardarProgreso();
             });
             
+            listContainer.appendChild(row);
+        });
+    }
+
+    // ----- Renders de Alquileres / Becas Activas -----
+    const misGenosBecaDueno = (window.misGenos || []).filter(g => g.scholarship && g.scholarship.ownerId === "local_user");
+    if (misGenosBecaDueno.length > 0) {
+        const header = document.createElement("h4");
+        header.style.cssText = "width: 100%; color: #00e5ff; border-bottom: 1px solid #384a5e; padding-bottom: 8px; margin: 20px 0 10px 0; font-size: 12px; text-transform: uppercase;";
+        header.innerText = "Tus Genos Ofrecidos en Beca:";
+        listContainer.appendChild(header);
+
+        misGenosBecaDueno.forEach(geno => {
+            const isRented = geno.scholarship.status === 'rented';
+            const row = document.createElement("div");
+            row.className = "listed-item-row";
+            row.style.borderColor = "#00e5ff";
+            row.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px; pointer-events: none;">
+                    <span style="font-size: 16px; display: flex; align-items: center; justify-content: center; width: 20px; height: 20px;">🎓</span>
+                    <span style="font-weight: bold; font-size: 13px;">${obtenerNombreGeno(geno)} <span style="font-size: 10px; color: ${isRented ? '#69f0ae' : '#ffcc00'}; font-weight: normal;">(${isRented ? `Rentado por ${geno.scholarship.scholarId}` : 'En Plaza'})</span></span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="color: #00e5ff; font-weight: bold; font-size: 11px; pointer-events: none;">Split: ${geno.scholarship.splitOwner}%</span>
+                    <button class="market-btn-neon red btn-reclaim-beca" style="padding: 5px 10px; width: auto; font-size: 10px; margin: 0; position: relative; z-index: 2;">
+                        ${isRented ? 'Reclamar' : 'Retirar'}
+                    </button>
+                </div>
+            `;
+
+            row.addEventListener("click", (e) => {
+                if (e.target.closest('.btn-reclaim-beca')) return;
+                window.abrirDetalleMercado(geno.id, 'becado_dueño');
+            });
+
+            row.querySelector(".btn-reclaim-beca").addEventListener("click", (e) => {
+                e.stopPropagation();
+                let res;
+                if (isRented) {
+                    res = window.ScholarshipManager.reclamarGenoRentado(geno.id);
+                } else {
+                    res = window.ScholarshipManager.retirarGenoDeBeca(geno.id);
+                }
+                alert(res.message);
+                if (res.success) {
+                    window.renderizarMisVentas();
+                }
+            });
+
+            listContainer.appendChild(row);
+        });
+    }
+
+    const misGenosBecaBecado = (window.misGenos || []).filter(g => g.scholarship && g.scholarship.scholarId === "local_user");
+    if (misGenosBecaBecado.length > 0) {
+        const header = document.createElement("h4");
+        header.style.cssText = "width: 100%; color: #ffea00; border-bottom: 1px solid #384a5e; padding-bottom: 8px; margin: 20px 0 10px 0; font-size: 12px; text-transform: uppercase;";
+        header.innerText = "Criaturas Alquiladas (Tus Becas):";
+        listContainer.appendChild(header);
+
+        misGenosBecaBecado.forEach(geno => {
+            const row = document.createElement("div");
+            row.className = "listed-item-row";
+            row.style.borderColor = "#ffea00";
+            row.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px; pointer-events: none;">
+                    <span style="font-size: 16px; display: flex; align-items: center; justify-content: center; width: 20px; height: 20px;">🛡️</span>
+                    <span style="font-weight: bold; font-size: 13px;">${obtenerNombreGeno(geno)} <span style="font-size: 10px; color: #aaa; font-weight: normal;">(Alquilado)</span></span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="color: #ffea00; font-weight: bold; font-size: 11px; pointer-events: none;">Split: ${100 - geno.scholarship.splitOwner}%</span>
+                    <button class="market-btn-neon red btn-return-beca" style="padding: 5px 10px; width: auto; font-size: 10px; margin: 0; position: relative; z-index: 2;">Devolver</button>
+                </div>
+            `;
+
+            row.addEventListener("click", (e) => {
+                if (e.target.closest('.btn-return-beca')) return;
+                window.abrirDetalleMercado(geno.id, 'becado');
+            });
+
+            row.querySelector(".btn-return-beca").addEventListener("click", (e) => {
+                e.stopPropagation();
+                const res = window.ScholarshipManager.devolverGenoAlquilado(geno.id);
+                alert(res.message);
+                if (res.success) {
+                    window.renderizarMisVentas();
+                }
+            });
+
             listContainer.appendChild(row);
         });
     }
@@ -1242,4 +1450,63 @@ window.iniciarMonitoreoRealtime = function() {
                 console.log("✅ Conectado a Supabase Realtime exitosamente.");
             }
         });
+};
+
+window.renderizarPlazaBecas = function() {
+    const grid = document.getElementById("market-scholarships-grid");
+    if (!grid) return;
+
+    grid.innerHTML = "";
+
+    const becasDisponibles = (window.becasPlaza || []).filter(b => b.scholarship && b.scholarship.status === 'available');
+
+    if (becasDisponibles.length === 0) {
+        grid.innerHTML = `
+            <div style="grid-column: span 2; text-align: center; padding: 40px; color: #aaa; font-size: 12px; line-height: 1.5;">
+                Actualmente no hay criaturas disponibles en alquiler.<br>¡Vuelve más tarde o ofrece uno de tus Genos en beca!
+            </div>
+        `;
+        return;
+    }
+
+    becasDisponibles.forEach(geno => {
+        let svgIcon = '🧬';
+        if (typeof window.generarSvgGeno === 'function') {
+            let tempSvg = window.generarSvgGeno({ ...geno, body_shape: geno.shape || geno.body_shape, base_color: geno.color || geno.base_color });
+            if (tempSvg) svgIcon = tempSvg.replace(/width="[^"]+"/, 'width="100%"').replace(/height="[^"]+"/, 'height="100%"');
+        }
+
+        const splitPropietario = geno.scholarship.splitOwner || 70;
+        const splitBecado = 100 - splitPropietario;
+        const reqLvl = geno.scholarship.minLabLevel || 1;
+        const reqMet = (window.labLevel || 1) >= reqLvl;
+
+        const card = document.createElement("div");
+        card.className = "market-card-neon";
+        card.style.borderColor = reqMet ? "#00e5ff" : "rgba(255,255,255,0.15)";
+        card.innerHTML = `
+            <div style="position: absolute; top: 8px; left: 8px; font-size: 8px; font-weight: bold; background: rgba(0,0,0,0.6); padding: 3px 6px; border-radius: 4px; border: 1px solid #384a5e; color: #ffea00; text-transform: uppercase;">
+                Lvl ${geno.level}
+            </div>
+            <div style="width: 55px; height: 55px; margin-bottom: 10px; filter: drop-shadow(0px 5px 8px rgba(0,229,255,0.4)); pointer-events: none;">${svgIcon}</div>
+            <h4 style="margin: 0 0 5px 0; font-size: 13px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">${obtenerNombreGeno(geno)}</h4>
+            
+            <div style="font-size: 9px; color: #aaa; margin: 0 0 10px 0; line-height: 1.3; pointer-events: none;">
+                <span style="color: #ff007f; font-weight: bold;">Split: ${splitBecado}% para ti</span><br>
+                ${reqLvl > 1 ? `<span style="color: ${reqMet ? '#4caf50' : '#ff5252'};">Req: Lab Nv. ${reqLvl}</span>` : 'Sin requisitos de Lab'}
+            </div>
+            
+            <button class="market-btn-neon green" style="background: linear-gradient(90deg, #0097a7, #00e5ff); margin-top: auto;" ${reqMet ? '' : 'disabled'}>
+                ${reqMet ? 'Alquilar' : `Nv. ${reqLvl} Req`}
+            </button>
+        `;
+
+        card.addEventListener("click", () => { window.abrirDetalleMercado(geno, 'alquiler_plaza'); });
+        card.querySelector("button").addEventListener("click", (e) => {
+            e.stopPropagation();
+            window.abrirDetalleMercado(geno, 'alquiler_plaza');
+        });
+
+        grid.appendChild(card);
+    });
 };

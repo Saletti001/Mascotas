@@ -340,7 +340,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const genosDisponibles = window.misGenos.filter(g => 
             (g.rarity === reglas.reqRarity || g.rarity === reglas.reqRarity + "+") && 
             !g.isEgg && 
-            (!window.miMascota || window.miMascota.id !== g.id)
+            (!window.miMascota || window.miMascota.id !== g.id) &&
+            !g.scholarship
         );
         
         if (countEl) countEl.innerText = genosDisponibles.length;

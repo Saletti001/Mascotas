@@ -1,10 +1,14 @@
 // =========================================
-// ImplantsManager.js - V22 (MOTOR DE EQUIPAR Y DESEQUIPAR REAL)
+// ImplantsManager.js - V23 (SISTEMA DE CUSTODIA DE MTs EN BECAS)
 // =========================================
 
 window.ImplantsManager = {
     currentTab: 'combat',
     targetSlot: null,
+
+    esGenoAlquilado: function() {
+        return window.miMascota && window.miMascota.scholarship && window.miMascota.scholarship.scholarId === 'local_user';
+    },
 
     init: function() {
         if(typeof ImplantsUI !== 'undefined') {
@@ -131,18 +135,42 @@ window.ImplantsManager = {
         return null;
     },
 
-    // ✨ FIX V22: Desequipar un ítem de forma manual (Botón rojo)
-    unequipCurrent: function(slot, isCosmetic) {
+    // ✨ V23: Desequipar un ítem de forma manual (Botón rojo)
+    // Para Genos alquilados: si el ítem pertenecía al dueño → va a ownerItems (custodia).
+    //                        si el ítem fue puesto por el becado → vuelve a su mochila.
+    unequipCurrent: function(slot, isCosmetic, _internallyCalled) {
         if (!window.miInventario || !window.miMascota) return;
 
         const itemToReturn = this.getItemToUnequip(slot, isCosmetic);
         if (!itemToReturn) return;
 
-        // Intentar añadir a la mochila
-        const added = window.miInventario.addItem(itemToReturn);
-        if (!added) return; // Si la mochila está llena, el addItem ya tiró el alert. Paramos aquí.
+        const esAlquilado = this.esGenoAlquilado();
 
-        // Si se añadió con éxito, limpiamos al Geno
+        if (esAlquilado) {
+            // Aseguramos las listas de custodia en el objeto scholarship
+            if (!window.miMascota.scholarship.ownerItems) window.miMascota.scholarship.ownerItems = {};
+            if (!window.miMascota.scholarship.scholarItems) window.miMascota.scholarship.scholarItems = {};
+
+            // Determinar la procedencia del ítem equipado
+            const esDelBecado = window.miMascota.scholarship.scholarItems[slot] &&
+                                window.miMascota.scholarship.scholarItems[slot].id === itemToReturn.id;
+
+            if (esDelBecado) {
+                // El ítem lo puso el becado → lo devolvemos a su mochila
+                const added = window.miInventario.addItem(itemToReturn);
+                if (!added && !_internallyCalled) return;
+                delete window.miMascota.scholarship.scholarItems[slot];
+            } else {
+                // El ítem pertenece al dueño → lo mandamos a custodia (ownerItems)
+                window.miMascota.scholarship.ownerItems[slot] = itemToReturn;
+            }
+        } else {
+            // Dueño normal: devolver a mochila
+            const added = window.miInventario.addItem(itemToReturn);
+            if (!added && !_internallyCalled) return;
+        }
+
+        // Limpiar el slot del Geno
         if (isCosmetic) {
             const propMap = { head: 'hat_type', back: 'wing_type', skin: 'skin_type', aura: 'aura_type' };
             window.miMascota[propMap[slot]] = (slot === 'skin' ? 'estandar' : 'ninguno');
@@ -151,13 +179,16 @@ window.ImplantsManager = {
             window.miMascota.ataques[slot] = null;
         }
 
-        this.syncAndSave();
-        this.closeSelector();
-        this.updateSlotLabels();
-        this.refreshPreview();
+        if (!_internallyCalled) {
+            this.syncAndSave();
+            this.closeSelector();
+            this.updateSlotLabels();
+            this.refreshPreview();
+        }
     },
 
     openSelector: function(slot) {
+        // V23: Scholars pueden usar el selector libremente
         this.targetSlot = slot;
         const selector = document.getElementById('lab-inventory-selector');
         const listContainer = document.getElementById('lab-inventory-list');
@@ -276,24 +307,27 @@ window.ImplantsManager = {
         return base;
     },
 
-    // ✨ FIX V22.1: FUNCIÓN RESTAURADA - Instala la MT y devuelve la vieja a la mochila
+    // ✨ V23: Instala la MT y gestiona la custodia correctamente según si es beca o no
     installModule: function(item, indexItem, isCosmetic) {
         if (!window.miInventario || !window.miMascota) return;
 
-        // 1. Verificamos si ya hay algo en ese slot. Si hay, lo desequipamos y vuelve a la mochila.
+        const esAlquilado = this.esGenoAlquilado();
+
+        // 1. Si ya hay algo en ese slot, lo gestionamos con el sistema de custodia
         const itemActual = this.getItemToUnequip(this.targetSlot, isCosmetic);
         if (itemActual) {
-            this.unequipCurrent(this.targetSlot, isCosmetic);
+            // Llamada interna: no cierra el selector ni refresca aún
+            this.unequipCurrent(this.targetSlot, isCosmetic, true);
         }
 
-        // 2. Buscamos la nueva MT en la mochila y la borramos de ahí (porque ahora estará en el Geno)
+        // 2. Quitar la nueva MT de la mochila del becado/dueño
         let invArray = window.miInventario.slots || window.miInventario.items;
         const realIndex = invArray.findIndex(i => i.id === item.id);
         if (realIndex !== -1) {
             invArray.splice(realIndex, 1);
         }
 
-        // 3. Equipamos el ítem en el Geno
+        // 3. Equipar el ítem en el Geno
         if (isCosmetic) {
             const propMap = { head: 'hat_type', back: 'wing_type', skin: 'skin_type', aura: 'aura_type' };
             window.miMascota[propMap[this.targetSlot]] = item.id_cosmetico || item.name.toLowerCase().replace(/\s+/g, '_');
@@ -301,7 +335,7 @@ window.ImplantsManager = {
             window.miMascota.cosmeticos[this.targetSlot] = item;
         } else {
             if (!window.miMascota.ataques) window.miMascota.ataques = {};
-            
+
             // Inyectamos la MT como un ataque activo
             window.miMascota.ataques[this.targetSlot] = {
                 id: item.id_ataque || "atk_" + Math.floor(Math.random() * 10000),
@@ -312,7 +346,13 @@ window.ImplantsManager = {
             };
         }
 
-        // 4. Guardamos partida y refrescamos los paneles
+        // 4. V23: Si es un Geno alquilado, registrar que este ítem fue puesto por el BECADO
+        if (esAlquilado) {
+            if (!window.miMascota.scholarship.scholarItems) window.miMascota.scholarship.scholarItems = {};
+            window.miMascota.scholarship.scholarItems[this.targetSlot] = item;
+        }
+
+        // 5. Guardamos partida y refrescamos los paneles
         this.syncAndSave();
         this.closeSelector();
         this.updateSlotLabels();

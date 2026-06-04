@@ -115,6 +115,9 @@ window.cargarProgreso = function() {
                 if (data.tournamentActive !== undefined && window.TournamentManager) {
                     window.TournamentManager.activeTournament = data.tournamentActive;
                 }
+                if (data.becasPlaza !== undefined) {
+                    window.becasPlaza = data.becasPlaza;
+                }
 
                 if (typeof window.WalletManager !== 'undefined') {
                     window.WalletManager.actualizarBoton();
@@ -178,6 +181,7 @@ window.guardarLocalSilencioso = function() {
         newsMailbox: window.newsMailboxData,
         tournamentSaldosPendientes: window.TournamentManager ? window.TournamentManager.saldosPendientes : 0.0,
         tournamentActive: window.TournamentManager ? window.TournamentManager.activeTournament : null,
+        becasPlaza: window.becasPlaza || [],
         lastActiveTime: typeof window.obtenerTiempoSeguro === 'function' ? window.obtenerTiempoSeguro() : Date.now()
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(dataToSave));

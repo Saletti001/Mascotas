@@ -702,12 +702,21 @@ window.TournamentManager = {
                 t.log.push(`👑 ¡${finalMatch.winner.nombre} se consagra campeón de la ${t.config.nombre}!`);
 
                 const pos = this.obtenerPosicionJugador();
+                let premio = 0;
                 if (pos === 1) {
-                    window.miWallet.pol += t.config.premios[1];
+                    premio = t.config.premios[1];
                 } else if (pos === 2) {
-                    window.miWallet.pol += t.config.premios[2];
+                    premio = t.config.premios[2];
                 } else if (pos === 3) {
-                    window.miWallet.pol += t.config.premios[3];
+                    premio = t.config.premios[3];
+                }
+
+                if (premio > 0) {
+                    if (window.miMascota && window.miMascota.scholarship && window.ScholarshipManager) {
+                        window.ScholarshipManager.aplicarSplitPremio(premio, window.miMascota);
+                    } else {
+                        window.miWallet.pol += premio;
+                    }
                 }
 
                 if (window.WalletManager && window.WalletManager.actualizarBoton) {

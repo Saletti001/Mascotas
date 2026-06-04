@@ -486,6 +486,12 @@ document.addEventListener("DOMContentLoaded", () => {
     if (btnRename) {
         btnRename.addEventListener("click", () => {
             if (!window.miMascota) return;
+
+            if (window.miMascota.scholarship && window.miMascota.scholarship.scholarId === 'local_user') {
+                alert("⚠️ Acción denegada: No puedes renombrar un Geno alquilado.");
+                return;
+            }
+
             btnRename.style.transform = "scale(0.8)";
             setTimeout(() => btnRename.style.transform = "scale(1)", 150);
 

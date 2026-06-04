@@ -424,7 +424,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const yaSeleccionado = (padre1 && String(padre1.id) === String(geno.id)) || (padre2 && String(padre2.id) === String(geno.id));
             
             const maxCrias = typeof window.getMaxCrias === 'function' ? window.getMaxCrias(geno) : 7;
-            const cumpleRequisitos = ((geno.breedCount || 0) < maxCrias) && !yaSeleccionado;
+            const cumpleRequisitos = ((geno.breedCount || 0) < maxCrias) && !yaSeleccionado && !geno.scholarship;
 
             const btn = document.createElement("div");
             let styleStr = "padding: 12px; border-radius: 14px; display: flex; align-items: center; text-align: left; box-shadow: 0 4px 10px rgba(0,0,0,0.4); transition: 0.2s;";
@@ -443,6 +443,7 @@ document.addEventListener("DOMContentLoaded", () => {
             let statusText = `<span style="color: #00d2ff; font-weight: bold; font-size: 11px;">${maxCrias - (geno.breedCount||0)} secuencias disponibles</span>`;
             if(yaSeleccionado) statusText = `<span style="color: #f0ad4e; font-weight: bold; font-size: 11px;">⚠️ Ya está seleccionado</span>`;
             else if((geno.breedCount||0) >= maxCrias) statusText = `<span style="color: #d9534f; font-weight: bold; font-size: 11px;">🔒 Límite de síntesis</span>`;
+            else if(geno.scholarship) statusText = `<span style="color: #a855f7; font-weight: bold; font-size: 11px;">⚠️ Bloqueado: Beca Activa</span>`;
 
             if (geno.id && String(geno.id).length > 10 && typeof window.generarNuevoID === 'function') {
                 geno.id = window.generarNuevoID();
