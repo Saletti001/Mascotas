@@ -103,7 +103,7 @@ window.WalletManager = {
         
         const variantes = [
             "🔒 Nota de seguridad: Tu dirección de comercio en la red Polygon se generará de forma automática y totalmente segura solo cuando decidas iniciar el proceso de depósito.",
-            "🛡️ Para mantener la seguridad de tu Laboratorio, la firma digital del Baúl solo se vinculará a tu cuenta al detectar una orden de depósito confirmada.",
+            "🛡️ Para mantener la seguridad de tu Laboratorio, la firma digital de tu Wallet solo se vinculará a tu cuenta al detectar una orden de depósito confirmada.",
             "💡 Puedes seguir explorando la Plaza de Comercio de forma libre. El enlace con la red de transacciones se activará únicamente al preparar los fondos de tu primer intercambio."
         ];
         
@@ -188,7 +188,7 @@ window.WalletManager = {
             alert(alertMsg);
             
             if (motivo === "deposit" || motivo === "withdraw") {
-                alert("✨ Ahora puedes depositar o retirar fondos desde el panel de Mi Baúl.");
+                alert("✨ Ahora puedes depositar o retirar fondos desde el panel de Wallet.");
             }
         }, 2000);
     },

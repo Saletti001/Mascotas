@@ -20,19 +20,107 @@ window.forzarActualizacionMochila = function() {
     }
 };
 
+window.vincularEventosBotonesBaul = function() {
+    const btnDeposit = document.getElementById("vault-btn-deposit");
+    const btnWithdraw = document.getElementById("vault-btn-withdraw");
+
+    if (btnDeposit) {
+        btnDeposit.onclick = () => {
+            if (!window.comercioDesbloqueado) {
+                alert("⚠️ Se requiere el 'Permiso de Comercio' (adquirible en el Bazar por 15 EV al llegar a Nv. 5 de Laboratorio) para realizar depósitos o retiros.");
+                return;
+            }
+            if (!window.miWallet || !window.miWallet.address) {
+                window.mostrarModalSaldoCero("deposit");
+                return;
+            }
+            const cantidadStr = prompt("Ingrese la cantidad de $POL a depositar en su Wallet:", "10.0");
+            if (cantidadStr === null) return;
+            const cantidad = parseFloat(cantidadStr);
+            if (isNaN(cantidad) || cantidad <= 0) {
+                alert("⚠️ Cantidad inválida.");
+                return;
+            }
+            // Simular depósito
+            window.miWallet.pol = (window.miWallet.pol || 0.0) + cantidad;
+            window.miWallet.history = window.miWallet.history || [];
+            window.miWallet.history.unshift({
+                tipo: 'Depósito',
+                monto: cantidad,
+                fecha: new Date().toLocaleTimeString()
+            });
+            alert(`✅ Depósito de ${cantidad.toFixed(1)} POL procesado exitosamente en la Red Nexo (Simulado).`);
+            window.actualizarVistaBaul();
+            if (window.WalletManager && window.WalletManager.actualizarBoton) window.WalletManager.actualizarBoton();
+            if (window.guardarJuego) window.guardarJuego();
+            else if (window.guardarProgreso) window.guardarProgreso();
+        };
+    }
+
+    if (btnWithdraw) {
+        btnWithdraw.onclick = () => {
+            if (!window.comercioDesbloqueado) {
+                alert("⚠️ Se requiere el 'Permiso de Comercio' (adquirible en el Bazar por 15 EV al llegar a Nv. 5 de Laboratorio) para realizar depósitos o retiros.");
+                return;
+            }
+            if (!window.miWallet || !window.miWallet.address) {
+                window.mostrarModalSaldoCero("withdraw");
+                return;
+            }
+            const maxVal = window.miWallet.pol || 0.0;
+            if (maxVal <= 0) {
+                alert("⚠️ No tienes fondos suficientes en tu Wallet para retirar.");
+                return;
+            }
+            const cantidadStr = prompt(`Ingrese la cantidad de $POL a retirar de su Wallet (Máx. ${maxVal.toFixed(1)} POL):`, maxVal.toFixed(1));
+            if (cantidadStr === null) return;
+            const cantidad = parseFloat(cantidadStr);
+            if (isNaN(cantidad) || cantidad <= 0 || cantidad > maxVal) {
+                alert("⚠️ Cantidad inválida o saldo insuficiente.");
+                return;
+            }
+            // Simular retiro
+            window.miWallet.pol -= cantidad;
+            window.miWallet.history = window.miWallet.history || [];
+            window.miWallet.history.unshift({
+                tipo: 'Retiro',
+                monto: cantidad,
+                fecha: new Date().toLocaleTimeString()
+            });
+            alert(`✅ Retiro de ${cantidad.toFixed(1)} POL procesado exitosamente (Simulado).`);
+            window.actualizarVistaBaul();
+            if (window.WalletManager && window.WalletManager.actualizarBoton) window.WalletManager.actualizarBoton();
+            if (window.guardarJuego) window.guardarJuego();
+            else if (window.guardarProgreso) window.guardarProgreso();
+        };
+    }
+};
+
 window.actualizarVistaBaul = function() {
     const addressEl = document.getElementById("vault-wallet-address");
     const balanceEl = document.getElementById("vault-wallet-balance");
     const historyList = document.getElementById("vault-history-list");
+    const actionsContainer = document.getElementById("vault-actions-container");
     
     if (!addressEl || !balanceEl) return;
 
-    if (window.miWallet && window.miWallet.address) {
+    const isConnected = window.miWallet && window.miWallet.address;
+
+    if (isConnected) {
         addressEl.innerText = window.miWallet.address;
         addressEl.style.color = "#00e5ff"; // Active neon cyan
         
         let polNum = window.miWallet.pol !== undefined ? window.miWallet.pol : 0.0;
         balanceEl.innerText = polNum.toFixed(1);
+        
+        // Renderizar botones normales de Depositar/Retirar
+        if (actionsContainer) {
+            actionsContainer.innerHTML = `
+                <button id="vault-btn-deposit" class="market-btn-neon green" style="flex: 1; padding: 12px 5px; font-size: 11px; margin-top: 0;">Depositar</button>
+                <button id="vault-btn-withdraw" class="market-btn-neon red" style="flex: 1; padding: 12px 5px; font-size: 11px; margin-top: 0;">Retirar</button>
+            `;
+            window.vincularEventosBotonesBaul();
+        }
         
         // Render history
         if (historyList) {
@@ -53,6 +141,26 @@ window.actualizarVistaBaul = function() {
         addressEl.innerText = "No Vinculada (Inicialización requerida)";
         addressEl.style.color = "#ff007f"; // Zero warning color
         balanceEl.innerText = "0.0";
+        
+        // Renderizar un único botón de "Primer depósito" idéntico al de Historial de Transacciones
+        if (actionsContainer) {
+            actionsContainer.innerHTML = `
+                <button id="vault-btn-first-deposit" class="market-btn-neon" style="flex: 1; background: linear-gradient(90deg, #1e293b, #334155); border: 1px solid #475569; padding: 12px 5px; font-size: 11px; margin-top: 0; box-shadow: none;">
+                    Primer depósito
+                </button>
+            `;
+            const btnFirstDeposit = document.getElementById("vault-btn-first-deposit");
+            if (btnFirstDeposit) {
+                btnFirstDeposit.onclick = () => {
+                    if (!window.comercioDesbloqueado) {
+                        alert("⚠️ Se requiere el 'Permiso de Comercio' (adquirible en el Bazar por 15 EV al llegar a Nv. 5 de Laboratorio) para realizar depósitos o retiros.");
+                        return;
+                    }
+                    window.mostrarModalSaldoCero("deposit");
+                };
+            }
+        }
+        
         if (historyList) {
             historyList.innerHTML = `<div style="color: #ff007f; font-weight: bold; text-align: center; padding: 10px;">Billetera no sincronizada.</div>`;
         }
@@ -120,7 +228,7 @@ window.iniciarMercado = function() {
                     <div style="display: flex; justify-content: center; margin-bottom: 15px; padding: 0; border-bottom: 1px solid #384a5e;">
                         <button id="tab-market-buy" class="market-tab-neon active">Comprar</button>
                         <button id="tab-market-sell" class="market-tab-neon">Mis Ventas</button>
-                        <button id="tab-market-vault" class="market-tab-neon">Mi Baúl</button>
+                        <button id="tab-market-vault" class="market-tab-neon">Wallet</button>
                     </div>
                 </div>
                 <div class="market-scroll-area" style="flex: 1; overflow-y: auto; padding: 0 10px 20px 10px;">
@@ -164,7 +272,7 @@ window.iniciarMercado = function() {
                         <div id="market-sell-grid" class="market-grid"></div>
                     </div>
 
-                    <!-- Mi Baúl View (Cyberpunk Web3 Simulation) -->
+                    <!-- Wallet View (Cyberpunk Web3 Simulation) -->
                     <div id="market-vault-view" class="hidden" style="display: flex; flex-direction: column; gap: 15px; color: #fff; padding: 10px;">
                         <!-- Información General de la Wallet -->
                         <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid #384a5e; border-radius: 12px; padding: 15px; text-align: center;">
@@ -176,16 +284,15 @@ window.iniciarMercado = function() {
 
                         <!-- Saldo de la Wallet -->
                         <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid #384a5e; border-radius: 12px; padding: 15px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
-                            <div style="font-size: 11px; color: #80deea; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-bottom: 5px;">Saldo en el Baúl</div>
+                            <div style="font-size: 11px; color: #80deea; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; margin-bottom: 5px;">Saldo en Wallet</div>
                             <div style="font-size: 28px; font-weight: 900; color: #00e5ff; text-shadow: 0 0 10px rgba(0, 229, 255, 0.4); display: flex; align-items: center; gap: 6px;">
                                 <span id="vault-wallet-balance">0.0</span> <span style="font-size: 16px; color: #80deea;">POL</span>
                             </div>
                         </div>
 
                         <!-- Botones de Acción -->
-                        <div style="display: flex; gap: 10px;">
-                            <button id="vault-btn-deposit" class="market-btn-neon green" style="flex: 1; padding: 12px 5px; font-size: 11px; margin-top: 0;">Depositar</button>
-                            <button id="vault-btn-withdraw" class="market-btn-neon red" style="flex: 1; padding: 12px 5px; font-size: 11px; margin-top: 0;">Retirar</button>
+                        <div id="vault-actions-container" style="display: flex; gap: 10px;">
+                            <!-- Botones inyectados dinámicamente según la vinculación de la wallet -->
                         </div>
                         
                         <button id="vault-btn-history" class="market-btn-neon" style="background: linear-gradient(90deg, #1e293b, #334155); border: 1px solid #475569; padding: 12px 5px; font-size: 11px; margin-top: 0; box-shadow: none;">
@@ -296,82 +403,10 @@ window.iniciarMercado = function() {
         window.actualizarVistaBaul();
     });
 
-    // Configurar botones de Mi Baúl
-    const btnDeposit = document.getElementById("vault-btn-deposit");
-    const btnWithdraw = document.getElementById("vault-btn-withdraw");
+    // Configurar botones de Wallet
+    window.actualizarVistaBaul();
+    
     const btnHistory = document.getElementById("vault-btn-history");
-
-    if (btnDeposit) {
-        btnDeposit.onclick = () => {
-            if (!window.comercioDesbloqueado) {
-                alert("⚠️ Se requiere el 'Permiso de Comercio' (adquirible en el Bazar por 15 EV al llegar a Nv. 5 de Laboratorio) para realizar depósitos o retiros.");
-                return;
-            }
-            if (!window.miWallet || !window.miWallet.address) {
-                window.mostrarModalSaldoCero("deposit");
-                return;
-            }
-            const cantidadStr = prompt("Ingrese la cantidad de $POL a depositar en su Baúl:", "10.0");
-            if (cantidadStr === null) return;
-            const cantidad = parseFloat(cantidadStr);
-            if (isNaN(cantidad) || cantidad <= 0) {
-                alert("⚠️ Cantidad inválida.");
-                return;
-            }
-            // Simular depósito
-            window.miWallet.pol = (window.miWallet.pol || 0.0) + cantidad;
-            window.miWallet.history = window.miWallet.history || [];
-            window.miWallet.history.unshift({
-                tipo: 'Depósito',
-                monto: cantidad,
-                fecha: new Date().toLocaleTimeString()
-            });
-            alert(`✅ Depósito de ${cantidad.toFixed(1)} POL procesado exitosamente en la Red Nexo (Simulado).`);
-            window.actualizarVistaBaul();
-            if (window.WalletManager && window.WalletManager.actualizarBoton) window.WalletManager.actualizarBoton();
-            if (window.guardarJuego) window.guardarJuego();
-            else if (window.guardarProgreso) window.guardarProgreso();
-        };
-    }
-
-    if (btnWithdraw) {
-        btnWithdraw.onclick = () => {
-            if (!window.comercioDesbloqueado) {
-                alert("⚠️ Se requiere el 'Permiso de Comercio' (adquirible en el Bazar por 15 EV al llegar a Nv. 5 de Laboratorio) para realizar depósitos o retiros.");
-                return;
-            }
-            if (!window.miWallet || !window.miWallet.address) {
-                window.mostrarModalSaldoCero("withdraw");
-                return;
-            }
-            const maxVal = window.miWallet.pol || 0.0;
-            if (maxVal <= 0) {
-                alert("⚠️ No tienes fondos suficientes en el Baúl para retirar.");
-                return;
-            }
-            const cantidadStr = prompt(`Ingrese la cantidad de $POL a retirar (Máx. ${maxVal.toFixed(1)} POL):`, maxVal.toFixed(1));
-            if (cantidadStr === null) return;
-            const cantidad = parseFloat(cantidadStr);
-            if (isNaN(cantidad) || cantidad <= 0 || cantidad > maxVal) {
-                alert("⚠️ Cantidad inválida o saldo insuficiente.");
-                return;
-            }
-            // Simular retiro
-            window.miWallet.pol -= cantidad;
-            window.miWallet.history = window.miWallet.history || [];
-            window.miWallet.history.unshift({
-                tipo: 'Retiro',
-                monto: cantidad,
-                fecha: new Date().toLocaleTimeString()
-            });
-            alert(`✅ Retiro de ${cantidad.toFixed(1)} POL procesado exitosamente (Simulado).`);
-            window.actualizarVistaBaul();
-            if (window.WalletManager && window.WalletManager.actualizarBoton) window.WalletManager.actualizarBoton();
-            if (window.guardarJuego) window.guardarJuego();
-            else if (window.guardarProgreso) window.guardarProgreso();
-        };
-    }
-
     if (btnHistory) {
         btnHistory.onclick = () => {
             const panel = document.getElementById("vault-history-panel");
