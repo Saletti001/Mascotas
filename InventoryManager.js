@@ -368,6 +368,38 @@ class InventoryManager {
             this.guardarCambios();
             if (window.Sonidos) window.Sonidos.play("heal");
         } 
+        else if (item.id === "pocion_energia") {
+            if (!window.miMascota || window.miMascota.id === "temp") {
+                alert("❌ Debes tener un Geno seleccionado como Compañero activo para usar la poción.");
+                return;
+            }
+            if (window.miMascota.resistencia === undefined) window.miMascota.resistencia = 100;
+            
+            if (window.miMascota.resistencia >= 100) {
+                alert("💚 Tu Geno ya tiene la Resistencia al máximo.");
+                return;
+            }
+
+            window.miMascota.resistencia = Math.min(100, window.miMascota.resistencia + 50);
+            
+            // Sincronizar con misGenos
+            if (window.misGenos) {
+                const idx = window.misGenos.findIndex(g => String(g.id) === String(window.miMascota.id));
+                if (idx !== -1) {
+                    window.misGenos[idx].resistencia = window.miMascota.resistencia;
+                }
+            }
+            
+            this.consumeItem(item.id, 1);
+            alert(`⚡ Usaste una Poción de Energía en ${window.miMascota.name || 'tu Geno'}. Resistencia +50% (Actual: ${window.miMascota.resistencia}%).`);
+            
+            if (window.NexoEnergyManager) window.NexoEnergyManager.actualizarUI();
+            this.guardarCambios();
+            if (window.Sonidos) window.Sonidos.play("heal");
+        }
+        else if (item.id === "tinta_habilidad") {
+            alert(`🧪 La Tinta de Habilidad es un material genético. Se utiliza en el Laboratorio para el refinamiento de genes y habilidades.`);
+        }
         else {
             alert(`El objeto ${item.name} no se puede usar directamente.`);
         }

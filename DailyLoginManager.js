@@ -1,55 +1,125 @@
-// =========================================
-// DailyLoginManager.js - RECOMPENSAS DIARIAS ACUMULATIVAS
-// =========================================
+// ========================================================
+// DailyLoginManager.js - GESTOR DE RECOMPENSAS DIARIAS DINÁMICAS
+// ========================================================
 
 window.DailyLoginManager = {
-    rewards: [
-        { day: 1, name: "10 EV", type: "essence", amount: 10, iconName: "essence", desc: "Esencia Vital" },
-        { day: 2, name: "25 EV", type: "essence", amount: 25, iconName: "essence", desc: "Esencia Vital" },
-        { day: 3, name: "🍱 Ración Auto", type: "item", id: "ration_auto", name: "Ración Automática", iconName: "ration", itemType: "consumable", desc: "Alimenta en reserva 24h.", maxStack: 20 },
-        { day: 4, name: "50 EV", type: "essence", amount: 50, iconName: "essence", desc: "Esencia Vital" },
-        { day: 5, name: "💿 Escáner B.", type: "item", id: "escaner_basico", name: "Escáner Básico", iconName: "escaner_basico", itemType: "basic", desc: "Revela slots del Geno.", maxStack: 99 },
-        { day: 6, name: "100 EV", type: "essence", amount: 100, iconName: "essence", desc: "Esencia Vital" },
-        { day: 7, name: "💿 Escáner C.", type: "item", id: "escaner_completo", name: "Escáner Completo", iconName: "escaner_completo", itemType: "basic", desc: "Genética exacta S-D.", maxStack: 99 }
-    ],
+    // 1. Obtiene la lista de recompensas de la semana actual del ciclo
+    getRewards: function() {
+        const weekNum = window.DailyRewardsCatalog ? window.DailyRewardsCatalog.getCicloSemana() : 1;
+        const mult = window.labLevel || 1;
 
+        // Días intermedios (1, 2, 4, 5) siempre entregan EV o Manzanas escaladas por el nivel de laboratorio
+        const day1 = { day: 1, name: `${15 * mult} EV`, type: "essence", amount: 15 * mult, iconName: "essence", desc: "Esencia Vital" };
+        const day2 = { day: 2, name: `${1 * mult} Manzana${mult > 1 ? 's' : ''}`, type: "item", id: "apple_01", amount: 1 * mult, iconName: "apple", desc: "Manzana Nexo para tu Geno." };
+        const day4 = { day: 4, name: `${25 * mult} EV`, type: "essence", amount: 25 * mult, iconName: "essence", desc: "Esencia Vital" };
+        const day5 = { day: 5, name: `${2 * mult} Manzana${mult > 1 ? 's' : ''}`, type: "item", id: "apple_01", amount: 2 * mult, iconName: "apple", desc: "Manzana Nexo para tu Geno." };
+
+        if (weekNum === 1) {
+            // Enfoque Recursos Básicos (Meta: Solo Comunes / Copa Raro)
+            // Día 3 y 6: Consumibles Tamagotchi. Día 7: Herramienta Genética Básica.
+            return [
+                day1,
+                day2,
+                { day: 3, name: "Poción Energía", type: "item", id: "pocion_energia", amount: 1, iconName: "pocion_energia", desc: "Recupera 50% de Resistencia." },
+                day4,
+                day5,
+                { day: 6, name: "Ración Automática", type: "item", id: "ration_auto", amount: 1, iconName: "ration", desc: "Alimento automático 24h." },
+                { day: 7, name: "Escáner ADN Básico", type: "item", id: "escaner_basico", amount: 1, iconName: "escaner_basico", desc: "Revela la presencia de genes." }
+            ];
+        } else if (weekNum === 2) {
+            // Enfoque Consumibles/Elementos (Meta: Elemental)
+            // Día 3 y 6: Herramientas Genéticas. Día 7: Ítems Competitivos.
+            return [
+                day1,
+                day2,
+                { day: 3, name: "Caja Genética", type: "random", pool: "HERRAMIENTAS_GENETICAS", iconName: "escaner_basico", desc: "ADN Básico o Completo." },
+                day4,
+                day5,
+                { day: 6, name: "Caja Genética", type: "random", pool: "HERRAMIENTAS_GENETICAS", iconName: "escaner_basico", desc: "ADN Básico o Completo." },
+                { day: 7, name: "Tinta Habilidad", type: "random", pool: "ITEMS_COMPETITIVOS", iconName: "tinta_habilidad", desc: "Tinta para refinar genes.", multiplier: 1 }
+            ];
+        } else if (weekNum === 3) {
+            // Enfoque Herramientas Genéticas (Meta: Linaje / Sin Genes)
+            // Día 3 y 6: Herramientas Genéticas completas. Día 7: Ítems Competitivos x2.
+            return [
+                day1,
+                day2,
+                { day: 3, name: "Caja Genética C.", type: "random", pool: "HERRAMIENTAS_GENETICAS", iconName: "escaner_completo", desc: "ADN Básico o Completo." },
+                day4,
+                day5,
+                { day: 6, name: "Caja Genética C.", type: "random", pool: "HERRAMIENTAS_GENETICAS", iconName: "escaner_completo", desc: "ADN Básico o Completo." },
+                { day: 7, name: "Tinta Habilidad x2", type: "random", pool: "ITEMS_COMPETITIVOS", iconName: "tinta_habilidad", desc: "Tinta para refinar genes.", multiplier: 2 }
+            ];
+        } else {
+            // Enfoque Ítems Competitivos (Meta: Olimpo / Berserker / Espejo)
+            // Día 3 y 6: Ítems Competitivos. Día 7: Ítems Competitivos x3.
+            return [
+                day1,
+                day2,
+                { day: 3, name: "Tinta Habilidad", type: "random", pool: "ITEMS_COMPETITIVOS", iconName: "tinta_habilidad", desc: "Tinta para refinar genes.", multiplier: 1 },
+                day4,
+                day5,
+                { day: 6, name: "Tinta Habilidad", type: "random", pool: "ITEMS_COMPETITIVOS", iconName: "tinta_habilidad", desc: "Tinta para refinar genes.", multiplier: 1 },
+                { day: 7, name: "Tinta Habilidad x3", type: "random", pool: "ITEMS_COMPETITIVOS", iconName: "tinta_habilidad", desc: "Tinta para refinar genes.", multiplier: 3 }
+            ];
+        }
+    },
+
+    // 2. Resolver los iconos SVG
     getSVG: function(name) {
-        if (name === "essence") {
-            return window.iconoEV || `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 1L14.5 8.5L22 11L14.5 13.5L12 21L9.5 13.5L2 11L9.5 8.5L12 1Z" fill="#FFD700"/></svg>`;
-        }
-        if (name === "ration") {
-            return `<span style="font-size: 24px;">🍱</span>`;
-        }
-        if (name === "escaner_basico") {
-            return `<svg viewBox="0 0 100 100" width="24" height="24"><path d="M45 20 A25 25 0 1 1 20 45 A25 25 0 0 1 45 20" fill="none" stroke="#00E5FF" stroke-width="8"/><path d="M62 62 L90 90" stroke="#00E5FF" stroke-width="12" stroke-linecap="round"/><circle cx="45" cy="45" r="12" fill="#00B0FF" opacity="0.5"/><path d="M25 45 L65 45 M45 25 L45 65" stroke="#00E5FF" stroke-width="4" opacity="0.8"/></svg>`;
-        }
-        if (name === "escaner_completo") {
-            return `<svg viewBox="0 0 100 100" width="24" height="24"><path d="M25 20 Q50 50 75 80 M75 20 Q50 50 25 80" fill="none" stroke="#D500F9" stroke-width="8"/><line x1="33" y1="50" x2="67" y2="50" stroke="#D500F9" stroke-width="5"/><line x1="42" y1="30" x2="58" y2="70" stroke="#D500F9" stroke-width="5"/><line x1="58" y1="30" x2="42" y2="70" stroke="#D500F9" stroke-width="5"/><circle cx="25" cy="20" r="7" fill="#AA00FF"/><circle cx="75" cy="80" r="7" fill="#AA00FF"/><circle cx="75" cy="20" r="7" fill="#AA00FF"/><circle cx="25" cy="80" r="7" fill="#AA00FF"/></svg>`;
+        if (window.DailyRewardsCatalog) {
+            return window.DailyRewardsCatalog.getSVG(name);
         }
         return "🎁";
     },
 
+    // 3. Comprobar elegibilidad (localmente)
     checkEligibility: function() {
         const todayStr = new Date().toDateString();
         return !window.dailyLoginData || window.dailyLoginData.lastClaimDate !== todayStr;
     },
 
-    claimReward: function() {
-        if (!this.checkEligibility()) {
-            alert("🔒 Ya has reclamado tu recompensa de hoy. ¡Vuelve mañana!");
-            return;
+    // 4. Obtener un item aleatorio por categoría
+    obtenerItemAleatorio: function(pool) {
+        if (!window.DailyRewardsCatalog) return null;
+        const items = window.DailyRewardsCatalog[pool];
+        if (!items) return null;
+
+        if (pool === "HERRAMIENTAS_GENETICAS") {
+            // Drop-rate equilibrado: 70% Básico, 30% Completo
+            const roll = Math.random();
+            return roll < 0.70 ? { ...items[0] } : { ...items[1] };
+        } else if (pool === "ITEMS_COMPETITIVOS") {
+            // Tinta de habilidad (100% de la categoría)
+            return { ...items[0] };
         }
+        // Fallback genérico
+        return { ...items[Math.floor(Math.random() * items.length)] };
+    },
 
-        const currentStreak = window.dailyLoginData.currentDayStreak; // 0 to 6
-        const reward = this.rewards[currentStreak];
+    // Auxiliares de tipo e inventario
+    obtenerTipoDeItemPorId: function(id) {
+        if (id === "apple_01" || id === "ration_auto" || id === "pocion_energia") {
+            return "consumable";
+        }
+        return "basic";
+    },
 
-        // Entregar recompensa
+    obtenerMaxStackPorId: function(id) {
+        if (id === "apple_01" || id === "ration_auto" || id === "pocion_energia") {
+            return 20;
+        }
+        return 99;
+    },
+
+    // 5. Entregar la recompensa localmente en el inventario
+    entregarRecompensaLocal: function(reward) {
         if (reward.type === "essence") {
             if (window.miInventario && typeof window.miInventario.addEssence === "function") {
                 window.miInventario.addEssence(reward.amount);
+                alert(`✨ ¡Felicidades! Has reclamado tu recompensa de Día ${reward.day}: +${reward.amount} Esencia Vital.`);
             } else {
-                alert("Error: El sistema de inventario no está listo.");
-                return;
+                alert("❌ Error: El sistema de inventario no está listo.");
             }
         } else if (reward.type === "item") {
             if (window.miInventario && typeof window.miInventario.addItem === "function") {
@@ -57,55 +127,149 @@ window.DailyLoginManager = {
                     id: reward.id,
                     name: reward.name,
                     icon: this.getSVG(reward.iconName),
-                    type: reward.itemType,
-                    maxStack: reward.maxStack,
-                    desc: reward.desc
+                    type: this.obtenerTipoDeItemPorId(reward.id),
+                    maxStack: this.obtenerMaxStackPorId(reward.id),
+                    desc: reward.desc,
+                    count: reward.amount || 1
                 };
                 const exito = window.miInventario.addItem(itemObj);
-                if (!exito) {
-                    // Si el inventario está lleno, abortamos para no perder la recompensa
-                    return;
+                if (exito) {
+                    alert(`✨ ¡Felicidades! Has reclamado tu recompensa de Día ${reward.day}: ${reward.name}.`);
                 }
             } else {
-                alert("Error: El sistema de inventario no está listo.");
-                return;
+                alert("❌ Error: El sistema de inventario no está listo.");
+            }
+        } else if (reward.type === "random") {
+            const rolled = this.obtenerItemAleatorio(reward.pool);
+            if (rolled) {
+                const amount = (reward.multiplier || 1) * (rolled.baseAmount || 1);
+                if (window.miInventario && typeof window.miInventario.addItem === "function") {
+                    const itemObj = {
+                        id: rolled.id,
+                        name: rolled.name + (amount > 1 ? ` x${amount}` : ""),
+                        icon: this.getSVG(rolled.iconName),
+                        type: this.obtenerTipoDeItemPorId(rolled.id),
+                        maxStack: this.obtenerMaxStackPorId(rolled.id),
+                        desc: rolled.desc,
+                        count: amount
+                    };
+                    const exito = window.miInventario.addItem(itemObj);
+                    if (exito) {
+                        alert(`✨ ¡Felicidades! Abriste tu Caja Sorpresa del Día ${reward.day} y obtuviste: ${itemObj.name}.`);
+                    }
+                } else {
+                    alert("❌ Error: El sistema de inventario no está listo.");
+                }
             }
         }
-
-        // Actualizar datos de guardado
-        window.dailyLoginData.lastClaimDate = new Date().toDateString();
-        window.dailyLoginData.currentDayStreak = (currentStreak + 1) % 7;
-
-        // Guardar progreso y respaldar en la nube
-        if (typeof window.guardarProgreso === "function") {
-            window.guardarProgreso();
-        }
-
-        // Efectos de sonido
-        if (window.Sonidos) {
-            window.Sonidos.play("heal");
-        }
-
-        alert(`✨ ¡Felicidades! Has reclamado tu recompensa de Día ${reward.day}: ${reward.name}.`);
-
-        // Actualizar UI del modal
-        this.renderGrid();
-        this.updateClaimButton();
     },
 
+    // 6. Ejecutar reclamo
+    claimReward: async function() {
+        if (!this.checkEligibility()) {
+            alert("🔒 Ya has reclamado tu recompensa de hoy. ¡Vuelve mañana!");
+            return;
+        }
+
+        const btnClaim = document.getElementById("btn-claim-daily");
+        if (btnClaim) btnClaim.disabled = true;
+
+        // Si está conectado a la nube (Supabase)
+        if (window.miUsuarioCloud && window.supabaseClient) {
+            try {
+                const { data, error } = await window.supabaseClient.rpc('claim_daily_checkin', {
+                    player_id: window.miUsuarioCloud.id
+                });
+
+                if (error) {
+                    alert("❌ Error al procesar reclamo en el servidor: " + error.message);
+                    if (btnClaim) btnClaim.disabled = false;
+                    return;
+                }
+
+                const res = data && data[0];
+                if (!res || !res.success) {
+                    alert("🔒 " + (res ? res.message : "No cumples con las condiciones para reclamar."));
+                    if (btnClaim) btnClaim.disabled = false;
+                    return;
+                }
+
+                // Obtener recompensa resuelta del día reclamado (new_streak = 1 a 7)
+                const streakDay = res.new_streak;
+                const rewards = this.getRewards();
+                const reward = rewards[streakDay - 1];
+
+                // Entregar el premio en el inventario local
+                this.entregarRecompensaLocal(reward);
+
+                // Sincronizar datos locales con estampa del servidor
+                window.dailyLoginData.lastClaimDate = new Date(res.last_check_in).toDateString();
+                window.dailyLoginData.currentDayStreak = streakDay % 7; // Próximo índice de día
+                window.dailyLoginData.streakDays = streakDay;
+
+                // Forzar sincronización de progreso en Supabase (upsert de datos_juego)
+                if (typeof window.guardarProgreso === "function") {
+                    window.guardarProgreso();
+                } else if (typeof window.autoGuardar === "function") {
+                    window.autoGuardar();
+                }
+
+                // Efecto de sonido
+                if (window.Sonidos) {
+                    window.Sonidos.play("heal");
+                }
+
+                // Refrescar UI del modal
+                this.renderGrid();
+                this.updateClaimButton();
+
+            } catch (err) {
+                console.error("Error al reclamar en Supabase:", err);
+                alert("❌ Error de comunicación con la base de datos.");
+            } finally {
+                if (btnClaim) btnClaim.disabled = false;
+            }
+        } else {
+            // Modo Offline / Local Fallback
+            const currentStreak = window.dailyLoginData ? window.dailyLoginData.currentDayStreak : 0;
+            const rewards = this.getRewards();
+            const reward = rewards[currentStreak];
+
+            this.entregarRecompensaLocal(reward);
+
+            // Guardar localmente
+            window.dailyLoginData.lastClaimDate = new Date().toDateString();
+            window.dailyLoginData.currentDayStreak = (currentStreak + 1) % 7;
+            window.dailyLoginData.streakDays = currentStreak + 1;
+
+            if (typeof window.guardarProgreso === "function") {
+                window.guardarProgreso();
+            }
+
+            if (window.Sonidos) {
+                window.Sonidos.play("heal");
+            }
+
+            this.renderGrid();
+            this.updateClaimButton();
+            if (btnClaim) btnClaim.disabled = false;
+        }
+    },
+
+    // 7. Renderizar cuadrícula
     renderGrid: function() {
         const grid = document.getElementById("daily-rewards-grid");
         if (!grid) return;
 
         grid.innerHTML = "";
-        const todayStr = new Date().toDateString();
         const hasClaimedToday = !this.checkEligibility();
         const currentStreak = window.dailyLoginData ? window.dailyLoginData.currentDayStreak : 0;
+        const rewards = this.getRewards();
 
-        this.rewards.forEach((reward, index) => {
+        rewards.forEach((reward, index) => {
             let status = "locked"; // claimed, available, locked
             if (hasClaimedToday && currentStreak === 0) {
-                // Si ya reclamó hoy y reinició el streak a 0, significa que acaba de reclamar el Día 7
+                // Acaba de reclamar el Día 7 y se reinició el streak
                 status = "claimed";
             } else {
                 if (index < currentStreak) {
@@ -146,7 +310,6 @@ window.DailyLoginManager = {
             const card = document.createElement("div");
             card.style = `background: ${cardBg}; border: ${borderStyle}; border-radius: 12px; box-shadow: ${glowShadow}; ${gridSpan} ${paddingStyle} display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.2s ease; box-sizing: border-box;`;
             
-            // Si es reclamable, añadir puntero y click para comodidad
             if (status === "available") {
                 card.style.cursor = "pointer";
                 card.onclick = () => this.claimReward();
@@ -165,6 +328,7 @@ window.DailyLoginManager = {
         });
     },
 
+    // 8. Actualizar botón principal
     updateClaimButton: function() {
         const btn = document.getElementById("btn-claim-daily");
         if (!btn) return;
@@ -185,8 +349,8 @@ window.DailyLoginManager = {
         }
     },
 
+    // 9. Inicializar
     init: function() {
-        // Enlazar botones de apertura y cierre
         const btnOpen = document.getElementById("btn-daily-login");
         const btnClose = document.getElementById("close-daily-login");
         const btnClaim = document.getElementById("btn-claim-daily");
