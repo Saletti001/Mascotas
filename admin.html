@@ -542,22 +542,36 @@
         }
 
         .logs-search {
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             color: #fff;
-            padding: 8px 14px;
+            padding: 0 14px;
+            height: 38px;
             border-radius: 6px;
-            font-size: 12px;
+            font-size: 13px;
             width: 250px;
             font-family: var(--font-main);
             transition: 0.3s;
+            box-sizing: border-box;
         }
 
         .logs-search:focus {
             outline: none;
             border-color: var(--neon-purple);
-            box-shadow: 0 0 8px rgba(213, 0, 249, 0.2);
+            box-shadow: 0 0 8px rgba(213, 0, 249, 0.25);
+            background: rgba(0, 0, 0, 0.8);
         }
+
+        /* Webkit Autofill Overrides for dark theme */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus, 
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px rgba(7, 8, 13, 0.95) inset !important;
+            -webkit-text-fill-color: #fff !important;
+            transition: background-color 5000s ease-in-out 0s;
+        }
+
 
         .logs-filter {
             background: rgba(0, 0, 0, 0.4);
@@ -808,6 +822,12 @@
             stroke: var(--neon-cyan);
             filter: drop-shadow(0 0 2px rgba(0, 229, 255, 0.4));
         }
+
+        /* Prevent custom selects from being clipped by card overflow */
+        .glass-panel.logs-panel {
+            overflow: visible !important;
+        }
+
     </style>
 </head>
 <body>
@@ -985,9 +1005,18 @@
                 </div>
             </div>
 
-            <!-- Chart 2: Geno Rarity Distribution -->
-            <div class="glass-panel chart-card">
-                <div class="chart-card-header">Población por Rareza de Criaturas</div>
+            <!-- Chart 2: Geno Rarity / Element Distribution -->
+            <div class="glass-panel chart-card" style="overflow: visible !important;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-left: 3px solid var(--neon-cyan); padding-left: 10px; height: 24px;">
+                    <div id="chart-population-title" class="chart-card-header" style="border-left: none; padding-left: 0; margin-bottom: 0;">Población de Mascotas</div>
+                    <div class="custom-select-wrapper" id="population-filter-wrapper" data-selected-value="rarity" style="width: 140px;">
+                        <div class="custom-select-trigger" id="population-filter-trigger" style="padding: 4px 10px; font-size: 10px;">Por Rareza</div>
+                        <div class="custom-select-options">
+                            <div class="custom-option selected" data-value="rarity" style="padding: 6px 10px; font-size: 10px;">Por Rareza</div>
+                            <div class="custom-option" data-value="element" style="padding: 6px 10px; font-size: 10px;">Por Elemento</div>
+                        </div>
+                    </div>
+                </div>
                 <div class="chart-container">
                     <canvas id="rarityDistributionChart"></canvas>
                 </div>
@@ -1001,7 +1030,7 @@
             <div style="display: flex; flex-direction: column; gap: 15px;">
                 <div class="chart-card-header" style="border-left-color: var(--neon-cyan); margin-bottom: 10px;">Consulta de Cuenta de Usuario</div>
                 <div style="display: flex; gap: 10px;">
-                    <input type="email" id="support-search-email" class="logs-search" placeholder="Buscar usuario por correo..." style="flex-grow: 1;">
+                    <input type="email" id="support-search-email" class="logs-search" placeholder="Buscar usuario por correo..." autocomplete="off" style="flex-grow: 1;">
                     <button id="btn-support-search" class="auth-btn" style="margin-top: 0; width: auto; padding: 0 20px; height: 38px;">Buscar</button>
                 </div>
                 <div id="support-profile-result" class="hidden" style="display: flex; flex-direction: column; gap: 12px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); font-size: 12px; font-family: var(--font-mono);">
@@ -1157,6 +1186,7 @@
 
         let charts = {};
         let allLogs = [];
+        let globalMetricsData = null;
 
         // Catálogo de ítems predefinidos para soporte y compensación
         const SUPPORT_ITEM_CATALOG = {
@@ -1424,6 +1454,8 @@
                             handleSupportTypeChange(value);
                         } else if (wrapper.id === 'support-item-wrapper') {
                             handleSupportItemChange(value);
+                        } else if (wrapper.id === 'population-filter-wrapper') {
+                            updatePopulationChart();
                         }
                     });
                 });
@@ -1654,6 +1686,7 @@
         // Render Dashboard metrics
         function renderMetrics(data) {
             if (!data) return;
+            globalMetricsData = data;
 
             // 1. Players Metrics
             document.getElementById("kpi-total-players").innerText = data.total_players || 0;
@@ -1841,41 +1874,81 @@
             });
         }
 
-        // Rarity Distribution Doughnut Chart
-        function buildRarityChart(distribution) {
+        // Update Population Chart (Rarity vs Element)
+        function updatePopulationChart() {
+            if (!globalMetricsData) return;
+            
+            const filterWrapper = document.getElementById('population-filter-wrapper');
+            const selectedMode = filterWrapper ? filterWrapper.getAttribute('data-selected-value') : 'rarity';
+            const titleEl = document.getElementById('chart-population-title');
+            
             const ctx = document.getElementById('rarityDistributionChart').getContext('2d');
             
-            // Expected categories
-            const rarities = ['Común', 'Raro', 'Épico', 'Legendario', 'Mítico'];
-            const counts = rarities.map(r => distribution[r] || 0);
-
-            // Rarity Colors matching the SVG Engine
-            const backgroundColors = [
-                'rgba(148, 163, 184, 0.7)', // Common - Slate/Gray
-                'rgba(0, 229, 255, 0.7)',   // Rare - Cyan
-                'rgba(213, 0, 249, 0.7)',   // Epic - Purple/Pink
-                'rgba(255, 234, 0, 0.7)',   // Legendary - Yellow
-                'rgba(255, 0, 127, 0.7)'    // Mythic - Neon Rose/Pink
-            ];
+            let labels, counts, backgroundColors, borderColors;
             
-            const borderColors = [
-                '#94a3b8',
-                '#00e5ff',
-                '#d500f9',
-                '#ffea00',
-                '#ff007f'
-            ];
+            if (selectedMode === 'element') {
+                if (titleEl) titleEl.innerText = "Población por Elemento";
+                
+                const distribution = globalMetricsData.element_distribution || {};
+                labels = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético", "Desconocido"];
+                counts = labels.map(e => distribution[e] || 0);
+                
+                backgroundColors = [
+                    'rgba(105, 240, 174, 0.7)', // Biomutante
+                    'rgba(224, 64, 251, 0.7)',  // Viral
+                    'rgba(0, 229, 255, 0.7)',   // Cibernético
+                    'rgba(255, 179, 0, 0.7)',   // Radiactivo
+                    'rgba(198, 255, 0, 0.7)',   // Tóxico
+                    'rgba(179, 136, 255, 0.7)',  // Sintético
+                    'rgba(148, 163, 184, 0.7)'   // Desconocido
+                ];
+                
+                borderColors = [
+                    '#69f0ae',
+                    '#e040fb',
+                    '#00e5ff',
+                    '#ffb300',
+                    '#c6ff00',
+                    '#b388ff',
+                    '#94a3b8'
+                ];
+            } else {
+                if (titleEl) titleEl.innerText = "Población de Mascotas";
+                
+                const distribution = globalMetricsData.rarity_distribution || {};
+                labels = ['Común', 'Raro', 'Épico', 'Legendario', 'Mítico'];
+                counts = labels.map(r => distribution[r] || 0);
 
+                backgroundColors = [
+                    'rgba(148, 163, 184, 0.7)', // Común
+                    'rgba(0, 229, 255, 0.7)',   // Raro
+                    'rgba(213, 0, 249, 0.7)',   // Épico
+                    'rgba(255, 234, 0, 0.7)',   // Legendario
+                    'rgba(255, 0, 127, 0.7)'    // Mítico
+                ];
+                
+                borderColors = [
+                    '#94a3b8',
+                    '#00e5ff',
+                    '#d500f9',
+                    '#ffea00',
+                    '#ff007f'
+                ];
+            }
+            
             if (charts.rarity) {
+                charts.rarity.data.labels = labels;
                 charts.rarity.data.datasets[0].data = counts;
+                charts.rarity.data.datasets[0].backgroundColor = backgroundColors;
+                charts.rarity.data.datasets[0].borderColor = borderColors;
                 charts.rarity.update();
                 return;
             }
-
+            
             charts.rarity = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: rarities,
+                    labels: labels,
                     datasets: [{
                         data: counts,
                         backgroundColor: backgroundColors,
@@ -1899,6 +1972,11 @@
                     cutout: '60%'
                 }
             });
+        }
+
+        // Rarity Distribution Doughnut Chart
+        function buildRarityChart(distribution) {
+            updatePopulationChart();
         }
     </script>
 </body>
