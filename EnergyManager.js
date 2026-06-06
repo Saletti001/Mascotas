@@ -71,7 +71,7 @@ window.NexoEnergyManager = {
         this.actualizarUI();
     },
 
-    recuperar: function(segundosTranscurridos) {
+    recuperar: function(segundosTranscurridos, isOffline) {
         // 1 de energía cada 12 minutos = 1 / (12 * 60) por segundo = 1 / 720 por segundo
         const recuperacionEnergia = segundosTranscurridos / 720;
         window.nexoEnergy = Math.min(this.energiaMax, (window.nexoEnergy || 100) + recuperacionEnergia);
@@ -164,17 +164,20 @@ window.NexoEnergyManager = {
                 }
 
                 // Decaimiento de amistad por negligencia (más de 24 horas desatendido)
-                const isNeglected = window.isGenoNeglected && window.isGenoNeglected(geno);
-                if (isNeglected) {
-                    geno.neglectedTime = (geno.neglectedTime || 0) + segundosTranscurridos;
-                    const secondsInGrace = 86400; // 24 horas de gracia
-                    if (geno.neglectedTime > secondsInGrace) {
-                        const decaySeconds = Math.min(segundosTranscurridos, geno.neglectedTime - secondsInGrace);
-                        const pointsLost = (1.0 / 3600) * decaySeconds; // 1 punto por hora
-                        geno.amistad = Math.max(0, (geno.amistad || 0) - pointsLost);
+                // Solo se aplica si el jugador está conectado (no offline)
+                if (!isOffline) {
+                    const isNeglected = window.isGenoNeglected && window.isGenoNeglected(geno);
+                    if (isNeglected) {
+                        geno.neglectedTime = (geno.neglectedTime || 0) + segundosTranscurridos;
+                        const secondsInGrace = 86400; // 24 horas de gracia
+                        if (geno.neglectedTime > secondsInGrace) {
+                            const decaySeconds = Math.min(segundosTranscurridos, geno.neglectedTime - secondsInGrace);
+                            const pointsLost = (1.0 / 3600) * decaySeconds; // 1 punto por hora
+                            geno.amistad = Math.max(0, (geno.amistad || 0) - pointsLost);
+                        }
+                    } else {
+                        geno.neglectedTime = 0; // Restaurar al salir del estado de descuido/huelga
                     }
-                } else {
-                    geno.neglectedTime = 0; // Restaurar al salir del estado de descuido/huelga
                 }
             });
         }
@@ -200,7 +203,7 @@ window.NexoEnergyManager = {
     aplicarRecuperacionPasiva: function(timestampUltimaVez) {
         const tiempoActual = typeof window.obtenerTiempoSeguro === 'function' ? window.obtenerTiempoSeguro() : Date.now();
         const segundosTranscurridos = Math.max(0, (tiempoActual - timestampUltimaVez) / 1000);
-        this.recuperar(segundosTranscurridos);
+        this.recuperar(segundosTranscurridos, true);
     },
 
     descontarEnergia: function(cantidad) {
