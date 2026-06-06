@@ -921,7 +921,7 @@
         // Configuración de Supabase
         const supabaseUrl = 'https://xoxkapvondvtlftecwcv.supabase.co';
         const supabaseKey = 'sb_publishable_FBCAFJCwTr9xtSgbcZC6rQ_oudcDLza';
-        let supabase;
+        let supabaseClient;
 
         let charts = {};
         let allLogs = [];
@@ -934,7 +934,7 @@
                     throw new Error("No se pudo cargar la librería de Supabase desde el CDN. Si usas Brave o un adblocker, por favor desactiva los escudos (Shields) para este sitio.");
                 }
                 
-                supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+                supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
                 
                 await checkAuthSession();
                 
@@ -988,7 +988,7 @@
 
         // Check active Auth Session
         async function checkAuthSession() {
-            const { data: { session } } = await supabase.auth.getSession();
+            const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {
                 await verifyWhitelist(session.user);
             } else {
@@ -1023,7 +1023,7 @@
             try {
                 // Call the admin RPC function. If it succeeds, the user is authorized.
                 // If it fails with 'Acceso denegado', they are not whitelisted.
-                const { data, error } = await supabase.rpc('get_admin_metrics');
+                const { data, error } = await supabaseClient.rpc('get_admin_metrics');
                 
                 if (error) {
                     console.error("[WHITELIST CHECK ERROR]", error);
@@ -1044,7 +1044,7 @@
                 // Poll metrics every 15 seconds to keep the dashboard live
                 if (window.metricsInterval) clearInterval(window.metricsInterval);
                 window.metricsInterval = setInterval(async () => {
-                    const { data: freshData, error: freshErr } = await supabase.rpc('get_admin_metrics');
+                    const { data: freshData, error: freshErr } = await supabaseClient.rpc('get_admin_metrics');
                     if (!freshErr && freshData) {
                         renderMetrics(freshData);
                     }
@@ -1074,7 +1074,7 @@
             btn.innerText = "CONECTANDO TERMINAL...";
             btn.disabled = true;
 
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
             if (error) {
                 errorMsg.innerText = "Error de conexión: " + error.message;
@@ -1093,7 +1093,7 @@
         // Handle Logout Action
         async function handleLogout() {
             if (window.metricsInterval) clearInterval(window.metricsInterval);
-            await supabase.auth.signOut();
+            await supabaseClient.auth.signOut();
             showToast("Terminal desconectada.");
             showAuthPortal();
             
