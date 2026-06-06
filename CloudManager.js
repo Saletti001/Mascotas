@@ -278,9 +278,6 @@ async function cargarDatosDeLaNube() {
                 });
         }, 180000);
 
-
-        const dj = data.datos_juego;
-        
         // Cargar variables de laboratorio con prioridad de columna y fallback a JSONB
         window.labLevel = data.lab_level !== undefined && data.lab_level !== null ? data.lab_level : (dj.labLevel || 1);
         window.labXP = data.lab_xp !== undefined && data.lab_xp !== null ? data.lab_xp : (dj.labXP || 0);
