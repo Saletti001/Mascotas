@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Proyecto Genos</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
+    <link rel="stylesheet" href="base.css">
+    <link rel="stylesheet" href="ui.css">
+    <link rel="stylesheet" href="screens.css">
+    <link rel="stylesheet" href="ArcadeUI.css">
+    <style>
+        .modal-content::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+        .modal-content { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+        /* Estilo para que los iconos SVG inyectados se adapten al texto */
+        .ev-icon-wrapper svg, .ev-icon-injector svg { width: 100%; height: 100%; display: block; }
+        /* Animación para el núcleo de crianza */
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        /* Animación de brillo para la tarjeta del Geno seleccionado o principal */
+        @keyframes selectedGlow {
+            0%, 100% {
+                border-color: #ffcc00;
+                box-shadow: 0 0 15px rgba(255, 204, 0, 0.8), inset 0 0 8px rgba(255, 204, 0, 0.4);
+            }
+            50% {
+                border-color: var(--rarity-color);
+                box-shadow: 0 0 15px var(--rarity-color-glow), inset 0 0 8px var(--rarity-color-glow);
+            }
+        }
+        .selected-card-glow {
+            animation: selectedGlow 2.5s infinite ease-in-out;
+            border-width: 2.5px !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container" style="position: relative; overflow: hidden;">
+        
+        <div id="main-slider-screen" class="app-screen">
+            <div id="desktop-slider">
+                <div id="room-area">
+            <div id="top-hud">
+                <div style="display: flex; flex-direction: column; background-color: #1a1a2e; border: 2px solid #2a2a4a; border-radius: 18px; padding: 10px 16px; width: 100%; box-sizing: border-box; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); gap: 8px;">
+                    <!-- Fila de Recursos: EV y POL -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                        <div id="btn-abrir-empaquetador" style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 2px 8px; border-radius: 8px; transition: 0.2s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
+                            <span id="hud-ev-icon-container" style="display: inline-block; width: 1.4em; height: 1.4em; display: flex; align-items: center;"></span>
+                            <span id="vital-essence-amount" style="color: white; font-weight: bold; font-family: sans-serif; font-size: 13.5px; letter-spacing: 0.5px;">0</span>
+                        </div>
+
+                        <div style="width: 2px; height: 18px; background-color: rgba(255, 255, 255, 0.1); border-radius: 2px;"></div>
+
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="display: flex; align-items: center;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#8A2BE2" stroke="#8A2BE2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon></svg>
+                            </span> 
+                            <span id="pol-amount" style="color: #e9d5ff; font-weight: bold; font-family: sans-serif; font-size: 13.5px;">0.0 POL | 🦊 Vincular</span>
+                        </div>
+                    </div>
+
+                    <!-- Divisor sutil -->
+                    <div style="width: 100%; height: 1px; background-color: rgba(255, 255, 255, 0.08);"></div>
+
+                    <!-- Barra de Energía Nexo Flanqueada por Calendario y Buzón -->
+                    <div style="display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box;">
+                        <!-- Botón Calendario (Izquierda) -->
+                        <button id="btn-daily-login" style="background: rgba(0, 229, 255, 0.1); border: 1.5px solid rgba(0, 229, 255, 0.3); border-radius: 8px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #00e5ff; transition: 0.2s; flex-shrink: 0;" onmouseover="this.style.background='rgba(0, 229, 255, 0.25)'; this.style.borderColor='#00e5ff';" onmouseout="this.style.background='rgba(0, 229, 255, 0.1)'; this.style.borderColor='rgba(0, 229, 255, 0.3)';" title="Recompensas Diarias">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                <line x1="16" y1="2" x2="16" y2="6"></line>
+                                <line x1="8" y1="2" x2="8" y2="6"></line>
+                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                            </svg>
+                        </button>
+
+                        <!-- Barra de Energía Nexo (Centro) -->
+                        <div id="hud-energy-container" style="display: flex; flex-direction: column; flex: 1; box-sizing: border-box; cursor: pointer;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                                <span style="color: #00e5ff; font-family: monospace; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 4px;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="#00e5ff" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                    Energía Nexo
+                                </span>
+                                <span id="hud-energy-text" style="color: #fff; font-family: monospace; font-size: 10px; font-weight: bold;">100 / 100</span>
+                            </div>
+                            <div style="width: 100%; height: 6px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(77, 208, 225, 0.3); border-radius: 3px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);">
+                                <div id="hud-energy-fill" style="width: 100%; height: 100%; background: linear-gradient(90deg, #00d2ff, #4dd0e1); box-shadow: 0 0 8px rgba(77,208,225,0.7); transition: width 0.3s ease;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Botón Correo/Noticias (Derecha) -->
+                        <button id="btn-news-mailbox" style="background: rgba(138, 43, 226, 0.1); border: 1.5px solid rgba(138, 43, 226, 0.3); border-radius: 8px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #a855f7; transition: 0.2s; position: relative; flex-shrink: 0;" onmouseover="this.style.background='rgba(138, 43, 226, 0.25)'; this.style.borderColor='#8A2BE2';" onmouseout="this.style.background='rgba(138, 43, 226, 0.1)'; this.style.borderColor='rgba(138, 43, 226, 0.3)';" title="Noticias y Buzón">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <!-- Badge de no leído -->
+                            <div id="news-unread-badge" class="hidden" style="position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: #ff007f; border-radius: 50%; box-shadow: 0 0 5px #ff007f;"></div>
+                        </button>
+                    </div>
+
+                    <!-- Divisor sutil -->
+                    <div style="width: 100%; height: 1px; background-color: rgba(255, 255, 255, 0.08);"></div>
+
+                    <!-- Nivel del Laboratorio (Paso 1 de Fase 1) -->
+                    <div id="hud-lab-container" style="display: flex; flex-direction: column; width: 100%; box-sizing: border-box;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <span style="color: #69f0ae; font-family: monospace; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 4px;">
+                                <span style="font-size: 11px;">🧪</span>
+                                Nivel Laboratorio
+                            </span>
+                            <span id="hud-lab-level-text" style="color: #69f0ae; font-family: monospace; font-size: 10px; font-weight: bold;">Nv. 1</span>
+                            <span id="hud-lab-xp-text" style="color: #fff; font-family: monospace; font-size: 10px; font-weight: bold;">0 / 100</span>
+                        </div>
+                        <div style="width: 100%; height: 6px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(105, 240, 174, 0.3); border-radius: 3px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);">
+                            <div id="hud-lab-xp-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #69f0ae, #b9f6ca); box-shadow: 0 0 8px rgba(105,240,174,0.7); transition: width 0.3s ease;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hud-action-row">
+                    <div class="action-btn-container">
+                        <button id="btn-show-stats" class="action-btn" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4dd0e1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                            Stats
+                        </button>
+                    </div>
+                    <div class="action-btn-container">
+                        <button id="btn-show-genos" class="action-btn" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A2BE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3.5" fill="currentColor"></circle>
+                                <path d="M 12 2 C 17.5 2, 22 6.5, 22 12 C 22 17.5, 17.5 22, 12 22"></path> <path d="M 12 2 C 6.5 2, 2 6.5, 2 12"></path> <path d="M 12 22 C 6.5 22, 2 17.5, 2 12"></path> <line x1="2" y1="12" x2="6.5" y2="12"></line>
+                                <line x1="17.5" y1="12" x2="22" y2="12"></line>
+                                <line x1="12" y1="2" x2="12" y2="6.5"></line>
+                                <line x1="12" y1="18.5" x2="12" y2="22"></line>
+                            </svg>
+                            Genos
+                        </button>
+                    </div>
+                    <div id="inventory-ui" class="action-btn-container">
+                        <button id="backpack-icon" class="action-btn" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffcc00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                            <span id="slot-counter">0/10<br>CAP</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HUD de Necesidades (Pou-Tamagotchi) - Oculto de la interfaz principal -->
+            <div id="needs-hud" class="hidden" style="display: none !important; position: absolute; top: 175px; right: 15px; z-index: 45; width: 140px; background: rgba(26, 26, 46, 0.9); border: 2px solid #2a2a4a; border-radius: 14px; padding: 8px 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); backdrop-filter: blur(5px); flex-direction: column; gap: 6px; font-family: monospace; font-size: 10px; color: #fff; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2px;">
+                    <span style="display: flex; align-items: center; gap: 4px;">
+                        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ec407a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        Amistad
+                    </span>
+                    <span id="needs-friendship-val" style="font-weight: bold; color: #ec407a;">0%</span>
+                </div>
+                
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                        <span style="display: flex; align-items: center; gap: 4px;">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ff7043" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block;"><path d="M3 12a9 9 0 0 0 18 0"></path><path d="M3 12h18"></path><path d="M8 7V3M12 7V3M16 7V3"></path></svg>
+                            Hambre
+                        </span>
+                        <span id="needs-hunger-val">100%</span>
+                    </div>
+                    <div style="width: 100%; height: 4px; background: rgba(0,0,0,0.4); border-radius: 2px; overflow: hidden;">
+                        <div id="needs-hunger-fill" style="width: 100%; height: 100%; background: #ff7043; transition: width 0.3s;"></div>
+                    </div>
+                </div>
+ 
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                        <span style="display: flex; align-items: center; gap: 4px;">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#29b6f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block;"><rect x="2" y="6" width="20" height="12" rx="3"></rect><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="15" y1="12" x2="15.01" y2="12"></line><line x1="18" y1="12" x2="18.01" y2="12"></line></svg>
+                            Diversión
+                        </span>
+                        <span id="needs-fun-val">100%</span>
+                    </div>
+                    <div style="width: 100%; height: 4px; background: rgba(0,0,0,0.4); border-radius: 2px; overflow: hidden;">
+                        <div id="needs-fun-fill" style="width: 100%; height: 100%; background: #29b6f6; transition: width 0.3s;"></div>
+                    </div>
+                </div>
+ 
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                        <span style="display: flex; align-items: center; gap: 4px;">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ab47bc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block;"><circle cx="7" cy="17" r="5"></circle><circle cx="17" cy="17" r="3"></circle><circle cx="12" cy="7" r="4"></circle></svg>
+                            Higiene
+                        </span>
+                        <span id="needs-hygiene-val">100%</span>
+                    </div>
+                    <div style="width: 100%; height: 4px; background: rgba(0,0,0,0.4); border-radius: 2px; overflow: hidden;">
+                        <div id="needs-hygiene-fill" style="width: 100%; height: 100%; background: #ab47bc; transition: width 0.3s;"></div>
+                    </div>
+                </div>
+ 
+                <div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                        <span style="display: flex; align-items: center; gap: 4px;">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                            Resistencia
+                        </span>
+                        <span id="needs-energy-val">100%</span>
+                    </div>
+                    <div style="width: 100%; height: 4px; background: rgba(0,0,0,0.4); border-radius: 2px; overflow: hidden;">
+                        <div id="needs-energy-fill" style="width: 100%; height: 100%; background: #4CAF50; transition: width 0.3s;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="stats-modal-overlay" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 2000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);">
+                <div class="modal-content" style="max-height: 85vh; overflow-y: auto; width: 85%; max-width: 350px;">
+                    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;">
+                        <h3 class="stats-title" style="margin: 0; color: #80deea; text-transform: uppercase; font-size: 16px; display: flex; align-items: center; gap: 10px;">
+                            <span id="geno-name">Geno Base</span> 
+                            <button id="btn-rename-geno" title="Cambiar Nombre" style="background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #80deea; padding: 0;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                            </button>
+                        </h3>
+                        <button id="close-stats-btn" style="background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        </button>
+                    </div>
+                    
+                    <div class="stats-level-badge" style="text-align: center; margin-bottom: 10px;">
+                        <span id="geno-level" style="background: #4dd0e1; color: #000; padding: 3px 8px; border-radius: 4px; font-weight: bold; font-size: 12px;">Nv. 1</span>
+                    </div>
+                    
+                    <div class="xp-bar-bg" style="background: #222; border-radius: 4px; height: 8px; overflow: hidden; margin-bottom: 5px;">
+                        <div id="geno-xp-fill" class="xp-bar-fill" style="background: #4CAF50; height: 100%; width: 0%;"></div>
+                    </div>
+                    <div class="xp-text" style="text-align: center; font-size: 10px; color: #aaa; margin-bottom: 15px;">
+                        <span id="geno-xp-text">0/100</span> XP
+                    </div>
+                    
+                    <div class="stat-info" style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
+                        <span>Rareza:</span> <span id="geno-rarity" style="color: #fff; font-weight: bold;">--</span>
+                    </div>
+                    <div class="stat-info" style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
+                        <span>Elem:</span> <span id="geno-element" style="color: #fff; font-weight: bold;">--</span>
+                    </div>
+                    
+                    <div class="stat-info" style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 8px;">
+                        <span>Calidad (Pura):</span> 
+                        <span id="geno-quality-badge" style="font-weight: 900; font-size: 13px; text-shadow: 0 0 5px rgba(255,255,255,0.3);">--</span>
+                    </div>
+
+                    <!-- Cuadrícula 2x2 para las 4 Necesidades Core -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; margin-top: 10px;">
+                        <!-- Resistencia -->
+                        <div class="need-card-clickable" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 40px; cursor: pointer;" title="Ver manual de cuidado">
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #aaa;">
+                                <span style="display: flex; align-items: center; gap: 4px;">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                    Resistencia
+                                </span>
+                                <span id="geno-resistance" style="font-weight: bold; color: #fff;">100/100</span>
+                            </div>
+                            <div style="background: rgba(0, 0, 0, 0.4); border-radius: 2px; height: 4px; overflow: hidden; width: 100%;">
+                                <div id="geno-resistance-fill" style="background: #4CAF50; height: 100%; width: 100%; transition: width 0.3s;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Hambre -->
+                        <div class="need-card-clickable" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 40px; cursor: pointer;" title="Ver manual de cuidado">
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #aaa;">
+                                <span style="display: flex; align-items: center; gap: 4px;">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ff7043" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 0 18 0"></path><path d="M3 12h18"></path><path d="M8 7V3M12 7V3M16 7V3"></path></svg>
+                                    Hambre
+                                </span>
+                                <span id="geno-hunger" style="font-weight: bold; color: #fff;">100/100</span>
+                            </div>
+                            <div style="background: rgba(0, 0, 0, 0.4); border-radius: 2px; height: 4px; overflow: hidden; width: 100%;">
+                                <div id="geno-hunger-fill" style="background: #ff7043; height: 100%; width: 100%; transition: width 0.3s;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Diversión -->
+                        <div class="need-card-clickable" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 40px; cursor: pointer;" title="Ver manual de cuidado">
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #aaa;">
+                                <span style="display: flex; align-items: center; gap: 4px;">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#29b6f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="3"></rect><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="15" y1="12" x2="15.01" y2="12"></line><line x1="18" y1="12" x2="18.01" y2="12"></line></svg>
+                                    Diversión
+                                </span>
+                                <span id="geno-fun" style="font-weight: bold; color: #fff;">100/100</span>
+                            </div>
+                            <div style="background: rgba(0, 0, 0, 0.4); border-radius: 2px; height: 4px; overflow: hidden; width: 100%;">
+                                <div id="geno-fun-fill" style="background: #29b6f6; height: 100%; width: 100%; transition: width 0.3s;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Higiene -->
+                        <div class="need-card-clickable" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 6px 8px; display: flex; flex-direction: column; justify-content: center; gap: 6px; min-height: 40px; cursor: pointer;" title="Ver manual de cuidado">
+                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #aaa;">
+                                <span style="display: flex; align-items: center; gap: 4px;">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ab47bc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="5"></circle><circle cx="17" cy="17" r="3"></circle><circle cx="12" cy="7" r="4"></circle></svg>
+                                    Higiene
+                                </span>
+                                <span id="geno-hygiene" style="font-weight: bold; color: #fff;">100/100</span>
+                            </div>
+                            <div style="background: rgba(0, 0, 0, 0.4); border-radius: 2px; height: 4px; overflow: hidden; width: 100%;">
+                                <div id="geno-hygiene-fill" style="background: #ab47bc; height: 100%; width: 100%; transition: width 0.3s;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Amistad (barra de nivel especial) -->
+                    <div style="background: rgba(236, 64, 122, 0.03); border: 1px solid rgba(236, 64, 122, 0.15); border-radius: 6px; padding: 6px 10px; margin-bottom: 12px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; margin-bottom: 4px; color: #ec407a; font-weight: bold;">
+                            <span style="display: flex; align-items: center; gap: 4px;">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ec407a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                Amistad Nexo
+                            </span>
+                            <span id="geno-friendship" style="color: #fff; font-weight: bold;">0/100</span>
+                        </div>
+                        <div style="background: rgba(0, 0, 0, 0.4); border-radius: 2px; height: 5px; overflow: hidden; width: 100%;">
+                            <div id="geno-friendship-fill" style="background: #ec407a; height: 100%; width: 0%; transition: width 0.3s;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Esencia Acumulada -->
+                    <div style="background: rgba(0, 229, 255, 0.03); border: 1px solid rgba(0, 229, 255, 0.15); border-radius: 6px; padding: 6px 10px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+                        <span style="display: flex; align-items: center; gap: 4px; font-size: 11px; color: #80deea; font-weight: bold;">
+                            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L14.5 9.5L21 12L14.5 14.5L12 21L9.5 14.5L3 12L9.5 9.5L12 3z"></path></svg>
+                            Esencia Acumulada
+                        </span>
+                        <span id="geno-ev-accumulated" style="color: #00e5ff; font-weight: bold; font-size: 12px;">0.00 EV</span>
+                    </div>
+
+                    <hr class="stats-divider" style="border: none; border-top: 1px solid #333; margin: 15px 0;">
+                    
+                    <div class="stat-header" style="display: flex; justify-content: space-between; font-weight: bold; color: #4dd0e1; margin-bottom: 10px; font-size: 14px;">
+                        <span>Atributos Activos</span>
+                        <span id="stat-points-badge" class="hidden" style="color: #ffcc00; background: rgba(255,204,0,0.2); padding: 2px 6px; border-radius: 4px; font-size: 10px;">+0 Pts</span>
+                    </div>
+                    
+                    <div class="stat-row" style="display: grid; grid-template-columns: 55px 25px 40px 30px 1fr; gap: 4px; align-items: center; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; font-size: 13px;">
+                        <span style="text-align: left; display: flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff4b4b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> Vit:</span>
+                        <span id="stat-hp-base" style="font-weight: bold; color: #fff; text-align: right;">10</span>
+                        <span id="stat-hp-added" style="color: #4CAF50; font-size: 11px; font-weight: bold; text-align: right;"></span>
+                        <span id="stat-hp-total" style="color: #ffcc00; font-weight: bold; font-size: 15px; text-align: right;"></span>
+                        <div style="display: flex; justify-content: flex-end;">
+                            <button class="btn-add-stat hidden" data-stat="hp" style="background: #4dd0e1; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; color: #000; box-shadow: 0 0 5px #4dd0e1; display: flex; justify-content: center; align-items: center;">➕</button>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-row" style="display: grid; grid-template-columns: 55px 25px 40px 30px 1fr; gap: 4px; align-items: center; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; font-size: 13px;">
+                        <span style="text-align: left; display: flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ff8c00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"></path><path d="M13 19l6-6"></path><path d="M16 16l4 4"></path><path d="M19 21l2-2"></path></svg> Fue:</span>
+                        <span id="stat-atk-base" style="font-weight: bold; color: #fff; text-align: right;">5</span>
+                        <span id="stat-atk-added" style="color: #4CAF50; font-size: 11px; font-weight: bold; text-align: right;"></span>
+                        <span id="stat-atk-total" style="color: #ffcc00; font-weight: bold; font-size: 15px; text-align: right;"></span>
+                        <div style="display: flex; justify-content: flex-end;">
+                            <button class="btn-add-stat hidden" data-stat="atk" style="background: #4dd0e1; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; color: #000; box-shadow: 0 0 5px #4dd0e1; display: flex; justify-content: center; align-items: center;">➕</button>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-row" style="display: grid; grid-template-columns: 55px 25px 40px 30px 1fr; gap: 4px; align-items: center; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; font-size: 13px;">
+                        <span style="text-align: left; display: flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> Def:</span>
+                        <span id="stat-def-base" style="font-weight: bold; color: #fff; text-align: right;">5</span>
+                        <span id="stat-def-added" style="color: #4CAF50; font-size: 11px; font-weight: bold; text-align: right;"></span>
+                        <span id="stat-def-total" style="color: #ffcc00; font-weight: bold; font-size: 15px; text-align: right;"></span>
+                        <div style="display: flex; justify-content: flex-end;">
+                            <button class="btn-add-stat hidden" data-stat="def" style="background: #4dd0e1; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; color: #000; box-shadow: 0 0 5px #4dd0e1; display: flex; justify-content: center; align-items: center;">➕</button>
+                        </div>
+                    </div>
+
+                    <div class="stat-row" style="display: grid; grid-template-columns: 55px 25px 40px 30px 1fr; gap: 4px; align-items: center; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; font-size: 13px;">
+                        <span style="text-align: left; display: flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> Agi:</span>
+                        <span id="stat-spd-base" style="font-weight: bold; color: #fff; text-align: right;">5</span>
+                        <span id="stat-spd-added" style="color: #4CAF50; font-size: 11px; font-weight: bold; text-align: right;"></span>
+                        <span id="stat-spd-total" style="color: #ffcc00; font-weight: bold; font-size: 15px; text-align: right;"></span>
+                        <div style="display: flex; justify-content: flex-end;">
+                            <button class="btn-add-stat hidden" data-stat="spd" style="background: #4dd0e1; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; color: #000; box-shadow: 0 0 5px #4dd0e1; display: flex; justify-content: center; align-items: center;">➕</button>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-row" style="display: grid; grid-template-columns: 55px 25px 40px 30px 1fr; gap: 4px; align-items: center; background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; margin-bottom: 5px; font-size: 13px;">
+                        <span style="text-align: left; display: flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg> Sue:</span>
+                        <span id="stat-luk-base" style="font-weight: bold; color: #fff; text-align: right;">5</span>
+                        <span id="stat-luk-added" style="color: #4CAF50; font-size: 11px; font-weight: bold; text-align: right;"></span>
+                        <span id="stat-luk-total" style="color: #ffcc00; font-weight: bold; font-size: 15px; text-align: right;"></span>
+                        <div style="display: flex; justify-content: flex-end;">
+                            <button class="btn-add-stat hidden" data-stat="luk" style="background: #4dd0e1; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; color: #000; box-shadow: 0 0 5px #4dd0e1; display: flex; justify-content: center; align-items: center;">➕</button>
+                        </div>
+                    </div>
+
+                    <hr class="stats-divider" style="border: none; border-top: 1px solid #333; margin: 15px 0;">
+                    <button id="btn-use-scanner" class="btn-scanner" style="width: 100%; background: linear-gradient(90deg, #8A2BE2, #00d2ff); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase;">Usar Escáner 🧬</button>
+                    
+                    <div id="genetic-structure-container"></div>
+                </div>
+            </div>
+
+
+
+            <div id="lab-machinery">
+                <div class="holo-ring"></div>
+            </div>
+
+            <div id="incubator-capsule">
+                <!-- Burbuja de Alerta flotante sobre el Geno -->
+                <div id="geno-alert-bubble" class="hidden" style="position: absolute; top: 15px; left: 50%; transform: translateX(-50%); z-index: 100; background: rgba(25, 25, 38, 0.95); border: 1.5px solid #ff7043; border-radius: 8px; padding: 4px 10px; color: #fff; font-family: monospace; font-size: 9px; font-weight: bold; text-align: center; white-space: nowrap; box-shadow: 0 0 8px rgba(255, 112, 67, 0.5); pointer-events: none; animation: floatBubble 2s ease-in-out infinite;">
+                    <span style="display: flex; align-items: center; gap: 4px;">
+                        <svg class="alert-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ff7043" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        <span id="geno-alert-text">Tengo Hambre</span>
+                    </span>
+                    <!-- Flecha hacia abajo -->
+                    <div class="bubble-arrow" style="position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 5px solid transparent; border-right: 5px solid transparent; border-top: 5px solid #ff7043;"></div>
+                </div>
+                <div class="energy-beam">
+                    <div class="energy-particle" style="left: 20%; animation-duration: 2.5s; animation-delay: 0s;"></div>
+                    <div class="energy-particle" style="left: 50%; animation-duration: 3s; animation-delay: 1s;"></div>
+                    <div class="energy-particle" style="left: 80%; animation-duration: 2.8s; animation-delay: 1.5s;"></div>
+                    <div class="energy-particle" style="left: 35%; animation-duration: 3.5s; animation-delay: 0.5s;"></div>
+                </div>
+                <div id="geno-container"></div>
+                <!-- Aura de descanso - pantalla principal -->
+                <div id="geno-resting-aura-main" class="geno-resting-aura" style="display:none; position:absolute; bottom:55px; left:50%; transform:translateX(-50%); width:130px; height:210px; z-index:16;"></div>
+                <div class="pedestal-bottom"><div class="pedestal-light"></div></div>
+            </div>
+        </div>
+
+        <div id="bathroom-screen" style="position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 12px 12px 95px 12px; box-sizing: border-box; background: linear-gradient(180deg, #4dd0e1 0%, #26c6da 100%) !important; gap: 10px;">
+            <div class="scanlines-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 2px, transparent 2px, transparent 8px); pointer-events: none; z-index: 1;"></div>
+
+            <!-- Caja Unificada: Título + Barras de Estado -->
+            <div style="width: 92%; max-width: 340px; background: #1a1a2e; border: 2px solid #2a2a4a; border-radius: 16px; padding: 12px 14px; z-index: 2; box-shadow: 0 4px 15px rgba(0,0,0,0.4); display: flex; flex-direction: column; gap: 8px; margin-top: 8px;">
+                <!-- Header: Título + Botón Cambiar Geno -->
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <button id="btn-bathroom-info" style="width: 34px; height: 34px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1.5px solid #2a2a4a; background: rgba(77, 208, 225, 0.1); cursor: pointer; transition: 0.2s; flex-shrink: 0;" title="Manual de Cuidado" onmouseover="this.style.background='rgba(77, 208, 225, 0.25)'; this.style.borderColor='#4dd0e1';" onmouseout="this.style.background='rgba(77, 208, 225, 0.1)'; this.style.borderColor='#2a2a4a';">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4dd0e1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                    </button>
+                    <h2 style="color: #80deea; font-weight: 900; font-size: 14px; letter-spacing: 2px; text-transform: uppercase; text-shadow: 0 0 15px rgba(128, 222, 234, 0.4); margin: 0; text-align: center; flex: 1;">Centro de Cuidado</h2>
+                    <button id="btn-bathroom-change-geno" style="width: 34px; height: 34px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1.5px solid #2a2a4a; background: rgba(77, 208, 225, 0.1); cursor: pointer; transition: 0.2s; flex-shrink: 0;" title="Cambiar Geno" onclick="const btn = document.getElementById('btn-show-genos'); if(btn) btn.click();" onmouseover="this.style.background='rgba(77, 208, 225, 0.25)'; this.style.borderColor='#4dd0e1';" onmouseout="this.style.background='rgba(77, 208, 225, 0.1)'; this.style.borderColor='#2a2a4a';">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4dd0e1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="3.5" fill="currentColor"></circle>
+                            <path d="M 12 2 C 17.5 2, 22 6.5, 22 12 C 22 17.5, 17.5 22, 12 22"></path> <path d="M 12 2 C 6.5 2, 2 6.5, 2 12"></path> <path d="M 12 22 C 6.5 22, 2 17.5, 2 12"></path> <line x1="2" y1="12" x2="6.5" y2="12"></line>
+                            <line x1="17.5" y1="12" x2="22" y2="12"></line>
+                            <line x1="12" y1="2" x2="12" y2="6.5"></line>
+                            <line x1="12" y1="18.5" x2="12" y2="22"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div style="width: 100%; height: 1px; background: rgba(255,255,255,0.08);"></div>
+                <!-- Grid 2x2 de Estados -->
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px;">
+                    <!-- Barra: Resistencia -->
+                    <div style="display: flex; flex-direction: column; gap: 3px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="display: flex; align-items: center; gap: 5px; font-size: 10px; font-family: monospace; color: #81c784; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#81c784" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                Resistencia
+                            </span>
+                            <span id="bath-resistance-text" style="font-weight: bold; color: #fff; font-size: 10px; font-family: monospace;">100%</span>
+                        </div>
+                        <div style="width: 100%; height: 5px; background: rgba(0,0,0,0.4); border-radius: 3px; overflow: hidden; border: 1px solid rgba(129, 199, 132, 0.3);">
+                            <div id="bath-resistance-fill" style="background: linear-gradient(90deg, #4CAF50, #81c784); height: 100%; width: 100%; transition: width 0.3s; box-shadow: 0 0 6px rgba(76, 175, 80, 0.5);"></div>
+                        </div>
+                    </div>
+
+                    <!-- Barra: Hambre -->
+                    <div style="display: flex; flex-direction: column; gap: 3px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="display: flex; align-items: center; gap: 5px; font-size: 10px; font-family: monospace; color: #ff8a65; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ff8a65" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 0 18 0"></path><path d="M3 12h18"></path><path d="M8 7V3M12 7V3M16 7V3"></path></svg>
+                                Hambre
+                            </span>
+                            <span id="bath-hunger-text" style="font-weight: bold; color: #fff; font-size: 10px; font-family: monospace;">100%</span>
+                        </div>
+                        <div style="width: 100%; height: 5px; background: rgba(0,0,0,0.4); border-radius: 3px; overflow: hidden; border: 1px solid rgba(255, 138, 101, 0.3);">
+                            <div id="bath-hunger-fill" style="background: linear-gradient(90deg, #ff7043, #ff8a65); height: 100%; width: 100%; transition: width 0.3s; box-shadow: 0 0 6px rgba(255, 112, 67, 0.5);"></div>
+                        </div>
+                    </div>
+
+                    <!-- Barra: Diversión -->
+                    <div style="display: flex; flex-direction: column; gap: 3px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="display: flex; align-items: center; gap: 5px; font-size: 10px; font-family: monospace; color: #29b6f6; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#29b6f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="3"></rect><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="15" y1="12" x2="15.01" y2="12"></line><line x1="18" y1="12" x2="18.01" y2="12"></line></svg>
+                                Diversión
+                            </span>
+                            <span id="bath-fun-text" style="font-weight: bold; color: #fff; font-size: 10px; font-family: monospace;">100%</span>
+                        </div>
+                        <div style="width: 100%; height: 5px; background: rgba(0,0,0,0.4); border-radius: 3px; overflow: hidden; border: 1px solid rgba(41, 182, 246, 0.3);">
+                            <div id="bath-fun-fill" style="background: linear-gradient(90deg, #0288d1, #29b6f6); height: 100%; width: 100%; transition: width 0.3s; box-shadow: 0 0 6px rgba(2, 136, 209, 0.5);"></div>
+                        </div>
+                    </div>
+
+                    <!-- Barra: Higiene -->
+                    <div style="display: flex; flex-direction: column; gap: 3px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="display: flex; align-items: center; gap: 5px; font-size: 10px; font-family: monospace; color: #ce93d8; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ce93d8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="5"></circle><circle cx="17" cy="17" r="3"></circle><circle cx="12" cy="7" r="4"></circle></svg>
+                                Higiene
+                            </span>
+                            <span id="bath-hygiene-text" style="font-weight: bold; color: #fff; font-size: 10px; font-family: monospace;">100%</span>
+                        </div>
+                        <div style="width: 100%; height: 5px; background: rgba(0,0,0,0.4); border-radius: 3px; overflow: hidden; border: 1px solid rgba(206, 147, 216, 0.3);">
+                            <div id="bath-hygiene-fill" style="background: linear-gradient(90deg, #ab47bc, #ce93d8); height: 100%; width: 100%; transition: width 0.3s; box-shadow: 0 0 6px rgba(171, 71, 188, 0.5);"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Separador fino -->
+                <div style="width: 100%; height: 1px; background: rgba(255,255,255,0.08); margin: 6px 0 2px 0;"></div>
+
+                <!-- Fila de Felicidad -->
+                <div id="bath-happiness-trigger" style="display: flex; flex-direction: column; gap: 3px; cursor: pointer; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="display: flex; align-items: center; gap: 5px; font-size: 10px; font-family: monospace; color: #81c784; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; transition: color 0.3s;">
+                            <svg id="happiness-icon" xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="#81c784" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: all 0.3s; filter: drop-shadow(0 0 3px rgba(76,175,80,0.4));">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                            Felicidad
+                        </span>
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span id="happiness-text" style="font-weight: bold; color: #fff; font-size: 10px; font-family: monospace; text-transform: uppercase;">Neutral</span>
+                            <span id="happiness-percent" style="font-weight: bold; color: #fff; font-size: 10px; font-family: monospace;">100%</span>
+                        </div>
+                    </div>
+                    <div style="width: 100%; height: 5px; background: rgba(0,0,0,0.4); border-radius: 3px; overflow: hidden; border: 1px solid rgba(76, 175, 80, 0.2); transition: border-color 0.3s;">
+                        <div id="happiness-fill" style="background: linear-gradient(90deg, #4CAF50, #81c784); height: 100%; width: 100%; transition: width 0.3s, background 0.3s, box-shadow 0.3s; box-shadow: 0 0 6px rgba(76, 175, 80, 0.5);"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Geno Container (sin cápsula, nítido) -->
+            <div id="geno-container-bathroom" style="width: 200px; flex: 1; min-height: 180px; display: flex; justify-content: center; align-items: center; z-index: 2; position: relative;"></div>
+
+            <!-- Contenedor unificado para empujar las acciones y herramientas abajo -->
+            <div style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: auto; z-index: 2;">
+                <!-- Sub-panel de herramientas de limpieza (oculto por defecto) -->
+                <div id="care-clean-tools" class="hidden" style="width: 92%; max-width: 340px; background: #1a1a2e; border: 2px solid rgba(0, 210, 255, 0.35); border-radius: 14px; padding: 10px 12px; box-shadow: 0 4px 15px rgba(0, 210, 255, 0.15); display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                    <span style="font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: #80deea; font-weight: bold;">Selecciona herramienta y arrastra sobre el Geno</span>
+                    <div style="display: flex; justify-content: space-around; width: 100%; gap: 10px;">
+                        <div class="tool-btn" id="btn-tool-soap" style="flex: 1; height: 48px; background: rgba(255, 0, 127, 0.08); border: 1.5px solid rgba(255, 0, 127, 0.4); border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(255, 0, 127, 0.2)'; this.style.borderColor='#ff007f';" onmouseout="this.style.background='rgba(255, 0, 127, 0.08)'; this.style.borderColor='rgba(255, 0, 127, 0.4)';">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ff007f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 3px rgba(255, 0, 127, 0.4));"><rect x="2" y="7" width="20" height="10" rx="3"/><path d="M6 10h1M16 14h2"/><circle cx="12" cy="12" r="1"/></svg>
+                            <span style="font-size: 10px; color: #ff007f; font-weight: bold; text-transform: uppercase;">Jabón</span>
+                        </div>
+                        <div class="tool-btn" id="btn-tool-shower" style="flex: 1; height: 48px; background: rgba(0, 229, 255, 0.08); border: 1.5px solid rgba(0, 229, 255, 0.4); border-radius: 10px; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(0, 229, 255, 0.2)'; this.style.borderColor='#00e5ff';" onmouseout="this.style.background='rgba(0, 229, 255, 0.08)'; this.style.borderColor='rgba(0, 229, 255, 0.4)';">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 3px rgba(0, 229, 255, 0.4));"><path d="M4 4h7a4 4 0 0 1 4 4v12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V8a4 4 0 0 1-4-4Z"/><path d="M15 12h5m-5 4h3"/><circle cx="21" cy="12" r="0.5" fill="#00e5ff"/><circle cx="19" cy="16" r="0.5" fill="#00e5ff"/></svg>
+                            <span style="font-size: 10px; color: #00e5ff; font-weight: bold; text-transform: uppercase;">Ducha</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Panel de Acciones de Cuidado -->
+                <div style="width: 92%; max-width: 340px; background: #1a1a2e; border: 2px solid #2a2a4a; border-radius: 16px; padding: 10px 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); display: flex; flex-direction: column; gap: 8px; margin-top: 0;">
+                    <span style="font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; color: #80deea; font-weight: bold; text-align: center;">Acciones de Cuidado</span>
+                    <div style="display: flex; justify-content: space-between; gap: 8px;">
+                        <button id="btn-care-clean" class="care-action-btn care-btn-blue">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-11-7-11S5 10.7 5 15a7 7 0 0 0 7 7z"/></svg>
+                            <span>Limpiar</span>
+                        </button>
+                        <button id="btn-care-feed" class="care-action-btn care-btn-orange">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z"/><path d="M10 2c1 .5 2 2 2 5"/></svg>
+                            <span>Alimentar</span>
+                        </button>
+                        <button id="btn-care-rest" class="care-action-btn care-btn-green">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                            <span id="btn-care-rest-label">Descansar</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fab-btn btn-go-home">
+                <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0; font-weight: bold; text-align: center; letter-spacing: 1px;">VOLVER AL LABORATORIO</div>
+            </div>
+        </div>
+        </div>
+
+    </div>
+
+        <div id="geno-swap-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);">
+            <div class="modal-content" style="height: 90%; max-height: 90%; width: 92%; max-width: 380px; display: flex; flex-direction: column; padding: 20px; box-sizing: border-box;">
+                <div class="modal-header">
+                    <h3>Mis Genos</h3>
+                    <button id="close-swap-modal" style="background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 0;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                </div>
+                <p style="color: #aaa; font-size: 12px; text-align: center; margin-top: 5px; margin-bottom: 12px; flex-shrink: 0;">Selecciona tu Geno principal.</p>
+                <div id="geno-swap-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; flex: 1; min-height: 0; overflow-y: auto; padding-right: 5px;"></div>
+            </div>
+        </div>
+
+        <div id="inventory-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);">
+            <div class="modal-content" style="max-height: 85vh; overflow-y: auto;">
+                <div class="modal-header">
+                    <h3>Almacén Nexo</h3>
+                    <button id="close-inventory" style="background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 0;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                </div>
+                <div id="inventory-grid"></div>
+                <div id="item-actions" class="hidden">
+                    <div id="selected-item-info">Seleccionado: --</div>
+                    <div class="action-buttons" style="display: flex; gap: 8px; width: 100%; box-sizing: border-box;">
+                        <button id="btn-use-item" style="flex: 1.5; background: linear-gradient(90deg, #4CAF50, #8bc34a); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Usar 🍱</button>
+                        <button id="btn-release-one" class="release-btn" style="flex: 1; padding: 10px; font-size: 12px; margin: 0;">Destruir 1</button>
+                        <button id="btn-release-all" class="release-btn danger" style="flex: 1; padding: 10px; font-size: 12px; margin: 0;">Vaciar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="arcade-info-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);">
+            <div class="modal-content" style="background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border: 2px solid #4dd0e1; box-shadow: 0 10px 30px rgba(77, 208, 225, 0.3); width: 80%; max-width: 300px; border-radius: 12px; padding: 25px 20px; box-sizing: border-box; position: relative; text-align: center;">
+                <button id="close-arcade-info" style="position: absolute; top: 10px; right: 15px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 0;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                <div id="arcade-info-icon" style="font-size: 45px; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));">🍎</div>
+                <h3 id="arcade-info-title" style="color: #4dd0e1; text-transform: uppercase; margin: 0 0 15px 0; font-size: 16px; letter-spacing: 1px;">Título</h3>
+                <div style="background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
+                    <p id="arcade-info-desc" style="color: #cbd5e1; font-size: 13px; line-height: 1.5; margin: 0;">Descripción del juego.</p>
+                </div>
+                <button id="btn-play-from-info" style="background: linear-gradient(90deg, #4dd0e1, #8A2BE2); color: #fff; font-weight: bold; border: none; padding: 12px; border-radius: 10px; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 20px; display: none;">Jugar Ahora</button>
+            </div>
+        </div>
+
+        <!-- Modal de Información de Energía Nexo -->
+        <div id="hud-energy-info-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+            <div class="modal-content" style="background: linear-gradient(180deg, #0d1e2d 0%, #07111c 100%); border: 2px solid #00e5ff; box-shadow: 0 0 25px rgba(0, 229, 255, 0.4), inset 0 0 15px rgba(0, 229, 255, 0.1); width: 85%; max-width: 320px; border-radius: 16px; padding: 25px 20px; box-sizing: border-box; position: relative; max-height: 85vh; display: flex; flex-direction: column;">
+                <button id="close-energy-info" style="position: absolute; top: 12px; right: 15px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 10px; z-index: 10; transition: transform 0.2s;"><svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                
+                <div style="display: flex; justify-content: center; margin-bottom: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.6));"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>
+                <h3 style="color: #00e5ff; text-transform: uppercase; margin: 0 0 15px 0; font-size: 15px; letter-spacing: 1.5px; text-align: center; font-weight: bold;">Energía Nexo</h3>
+                
+                <div class="help-scroll-content" style="flex-grow: 1; overflow-y: auto; background: rgba(0,0,0,0.5); padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); font-size: 11px; line-height: 1.5; color: #cbd5e1; text-align: left; scrollbar-width: none; -ms-overflow-style: none;">
+                    <div class="help-section-title" style="color: #00e5ff; font-weight: bold; text-transform: uppercase; font-size: 10px; margin-top: 0; margin-bottom: 4px;">¿Qué es la Energía Nexo?</div>
+                    Es una energía global de tu cuenta que limita el número de acciones que puedes realizar diariamente para mantener la economía equilibrada y evitar la automatización.
+                    
+                    <div class="help-section-title" style="color: #00e5ff; font-weight: bold; text-transform: uppercase; font-size: 10px; margin-top: 12px; margin-bottom: 4px; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="3"></rect><path d="M6 12h4M8 10v4M15 11h.01M18 13h.01"></path></svg> Consumo de Energía</div>
+                    <ul style="margin: 4px 0; padding-left: 15px;">
+                        <li><strong>Combates en el Coliseo:</strong> consume <strong>10 puntos</strong> por batalla (además de 20% de resistencia de tu Geno).</li>
+                        <li><strong>Minijuegos en el Arcade:</strong> consume <strong>5 puntos</strong> por partida (no consume resistencia del Geno).</li>
+                    </ul>
+                    
+                    <div class="help-section-title" style="color: #00e5ff; font-weight: bold; text-transform: uppercase; font-size: 10px; margin-top: 12px; margin-bottom: 4px; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg> ¿Cómo se regenera?</div>
+                    <ul style="margin: 4px 0; padding-left: 15px;">
+                        <li><strong>Regeneración Activa:</strong> recuperas automáticamente <strong>1 punto cada 12 minutos</strong> (5 puntos por hora), hasta un máximo de 100.</li>
+                        <li><strong>Regeneración Offline:</strong> el juego calcula el tiempo transcurrido mientras estuviste desconectado y lo aplica retrospectivamente al volver a entrar.</li>
+                    </ul>
+                </div>
+                
+                <button id="btn-close-energy-info-confirm" style="margin-top: 15px; background: linear-gradient(135deg, #00d2ff, #008be2); color: white; border: none; border-radius: 10px; padding: 10px 0; font-weight: bold; font-size: 12px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,210,255,0.3); transition: 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">Entendido</button>
+            </div>
+        </div>
+
+        <div id="needs-info-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+            <div class="modal-content" style="background: linear-gradient(180deg, #101524 0%, #080b12 100%); border: 2px solid #ff007f; box-shadow: 0 0 25px rgba(255, 0, 127, 0.4), inset 0 0 15px rgba(255, 0, 127, 0.1); width: 85%; max-width: 320px; border-radius: 16px; padding: 20px 18px; box-sizing: border-box; position: relative; max-height: 85vh; display: flex; flex-direction: column; font-family: sans-serif;">
+                <button id="close-needs-info" style="position: absolute; top: 12px; right: 15px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 10px; z-index: 10; transition: transform 0.2s;"><svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                
+                <div style="display: flex; justify-content: center; margin-bottom: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#ff007f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 8px rgba(255, 0, 127, 0.6));"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg></div>
+                <h3 style="color: #ff007f; text-transform: uppercase; margin: 0 0 12px 0; font-size: 14px; letter-spacing: 1.5px; text-align: center; font-weight: bold;">Manual de Cuidado</h3>
+                
+                <div class="help-scroll-content" style="flex: 1; overflow-y: auto; font-size: 11.5px; color: #cbd5e1; line-height: 1.4; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; text-align: left; scrollbar-width: none; -ms-overflow-style: none;">
+                    <p style="margin: 0; text-align: center; color: #80deea; font-weight: bold;">¡El estado de tu Geno Compañero influye en el combate y la economía!</p>
+                    
+                    <div style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px;">
+                        <span style="color: #ff7043; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ff7043" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 0 0 18 0"></path><path d="M3 12h18"></path><path d="M8 7V3M12 7V3M16 7V3"></path></svg> Hambre:</span> Se vacía en 12h. Dále de comer manzanas farmeadas en Arcade. Los portadores de <span style="color: #4dd0e1;">Reactor Instintivo</span> la consumen 30% más lento.
+                    </div>
+                    
+                    <div style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px;">
+                        <span style="color: #29b6f6; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#29b6f6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="3"></rect><line x1="6" y1="12" x2="10" y2="12"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="15" y1="12" x2="15.01" y2="12"></line><line x1="18" y1="12" x2="18.01" y2="12"></line></svg> Diversión:</span> Se vacía en 16h. Juega al Arcade o gana en el Coliseo. El gen <span style="color: #4dd0e1;">Conexión Empática</span> previene su caída si tienes 2 o más portadores.
+                    </div>
+                    
+                    <div style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px;">
+                        <span style="color: #ab47bc; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ab47bc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="5"></circle><circle cx="17" cy="17" r="3"></circle><circle cx="12" cy="7" r="4"></circle></svg> Higiene:</span> Se vacía en 24h. Genera manchas de suciedad. Limpialas en el Centro de Cuidado usando el jabón y enjuagando con la ducha (baño completo de 8 segundos).
+                    </div>
+                    
+                    <div style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px;">
+                        <span style="color: #4CAF50; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Resistencia:</span> Se gasta combatiendo en el Coliseo (20% por combate). Se recupera únicamente activando el descanso en el Centro de Cuidado (25 pts/h, tomando 4h para completar).
+                    </div>
+
+                    <div style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px;">
+                        <span style="color: #ec407a; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ec407a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg> Amistad:</span> Sube de 1 a 3 puntos (máx. una vez al día por acción) al acariciar, limpiar, alimentar, ganar combates o jugar arcade. Aumenta la Esencia pasiva generada.
+                    </div>
+                    
+                    <div style="background: rgba(76, 175, 80, 0.15); border: 1px solid #4CAF50; border-radius: 8px; padding: 8px; margin-top: 4px;">
+                        <strong style="color: #4CAF50; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M16 16l3 3M19 13l2 2"/></svg> Estado Óptimo (Barras &gt; 80%):</strong> +5% de probabilidad Crítica (+25 LUK stat) y genera EV pasiva cada segundo (aparecen monedas flotantes sobre el Geno).
+                    </div>
+                    
+                    <div style="background: rgba(244, 67, 54, 0.15); border: 1px solid #f44336; border-radius: 8px; padding: 8px;">
+                        <strong style="color: #f44336; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f44336" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> Depresión/Huelga (Barras &lt; 20%):</strong> ¡El Geno se negará a pelear en el Coliseo!
+                    </div>
+
+                    <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 8px; font-size: 11px;">
+                        <strong style="color: #e2e8f0; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#e2e8f0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> Reserva:</strong> Las necesidades de los Genos en reserva (no activos) bajan 5 veces más despacio. Puedes automatizar su cuidado usando consumibles de la tienda de Esencia.
+                    </div>
+                </div>
+                
+                <button id="btn-close-needs-info-confirm" style="background: linear-gradient(90deg, #ff007f, #8A2BE2); color: #fff; font-weight: bold; border: none; padding: 10px; border-radius: 10px; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 15px; font-size: 12px; letter-spacing: 0.5px;">Entendido</button>
+            </div>
+        </div>
+
+        <!-- Modal de Información de Felicidad (Premium Cyberpunk Neon) -->
+        <div id="happiness-info-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+            <div class="modal-content" style="background: linear-gradient(180deg, #101524 0%, #080b12 100%); border: 2px solid #ffeb3b; box-shadow: 0 0 25px rgba(255, 235, 59, 0.4), inset 0 0 15px rgba(255, 235, 59, 0.1); width: 85%; max-width: 320px; border-radius: 16px; padding: 20px 18px; box-sizing: border-box; position: relative; max-height: 85vh; display: flex; flex-direction: column; font-family: sans-serif;">
+                <button id="close-happiness-info" style="position: absolute; top: 12px; right: 15px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 10px; z-index: 10; transition: transform 0.2s;"><svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                
+                <div style="display: flex; justify-content: center; margin-bottom: 5px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="#ffeb3b" stroke="#fbc02d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 8px rgba(255, 235, 59, 0.6));">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    </svg>
+                </div>
+                <h3 style="color: #ffeb3b; text-transform: uppercase; margin: 0 0 12px 0; font-size: 14px; letter-spacing: 1.5px; text-align: center; font-weight: bold;">Felicidad del Geno</h3>
+                
+                <div class="help-scroll-content" style="flex: 1; overflow-y: auto; font-size: 11.5px; color: #cbd5e1; line-height: 1.4; display: flex; flex-direction: column; gap: 10px; padding-right: 4px; text-align: left; scrollbar-width: none; -ms-overflow-style: none;">
+                    <p style="margin: 0; text-align: center; color: #80deea; font-weight: bold;">¿Cómo funciona la felicidad?</p>
+                    
+                    <div style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px;">
+                        <span style="color: #ffeb3b; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ffeb3b" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 2px rgba(255,235,59,0.4));">
+                                <line x1="18" y1="20" x2="18" y2="10"></line>
+                                <line x1="12" y1="20" x2="12" y2="4"></line>
+                                <line x1="6" y1="20" x2="6" y2="14"></line>
+                            </svg>
+                            Cálculo Promedio:
+                        </span> Es la media aritmética de las 4 necesidades básicas del Geno:<br>
+                        <code>(Hambre + Diversión + Higiene + Resistencia) / 4</code>.
+                    </div>
+                    
+                    <div style="background: rgba(76, 175, 80, 0.15); border: 1px solid #4CAF50; border-radius: 8px; padding: 8px;">
+                        <strong style="color: #4CAF50; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M16 16l3 3M19 13l2 2"/></svg> Estado Óptimo (&gt; 80%):</strong><br>
+                        Otorga <span style="color: #a5d6a7;">+5% Prob. Crítica</span> (+25 LUK) y genera <span style="color: #a5d6a7;">EV pasiva</span> en el laboratorio (monedas flotantes).
+                    </div>
+                    
+                    <div style="background: rgba(244, 67, 54, 0.15); border: 1px solid #f44336; border-radius: 8px; padding: 8px;">
+                        <strong style="color: #f44336; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f44336" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> Negligencia (&lt; 20%):</strong><br>
+                        El Geno entra en huelga y <span style="color: #ef9a9a;">se negará a combatir</span> en el Coliseo.
+                    </div>
+                </div>
+                
+                <button id="btn-close-happiness-info-confirm" style="background: linear-gradient(90deg, #ffeb3b, #fbc02d); color: #07111c; font-weight: bold; border: none; padding: 10px; border-radius: 10px; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 15px; font-size: 12px; letter-spacing: 0.5px;">Entendido</button>
+            </div>
+        </div>
+
+        <!-- Modal de Recompensas Diarias (Premium Cyberpunk Neon Cyan) -->
+        <div id="daily-login-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+            <div class="modal-content" style="background: linear-gradient(180deg, #101524 0%, #080b12 100%); border: 2px solid #00e5ff; box-shadow: 0 0 25px rgba(0, 229, 255, 0.4), inset 0 0 15px rgba(0, 229, 255, 0.1); width: 85%; max-width: 330px; border-radius: 16px; padding: 20px 18px; box-sizing: border-box; position: relative; max-height: 90vh; display: flex; flex-direction: column; font-family: sans-serif; color: white;">
+                <button id="close-daily-login" style="position: absolute; top: 12px; right: 15px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 10px; z-index: 10; transition: transform 0.2s;"><svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                
+                <div style="display: flex; justify-content: center; margin-bottom: 5px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.6));">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                </div>
+                <h3 style="color: #00e5ff; text-transform: uppercase; margin: 0 0 4px 0; font-size: 14px; letter-spacing: 1.5px; text-align: center; font-weight: bold;">Recompensas Diarias</h3>
+                <p style="font-size: 10px; color: #80deea; text-align: center; margin: 0 0 15px 0; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Inicia sesión cada día para desbloquear suministros</p>
+
+                <div id="daily-rewards-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; flex: 1; overflow-y: auto; padding-right: 2px; scrollbar-width: none; -ms-overflow-style: none;">
+                    <!-- Inyectado dinámicamente -->
+                </div>
+                
+                <button id="btn-claim-daily" style="background: linear-gradient(90deg, #00d2ff, #008be2); color: #fff; font-weight: bold; border: none; padding: 12px; border-radius: 10px; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 15px; font-size: 12px; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(0,210,255,0.3); transition: 0.2s;">Reclamar Recompensa</button>
+            </div>
+        </div>
+
+        <!-- Modal de Buzón de Noticias (Premium Cyberpunk Neon Violet) -->
+        <div id="news-mailbox-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+            <div class="modal-content" style="background: linear-gradient(180deg, #101524 0%, #080b12 100%); border: 2px solid #8A2BE2; box-shadow: 0 0 25px rgba(138, 43, 226, 0.4), inset 0 0 15px rgba(138, 43, 226, 0.1); width: 85%; max-width: 340px; border-radius: 16px; padding: 20px 18px; box-sizing: border-box; position: relative; max-height: 90vh; display: flex; flex-direction: column; font-family: sans-serif; color: white;">
+                <button id="close-news-mailbox" style="position: absolute; top: 12px; right: 15px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 10px; z-index: 10; transition: transform 0.2s;"><svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                
+                <div style="display: flex; justify-content: center; margin-bottom: 5px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#8A2BE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 8px rgba(138, 43, 226, 0.6));">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                </div>
+                <h3 style="color: #a855f7; text-transform: uppercase; margin: 0 0 4px 0; font-size: 14px; letter-spacing: 1.5px; text-align: center; font-weight: bold;">Buzón de Noticias</h3>
+                <p style="font-size: 10px; color: #d8b4fe; text-align: center; margin: 0 0 15px 0; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Actualizaciones de la Red Nexo y Anuncios Competitivos</p>
+
+                <div id="news-mailbox-list" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-right: 2px; scrollbar-width: none; -ms-overflow-style: none;">
+                    <!-- Inyectado dinámicamente -->
+                </div>
+                
+                <button id="btn-close-news-confirm" style="background: linear-gradient(90deg, #8A2BE2, #a855f7); color: #fff; font-weight: bold; border: none; padding: 12px; border-radius: 10px; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 15px; font-size: 12px; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(138,43,226,0.3); transition: 0.2s;">Entendido</button>
+            </div>
+        </div>
+
+        <!-- Modal de Selección de Equipo 3v3 (Glassmorphism Cyberpunk) -->
+        <div id="coliseum-team-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+            <div class="modal-content" style="background: linear-gradient(180deg, #101524 0%, #080b12 100%); border: 2px solid #00e5ff; box-shadow: 0 0 25px rgba(0, 229, 255, 0.4), inset 0 0 15px rgba(0, 229, 255, 0.1); width: 90%; max-width: 360px; border-radius: 16px; padding: 20px 18px; box-sizing: border-box; position: relative; max-height: 90vh; display: flex; flex-direction: column; font-family: sans-serif; color: white;">
+                <button id="close-coliseum-team" style="position: absolute; top: 12px; right: 15px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 10px; z-index: 10; transition: transform 0.2s;"><svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                
+                <h3 style="color: #00e5ff; text-transform: uppercase; margin: 0 0 4px 0; font-size: 14px; letter-spacing: 1.5px; text-align: center; font-weight: bold;">Configurar Equipo 3v3</h3>
+                <p style="font-size: 10px; color: #80deea; text-align: center; margin: 0 0 15px 0; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Asigna tus Genos a los slots tácticos</p>
+
+                <!-- Slots del Equipo -->
+                <div style="display: flex; justify-content: space-between; gap: 8px; margin-bottom: 15px;">
+                    <!-- Slot 1: Abridor -->
+                    <div id="team-slot-0" class="team-slot active-slot" style="flex: 1; aspect-ratio: 1/1.2; background: rgba(13, 22, 30, 0.6); border: 2px solid #00e5ff; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px; cursor: pointer; transition: 0.2s; position: relative;">
+                        <span style="font-size: 9px; font-weight: bold; color: #00e5ff; text-transform: uppercase; margin-bottom: 5px;">Abridor</span>
+                        <div class="slot-preview-svg" style="width: 46px; height: 46px; display: flex; justify-content: center; align-items: center; pointer-events: none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(0, 229, 255, 0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        </div>
+                        <span class="slot-preview-name" style="font-size: 9px; color: #aaa; text-align: center; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">Vacío</span>
+                    </div>
+
+                    <!-- Slot 2: Relevo -->
+                    <div id="team-slot-1" class="team-slot" style="flex: 1; aspect-ratio: 1/1.2; background: rgba(13, 22, 30, 0.4); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px; cursor: pointer; transition: 0.2s; position: relative;">
+                        <span style="font-size: 9px; font-weight: bold; color: #a855f7; text-transform: uppercase; margin-bottom: 5px;">Relevo</span>
+                        <div class="slot-preview-svg" style="width: 46px; height: 46px; display: flex; justify-content: center; align-items: center; pointer-events: none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(168, 85, 247, 0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        </div>
+                        <span class="slot-preview-name" style="font-size: 9px; color: #aaa; text-align: center; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">Vacío</span>
+                    </div>
+
+                    <!-- Slot 3: Cierre -->
+                    <div id="team-slot-2" class="team-slot" style="flex: 1; aspect-ratio: 1/1.2; background: rgba(13, 22, 30, 0.4); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px; cursor: pointer; transition: 0.2s; position: relative;">
+                        <span style="font-size: 9px; font-weight: bold; color: #ff007f; text-transform: uppercase; margin-bottom: 5px;">Cierre</span>
+                        <div class="slot-preview-svg" style="width: 46px; height: 46px; display: flex; justify-content: center; align-items: center; pointer-events: none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255, 0, 127, 0.3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        </div>
+                        <span class="slot-preview-name" style="font-size: 9px; color: #aaa; text-align: center; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;">Vacío</span>
+                    </div>
+                </div>
+
+                <!-- Lista de Genos Seleccionables -->
+                <div style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 4px; max-height: 45vh; scrollbar-width: none; -ms-overflow-style: none;" id="coliseum-team-genos-list">
+                    <!-- Inyectado dinámicamente -->
+                </div>
+
+                <button id="btn-confirm-team-3v3" style="background: linear-gradient(90deg, #00d2ff, #8A2BE2); color: #fff; font-weight: bold; border: none; padding: 12px; border-radius: 10px; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 15px; font-size: 12px; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(0,210,255,0.3); transition: 0.2s;" disabled>Confirmar Equipo</button>
+            </div>
+        </div>
+
+        <!-- Modal de Ofrecer en Beca (Premium Cyberpunk Neon Violet) -->
+        <div id="modal-ofrecer-beca" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+            <div class="modal-content" style="background: linear-gradient(180deg, #101524 0%, #080b12 100%); border: 2px solid #8A2BE2; box-shadow: 0 0 25px rgba(138, 43, 226, 0.4), inset 0 0 15px rgba(138, 43, 226, 0.1); width: 85%; max-width: 320px; border-radius: 16px; padding: 20px 18px; box-sizing: border-box; position: relative; max-height: 90vh; display: flex; flex-direction: column; font-family: sans-serif; color: white;">
+                <button id="close-ofrecer-beca" style="position: absolute; top: 12px; right: 15px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 10px; z-index: 10; transition: transform 0.2s;"><svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                
+                <div style="display: flex; justify-content: center; margin-bottom: 5px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#8A2BE2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 8px rgba(138, 43, 226, 0.6));">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="8.5" cy="7" r="4"></circle>
+                        <polyline points="17 11 19 13 23 9"></polyline>
+                    </svg>
+                </div>
+                <h3 style="color: #a855f7; text-transform: uppercase; margin: 0 0 4px 0; font-size: 14px; letter-spacing: 1.5px; text-align: center; font-weight: bold;">Ofrecer en Beca</h3>
+                <p style="font-size: 10px; color: #d8b4fe; text-align: center; margin: 0 0 15px 0; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Establece condiciones para alquilar tu Geno</p>
+
+                <div style="display: flex; flex-direction: column; gap: 12px; font-size: 11px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 4px; color: #aaa; text-transform: uppercase; font-size: 9px; font-weight: bold; letter-spacing: 0.5px;">Requisito de Laboratorio</label>
+                        <select id="beca-req-level" style="width: 100%; padding: 8px; background: #13192b; border: 1px solid #444; border-radius: 6px; color: #fff; outline: none;">
+                            <option value="1">Sin requisitos (Cualquiera)</option>
+                            <option value="2">Nivel 2 o superior</option>
+                            <option value="5">Nivel 5 o superior (Recomendado)</option>
+                            <option value="10">Nivel 10 o superior</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label style="display: block; margin-bottom: 4px; color: #aaa; text-transform: uppercase; font-size: 9px; font-weight: bold; letter-spacing: 0.5px;">Split de Ganancias ($POL)</label>
+                        <select id="beca-split-ratio" style="width: 100%; padding: 8px; background: #13192b; border: 1px solid #444; border-radius: 6px; color: #fff; outline: none;">
+                            <option value="70">70% Propietario / 30% Becado</option>
+                            <option value="80">80% Propietario / 20% Becado</option>
+                            <option value="50">50% Propietario / 50% Becado</option>
+                        </select>
+                    </div>
+                    
+                    <input type="hidden" id="beca-target-geno-id" value="">
+                </div>
+                
+                <button id="btn-confirm-ofrecer-beca" style="background: linear-gradient(90deg, #8A2BE2, #a855f7); color: #fff; font-weight: bold; border: none; padding: 12px; border-radius: 10px; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 20px; font-size: 12px; letter-spacing: 1px; box-shadow: 0 4px 10px rgba(138,43,226,0.3); transition: 0.2s;">Publicar Beca</button>
+            </div>
+        </div>
+
+        <!-- Modal de Ayuda del Coliseo (Premium Cyberpunk Neon) -->
+        <div id="coliseum-help-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+            <div class="modal-content" style="background: linear-gradient(180deg, #0d1e2d 0%, #07111c 100%); border: 2px solid #4dd0e1; box-shadow: 0 0 25px rgba(77, 208, 225, 0.4), inset 0 0 15px rgba(77, 208, 225, 0.1); width: 85%; max-width: 320px; border-radius: 16px; padding: 25px 20px; box-sizing: border-box; position: relative; max-height: 85vh; display: flex; flex-direction: column;">
+                <button id="close-coliseum-help" style="position: absolute; top: 12px; right: 15px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 10px; z-index: 10; transition: transform 0.2s;"><svg style="pointer-events: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                
+                <div style="display: flex; justify-content: center; margin-bottom: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#4dd0e1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 8px rgba(77, 208, 225, 0.6));"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34"></path><path d="M12 2a8.26 8.26 0 0 0-8 8h16a8.26 8.26 0 0 0-8-8z"></path></svg></div>
+                <h3 style="color: #4dd0e1; text-transform: uppercase; margin: 0 0 15px 0; font-size: 15px; letter-spacing: 1.5px; text-align: center; font-weight: bold;">Manual del Coliseo</h3>
+                
+                <div class="help-scroll-content" style="flex-grow: 1; overflow-y: auto; background: rgba(0,0,0,0.5); padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05); font-size: 11px; line-height: 1.5; color: #cbd5e1; text-align: left; scrollbar-width: none; -ms-overflow-style: none;">
+                    <style>
+                        .help-scroll-content::-webkit-scrollbar { display: none; }
+                        .help-section-title { color: #ff9800; font-weight: bold; text-transform: uppercase; font-size: 10px; margin-top: 12px; margin-bottom: 4px; display: flex; align-items: center; gap: 4px; }
+                        .help-section-title:first-child { margin-top: 0; }
+                        @keyframes lowLevelPulse {
+                            0% { box-shadow: 0 0 5px rgba(105, 240, 174, 0.2); border-color: rgba(105, 240, 174, 0.4); }
+                            100% { box-shadow: 0 0 20px rgba(105, 240, 174, 0.8); border-color: rgba(105, 240, 174, 1); }
+                        }
+                    </style>
+                    
+                    <div class="help-section-title"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ff9800" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5M13 19l6-6M16 16l3 3M19 13l2 2"/></svg> Dinámica del Combate</div>
+                    Duelos tácticos de 1v1. En cada turno seleccionas un ataque. El Geno más veloz suele golpear primero.
+                    
+                    <div class="help-section-title"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ff9800" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Tabla de Ventajas</div>
+                    Los ataques elementales tienen una ventaja cíclica (+35% daño causado, -25% daño recibido):
+                    <div style="color: #00e5ff; font-weight: bold; margin: 4px 0; padding-left: 6px; border-left: 2px solid #00e5ff; font-size: 10px; line-height: 1.3;">
+                        Biomutante ➔ Sintético ➔ Tóxico ➔ Radiactivo ➔ Cibernético ➔ Viral ➔ Biomutante
+                    </div>
+                    
+                    <div class="help-section-title"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ff9800" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> Tácticas IFTTT</div>
+                    En el laboratorio de implantes puedes configurar reglas automáticas de comportamiento para que tu IA luche de forma inteligente y automatizada.
+                    
+                    <!-- PROTOCOLO DE AYUDA DE BAJO NIVEL -->
+                    <div id="help-low-level-section" style="margin-top: 14px; padding: 10px; background: rgba(105, 240, 174, 0.08); border: 1px solid rgba(105, 240, 174, 0.4); border-radius: 8px; transition: 0.3s;">
+                        <div style="color: #69f0ae; font-weight: bold; text-transform: uppercase; font-size: 10px; margin-bottom: 4px; display: flex; align-items: center; gap: 4px;"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#69f0ae" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> Asistencia de Recluta</div>
+                        <span style="color: #69f0ae; font-weight: 500;">¡Activo para Genos menor a Nivel 5!</span><br>
+                        Los oponentes de la arena se adaptarán a tu nivel, sus estadísticas base se reducirán en un **15%** y no tendrán bono de pureza. Además, tu Geno infligirá **+15% de daño extra** y recibirá **-15% de daño reducido** para asegurar tu aprendizaje sin frustraciones.
+                    </div>
+                </div>
+                
+                <button id="btn-close-help-confirm" style="background: linear-gradient(90deg, #4dd0e1, #00acc1); color: #07111c; font-weight: 900; border: none; padding: 10px; border-radius: 10px; width: 100%; cursor: pointer; text-transform: uppercase; margin-top: 15px; font-size: 11px; letter-spacing: 1px; box-shadow: 0 4px 12px rgba(77, 208, 225, 0.3);">Entendido</button>
+            </div>
+        </div>
+
+        <div id="arcade-menu" class="app-screen hidden">
+            <div class="arcade-card-container">
+                <h2 class="screen-title">Salón Arcade</h2>
+                <div class="arcade-games-grid"></div> 
+            </div>
+            <div class="arcade-footer-anchor">
+                 <div class="fab-btn btn-go-home">
+                    <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0; width: 100%; text-align: center; font-weight: bold; letter-spacing: 1px;">VOLVER AL LABORATORIO</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="minigame-screen" class="app-screen hidden">
+            <div id="game-header"><button class="back-btn small" id="btn-quit-minigame">Salir</button><div id="minigame-timer">⏱️ 30s</div><div id="minigame-score">Manzanas: 0</div></div>
+            <div id="play-area"><div id="falling-object">🍎</div> <div id="player-basket">🧺</div></div>
+            <div id="touch-controls"><div id="touch-left"></div><div id="touch-right"></div></div>
+        </div>
+
+        <div id="sanctuary-screen" class="app-screen hidden">
+            <h2 class="screen-title" style="color: #4CAF50;">Santuario Genético</h2>
+            <p style="text-align: center; color: #666; font-size: 14px; padding: 0 20px; margin-bottom: 5px;">Libera Genos en la naturaleza para obtener ✨ EV.</p>
+            <div style="text-align: center; font-weight: bold; color: #d9534f; margin-bottom: 15px;">Límite diario: <span id="daily-release-count">0</span>/3</div>
+            <div id="sanctuary-grid" class="sanctuary-grid"></div>
+            
+            <div class="fab-btn btn-go-home sanctuary-btn" style="position: absolute !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; width: 70% !important; max-width: 300px !important; z-index: 100 !important;">
+                <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0; font-weight: bold; text-align: center; letter-spacing: 1px;">VOLVER AL LABORATORIO</div>
+            </div>
+        </div>
+
+        <div id="alchemy-screen" class="app-screen hidden">
+            <h2 class="screen-title" style="color: #8B5CF6;">Reactor Genético</h2>
+            <p id="reactor-description" style="text-align: center; color: #666; font-size: 14px; padding: 0 20px; margin-bottom: 20px;">Fusiona 5 Genos Comunes para intentar crear 1 Geno Raro.</p>
+            <div class="alchemy-panel">
+                <div class="alchemy-stats" style="flex-direction: column; gap: 10px; border-bottom: none; margin-bottom: 10px;">
+                    <select id="reactor-level-select" style="padding: 10px; border-radius: 8px; border: 2px solid #8B5CF6; font-weight: bold; color: #333; outline: none; width: 100%; text-align: center; cursor: pointer; background: #f8f9fa;">
+                        <option value="1">Nivel 1 (Quemar 5 Comunes)</option>
+                        <option value="2">Nivel 2 (Quemar 5 Raros)</option>
+                        <option value="3">Nivel 3 (Quemar 5 Épicos)</option>
+                    </select>
+                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; width: 100%; margin-top: 10px; padding-bottom: 10px; border-bottom: 1px dashed #ccc; color: #fff; font-size: 13px;">
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            Disponibles: <span id="alchemy-common-count" style="font-weight: bold; color: #4dd0e1; font-size: 14px;">0</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            Costo: <span id="reactor-cost-display" style="font-weight: bold; color: #ffcc00; font-size: 14px; display: flex; align-items: center; gap: 4px;">100 <span class="ev-icon-injector" style="display: inline-block; width: 1.2em; height: 1.2em;"></span></span>
+                        </div>
+                        <span id="reactor-req-name" style="display: none;">Comunes</span>
+                    </div>
+                </div>
+                <div id="reactor-slots-container" style="display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; width: 100%; min-height: 55px;"></div>
+                <div style="font-size: 11px; color: #888; text-align: left; width: 100%; margin-bottom: 5px;">Toca un Geno para cargarlo:</div>
+                <div id="reactor-available-genos" style="display: flex; overflow-x: auto; gap: 10px; padding: 10px; background: #f0f4f8; border-radius: 8px; margin-bottom: 20px; width: 100%; min-height: 60px; box-sizing: border-box;"></div>
+                <button id="btn-fuse-genos" class="btn-fuse" disabled>Activar Reactor</button>
+            </div>
+            <button class="back-btn btn-go-home">Volver al Laboratorio</button>
+        </div>
+
+        <div id="breeding-screen" class="app-screen hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; box-sizing: border-box;">
+            <div style="width: 100%; height: 100%; overflow-y: auto; padding-bottom: 100px;">
+                <div class="alchemy-panel" style="background: #1a2a36; border: 1px solid #333; border-radius: 16px; padding: 20px; margin: 25px 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                    <div class="drawer-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px;">
+                        <div style="width: 34px;"></div>
+                        <h3 style="font-size: 16px !important; color: #80deea !important; text-transform: uppercase !important; letter-spacing: 1px !important; margin: 0 !important; font-weight: bold !important; text-shadow: none !important; text-align: center; flex: 1;">CENTRO DE CRIANZA</h3>
+                        <div style="width: 34px;"></div>
+                    </div>
+                    
+                    <p style="text-align: center; color: #aaa !important; font-size: 10px !important; text-transform: uppercase !important; letter-spacing: 1px !important; padding: 0 15px !important; margin-bottom: 25px !important; text-shadow: none !important; display: block; line-height: 1.5;">
+                        Combina el ADN de dos especímenes (Nv. 10+) para iniciar la secuencia. Costo: 500 <span class="ev-icon-injector" style="display: inline-block; width: 1.4em; height: 1.4em; vertical-align: middle; margin: 0 2px; transform: translateY(-2px);"></span>
+                    </p>
+
+                    <div style="display: flex; justify-content: space-around; width: 100%; margin-bottom: 20px; position: relative; align-items: center;">
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                            <div id="slot-parent-1" style="width: 75px; height: 75px; border: 2px dashed #4dd0e1; border-radius: 12px; display: flex; justify-content: center; align-items: center; background: #0d1a24; cursor: pointer; transition: 0.2s;">
+                                <span style="color: #4dd0e1; font-size: 28px;">+</span>
+                            </div>
+                            <span style="font-size: 11px; font-weight: bold; color: #4dd0e1; letter-spacing: 1px;">MUESTRA ALFA</span>
+                        </div>
+                        
+                        <div style="color: #8A2BE2; filter: drop-shadow(0 0 10px rgba(138, 43, 226, 0.8)); display: flex; justify-content: center; align-items: center; width: 35px; height: 35px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 100%; height: 100%; animation: spin 10s linear infinite;">
+                                <circle cx="12" cy="12" r="3" fill="currentColor"></circle>
+                                <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(45 12 12)"></ellipse>
+                                <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-45 12 12)"></ellipse>
+                            </svg>
+                        </div>
+                        
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                            <div id="slot-parent-2" style="width: 75px; height: 75px; border: 2px dashed #4dd0e1; border-radius: 12px; display: flex; justify-content: center; align-items: center; background: #0d1a24; cursor: pointer; transition: 0.2s;">
+                                <span style="color: #4dd0e1; font-size: 28px;">+</span>
+                            </div>
+                            <span style="font-size: 11px; font-weight: bold; color: #4dd0e1; letter-spacing: 1px;">MUESTRA OMEGA</span>
+                        </div>
+                    </div>
+                    
+                    <button id="btn-start-breeding" class="btn-fuse" style="background: linear-gradient(90deg, #4dd0e1, #8A2BE2); color: #fff; font-weight: bold; border: none; padding: 14px; border-radius: 10px; width: 100%; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;" disabled>
+                        INICIAR SECUENCIA
+                    </button>
+                    <hr style="margin: 20px 0; border: none; border-top: 1px solid #333; width: 100%;">
+                    <h3 style="text-align: center; color: #80deea !important; margin-top: 0; font-size: 12px !important; text-transform: uppercase !important; letter-spacing: 2px !important; text-shadow: none !important;">CÁMARA DE BIO-NÚCLEOS</h3>
+                    <div id="incubator-grid" style="display: flex; gap: 10px; overflow-x: auto; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 12px; min-height: 120px; width: 100%; box-sizing: border-box; align-items: center; border: 1px solid #333;">
+                    </div>
+                </div>
+            </div>
+
+            <div id="breeding-selector" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 2000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);">
+                <div class="modal-content" style="background: #0d1a24; border: 1px solid #4dd0e1; box-shadow: 0 0 20px rgba(77, 208, 225, 0.4); max-height: 80vh; overflow-y: auto; width: 85%; max-width: 340px; border-radius: 15px; padding: 20px; box-sizing: border-box;">
+                    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px;">
+                        <h3 style="margin: 0; color: #80deea; text-transform: uppercase; font-size: 16px; letter-spacing: 1px;">Base de Datos Genética</h3>
+                        <button id="close-breeding-selector" style="background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 0;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                    </div>
+                    <div id="breeding-list" style="display: flex; flex-direction: column; gap: 12px;"></div>
+                </div>
+            </div>
+
+            <div id="geno-id-card-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);">
+                <div class="modal-content" style="background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border: 2px solid #00d2ff; box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3); width: 85%; max-width: 320px; border-radius: 12px; padding: 20px; box-sizing: border-box; position: relative;">
+                    <button id="close-id-card" style="position: absolute; top: 10px; right: 15px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 0; filter: drop-shadow(0 0 5px #000);"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+                    <h3 style="margin: 0 0 15px 0 !important; color: #00d2ff !important; text-transform: uppercase !important; font-size: 16px !important; font-weight: 900 !important; letter-spacing: 2px !important; text-align: center !important; border-bottom: 1px solid rgba(0, 210, 255, 0.3) !important; padding-bottom: 10px !important; text-shadow: 0 0 10px rgba(0, 210, 255, 0.6) !important;">ANÁLISIS GENÉTICO</h3>
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                        <div id="id-card-svg" style="width: 110px; height: 110px; background: rgba(0, 0, 0, 0.5); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px dashed #00d2ff; margin-bottom: 15px; box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 0 0 15px rgba(0, 210, 255, 0.2);"></div>
+                        <h2 style="margin: 0 0 5px 0; color: #fff; font-size: 18px; text-transform: uppercase; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">
+                            <span id="id-card-name">--</span> <span id="id-card-level" style="color: #00d2ff; font-size: 14px; margin-left: 5px;">Nv. --</span>
+                        </h2>
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px; font-size: 11px; font-weight: bold; text-transform: uppercase; align-items: center; background: rgba(0,0,0,0.3); padding: 5px 15px; border-radius: 15px; border: 1px solid #333;">
+                            <span id="id-card-rarity" style="color: #aaa;">--</span> <span style="color:#555">|</span>
+                            <span id="id-card-element" style="color: #00d2ff;">--</span> <span style="color:#555">|</span>
+                            <span style="color: #f0ad4e;">Crías: <span id="id-card-breeds">--</span></span>
+                        </div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px; margin-bottom: 15px; text-align: center; border: 1px solid #333; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);">
+                        <div style="font-size: 10px; color: #888; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 1px;">Veredicto de Pureza</div>
+                        <div id="id-card-quality" style="font-size: 22px; font-weight: 900; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.8);">--</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; margin-bottom: 15px;">
+                        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333;">❤️ Vit: <span id="id-card-hp" style="float: right; font-weight: bold; color: #fff;">--</span></div>
+                        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333;">⚔️ Fue: <span id="id-card-atk" style="float: right; font-weight: bold; color: #fff;">--</span></div>
+                        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333; grid-column: span 2; text-align: center;">🛡️ Defensa: <span id="id-card-def" style="font-weight: bold; color: #fff; margin-left: 10px;">--</span></div>
+                        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333;">⚡ Agi: <span id="id-card-spd" style="float: right; font-weight: bold; color: #fff;">--</span></div>
+                        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333;">🍀 Sue: <span id="id-card-luk" style="float: right; font-weight: bold; color: #fff;">--</span></div>
+                    </div>
+
+                    <div id="id-card-secret-gene" style="background: rgba(138, 43, 226, 0.15); border-radius: 8px; padding: 12px; text-align: center; border: 1px dashed #8A2BE2;">
+                        <div style="font-size: 10px; color: #e0b0ff; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; font-weight: bold;">Gen Oculto</div>
+                        <div id="id-card-locked-text" style="color: #aaa; font-size: 12px; margin-bottom: 10px;">🔒 Secuencia Bloqueada</div>
+                        <div id="id-card-dom" class="hidden" style="font-size: 11px; margin-bottom: 5px; text-align: left; padding: 6px; background: rgba(0,0,0,0.4); border-radius: 4px; border-left: 3px solid #80deea;"></div>
+                        <div id="id-card-rec" class="hidden" style="font-size: 11px; text-align: left; padding: 6px; background: rgba(0,0,0,0.4); border-radius: 4px; border-left: 3px solid #8A2BE2;"></div>
+                        <button id="btn-id-scan" style="background: linear-gradient(90deg, #8A2BE2, #00d2ff); color: white; border: none; padding: 10px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%; box-shadow: 0 4px 10px rgba(138, 43, 226, 0.3);">Usar Escáner Molecular</button>
+                    </div>
+                </div>
+            </div>
+            <div class="fab-btn btn-go-home" style="position: absolute !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; width: 70% !important; max-width: 300px !important; z-index: 100 !important;">
+                <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0;">VOLVER AL LABORATORIO</div>
+            </div>
+        </div>
+
+        <div id="coliseum-lobby-screen" class="app-screen hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; box-sizing: border-box; background: linear-gradient(180deg, #4dd0e1 0%, #26c6da 100%) !important;">
+            <!-- Capa de scanlines (mismo que room-area y breeding) -->
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 2px, transparent 2px, transparent 8px); pointer-events: none; z-index: 2;"></div>
+            
+            <style>
+                #coliseum-lobby-screen:not(.hidden) {
+                    display: flex !important;
+                    flex-direction: column !important;
+                    padding: 15px !important;
+                }
+                .lobby-card-container {
+                    flex-grow: 1 !important; 
+                    overflow-y: hidden !important; 
+                    background: #1a2a36 !important;
+                    border-radius: 16px !important;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.4) !important;
+                    padding: 15px !important;
+                    margin-bottom: 70px !important; 
+                    display: flex !important;
+                    flex-direction: column !important;
+                    position: relative;
+                    z-index: 3;
+                    min-height: 0 !important;
+                }
+                .lobby-card {
+                    background: linear-gradient(135deg, #0f1c26 0%, #071017 100%) !important;
+                    border-radius: 14px;
+                    padding: 12px 14px;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+                    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.05), 0 4px 15px rgba(0, 0, 0, 0.4);
+                }
+                .lobby-card.active-card {
+                    position: relative !important;
+                    z-index: 100 !important;
+                }
+                .lobby-card.card-estandar {
+                    border: 2px solid #ff8c00 !important;
+                    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.05), 0 4px 15px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 140, 0, 0.05);
+                }
+                .lobby-card.card-estandar:hover {
+                    transform: translateY(-3px);
+                    background: linear-gradient(135deg, #182e42 0%, #0b1720 100%) !important;
+                    border-color: #ffaa33 !important;
+                    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.08), 0 8px 25px rgba(255, 140, 0, 0.35), 0 0 15px rgba(255, 140, 0, 0.15) !important;
+                }
+                .lobby-card.card-clon {
+                    border: 2px solid #00acc1 !important;
+                    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.05), 0 4px 15px rgba(0, 0, 0, 0.4), 0 0 12px rgba(0, 172, 193, 0.05);
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                }
+                .lobby-card.card-clon:hover {
+                    transform: translateY(-3px);
+                    background: linear-gradient(135deg, #182e42 0%, #0b1720 100%) !important;
+                    border-color: #00e5ff !important;
+                    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.08), 0 8px 25px rgba(0, 172, 193, 0.35), 0 0 15px rgba(0, 172, 193, 0.15) !important;
+                }
+                .lobby-card.card-desafio {
+                    border: 2px solid #8A2BE2 !important;
+                    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.05), 0 4px 15px rgba(0, 0, 0, 0.4), 0 0 12px rgba(138, 43, 226, 0.05);
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                }
+                .lobby-card.card-desafio:hover {
+                    transform: translateY(-3px);
+                    background: linear-gradient(135deg, #182e42 0%, #0b1720 100%) !important;
+                    border-color: #ba55d3 !important;
+                    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.08), 0 8px 25px rgba(138, 43, 226, 0.35), 0 0 15px rgba(138, 43, 226, 0.15) !important;
+                }
+                .lobby-card.card-3v3 {
+                    border: 2px solid #00e5ff !important;
+                    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.05), 0 4px 15px rgba(0, 0, 0, 0.4), 0 0 12px rgba(0, 229, 255, 0.05);
+                }
+                .lobby-card.card-3v3:hover {
+                    transform: translateY(-3px);
+                    background: linear-gradient(135deg, #182e42 0%, #0b1720 100%) !important;
+                    border-color: #8A2BE2 !important;
+                    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.08), 0 8px 25px rgba(138, 43, 226, 0.35), 0 0 15px rgba(0, 229, 255, 0.15) !important;
+                }
+                .lobby-card.card-tournament {
+                    border: 2px solid #ff007f !important;
+                    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.05), 0 4px 15px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 0, 127, 0.05);
+                }
+                .lobby-card.card-tournament:hover {
+                    transform: translateY(-3px);
+                    background: linear-gradient(135deg, #182e42 0%, #0b1720 100%) !important;
+                    border-color: #ff55a3 !important;
+                    box-shadow: inset 0 1px 3px rgba(255, 255, 255, 0.08), 0 8px 25px rgba(255, 0, 127, 0.35), 0 0 15px rgba(255, 0, 127, 0.15) !important;
+                }
+                .lobby-scroll-list::-webkit-scrollbar {
+                    display: none !important;
+                }
+                
+                /* Estilo premium para las cajas de selección (select) */
+                .lobby-card select {
+                    display: none !important;
+                }
+
+                .coliseum-select-wrapper {
+                    position: relative;
+                    flex: 1;
+                    max-width: 160px;
+                    user-select: none;
+                }
+
+                .coliseum-select-wrapper.active-select {
+                    z-index: 1010 !important;
+                }
+
+                .coliseum-select-trigger {
+                    background-color: #0c1620 !important;
+                    color: #fff !important;
+                    border-radius: 6px !important;
+                    padding: 6px 28px 6px 10px !important;
+                    font-size: 11px !important;
+                    font-family: inherit !important;
+                    cursor: pointer !important;
+                    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease !important;
+                    background-repeat: no-repeat !important;
+                    background-position: right 8px center !important;
+                    background-size: 10px !important;
+                    font-weight: bold !important;
+                    text-transform: uppercase !important;
+                    letter-spacing: 0.5px !important;
+                    text-align: left !important;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                /* Custom styles for clone element select trigger (cyan) */
+                .coliseum-select-wrapper.cyan-theme .coliseum-select-trigger {
+                    border: 1px solid rgba(0, 172, 193, 0.6) !important;
+                    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300e5ff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+                }
+
+                .coliseum-select-wrapper.cyan-theme .coliseum-select-trigger:hover {
+                    border-color: #00e5ff !important;
+                    background-color: #12222f !important;
+                    box-shadow: 0 0 8px rgba(0, 172, 193, 0.3) !important;
+                }
+
+                .coliseum-select-wrapper.cyan-theme .coliseum-select-trigger.open {
+                    border-color: #00e5ff !important;
+                    box-shadow: 0 0 12px rgba(0, 172, 193, 0.6) !important;
+                    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300e5ff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='18 15 12 9 6 15'%3E%3C/polyline%3E%3C/svg%3E") !important;
+                }
+
+                /* Custom styles for NPC/difficulty select trigger (purple) */
+                .coliseum-select-wrapper.purple-theme .coliseum-select-trigger {
+                    border: 1px solid rgba(138, 43, 226, 0.6) !important;
+                    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b85cff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") !important;
+                }
+
+                .coliseum-select-wrapper.purple-theme .coliseum-select-trigger:hover {
+                    border-color: #ba55d3 !important;
+                    background-color: #12222f !important;
+                    box-shadow: 0 0 8px rgba(138, 43, 226, 0.3) !important;
+                }
+
+                .coliseum-select-wrapper.purple-theme .coliseum-select-trigger.open {
+                    border-color: #ba55d3 !important;
+                    box-shadow: 0 0 12px rgba(138, 43, 226, 0.6) !important;
+                    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b85cff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='18 15 12 9 6 15'%3E%3C/polyline%3E%3C/svg%3E") !important;
+                }
+
+                /* Floating options container */
+                .coliseum-select-options {
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    width: 100%;
+                    background: #0c1620;
+                    border-radius: 6px;
+                    margin-top: 5px;
+                    z-index: 1000;
+                    display: none;
+                    overflow-y: auto;
+                    max-height: 180px;
+                    box-shadow: 0 8px 25px rgba(0,0,0,0.8);
+                    -ms-overflow-style: none !important;
+                    scrollbar-width: none !important;
+                }
+
+                .coliseum-select-options::-webkit-scrollbar {
+                    display: none !important;
+                }
+
+                .coliseum-select-options.open {
+                    display: block;
+                    animation: fadeInColiseumSelect 0.15s ease-in-out;
+                }
+
+                .coliseum-select-wrapper.cyan-theme .coliseum-select-options {
+                    border: 1px solid #00acc1;
+                }
+
+                .coliseum-select-wrapper.purple-theme .coliseum-select-options {
+                    border: 1px solid #8A2BE2;
+                }
+
+                @keyframes fadeInColiseumSelect {
+                    from { opacity: 0; transform: translateY(-5px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+
+                /* Individual options */
+                .coliseum-option {
+                    padding: 8px 10px;
+                    font-size: 11px;
+                    font-weight: bold;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    cursor: pointer;
+                    transition: all 0.2s;
+                    text-align: left;
+                }
+
+                .coliseum-select-wrapper.cyan-theme .coliseum-option {
+                    color: #00e5ff;
+                    border-bottom: 1px dashed rgba(0, 172, 193, 0.2);
+                }
+
+                .coliseum-select-wrapper.cyan-theme .coliseum-option:last-child {
+                    border-bottom: none;
+                }
+
+                .coliseum-select-wrapper.cyan-theme .coliseum-option:hover {
+                    background: #00acc1;
+                    color: #0c1620;
+                }
+
+                .coliseum-select-wrapper.cyan-theme .coliseum-option.selected {
+                    background: rgba(0, 172, 193, 0.2);
+                    color: #fff;
+                }
+
+                .coliseum-select-wrapper.purple-theme .coliseum-option {
+                    color: #b85cff;
+                    border-bottom: 1px dashed rgba(138, 43, 226, 0.2);
+                }
+
+                .coliseum-select-wrapper.purple-theme .coliseum-option:last-child {
+                    border-bottom: none;
+                }
+
+                .coliseum-select-wrapper.purple-theme .coliseum-option:hover {
+                    background: #8A2BE2;
+                    color: #0c1620;
+                }
+
+                .coliseum-select-wrapper.purple-theme .coliseum-option.selected {
+                    background: rgba(138, 43, 226, 0.2);
+                    color: #fff;
+                }
+            </style>
+
+            <!-- Recuadro oscuro para respetar la interfaz de la app (mismo estilo que Salon Arcade) -->
+            <div class="lobby-card-container">
+                <!-- Título idéntico en formato al de Arcade con botón de ayuda -->
+                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px; flex-shrink: 0;">
+                    <h2 class="screen-title" style="color: #4dd0e1 !important; text-shadow: none !important; text-transform: uppercase !important; letter-spacing: 2px !important; margin: 0 !important; font-weight: bold !important; font-size: 14px !important; border-bottom: none !important; padding-bottom: 0 !important;">TERMINAL DE COMBATE</h2>
+                    <button id="btn-coliseum-help" style="width: 34px; height: 34px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 10px; border: 1.5px solid #2a2a4a; background: rgba(77, 208, 225, 0.1); cursor: pointer; transition: 0.2s; flex-shrink: 0;" title="Manual del Coliseo" onmouseover="this.style.background='rgba(77, 208, 225, 0.25)'; this.style.borderColor='#4dd0e1';" onmouseout="this.style.background='rgba(77, 208, 225, 0.1)'; this.style.borderColor='#2a2a4a';">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4dd0e1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                        </svg>
+                    </button>
+                </div>
+                <p style="text-align: center; color: #cbd5e1 !important; font-size: 11px; margin: 0 0 15px 0 !important; padding: 0 10px; line-height: 1.4 !important; flex-shrink: 0 !important;">Selecciona la modalidad para entrar a la arena del Coliseo.</p>
+
+                <!-- Lista de tarjetas scrollable interna -->
+                <div class="lobby-scroll-list" style="flex-grow: 1 !important; overflow-y: auto !important; display: flex !important; flex-direction: column !important; gap: 12px !important; padding: 5px 2px !important; -ms-overflow-style: none !important; scrollbar-width: none !important;">
+                    
+                    <!-- CARD 1: ESTANDAR -->
+                    <div class="lobby-card card-estandar" onclick="ColiseumManager.seleccionarModo('estandar')">
+                        <div style="background: rgba(255, 140, 0, 0.1); border: 1px solid #ff8c00; border-radius: 10px; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff8c00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="20" y1="20" x2="14" y2="14" />
+                                <line x1="10" y1="10" x2="4" y2="4" />
+                                <line x1="15" y1="19" x2="19" y2="15" />
+                                <line x1="4" y1="20" x2="20" y2="4" />
+                                <line x1="5" y1="15" x2="9" y2="19" />
+                            </svg>
+                        </div>
+                        <div style="flex: 1;">
+                            <h3 style="color: #ff9800; margin: 0 0 3px 0; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Combate Estándar</h3>
+                            <p style="color: #cbd5e1; margin: 0; font-size: 11px; line-height: 1.25;">Duelo clásico contra Genos aleatorios controlados por la IA de la arena. Gana EV y sube de nivel.</p>
+                        </div>
+                    </div>
+
+                    <!-- CARD 2: CLON -->
+                    <div class="lobby-card card-clon">
+                        <div style="display: flex; align-items: center; gap: 12px; cursor: pointer; width: 100%;" onclick="ColiseumManager.seleccionarModo('clon')">
+                            <div style="background: rgba(0, 172, 193, 0.1); border: 1px solid #00acc1; border-radius: 10px; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M4.5 16.5c-1.5 1.26-2.5 3.19-2.5 5.5h20c0-2.31-1-4.24-2.5-5.5"/>
+                                    <path d="M12 2C9.24 2 7 4.24 7 7c0 2.04 1.22 3.79 3 4.54V14h4v-2.46c1.78-.75 3-2.5 3-4.54 0-2.76-2.24-5-5-5z"/>
+                                </svg>
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 style="color: #00e5ff; margin: 0 0 3px 0; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Simulador de Clon</h3>
+                                <p style="color: #cbd5e1; margin: 0; font-size: 11px; line-height: 1.25;">Combate de práctica contra una réplica exacta de tu Geno. Evalúa tus Tácticas Automáticas en acción.</p>
+                            </div>
+                        </div>
+                        
+                        <div style="border-top: 1px solid rgba(0, 172, 193, 0.2); padding-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%;">
+                            <span style="color: #00e5ff; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Afinidad Elemento:</span>
+                            <select id="lobby-clone-element-select">
+                                <option value="mismo" selected>Mismo que tu Geno</option>
+                                <option value="Biomutante">Biomutante</option>
+                                <option value="Viral">Viral</option>
+                                <option value="Cibernético">Cibernético</option>
+                                <option value="Radiactivo">Radiactivo</option>
+                                <option value="Tóxico">Tóxico</option>
+                                <option value="Sintético">Sintético</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- CARD 3: DESAFIO TACTICO -->
+                    <div class="lobby-card card-desafio">
+                        <div style="display: flex; align-items: center; gap: 12px; cursor: pointer; width: 100%;" onclick="ColiseumManager.seleccionarModo('desafio')">
+                            <div style="background: rgba(138, 43, 226, 0.1); border: 1px solid #8A2BE2; border-radius: 10px; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A2BE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                                    <line x1="9" y1="9" x2="15" y2="9"/>
+                                    <line x1="9" y1="13" x2="15" y2="13"/>
+                                    <line x1="9" y1="17" x2="13" y2="17"/>
+                                </svg>
+                            </div>
+                            <div style="flex: 1;">
+                                <h3 style="color: #b85cff; margin: 0 0 3px 0; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Desafío Táctico</h3>
+                                <p style="color: #cbd5e1; margin: 0; font-size: 11px; line-height: 1.25;">Desafía a estrategas pre-programados. Pon a prueba la adaptabilidad de tu Geno contra diferentes IAs.</p>
+                            </div>
+                        </div>
+                        
+                        <div style="border-top: 1px solid rgba(138, 43, 226, 0.2); padding-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%;">
+                            <span style="color: #b85cff; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Oponente:</span>
+                            <select id="lobby-npc-select">
+                                <option value="cyborg" selected>Cyborg Defensivo (Cibernético)</option>
+                                <option value="viral">Infeccioso Viral (Viral)</option>
+                                <option value="sintetico">Rápido Sintético (Sintético)</option>
+                                <option value="biomutante">Titán Biomutante (Biomutante)</option>
+                                <option value="radiactivo">Radiador Mutado (Radiactivo)</option>
+                                <option value="toxico">Tóxico Mutante (Tóxico)</option>
+                            </select>
+                        </div>
+
+                        <div style="border-top: 1px solid rgba(138, 43, 226, 0.1); padding-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%;">
+                            <span style="color: #b85cff; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Dificultad:</span>
+                            <select id="lobby-npc-level-select">
+                                <option value="10">Nivel 10 (Fácil)</option>
+                                <option value="25" selected>Nivel 25 (Normal)</option>
+                                <option value="40">Nivel 40 (Difícil)</option>
+                                <option value="50">Nivel 50 (Élite)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- CARD 4: 3v3 TEAM BATTLES -->
+                    <div class="lobby-card card-3v3" onclick="ColiseumManager.abrirSeleccion3v3()">
+                        <div style="background: rgba(0, 229, 255, 0.1); border: 1px solid #00e5ff; border-radius: 10px; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                                <circle cx="9" cy="7" r="4" />
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                            </svg>
+                        </div>
+                        <div style="flex: 1;">
+                            <h3 style="color: #00e5ff; margin: 0 0 3px 0; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Combate 3v3 de Equipos</h3>
+                            <p style="color: #cbd5e1; margin: 0; font-size: 11px; line-height: 1.25;">Enfrentamiento táctico con un equipo de 3 Genos. Domina la arena con relevos estratégicos y sinergias.</p>
+                        </div>
+                    </div>
+
+                    <!-- CARD 5: TORNEO DE LLAVES -->
+                    <div class="lobby-card card-tournament" onclick="TournamentManager.abrirTorneos()">
+                        <div style="background: rgba(255, 0, 127, 0.1); border: 1px solid #ff007f; border-radius: 10px; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff007f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="8" r="7" />
+                                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+                            </svg>
+                        </div>
+                        <div style="flex: 1;">
+                            <h3 style="color: #ff007f; margin: 0 0 3px 0; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Torneo de Llaves</h3>
+                            <p style="color: #cbd5e1; margin: 0; font-size: 11px; line-height: 1.25;">Torneo de eliminación directa de 16 jugadores. Inscripción en $POL con premios acumulados.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón Volver flotante y anclado abajo -->
+            <div class="fab-btn btn-go-home" style="position: absolute !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; width: 70% !important; max-width: 300px !important; z-index: 100 !important;">
+                <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0; font-weight: bold; text-align: center; letter-spacing: 1px;">VOLVER AL LABORATORIO</div>
+            </div>
+        </div>
+
+        <div id="coliseum-screen" class="app-screen hidden">
+            <h2 class="screen-title">Coliseo Nexo</h2>
+            
+            <div id="battle-area" class="coliseum-card">
+                <!-- Banner de Asistencia de Entrenamiento de Bajo Nivel -->
+                <div id="coliseum-battle-notification" class="hidden" style="width: calc(100% + 40px); margin: -25px -20px 15px -20px; padding: 8px 15px; background: rgba(105, 240, 174, 0.12); border-bottom: 2px solid #69f0ae; color: #69f0ae; font-size: 11px; font-weight: bold; text-align: center; text-transform: uppercase; letter-spacing: 1px; border-radius: 14px 14px 0 0; box-shadow: 0 4px 10px rgba(105,240,174,0.1); z-index: 10; box-sizing: border-box;">
+                    🛡️ Asistencia de Entrenamiento Activa (-15% Stats Enemigo)
+                </div>
+                
+                <div class="fighters-vs-container">
+                    <div id="player-sprite-battle" class="fighter-left">
+                        <div id="player-visual-box" class="fighter-sprite"></div>
+                        <div id="battle-player-name" class="fighter-name">Tu Geno</div>
+                        <div class="hp-bar-container">
+                            <div id="player-hp-bar" class="hp-bar-fill-green"></div>
+                        </div>
+                        <div id="player-hp-text" class="hp-text">HP</div>
+                    </div>
+                    
+                    <div class="vs-badge-battle">VS</div>
+                    
+                    <div id="enemy-sprite-battle" class="fighter-right">
+                        <div id="enemy-visual-box" class="fighter-sprite"></div>
+                        <div id="battle-enemy-name" class="fighter-name">---</div>
+                        <div class="hp-bar-container">
+                            <div id="enemy-hp-bar" class="hp-bar-fill-red"></div>
+                        </div>
+                        <div id="enemy-hp-text" class="hp-text">HP</div>
+                    </div>
+                </div>
+                
+                <div id="battle-log" class="battle-log-container">Arena preparada. Esperando combatientes...</div>
+            </div>
+            
+            <div id="battle-controls" class="controls-container hidden"></div>
+            
+            <button id="btn-start-battle" class="btn-primary">Entrar a la Arena</button>
+            
+            <div id="btn-leave-battle" style="display: block; margin: 40px auto 25px auto !important; width: 70% !important; max-width: 300px !important; background: transparent !important; border: none !important; box-shadow: none !important; padding: 0 !important; text-align: center !important;">
+                <div class="fab-btn btn-go-home" style="position: relative !important; width: 100% !important; margin: 0 !important; display: block !important;">
+                    <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0; width: 100%; text-align: center; font-weight: bold; letter-spacing: 1px;">RETIRARSE</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANTALLA DE TORNEOS COMPETITIVOS -->
+        <div id="tournament-screen" class="app-screen hidden">
+            <!-- Header con título neón y botón de Volver -->
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 15px; flex-shrink: 0;">
+                <h2 class="screen-title" style="color: #ff007f !important; text-shadow: 0 0 10px rgba(255,0,127,0.3) !important; text-transform: uppercase !important; letter-spacing: 2px !important; margin: 0 !important; font-weight: bold !important; font-size: 15px !important; border-bottom: none !important; padding-bottom: 0 !important;">Torneos de Llaves</h2>
+                <button onclick="navegarA('coliseum-lobby-screen')" style="background: transparent; border: 1px solid #384a5e; border-radius: 8px; color: #aaa; padding: 5px 10px; font-size: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase;">
+                    Volver
+                </button>
+            </div>
+
+            <!-- Panel de Saldos Pendientes (FIFO / Cancelaciones) -->
+            <div class="tourney-card" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; margin-bottom: 12px;">
+                <div style="display: flex; flex-direction: column;">
+                    <span style="font-size: 9px; color: #888; text-transform: uppercase; letter-spacing: 0.5px;">Saldos Pendientes (Reembolsos):</span>
+                    <span style="font-size: 16px; font-weight: bold; color: #ffd700;"><span id="tourney-pending-balance-val">0.00</span> POL</span>
+                </div>
+                <button id="tourney-btn-claim-pending" class="market-btn-neon" onclick="TournamentManager.reclamarSaldoPendiente()" style="margin: 0; padding: 8px 12px; font-size: 10px; font-weight: bold; background: linear-gradient(90deg, #1e293b, #334155); border: 1px solid #475569; box-shadow: none;">
+                    Reclamar Reembolso
+                </button>
+            </div>
+
+            <!-- Pestañas de Navegación -->
+            <div class="tournament-tabs" style="display: flex; gap: 8px; margin-bottom: 12px; flex-shrink: 0; z-index: 10;">
+                <button id="tab-tourney-brackets" class="market-btn-neon active" onclick="TournamentManager.setTab('brackets')" style="margin: 0; flex: 1; padding: 8px 0; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">🏆 Copas</button>
+                <button id="tab-tourney-tematicos" class="market-btn-neon" onclick="TournamentManager.setTab('tematicos')" style="margin: 0; flex: 1; padding: 8px 0; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">🎯 Temáticos</button>
+                <button id="tab-tourney-ranking" class="market-btn-neon" onclick="TournamentManager.setTab('ranking')" style="margin: 0; flex: 1; padding: 8px 0; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">🏅 Ranking</button>
+            </div>
+
+            <!-- CONTENIDO DE PESTAÑA: COPAS DE LLAVES -->
+            <div id="tourney-brackets-tab-content" style="display: contents;">
+                <!-- PANEL 1: LOBBY DE SELECCIÓN (TORNEOS DISPONIBLES) -->
+                <div id="tourney-lobby-panel" class="tourney-card" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: center; gap: 15px; margin-bottom: 70px;">
+                    <div style="text-align: center; color: #ccc; font-size: 11px; margin-bottom: 5px;">
+                        Selecciona un torneo activo de 16 jugadores en la red Polygon:
+                    </div>
+                    
+                    <div class="tourney-grid">
+                        <div class="tourney-option-card" onclick="TournamentManager.inscribirse('neon')">
+                            <div class="tourney-title-glow" style="color: #ff007f; text-shadow: 0 0 8px rgba(255,0,127,0.3);">Copa Neón</div>
+                            <div style="font-size: 20px; font-weight: bold; color: #fff; margin: 5px 0;">1.00 POL</div>
+                            <div style="font-size: 9px; color: #aaa; text-transform: uppercase; margin-bottom: 8px;">Entrada</div>
+                            <div style="font-size: 9px; color: #69f0ae; line-height: 1.3;">Premio 1er Puesto:<br><b>9.00 POL</b></div>
+                        </div>
+                        <div class="tourney-option-card" onclick="TournamentManager.inscribirse('satelite')">
+                            <div class="tourney-title-glow" style="color: #00e5ff; text-shadow: 0 0 8px rgba(0,229,255,0.3);">Copa Satélite</div>
+                            <div style="font-size: 20px; font-weight: bold; color: #fff; margin: 5px 0;">0.50 POL</div>
+                            <div style="font-size: 9px; color: #aaa; text-transform: uppercase; margin-bottom: 8px;">Entrada</div>
+                            <div style="font-size: 9px; color: #69f0ae; line-height: 1.3;">Premio 1er Puesto:<br><b>4.50 POL</b></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENIDO DE PESTAÑA: TORNEOS TEMÁTICOS -->
+            <div id="tourney-tematicos-tab-content" class="hidden" style="flex-grow: 1; display: flex; flex-direction: column; gap: 12px; margin-bottom: 70px;">
+                <!-- Banner de la Semana Actual -->
+                <div id="tourney-tematicos-banner" class="tourney-card" style="padding: 12px 15px; background: linear-gradient(135deg, rgba(255, 0, 127, 0.15) 0%, rgba(138, 43, 226, 0.15) 100%); border: 1.5px solid #ff007f; box-shadow: 0 0 15px rgba(255, 0, 127, 0.2); text-align: center;">
+                    <div id="tematicos-banner-week" style="font-size: 13px; font-weight: 900; color: #ff007f; text-transform: uppercase; letter-spacing: 1.5px; text-shadow: 0 0 8px rgba(255,0,127,0.4); margin-bottom: 4px;">Semana X - Rotación Temática</div>
+                    <div id="tematicos-banner-desc" style="font-size: 11px; color: #cbd5e1; line-height: 1.4;">Cargando detalles de la rotación...</div>
+                </div>
+                
+                <!-- Grid de Torneos Temáticos Activos -->
+                <div id="tourney-tematicos-list" style="flex-grow: 1; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; max-height: 380px; -ms-overflow-style: none; scrollbar-width: none;">
+                    <!-- Tarjetas de torneos inyectadas por JS -->
+                </div>
+            </div>
+
+            <!-- CONTENIDO DE PESTAÑA: RANKING ON-CHAIN -->
+            <div id="tourney-ranking-tab-content" class="hidden" style="flex-grow: 1; display: flex; flex-direction: column; gap: 12px; margin-bottom: 70px; overflow-y: auto;">
+
+                <!-- Ranking Global -->
+                <div class="tourney-card" style="padding: 12px 15px; background: linear-gradient(135deg, rgba(255,215,0,0.08) 0%, rgba(138,43,226,0.08) 100%); border: 1.5px solid rgba(255,215,0,0.3);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="font-size: 11px; font-weight: bold; color: #ffd700; text-transform: uppercase; letter-spacing: 1px;">🌐 Leaderboard Global</div>
+                        <button onclick="TournamentManager.cargarLeaderboard()" id="btn-reload-leaderboard" style="background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); border-radius: 6px; color: #ffd700; font-size: 9px; font-weight: bold; padding: 4px 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;">↻ Actualizar</button>
+                    </div>
+                    <div id="tourney-leaderboard-global" style="min-height: 80px;">
+                        <div style="text-align: center; color: #555; font-size: 11px; padding: 20px;">Cargando ranking...</div>
+                    </div>
+                </div>
+
+                <!-- Historial Personal -->
+                <div class="tourney-card" style="padding: 12px 15px; background: linear-gradient(135deg, rgba(0,229,255,0.06) 0%, rgba(0,0,0,0.3) 100%); border: 1.5px solid rgba(0,229,255,0.2);">
+                    <div style="font-size: 11px; font-weight: bold; color: #00e5ff; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">📋 Mi Historial de Torneos</div>
+                    <div id="tourney-leaderboard-personal" style="min-height: 60px;">
+                        <div style="text-align: center; color: #555; font-size: 11px; padding: 15px;">Conéctate para ver tu historial.</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- PANEL 2: SALA DE ESPERA (COLA MATCHMAKING) -->
+            <div id="tourney-queue-panel" class="tourney-card hidden" style="flex-grow: 1; display: flex; flex-direction: column; margin-bottom: 70px;">
+                <div style="text-align: center; margin-bottom: 15px;">
+                    <div style="border: 3px solid rgba(0, 229, 255, 0.1); border-top: 3px solid #00e5ff; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 0 auto 10px auto;"></div>
+                    <div style="font-size: 13px; font-weight: bold; color: #00e5ff;">Buscando Oponentes...</div>
+                    <div style="font-size: 10px; color: #888; margin-top: 2px;">Sincronizando jugadores (FIFO Matchmaking)</div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; border-bottom: 1.5px solid #384a5e; padding-bottom: 5px; margin-bottom: 10px;">
+                    <span style="font-size: 11px; font-weight: bold; color: #fff;">LOBBY COMPETITIVO</span>
+                    <span id="tourney-queue-count" style="font-size: 11px; font-weight: bold; color: #00e5ff; font-family: monospace;">1/16</span>
+                </div>
+
+                <div id="tourney-queue-list" style="flex-grow: 1; overflow-y: auto; max-height: 200px; background: rgba(0,0,0,0.3); border-radius: 8px; border: 1px solid #2a3a4a; padding: 5px;">
+                    <!-- Jugadores en cola -->
+                </div>
+
+                <button class="market-btn-neon red" onclick="TournamentManager.cancelarCola()" style="width: 100%; margin-top: 15px; padding: 12px 0;">
+                    Abandonar Cola (Reembolso)
+                </button>
+            </div>
+
+            <!-- PANEL 3: BRACKET COMPLETO DEL TORNEO -->
+            <div id="tourney-bracket-panel" class="hidden" style="flex-grow: 1; display: flex; flex-direction: column; gap: 15px; margin-bottom: 70px; min-height: 0;">
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px; height: 100%; min-height: 0;">
+                    <!-- Árbol visual de llaves (Scroll horizontal) -->
+                    <div class="tourney-card" style="margin-bottom: 0; padding: 10px; overflow: hidden; display: flex; flex-direction: column; min-height: 0;">
+                        <div id="tourney-bracket-rounds" class="bracket-tree" style="overflow-x: auto;">
+                            <!-- Columnas de rondas inyectadas por JS -->
+                        </div>
+                    </div>
+
+                    <!-- Panel de control de encuentro a la derecha -->
+                    <div id="tourney-match-details" style="display: flex; flex-direction: column; justify-content: center;">
+                        <!-- Detalles inyectados por JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón Volver flotante abajo -->
+            <div class="fab-btn btn-go-home" style="position: absolute !important; bottom: 30px !important; left: 50% !important; transform: translateX(-50%) !important; width: 70% !important; max-width: 300px !important; z-index: 100 !important;" onclick="navegarA('coliseum-lobby-screen')">
+                <div class="fab-content" style="font-size: 13px; cursor: pointer; padding: 12px 0; font-weight: bold; text-align: center; letter-spacing: 1px;">VOLVER AL COLISEO</div>
+            </div>
+        </div>
+
+        <div id="shop-screen" class="app-screen hidden" style="background-color: #4dd0e1; background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px); overflow: hidden;"></div>
+        
+        <div id="market-screen" class="app-screen hidden">
+            <h2 class="screen-title" style="color: #8A2BE2;">Mercado Web3</h2>
+            <div style="display: flex; justify-content: center; margin-bottom: 15px;">
+                <button id="tab-market-buy" style="background: #8A2BE2; color: white; border: 1px solid #8A2BE2; padding: 8px 20px; font-weight: bold; border-radius: 8px 0 0 8px; cursor: pointer;">Comprar</button>
+                <button id="tab-market-scholarships" style="background: #eee; color: #333; border: 1px solid #ccc; padding: 8px 20px; font-weight: bold; border-radius: 0; cursor: pointer; border-left: none; border-right: none;">Alquileres</button>
+                <button id="tab-market-sell" style="background: #eee; color: #333; border: 1px solid #ccc; padding: 8px 20px; font-weight: bold; border-radius: 0 8px 8px 0; cursor: pointer;">Mis Ventas</button>
+            </div>
+            <div id="market-buy-view">
+                <p style="text-align: center; color: #666; font-size: 12px; margin-bottom: 15px;">Adquiere Genos de otros criadores usando $POL.</p>
+                <div id="market-buy-grid" class="sanctuary-grid"></div>
+            </div>
+            <div id="market-scholarships-view" class="hidden">
+                <p style="text-align: center; color: #666; font-size: 12px; margin-bottom: 15px;">Alquila Genos competitivos para disputar los premios de $POL en el Coliseo.</p>
+                <div id="market-scholarships-grid" class="sanctuary-grid"></div>
+            </div>
+            <div id="market-sell-view" class="hidden">
+                <p style="text-align: center; color: #666; font-size: 12px; margin-bottom: 15px;">Ofrece tus Genos en venta directa o publícalos en beca para obtener rendimiento.</p>
+                <div id="market-my-listed" style="margin-bottom: 15px;"></div>
+                <div id="market-sell-grid" class="sanctuary-grid"></div>
+            </div>
+            <button class="back-btn btn-go-home">Volver al Laboratorio</button>
+        </div>
+
+        <div id="implants-area" class="app-screen hidden"></div>
+
+        <div id="fab-menu" class="fab-btn">
+            <div class="fab-content" style="font-weight: 900; letter-spacing: 3px; font-size: 14px;">NEXO</div>
+        </div>
+
+        <div id="drawer-menu" class="drawer-overlay hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000;">
+            <div class="drawer-content">
+                <div class="drawer-header"><h3>Red Nexo</h3><button id="close-drawer" style="background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 0;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div>
+                <div class="drawer-grid">
+                    <div class="drawer-item" id="btn-bathroom" onclick="document.getElementById('drawer-menu').classList.add('hidden'); window.navegarA('bathroom-screen');">
+                        <div class="drawer-icon" style="display:flex; align-items:center; justify-content:center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4dd0e1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                                <line x1="12" y1="10" x2="12" y2="16"/>
+                                <line x1="9" y1="13" x2="15" y2="13"/>
+                            </svg>
+                        </div>
+                        <span>Cuidado</span>
+                    </div>
+                    <div class="drawer-item" id="btn-arcade">
+                        <div class="drawer-icon" style="display:flex; align-items:center; justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4dd0e1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4"/><path d="M8 10v4"/><circle cx="15" cy="13" r="1"/><circle cx="18" cy="11" r="1"/></svg></div>
+                        <span>Arcade</span>
+                    </div>
+                    <div class="drawer-item" id="btn-breeding">
+                        <div class="drawer-icon" style="display:flex; align-items:center; justify-content:center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A2BE2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"/>
+                                <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(45 12 12)"/>
+                                <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-45 12 12)"/>
+                            </svg>
+                        </div>
+                        <span>Crianza</span>
+                    </div>
+                    <div class="drawer-item" id="btn-coliseum">
+                        <div class="drawer-icon" style="display:flex; align-items:center; justify-content:center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff8c00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="20" y1="20" x2="14" y2="14" />
+                                <line x1="10" y1="10" x2="4" y2="4" />
+                                <line x1="15" y1="19" x2="19" y2="15" />
+                                
+                                <line x1="4" y1="20" x2="20" y2="4" />
+                                <line x1="5" y1="15" x2="9" y2="19" />
+                            </svg>
+                        </div>
+                        <span>Coliseo</span>
+                    </div>
+                    
+                    <div class="drawer-item" id="btn-implants" onclick="document.getElementById('drawer-menu').classList.add('hidden'); ImplantsManager.init(); navegarA('implants-area');">
+                        <div class="drawer-icon" style="display:flex; align-items:center; justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg></div>
+                        <span>Implantes</span>
+                    </div>
+                    <div class="drawer-item" id="btn-alchemy">
+                        <div class="drawer-icon" style="display:flex; align-items:center; justify-content:center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="4" y="3" width="16" height="18" rx="4" />
+                                <circle cx="12" cy="12" r="3" />
+                                <line x1="4" y1="12" x2="9" y2="12" />
+                                <line x1="15" y1="12" x2="20" y2="12" />
+                                <line x1="12" y1="3" x2="12" y2="9" />
+                                <line x1="12" y1="15" x2="12" y2="21" />
+                            </svg>
+                        </div>
+                        <span>Reactor</span>
+                    </div>
+                    <div class="drawer-item" id="btn-sanctuary">
+                        <div class="drawer-icon" style="display:flex; align-items:center; justify-content:center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polygon points="12 3 22 9 2 9" />
+                                <line x1="6" y1="9" x2="6" y2="18" />
+                                <line x1="12" y1="9" x2="12" y2="18" />
+                                <line x1="18" y1="9" x2="18" y2="18" />
+                                <line x1="2" y1="18" x2="22" y2="18" />
+                                <line x1="4" y1="22" x2="20" y2="22" />
+                            </svg>
+                        </div>
+                        <span>Santuario</span>
+                    </div>
+                    <div class="drawer-item" id="btn-market">
+                        <div class="drawer-icon" style="display:flex; align-items:center; justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div>
+                        <span>Mercado</span>
+                    </div>
+                    
+                    <div class="drawer-item" id="btn-shop" onclick="document.getElementById('drawer-menu').classList.add('hidden'); if(window.ShopManager) window.ShopManager.init(); navegarA('shop-screen');">
+                        <div class="drawer-icon" style="display:flex; align-items:center; justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+                        <span>Tienda Nexo</span>
+                    </div>
+                    <div class="drawer-item" id="btn-toggle-music">
+                        <div class="drawer-icon" id="music-icon" style="display:flex; align-items:center; justify-content:center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff4b4b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>
+                                <line x1="20" y1="2" x2="4" y2="22"></line>
+                            </svg>
+                        </div>
+                        <span id="music-text" style="color: #ff4b4b;">Música: OFF</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Muro de Saldo Cero / Web3 Gateway (Cyberpunk Neon) -->
+        <div id="zero-balance-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+            <div class="modal-content" style="background: linear-gradient(180deg, #101524 0%, #080b12 100%); border: 2px solid #ff007f; box-shadow: 0 0 25px rgba(255, 0, 127, 0.4), inset 0 0 15px rgba(255, 0, 127, 0.1); width: 90%; max-width: 360px; border-radius: 16px; padding: 25px 20px; box-sizing: border-box; position: relative; max-height: 85vh; display: flex; flex-direction: column; font-family: sans-serif; color: white;">
+                <h3 style="color: #ff007f; text-transform: uppercase; margin: 0 0 10px 0; font-size: 15px; letter-spacing: 1.5px; text-align: center; font-weight: bold; text-shadow: 0 0 10px rgba(255, 0, 127, 0.5);">Sincronización Web3</h3>
+                
+                <p style="font-size: 11px; color: #ccc; line-height: 1.5; text-align: center; margin: 0 0 15px 0;">
+                    Para habilitar las funciones de la Wallet e interactuar con la red de transacciones externas, necesitas inicializar y vincular tu cuenta inteligente.
+                </p>
+
+                <!-- Copywriting Rotativo -->
+                <div id="zero-balance-copywriting" style="background: rgba(255, 0, 127, 0.05); border: 1px solid rgba(255, 0, 127, 0.2); border-radius: 10px; padding: 12px; margin-bottom: 20px; font-size: 11px; line-height: 1.4; color: #ff80bf; min-height: 50px; display: flex; align-items: center; justify-content: center; text-align: center;">
+                    <!-- Se inyectará dinámicamente una de las 3 variantes -->
+                </div>
+
+                <!-- Checkbox Gate -->
+                <div style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 20px; padding: 0 5px;">
+                    <input type="checkbox" id="gate_web3" style="width: 18px; height: 18px; cursor: pointer; accent-color: #ff007f; margin-top: 2px;">
+                    <label for="gate_web3" style="font-size: 11px; color: #aaa; cursor: pointer; line-height: 1.3; font-weight: 500; user-select: none;">
+                        Confirmar que deseo inicializar la red para preparar una transferencia externa de $POL.
+                    </label>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <!-- Botón Principal: Volver a la Plaza (Cian neón activo) -->
+                    <button id="btn-zero-back-plaza" style="background: transparent; color: #00e5ff; font-weight: bold; border: 2px solid #00e5ff; padding: 12px; border-radius: 10px; width: 100%; cursor: pointer; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; box-shadow: 0 0 15px rgba(0,229,255,0.2); transition: 0.2s;">
+                        Volver a la Plaza
+                    </button>
+                    
+                    <!-- Botón Secundario: Activar Wallet (Gris, deshabilitado y opaco por defecto) -->
+                    <button id="btn-zero-activate-privy" disabled style="background: #333; color: #888; font-weight: bold; border: none; padding: 12px; border-radius: 10px; width: 100%; cursor: not-allowed; text-transform: uppercase; font-size: 12px; letter-spacing: 1px; transition: 0.3s; opacity: 0.5;">
+                        Activar Wallet y Depositar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="LoginUI.js"></script>
+    <script src="EmojiReplacer.js"></script>
+    <script src="CloudManager.js"></script>
+    <script src="EnergyManager.js"></script>
+    <script src="SaveManager.js"></script>
+    <script src="AudioEngine.js"></script>
+    <script src="genes.js"></script>
+    <script src="genoma.js"></script>
+    <script src="motorGenetico.js"></script>
+    <script src="caras.js"></script>
+    <script src="accesorios.js"></script>
+    <script src="SVGEngine.js?v=2"></script>
+    <script src="InventoryManager.js"></script>
+    <script src="BreedingManager.js"></script>
+    <script src="MarketManager.js"></script>
+    <script src="ShopManager.js"></script>
+    <script src="AttackCatalog.js"></script>
+    <script src="ColiseumLogic.js"></script>
+    <script src="ColiseumUI.js"></script>
+    <script src="ColiseumManager.js"></script>
+    <script src="ArcadeData.js"></script>
+    <script src="ArcadeManager.js"></script>
+    <script src="MinigameCatch.js"></script>
+    <script src="ReactorManager.js"></script>
+    <script src="SanctuaryManager.js"></script>
+    <script src="RPGManager.js"></script>
+    <script src="LabManager.js"></script>
+    <script src="app.js"></script>
+    <script src="ImplantsUI.js"></script>
+    <script src="ImplantsManager.js"></script>
+    <script src="WalletManager.js"></script>
+    <script src="TournamentManager.js"></script>
+    <script src="ScholarshipManager.js"></script>
+    <script src="EnergyPackager.js"></script>
+    <script src="DailyRewardsCatalog.js"></script>
+    <script src="DailyLoginManager.js"></script>
+    <script src="MailboxManager.js"></script>
+    <!-- Cyberpunk Dialog Overlay -->
+    <div id="cyber-alert-modal" class="hidden" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5, 7, 12, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 999999; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s ease; display: none;">
+        <div style="background: rgba(14, 18, 30, 0.95); border: 2px solid #00e5ff; box-shadow: 0 0 25px rgba(0, 229, 255, 0.35); border-radius: 12px; width: 90%; max-width: 400px; padding: 25px; box-sizing: border-box; text-align: center; position: relative; overflow: hidden; transform: scale(0.9); transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+            <!-- Grid decorativo cyberpunk -->
+            <div style="position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #00e5ff, #d500f9);"></div>
+            <div style="font-size: 30px; margin-bottom: 15px; filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.5));">
+                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle;">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+            </div>
+            <h3 style="font-family: 'Orbitron', sans-serif; font-size: 13px; color: #fff; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; text-shadow: 0 0 5px rgba(0, 229, 255, 0.2);">Mensaje de Red Nexo</h3>
+            <p id="cyber-alert-text" style="font-family: 'Outfit', sans-serif; font-size: 12px; color: #cbd5e1; line-height: 1.5; margin-bottom: 22px; word-break: break-word; text-align: center; font-weight: 600;"></p>
+            <button id="cyber-alert-btn" style="background: linear-gradient(90deg, #00e5ff, #d500f9); border: none; color: #fff; font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px; padding: 10px 24px; border-radius: 6px; cursor: pointer; box-shadow: 0 4px 12px rgba(0, 229, 255, 0.25); transition: all 0.2s; outline: none; width: 100%;" onmouseover="this.style.filter='brightness(1.1)'; this.style.boxShadow='0 6px 16px rgba(0, 229, 255, 0.45)';" onmouseout="this.style.filter='none'; this.style.boxShadow='0 4px 12px rgba(0, 229, 255, 0.25)';">Aceptar</button>
+        </div>
+    </div>
+
+    <script>
+        // Custom window.alert override is now handled centrally by EmojiReplacer.js
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const inyectarIconos = () => {
+                if(!window.iconoEV) return;
+                
+                const hudIcon = document.getElementById('hud-ev-icon-container');
+                if(hudIcon && !hudIcon.innerHTML.includes('svg')) hudIcon.innerHTML = window.iconoEV;
+                
+                document.querySelectorAll('.ev-icon-injector').forEach(el => {
+                    if(!el.innerHTML.includes('svg')) el.innerHTML = window.iconoEV;
+                });
+            };
+
+            setTimeout(inyectarIconos, 150);
+            
+            const observer = new MutationObserver(inyectarIconos);
+            observer.observe(document.body, { childList: true, subtree: true });
+        });
+    </script>
+</body>
+</html>
