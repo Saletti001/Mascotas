@@ -1,12 +1,65 @@
 // =========================================
-// WalletManager.js - CONEXIÓN WEB3 AMIGABLE
+// WalletManager.js - CONEXIÓN WEB3 COMPLETA
 // =========================================
+
+// Direcciones de contratos en Polygon (Amoy Testnet o Mainnet)
+window.CONTRACTS = {
+    PlazaComercio: "0x39aAA491de5C255f05Eb5A9b109eFd962551F891", // Dirección del contrato desplegado
+    Torneos: "0x81CbB112ADa8baA425e4c026856a9B109eFd112A"       // Dirección del contrato desplegado
+};
+
+// ABIs para interactuar con los métodos necesarios de Solidity
+window.ABI_PLAZA = [
+    "function procesarPagoGeno(uint256 _compraId, uint256 _genoId, address _vendedor, uint256 _montoTotal) external payable"
+];
+
+window.ABI_TORNEOS = [
+    "function crearTorneo(uint256 _torneoId, uint256 _costoEntrada, uint256 _maxJugadores) external",
+    "function inscribirseTorneo(uint256 _torneoId) external payable",
+    "function reubicarJugador(uint256 _torneoIdOrigen, uint256 _torneoIdDestino, address _jugador) external",
+    "function cancelarTorneo(uint256 _torneoId) external",
+    "function finalizarTorneo(uint256 _torneoId, address[] calldata _ganadores, bool[] calldata _esNPC) external",
+    "function retirarSaldo() external",
+    "function saldosPendientes(address) external view returns (uint256)",
+    "function torneos(uint256) external view returns (uint256 costoEntrada, uint256 maxJugadores, uint256 jugadoresInscritosCount, bool activo, bool cancelado, bool finalizado)"
+];
 
 window.WalletManager = {
     currentMotivo: null,
 
+    /**
+     * @dev Obtiene la instancia del contrato de la Plaza de Comercio.
+     */
+    obtenerContratoPlaza: async function() {
+        if (typeof window.ethers === 'undefined' || typeof window.ethereum === 'undefined') return null;
+        if (!window.miWallet || !window.miWallet.address || window.miWallet.isSimulated) return null;
+        try {
+            const provider = new window.ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
+            return new window.ethers.Contract(window.CONTRACTS.PlazaComercio, window.ABI_PLAZA, signer);
+        } catch (e) {
+            console.error("Error al instanciar contrato de Plaza:", e);
+            return null;
+        }
+    },
+
+    /**
+     * @dev Obtiene la instancia del contrato de Torneos.
+     */
+    obtenerContratoTorneos: async function() {
+        if (typeof window.ethers === 'undefined' || typeof window.ethereum === 'undefined') return null;
+        if (!window.miWallet || !window.miWallet.address || window.miWallet.isSimulated) return null;
+        try {
+            const provider = new window.ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
+            return new window.ethers.Contract(window.CONTRACTS.Torneos, window.ABI_TORNEOS, signer);
+        } catch (e) {
+            console.error("Error al instanciar contrato de Torneos:", e);
+            return null;
+        }
+    },
+
     inyectarModal: function() {
-        // Modal de Metamask legacy / fallback
         const modalHTML = `
             <div id="wallet-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
                 <div style="background:#1a1a2e; border: 2px solid #00d2ff; border-radius: 10px; padding: 20px; width: 85%; max-width: 320px; box-sizing: border-box; text-align: center; color: white; font-family: sans-serif; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
@@ -36,6 +89,7 @@ window.WalletManager = {
                     
                     if(!window.miWallet) window.miWallet = { pol: 10.0 };
                     window.miWallet.address = address;
+                    window.miWallet.isSimulated = false; // Billetera Web3 real activa
                     
                     document.getElementById('wallet-modal').style.display='none';
                     window.WalletManager.actualizarBoton();
@@ -51,7 +105,6 @@ window.WalletManager = {
             }
         };
 
-        // Configurar los listeners del Muro de Saldo Cero / Checkbox Gate
         const gate = document.getElementById("gate_web3");
         const btnActivate = document.getElementById("btn-zero-activate-privy");
         const btnBack = document.getElementById("btn-zero-back-plaza");
@@ -161,6 +214,7 @@ window.WalletManager = {
             
             if (!window.miWallet) window.miWallet = { pol: 0.0 };
             window.miWallet.address = generatedAddress;
+            window.miWallet.isSimulated = true; // Billetera Privy simulada activa
             
             let balanceClaimed = false;
             if ((window.miWallet.pol || 0) <= 0) {
@@ -218,6 +272,7 @@ window.WalletManager = {
             polText.onclick = () => {
                 if(confirm("Tu billetera actual es " + address + ".\n¿Deseas desvincularla?")) {
                     window.miWallet.address = null;
+                    window.miWallet.isSimulated = false;
                     this.actualizarBoton();
                     if (typeof window.actualizarVistaBaul === 'function') window.actualizarVistaBaul();
                     if(typeof window.guardarProgreso === 'function') window.guardarProgreso();
@@ -226,7 +281,6 @@ window.WalletManager = {
         } else {
             polText.innerText = `${saldo} POL | 🦊 Vincular`;
             polText.onclick = () => {
-                // Si el saldo es cero y no está vinculada, abrir el Muro de Saldo Cero
                 if (polNum <= 0) {
                     window.WalletManager.mostrarModalSaldoCero("vincular");
                 } else {

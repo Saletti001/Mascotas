@@ -1241,13 +1241,18 @@ window.publicarVentaEnNube = async function(ventaObj) {
         return;
     }
 
+    const walletAddress = window.miWallet ? window.miWallet.address : null;
+    const itemDataWithWallet = ventaObj.isItem 
+        ? { ...ventaObj.itemData, sellerWallet: walletAddress }
+        : { ...ventaObj, sellerWallet: walletAddress };
+
     const payload = {
         saleId: ventaObj.saleId || ventaObj.id,
         itemId: ventaObj.isItem ? ventaObj.itemData.id || "item" : ventaObj.id,
         pricePol: parseFloat(ventaObj.pricePol),
         sellerId: window.miUsuarioCloud.id,
         status: 'active',
-        itemData: ventaObj.isItem ? ventaObj.itemData : ventaObj,
+        itemData: itemDataWithWallet,
         isItem: !!ventaObj.isItem
     };
 
@@ -1297,68 +1302,143 @@ window.comprarListado = async function(listing) {
         btn.innerText = "PROCESANDO PAGO...";
     }
 
-    try {
-        const payloadToUpdate = { status: 'sold' };
-        // Si el usuario añadió la columna buyer_id o buyerId, podemos intentar pasarla, pero para estar 100% seguros de no romper el schema (ya que todo está en camelCase o JSON):
-        // Guardaremos el comprador dentro del itemData para no requerir una columna nueva obligatoria.
-        const updatedItemData = { ...(listing.itemData || {}), buyerId: window.miUsuarioCloud.id };
-        payloadToUpdate.itemData = updatedItemData;
+    const isSimulated = !!(window.miWallet && window.miWallet.isSimulated);
 
-        const { data, error } = await window.supabaseClient
-            .from('market_listings')
-            .update(payloadToUpdate)
-            .eq('id', listing.id || listing.saleId)
-            .eq('status', 'active')
-            .select();
+    if (isSimulated) {
+        console.log("🎮 Ejecutando flujo simulado Web2 (Mock Wallet)");
+        try {
+            const payloadToUpdate = { status: 'sold' };
+            const updatedItemData = { ...(listing.itemData || {}), buyerId: window.miUsuarioCloud.id };
+            payloadToUpdate.itemData = updatedItemData;
 
-        if (error) {
-            console.error("Supabase Error:", error);
-            alert(`⚠️ Error de base de datos: ${error.message || JSON.stringify(error)}\n\n(Verifica si tienes permisos RLS para hacer UPDATE o si la columna no existe).`);
-            if(btn) { btn.disabled = false; btn.innerText = "Comprar"; }
-            return;
-        }
+            const { data, error } = await window.supabaseClient
+                .from('market_listings')
+                .update(payloadToUpdate)
+                .eq('id', listing.id || listing.saleId)
+                .eq('status', 'active')
+                .select();
 
-        if (!data || data.length === 0) {
-            alert("⚠️ La compra falló (0 filas afectadas). El artículo pudo haber sido vendido o retirado, o no tienes permisos (RLS) para modificarlo.");
-            if(btn) { btn.disabled = false; btn.innerText = "Comprar"; }
-            return;
-        }
-
-        window.miWallet.pol -= precio;
-
-        if (typeof window.registrarLogEconomia === 'function') {
-            window.registrarLogEconomia('pol_sale', precio, 'market');
-        }
-
-        const dataObj = listing.itemData || {};
-        
-        if (listing.isItem) {
-            const itemLimpio = { ...dataObj };
-            delete itemLimpio.pricePol;
-            delete itemLimpio.listadoRemoto;
-            delete itemLimpio.sellerId;
-            delete itemLimpio.saleId;
-            if (window.miInventario && window.miInventario.addItem) {
-                window.miInventario.addItem(itemLimpio, itemLimpio.count || 1);
+            if (error) {
+                console.error("Supabase Error:", error);
+                alert(`⚠️ Error de base de datos: ${error.message || JSON.stringify(error)}`);
+                if(btn) { btn.disabled = false; btn.innerText = "Comprar"; }
+                return;
             }
-        } else {
-            if (!window.misGenos) window.misGenos = [];
-            window.misGenos.push(dataObj);
+
+            if (!data || data.length === 0) {
+                alert("⚠️ La compra falló. El artículo pudo haber sido vendido o retirado.");
+                if(btn) { btn.disabled = false; btn.innerText = "Comprar"; }
+                return;
+            }
+
+            window.miWallet.pol -= precio;
+
+            if (typeof window.registrarLogEconomia === 'function') {
+                window.registrarLogEconomia('pol_sale', precio, 'market');
+            }
+
+            const dataObj = listing.itemData || {};
+            
+            if (listing.isItem) {
+                const itemLimpio = { ...dataObj };
+                delete itemLimpio.pricePol;
+                delete itemLimpio.listadoRemoto;
+                delete itemLimpio.sellerId;
+                delete itemLimpio.saleId;
+                if (window.miInventario && window.miInventario.addItem) {
+                    window.miInventario.addItem(itemLimpio, itemLimpio.count || 1);
+                }
+            } else {
+                if (!window.misGenos) window.misGenos = [];
+                window.misGenos.push(dataObj);
+            }
+
+            alert(`🎉 ¡Compra simulada exitosa! Se ha añadido [${dataObj.name || "Geno"}] a tu cuenta.`);
+            const modal = document.getElementById("market-detail-modal");
+            if (modal) modal.style.display = "none";
+            
+            window.cargarMercadoGlobal();
+            if (typeof window.WalletManager !== 'undefined') window.WalletManager.actualizarBoton();
+            if (typeof window.forzarActualizacionMochila === 'function') window.forzarActualizacionMochila();
+            if (typeof window.respaldarEnNube === 'function') window.respaldarEnNube();
+
+        } catch (err) {
+            console.error("Error en la compra:", err);
+            alert("⚠️ Ocurrió un error al procesar el pago.");
+            if(btn) { btn.disabled = false; btn.innerText = "Comprar"; }
         }
+    } else {
+        console.log("🌐 Ejecutando flujo Web3 real on-chain");
+        try {
+            const plaza = await window.WalletManager.obtenerContratoPlaza();
+            if (!plaza) {
+                alert("⚠️ No se pudo instanciar el contrato de la Plaza de Comercio. Por favor verifica tu MetaMask.");
+                if(btn) { btn.disabled = false; btn.innerText = "Comprar"; }
+                return;
+            }
 
-        alert(`🎉 ¡Compra exitosa! Se ha añadido [${dataObj.name || "Geno"}] a tu cuenta.`);
-        const modal = document.getElementById("market-detail-modal");
-        if (modal) modal.style.display = "none";
-        
-        window.cargarMercadoGlobal();
-        if (typeof window.WalletManager !== 'undefined') window.WalletManager.actualizarBoton();
-        if (typeof window.forzarActualizacionMochila === 'function') window.forzarActualizacionMochila();
-        if (typeof window.respaldarEnNube === 'function') window.respaldarEnNube();
+            const sellerWallet = listing.itemData.sellerWallet;
+            if (!sellerWallet || sellerWallet === "null") {
+                alert("⚠️ No se encontro la wallet del vendedor registrada en este listado.");
+                if(btn) { btn.disabled = false; btn.innerText = "Comprar"; }
+                return;
+            }
 
-    } catch (err) {
-        console.error("Error en la compra:", err);
-        alert("⚠️ Ocurrió un error al procesar el pago.");
-        if(btn) { btn.disabled = false; btn.innerText = "Comprar"; }
+            const priceWei = window.ethers.parseEther(precio.toString());
+            const compraId = BigInt(listing.id);
+
+            if (btn) btn.innerText = "FIRMANDO TRANSACCION...";
+            const tx = await plaza.procesarPagoGeno(compraId, 1, sellerWallet, priceWei, { value: priceWei });
+            
+            if (btn) btn.innerText = "ESPERANDO CONFIRMACION...";
+            const receipt = await tx.wait();
+
+            if (receipt.status === 0) {
+                alert("⚠️ La transaccion en la blockchain fallo.");
+                if(btn) { btn.disabled = false; btn.innerText = "Comprar"; }
+                return;
+            }
+
+            if (btn) btn.innerText = "SINCRONIZANDO CON RED...";
+
+            // Polling de seguridad de Supabase hasta que la Edge Function actualice a 'sold'
+            let success = false;
+            for (let i = 0; i < 15; i++) {
+                await new Promise(r => setTimeout(r, 1500));
+                const { data, error } = await window.supabaseClient
+                    .from('market_listings')
+                    .select('status')
+                    .eq('id', listing.id)
+                    .single();
+
+                if (!error && data && data.status === 'sold') {
+                    success = true;
+                    break;
+                }
+            }
+
+            if (success) {
+                alert(`🎉 ¡Compra on-chain exitosa! Se ha transferido [${listing.itemData?.name || "Geno"}] a tu cuenta.`);
+                const modal = document.getElementById("market-detail-modal");
+                if (modal) modal.style.display = "none";
+                
+                window.cargarMercadoGlobal();
+                // Deducir saldo local para coherencia inmediata
+                window.miWallet.pol -= precio;
+                if (typeof window.WalletManager !== 'undefined') window.WalletManager.actualizarBoton();
+                if (typeof window.forzarActualizacionMochila === 'function') window.forzarActualizacionMochila();
+                if (typeof window.respaldarEnNube === 'function') window.respaldarEnNube();
+            } else {
+                alert("⏳ El pago fue enviado con éxito, pero la red de datos off-chain está demorando en sincronizar. La posesión se reflejará en unos momentos.");
+                const modal = document.getElementById("market-detail-modal");
+                if (modal) modal.style.display = "none";
+                window.cargarMercadoGlobal();
+            }
+        } catch (err) {
+            console.error("Error en transaccion on-chain:", err);
+            alert(`⚠️ Error en transaccion: ${err.reason || err.message || err}`);
+            if(btn) { btn.disabled = false; btn.innerText = "Comprar"; }
+        }
     }
 };
 

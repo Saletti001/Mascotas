@@ -9,8 +9,9 @@ window.TournamentManager = {
     queuePlayers: [],
     queueTimer: null,
     injectedBotUsed: false,
-    activeTab: "brackets", // "brackets" | "tematicos"
+    activeTab: "brackets", // "brackets" | "tematicos" | "ranking"
     activeQueueConfig: null,
+    _torneoOnChainId: null, // ID numérico del torneo activo en la blockchain
 
     // Configuración de Torneos
     CONFIG: {
@@ -314,23 +315,32 @@ window.TournamentManager = {
             }
         }
 
-        // Obtener elementos de pestañas
         const tabContentBrackets = document.getElementById("tourney-brackets-tab-content");
         const tabContentTematicos = document.getElementById("tourney-tematicos-tab-content");
-        const tabBrackets = document.getElementById("tab-tourney-brackets");
+        const tabContentRanking  = document.getElementById("tourney-ranking-tab-content");
+        const tabBrackets  = document.getElementById("tab-tourney-brackets");
         const tabTematicos = document.getElementById("tab-tourney-tematicos");
+        const tabRanking   = document.getElementById("tab-tourney-ranking");
 
-        if (this.activeTab === "tematicos") {
-            tabContentBrackets?.classList.add("hidden");
+        // Ocultar todos primero
+        tabContentBrackets?.classList.add("hidden");
+        tabContentTematicos?.classList.add("hidden");
+        tabContentRanking?.classList.add("hidden");
+        tabBrackets?.classList.remove("active");
+        tabTematicos?.classList.remove("active");
+        tabRanking?.classList.remove("active");
+
+        if (this.activeTab === "ranking") {
+            tabContentRanking?.classList.remove("hidden");
+            tabRanking?.classList.add("active");
+            this.cargarLeaderboard();
+        } else if (this.activeTab === "tematicos") {
             tabContentTematicos?.classList.remove("hidden");
-            tabBrackets?.classList.remove("active");
             tabTematicos?.classList.add("active");
             this.renderizarTematicos();
         } else {
             tabContentBrackets?.classList.remove("hidden");
-            tabContentTematicos?.classList.add("hidden");
             tabBrackets?.classList.add("active");
-            tabTematicos?.classList.remove("active");
         }
 
         // Determinar qué panel mostrar
@@ -342,7 +352,8 @@ window.TournamentManager = {
             // Ocultar tabs de selección de torneo y mostrar brackets
             document.querySelector(".tournament-tabs")?.classList.add("hidden");
             lobbyPanel.classList.add("hidden");
-            tabContentTematicos?.classList.add("hidden");
+            document.getElementById("tourney-tematicos-tab-content")?.classList.add("hidden");
+            document.getElementById("tourney-ranking-tab-content")?.classList.add("hidden");
             queuePanel.classList.add("hidden");
             bracketPanel.classList.remove("hidden");
             this.renderizarBracket();
@@ -350,7 +361,8 @@ window.TournamentManager = {
             // Ocultar tabs de selección y mostrar cola
             document.querySelector(".tournament-tabs")?.classList.add("hidden");
             lobbyPanel.classList.add("hidden");
-            tabContentTematicos?.classList.add("hidden");
+            document.getElementById("tourney-tematicos-tab-content")?.classList.add("hidden");
+            document.getElementById("tourney-ranking-tab-content")?.classList.add("hidden");
             queuePanel.classList.remove("hidden");
             bracketPanel.classList.add("hidden");
             this.renderizarQueue();
@@ -359,10 +371,10 @@ window.TournamentManager = {
             document.querySelector(".tournament-tabs")?.classList.remove("hidden");
             if (this.activeTab === "tematicos") {
                 lobbyPanel.classList.add("hidden");
-                tabContentTematicos?.classList.remove("hidden");
+            } else if (this.activeTab === "ranking") {
+                lobbyPanel.classList.add("hidden");
             } else {
                 lobbyPanel.classList.remove("hidden");
-                tabContentTematicos?.classList.add("hidden");
             }
             queuePanel.classList.add("hidden");
             bracketPanel.classList.add("hidden");
@@ -456,7 +468,117 @@ window.TournamentManager = {
         }).join('');
     },
 
-    inscribirse: function(tourneyId) {
+    // ─────────────────────────────────────────────────────────────────────────
+    // HELPERS WEB3 — Torneos
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Genera un torneoId numérico determinístico (uint256) a partir del id de
+     * cadena de texto del torneo y el timestamp de la semana (evita colisiones).
+     */
+    _generarTorneoOnChainId: function(confId) {
+        const semana = this.getSemanaAño();
+        // Suma simple de char codes del id + semana * 1000 — suficiente para testnet
+        let hash = semana * 10000;
+        for (let i = 0; i < confId.length; i++) {
+            hash += confId.charCodeAt(i) * (i + 1);
+        }
+        return hash;
+    },
+
+    /**
+     * Intenta inscribirse en el torneo on-chain. Devuelve true si tiene éxito.
+     * Si la wallet es simulada o el contrato no está disponible, hace fallback silencioso.
+     * @param {Object} conf - Configuración del torneo.
+     * @returns {Promise<boolean>} - true = on-chain OK o simulado, false = error que debe abortar.
+     */
+    _inscribirOnChain: async function(conf) {
+        const wallet = window.miWallet;
+
+        // Fallback: wallet simulada (Privy mock) → no llamar al contrato
+        if (!wallet || !wallet.address || wallet.isSimulated) {
+            console.log("[TournamentManager] Wallet simulada detectada. Inscripción off-chain (simulada).");
+            return true;
+        }
+
+        const contrato = await window.WalletManager.obtenerContratoTorneos();
+        if (!contrato) {
+            console.warn("[TournamentManager] Contrato de Torneos no disponible. Inscripción simulada.");
+            return true;
+        }
+
+        try {
+            const torneoId = this._generarTorneoOnChainId(conf.id);
+            this._torneoOnChainId = torneoId;
+
+            // Convertir costo de POL (float) a Wei
+            const costoWei = window.ethers.parseEther(conf.costo.toFixed(6));
+
+            // Verificar si el torneo existe on-chain; si no, el owner lo crea
+            // (en testnet el owner = la misma wallet de desarrollo)
+            const torneoInfo = await contrato.torneos(torneoId);
+            if (!torneoInfo.activo && !torneoInfo.finalizado) {
+                console.log("[TournamentManager] Torneo no existe on-chain. Creando...");
+                const txCrear = await contrato.crearTorneo(torneoId, costoWei, 16);
+                await txCrear.wait();
+                console.log("[TournamentManager] Torneo creado on-chain:", txCrear.hash);
+            }
+
+            // Inscribirse al torneo
+            const txInscripcion = await contrato.inscribirseTorneo(torneoId, { value: costoWei });
+            console.log("[TournamentManager] Inscripción enviada:", txInscripcion.hash);
+
+            const receipt = await txInscripcion.wait();
+            console.log("[TournamentManager] Inscripción confirmada en bloque:", receipt.blockNumber);
+
+            return true;
+        } catch (err) {
+            // El usuario rechazó la transacción en MetaMask
+            if (err.code === 4001 || (err.info && err.info.error && err.info.error.code === 4001)) {
+                alert("❌ Transacción cancelada. No se realizó el pago on-chain.");
+                return false;
+            }
+
+            // Error de contrato (torneo lleno, ya inscrito, etc.)
+            console.error("[TournamentManager] Error on-chain en inscripción:", err);
+            alert(`⚠️ Error al procesar la inscripción on-chain: ${err.reason || err.message || 'Error desconocido'}. Revisa la consola para más detalles.`);
+            return false;
+        }
+    },
+
+    /**
+     * Intenta finalizar el torneo on-chain con los 3 ganadores.
+     * Solo se ejecuta si la wallet es real y el torneoId fue registrado.
+     * @param {number} torneoId - El id on-chain del torneo.
+     * @param {Array} top3 - Array de 3 objetos {isPlayer, address} (1º, 2º, 3º lugar).
+     */
+    _finalizarTorneoOnChain: async function(torneoId, top3) {
+        if (!torneoId) return;
+        const wallet = window.miWallet;
+        if (!wallet || !wallet.address || wallet.isSimulated) return;
+
+        const contrato = await window.WalletManager.obtenerContratoTorneos();
+        if (!contrato) return;
+
+        try {
+            const ganadores = top3.map(p => p.address || wallet.address);
+            const esNPC = top3.map(p => !p.isPlayer);
+
+            const tx = await contrato.finalizarTorneo(torneoId, ganadores, esNPC);
+            console.log("[TournamentManager] finalizarTorneo enviado:", tx.hash);
+            await tx.wait();
+            console.log("[TournamentManager] Torneo finalizado on-chain correctamente.");
+        } catch (err) {
+            console.warn("[TournamentManager] Error al finalizar torneo on-chain:", err);
+            // No alertamos al usuario — el pago local ya se hizo como fallback
+        }
+    },
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // INSCRIPCIÓN (con flujo on-chain)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    inscribirse: async function(tourneyId) {
         if (!window.comercioDesbloqueado) {
             alert("⚠️ Se requiere el 'Permiso de Comercio' (adquirible en el Bazar por 15 EV al llegar a Nv. 5 de Laboratorio) para participar en Torneos competitivos.");
             return;
@@ -497,12 +619,24 @@ window.TournamentManager = {
         }
 
         // Confirmación consciente
-        const msg = isThematic ? `el Torneo Temático ${conf.nombre}` : `la ${conf.nombre}`;
-        if (!confirm(`¿Deseas inscribir a tu Geno en ${msg} por un valor de ${conf.costo.toFixed(2)} POL?`)) {
+        const msgTorneo = isThematic ? `el Torneo Temático ${conf.nombre}` : `la ${conf.nombre}`;
+        const walletReal = window.miWallet && window.miWallet.address && !window.miWallet.isSimulated;
+        const confirmMsg = walletReal
+            ? `¿Deseas inscribir a tu Geno en ${msgTorneo} por un valor de ${conf.costo.toFixed(2)} POL?\n\n💡 Se realizará una transacción en la red Polygon.`
+            : `¿Deseas inscribir a tu Geno en ${msgTorneo} por un valor de ${conf.costo.toFixed(2)} POL?`;
+
+        if (!confirm(confirmMsg)) {
             return;
         }
 
-        // Descontar saldo y guardar
+        // ── Paso 1: Intentar pago on-chain (puede ser async con MetaMask) ──
+        const exitoOnChain = await this._inscribirOnChain(conf);
+        if (!exitoOnChain) {
+            // El usuario canceló en MetaMask o hubo error de contrato → abortar
+            return;
+        }
+
+        // ── Paso 2: Descontar saldo local y actualizar UI ──
         window.miWallet.pol -= conf.costo;
         if (window.WalletManager && window.WalletManager.actualizarBoton) {
             window.WalletManager.actualizarBoton();
@@ -527,7 +661,8 @@ window.TournamentManager = {
         window.miWallet.history.unshift({
             tipo: isThematic ? 'Torneo Temático' : 'Inscripción Torneo',
             monto: conf.costo,
-            fecha: new Date().toLocaleTimeString()
+            fecha: new Date().toLocaleTimeString(),
+            onChain: walletReal
         });
 
         // Iniciar Simulación de Cola
@@ -1145,10 +1280,29 @@ window.TournamentManager = {
                     if (typeof window.registrarLogEconomia === "function") {
                         window.registrarLogEconomia('pol_reward', premio, 'tournament_payout');
                     }
+
+                    // Registrar victoria/payout en el historial local de la wallet
+                    const walletReal = window.miWallet && window.miWallet.address && !window.miWallet.isSimulated;
+                    window.miWallet.history = window.miWallet.history || [];
+                    window.miWallet.history.unshift({
+                        tipo: pos === 1 ? 'Campeón Torneo' : pos === 2 ? 'Subcampeón Torneo' : 'Tercer Puesto Torneo',
+                        monto: premio,
+                        fecha: new Date().toLocaleTimeString(),
+                        onChain: walletReal
+                    });
                 }
 
                 if (window.WalletManager && window.WalletManager.actualizarBoton) {
                     window.WalletManager.actualizarBoton();
+                }
+
+                // ── Liquidación On-Chain: finalizarTorneo() con Top-3 ──
+                const walletAddr = window.miWallet && window.miWallet.address;
+                const top3Players = this._obtenerTop3ParaOnChain(t);
+                if (this._torneoOnChainId && walletAddr) {
+                    this._finalizarTorneoOnChain(this._torneoOnChainId, top3Players)
+                        .catch(err => console.warn("[TournamentManager] finalizarTorneo on-chain error (no crítico):", err));
+                    this._torneoOnChainId = null;
                 }
             }
         }
@@ -1162,6 +1316,42 @@ window.TournamentManager = {
         while (t.estado === "jugando") {
             this.simularOtrosMatchsDeRonda();
         }
+    },
+
+    /**
+     * Extrae el Top 3 del torneo con sus direcciones para la llamada on-chain.
+     * Si un ganador es NPC, su address se pone como address(0) en el contrato.
+     */
+    _obtenerTop3ParaOnChain: function(t) {
+        const NULL_ADDR = "0x0000000000000000000000000000000000000000";
+        const playerAddr = window.miWallet && window.miWallet.address ? window.miWallet.address : NULL_ADDR;
+
+        const finalMatch = t.matches.find(m => m.round === 3);
+        const semis = t.matches.filter(m => m.round === 2);
+
+        const primerLugar = finalMatch && finalMatch.winner
+            ? { isPlayer: finalMatch.winner.isPlayer, address: finalMatch.winner.isPlayer ? playerAddr : NULL_ADDR }
+            : { isPlayer: false, address: NULL_ADDR };
+
+        const subcampeon = finalMatch
+            ? (finalMatch.p1 && finalMatch.p1.isPlayer
+                ? { isPlayer: true, address: playerAddr }
+                : (finalMatch.p2 && finalMatch.p2.isPlayer
+                    ? { isPlayer: true, address: playerAddr }
+                    : { isPlayer: false, address: NULL_ADDR }))
+            : { isPlayer: false, address: NULL_ADDR };
+
+        // Tercer lugar: perdedor de semis que llegó más lejos
+        let tercero = { isPlayer: false, address: NULL_ADDR };
+        for (const semi of semis) {
+            const loser = semi.winner && semi.p1 && semi.winner.nombre === semi.p1.nombre ? semi.p2 : semi.p1;
+            if (loser && loser.isPlayer) {
+                tercero = { isPlayer: true, address: playerAddr };
+                break;
+            }
+        }
+
+        return [primerLugar, subcampeon, tercero];
     },
 
     obtenerPosicionJugador: function() {
@@ -1197,10 +1387,41 @@ window.TournamentManager = {
         this.actualizarVista();
     },
 
-    reclamarSaldoPendiente: function() {
+    reclamarSaldoPendiente: async function() {
         if (this.saldosPendientes <= 0) return;
 
         const monto = this.saldosPendientes;
+        const wallet = window.miWallet;
+        const walletReal = wallet && wallet.address && !wallet.isSimulated;
+
+        // ── Intento On-Chain: retirarSaldo() del contrato ──
+        if (walletReal) {
+            const contrato = await window.WalletManager.obtenerContratoTorneos();
+            if (contrato) {
+                try {
+                    // Consultar saldo on-chain antes de llamar
+                    const saldoOnChain = await contrato.saldosPendientes(wallet.address);
+                    if (saldoOnChain > 0n) {
+                        const tx = await contrato.retirarSaldo();
+                        console.log("[TournamentManager] retirarSaldo tx:", tx.hash);
+                        await tx.wait();
+                        console.log("[TournamentManager] Saldo retirado on-chain correctamente.");
+                        // El saldo llegará a la wallet on-chain; notificar al usuario
+                        alert(`✅ Retiro on-chain enviado. Los ${window.ethers.formatEther(saldoOnChain)} POL llegarán a tu dirección Polygon en breve.`);
+                    } else {
+                        console.log("[TournamentManager] No hay saldo on-chain pendiente. Acreditando localmente.");
+                    }
+                } catch (err) {
+                    if (err.code === 4001 || (err.info && err.info.error && err.info.error.code === 4001)) {
+                        alert("❌ Retiro cancelado por el usuario.");
+                        return; // No acreditar localmente si el usuario cancela
+                    }
+                    console.warn("[TournamentManager] Error en retirarSaldo on-chain, acreditando localmente:", err);
+                }
+            }
+        }
+
+        // ── Acreditar localmente (siempre, como fuente de verdad off-chain) ──
         this.saldosPendientes = 0;
 
         if (!window.miWallet) window.miWallet = { pol: 0 };
@@ -1218,13 +1439,182 @@ window.TournamentManager = {
         window.miWallet.history.unshift({
             tipo: 'Reembolso Torneo',
             monto: monto,
-            fecha: new Date().toLocaleTimeString()
+            fecha: new Date().toLocaleTimeString(),
+            onChain: walletReal
         });
 
         this.guardarEstado();
         this.actualizarVista();
 
-        alert(`💰 Reclamación exitosa: Se añadieron +${monto.toFixed(2)} POL a tu Wallet.`);
+        if (!walletReal) {
+            alert(`💰 Reclamación exitosa: Se añadieron +${monto.toFixed(2)} POL a tu Wallet.`);
+        }
+    },
+
+    cargarLeaderboard: async function() {
+        const containerGlobal = document.getElementById("tourney-leaderboard-global");
+        if (!containerGlobal) return;
+
+        containerGlobal.innerHTML = `
+            <div style="text-align: center; padding: 15px; color: #888;">
+                <div style="border: 2px solid rgba(0, 229, 255, 0.1); border-top: 2px solid #00e5ff; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; margin: 0 auto 10px auto;"></div>
+                Sincronizando con la blockchain...
+            </div>
+        `;
+
+        // Load personal history too
+        this.renderizarHistorialPersonal();
+
+        if (!window.supabaseClient) {
+            containerGlobal.innerHTML = `<div style="text-align: center; color: #aaa; font-size: 11px; padding: 15px;">Servicio de red no disponible (Modo Offline)</div>`;
+            return;
+        }
+
+        try {
+            const { data, error } = await window.supabaseClient
+                .from('leaderboard_torneos')
+                .select('*')
+                .limit(10);
+
+            if (error) throw error;
+
+            if (!data || data.length === 0) {
+                containerGlobal.innerHTML = `<div style="text-align: center; color: #aaa; font-size: 11px; padding: 15px;">No hay registros de victorias en torneos todavía.</div>`;
+                return;
+            }
+
+            let html = `
+                <table style="width: 100%; border-collapse: collapse; font-family: monospace; font-size: 11px; color: #cbd5e1;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); color: #888; text-align: left;">
+                            <th style="padding: 6px 4px; width: 10%;">#</th>
+                            <th style="padding: 6px 4px; width: 50%;">Wallet</th>
+                            <th style="padding: 6px 4px; width: 20%; text-align: center;">Victorias</th>
+                            <th style="padding: 6px 4px; width: 20%; text-align: right;">Estimado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            data.forEach((row, index) => {
+                const isMe = window.miWallet && window.miWallet.address && window.miWallet.address.toLowerCase() === row.wallet_address.toLowerCase();
+                const walletText = isMe ? "TÚ (" + row.wallet_address.substring(0, 6) + "..." + row.wallet_address.substring(row.wallet_address.length - 4) + ")" : row.wallet_address.substring(0, 8) + "..." + row.wallet_address.substring(row.wallet_address.length - 6);
+                const bgStyle = isMe ? "background: rgba(0, 229, 255, 0.1); color: #fff; font-weight: bold;" : "";
+                const medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `${index + 1}`;
+                
+                html += `
+                    <tr style="border-bottom: 1px dashed rgba(255, 255, 255, 0.05); ${bgStyle}">
+                        <td style="padding: 8px 4px;">${medal}</td>
+                        <td style="padding: 8px 4px; text-transform: uppercase;">${walletText}</td>
+                        <td style="padding: 8px 4px; text-align: center; color: #ff007f; font-weight: bold;">${row.victorias}</td>
+                        <td style="padding: 8px 4px; text-align: right; color: #ffd700;">🔷 ${parseFloat(row.pol_ganado_estimado).toFixed(1)}</td>
+                    </tr>
+                `;
+            });
+
+            html += `
+                    </tbody>
+                </table>
+            `;
+            containerGlobal.innerHTML = html;
+
+        } catch (err) {
+            console.error("[TournamentManager] Error al cargar leaderboard:", err);
+            containerGlobal.innerHTML = `<div style="text-align: center; color: #ff5252; font-size: 11px; padding: 15px;">Error al conectar con la Nube Nexo</div>`;
+        }
+    },
+
+    renderizarHistorialPersonal: async function() {
+        const containerPersonal = document.getElementById("tourney-leaderboard-personal");
+        if (!containerPersonal) return;
+
+        const wallet = window.miWallet;
+        if (!wallet || !wallet.address) {
+            containerPersonal.innerHTML = `<div style="text-align: center; color: #888; font-size: 11px; padding: 15px;">Vincula tu Wallet para ver tu historial de torneos.</div>`;
+            return;
+        }
+
+        const walletReal = !wallet.isSimulated;
+
+        if (walletReal && window.supabaseClient) {
+            containerPersonal.innerHTML = `
+                <div style="text-align: center; padding: 10px; color: #888;">
+                    <div style="border: 2px solid rgba(0, 229, 255, 0.1); border-top: 2px solid #00e5ff; border-radius: 50%; width: 15px; height: 15px; animation: spin 1s linear infinite; margin: 0 auto 5px auto;"></div>
+                    Cargando historial on-chain...
+                </div>
+            `;
+            try {
+                const { data, error } = await window.supabaseClient
+                    .from('tournament_entries')
+                    .select('*')
+                    .eq('jugador_address', wallet.address.toLowerCase())
+                    .order('inscrito_at', { ascending: false })
+                    .limit(10);
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    containerPersonal.innerHTML = `<div style="text-align: center; color: #aaa; font-size: 11px; padding: 15px;">No tienes participaciones registradas on-chain.</div>`;
+                    return;
+                }
+
+                let html = `
+                    <div style="display: flex; flex-direction: column; gap: 6px; font-family: monospace; font-size: 11px;">
+                `;
+
+                data.forEach(entry => {
+                    const fecha = new Date(entry.inscrito_at).toLocaleDateString() + " " + new Date(entry.inscrito_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    const costo = parseFloat(entry.monto_pagado_pol) + parseFloat(entry.saldo_usado_pol);
+                    const statusColor = entry.status === 'finalizado' ? '#69f0ae' : entry.status === 'cancelado' ? '#ff5252' : '#00e5ff';
+                    const txLink = `https://amoy.polygonscan.com/tx/${entry.tx_hash}`;
+                    
+                    html += `
+                        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; padding: 8px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div style="color: #fff; font-weight: bold;">Torneo #${entry.torneo_id}</div>
+                                <div style="font-size: 9px; color: #888;">${fecha} | Costo: ${costo.toFixed(2)} POL</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="color: ${statusColor}; text-transform: uppercase; font-weight: bold; font-size: 10px;">${entry.status}</div>
+                                <a href="${txLink}" target="_blank" style="color: #888; font-size: 9px; text-decoration: underline;">Scan ↗</a>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `</div>`;
+                containerPersonal.innerHTML = html;
+                return;
+            } catch (err) {
+                console.warn("[TournamentManager] Error cargando historial on-chain de Supabase, usando local:", err);
+            }
+        }
+
+        const hist = wallet.history || [];
+        const tourneyHist = hist.filter(h => h.tipo.includes('Torneo'));
+
+        if (tourneyHist.length === 0) {
+            containerPersonal.innerHTML = `<div style="text-align: center; color: #aaa; font-size: 11px; padding: 15px;">No tienes historial de torneos registrado localmente.</div>`;
+            return;
+        }
+
+        let html = `<div style="display: flex; flex-direction: column; gap: 6px; font-family: monospace; font-size: 11px;">`;
+        tourneyHist.slice(0, 10).forEach(h => {
+            const esMontoPositivo = h.tipo.includes('Reembolso') || h.tipo.includes('Campeón') || h.tipo.includes('Subcampeón') || h.tipo.includes('Puesto');
+            const sign = esMontoPositivo ? '+' : '-';
+            const color = esMontoPositivo ? '#69f0ae' : '#ff5252';
+            html += `
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; padding: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="color: #fff; font-weight: bold;">${h.tipo}</div>
+                        <div style="font-size: 9px; color: #888;">${h.fecha || 'Reciente'} | Local/Simulado</div>
+                    </div>
+                    <div style="color: ${color}; font-weight: bold;">${sign}${Math.abs(h.monto).toFixed(2)} POL</div>
+                </div>
+            `;
+        });
+        html += `</div>`;
+        containerPersonal.innerHTML = html;
     },
 
     vincularHooks: function() {

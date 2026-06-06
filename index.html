@@ -1542,9 +1542,10 @@
             </div>
 
             <!-- Pestañas de Navegación -->
-            <div class="tournament-tabs" style="display: flex; gap: 10px; margin-bottom: 12px; flex-shrink: 0; z-index: 10;">
-                <button id="tab-tourney-brackets" class="market-btn-neon active" onclick="TournamentManager.setTab('brackets')" style="margin: 0; flex: 1; padding: 8px 0; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Copas de Llaves</button>
-                <button id="tab-tourney-tematicos" class="market-btn-neon" onclick="TournamentManager.setTab('tematicos')" style="margin: 0; flex: 1; padding: 8px 0; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">Torneos Temáticos</button>
+            <div class="tournament-tabs" style="display: flex; gap: 8px; margin-bottom: 12px; flex-shrink: 0; z-index: 10;">
+                <button id="tab-tourney-brackets" class="market-btn-neon active" onclick="TournamentManager.setTab('brackets')" style="margin: 0; flex: 1; padding: 8px 0; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">🏆 Copas</button>
+                <button id="tab-tourney-tematicos" class="market-btn-neon" onclick="TournamentManager.setTab('tematicos')" style="margin: 0; flex: 1; padding: 8px 0; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">🎯 Temáticos</button>
+                <button id="tab-tourney-ranking" class="market-btn-neon" onclick="TournamentManager.setTab('ranking')" style="margin: 0; flex: 1; padding: 8px 0; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">🏅 Ranking</button>
             </div>
 
             <!-- CONTENIDO DE PESTAÑA: COPAS DE LLAVES -->
@@ -1584,6 +1585,30 @@
                 <div id="tourney-tematicos-list" style="flex-grow: 1; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; max-height: 380px; -ms-overflow-style: none; scrollbar-width: none;">
                     <!-- Tarjetas de torneos inyectadas por JS -->
                 </div>
+            </div>
+
+            <!-- CONTENIDO DE PESTAÑA: RANKING ON-CHAIN -->
+            <div id="tourney-ranking-tab-content" class="hidden" style="flex-grow: 1; display: flex; flex-direction: column; gap: 12px; margin-bottom: 70px; overflow-y: auto;">
+
+                <!-- Ranking Global -->
+                <div class="tourney-card" style="padding: 12px 15px; background: linear-gradient(135deg, rgba(255,215,0,0.08) 0%, rgba(138,43,226,0.08) 100%); border: 1.5px solid rgba(255,215,0,0.3);">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                        <div style="font-size: 11px; font-weight: bold; color: #ffd700; text-transform: uppercase; letter-spacing: 1px;">🌐 Leaderboard Global</div>
+                        <button onclick="TournamentManager.cargarLeaderboard()" id="btn-reload-leaderboard" style="background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); border-radius: 6px; color: #ffd700; font-size: 9px; font-weight: bold; padding: 4px 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;">↻ Actualizar</button>
+                    </div>
+                    <div id="tourney-leaderboard-global" style="min-height: 80px;">
+                        <div style="text-align: center; color: #555; font-size: 11px; padding: 20px;">Cargando ranking...</div>
+                    </div>
+                </div>
+
+                <!-- Historial Personal -->
+                <div class="tourney-card" style="padding: 12px 15px; background: linear-gradient(135deg, rgba(0,229,255,0.06) 0%, rgba(0,0,0,0.3) 100%); border: 1.5px solid rgba(0,229,255,0.2);">
+                    <div style="font-size: 11px; font-weight: bold; color: #00e5ff; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">📋 Mi Historial de Torneos</div>
+                    <div id="tourney-leaderboard-personal" style="min-height: 60px;">
+                        <div style="text-align: center; color: #555; font-size: 11px; padding: 15px;">Conéctate para ver tu historial.</div>
+                    </div>
+                </div>
+
             </div>
 
             <!-- PANEL 2: SALA DE ESPERA (COLA MATCHMAKING) -->
@@ -1795,6 +1820,7 @@
 
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="LoginUI.js"></script>
     <script src="EmojiReplacer.js"></script>
