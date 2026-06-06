@@ -828,6 +828,24 @@
             overflow: visible !important;
         }
 
+        /* Force strict dimensions on items list SVGs to prevent overflow */
+        #prof-items-list svg {
+            width: 16px !important;
+            height: 16px !important;
+            max-width: 16px !important;
+            max-height: 16px !important;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        #prof-items-list span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
     </style>
 </head>
 <body>
