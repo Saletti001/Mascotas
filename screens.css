@@ -77,17 +77,92 @@
 #minigame-screen.hidden {
     display: none !important;
 }
-#play-area { flex: 1; position: relative; overflow: hidden; background: #0a1118; }
+#play-area { 
+    flex: 1; 
+    position: relative; 
+    overflow: hidden; 
+    background: radial-gradient(circle at center, #162430 0%, #0a1118 100%); 
+}
+#play-area::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+        linear-gradient(rgba(77, 208, 225, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(77, 208, 225, 0.02) 1px, transparent 1px);
+    background-size: 25px 25px;
+    background-position: center;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Fondos específicos y dinámicos para cada minijuego */
+#play-area.game-catch-bg {
+    background: radial-gradient(circle at center, #0e2a20 0%, #05100c 100%) !important;
+}
+#play-area.game-catch-bg::before {
+    background-image: 
+        linear-gradient(rgba(76, 175, 80, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(76, 175, 80, 0.03) 1px, transparent 1px) !important;
+}
+
+#play-area.game-flappy-bg {
+    background: radial-gradient(circle at center, #102636 0%, #061118 100%) !important;
+}
+#play-area.game-flappy-bg::before {
+    background-image: 
+        linear-gradient(rgba(0, 229, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px) !important;
+}
+
+#play-area.game-memory-bg {
+    background: radial-gradient(circle at center, #231230 0%, #0b0510 100%) !important;
+}
+#play-area.game-memory-bg::before {
+    background-image: 
+        linear-gradient(rgba(138, 43, 226, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(138, 43, 226, 0.03) 1px, transparent 1px) !important;
+}
 @keyframes pulse {
     0%   { filter: drop-shadow(0 0 4px #FFD700) drop-shadow(0 0 8px rgba(255,215,0,0.5)); }
     100% { filter: drop-shadow(0 0 10px #FFD700) drop-shadow(0 0 20px rgba(255,215,0,0.8)); }
 }
 
 #falling-object { position: absolute; font-size: 30px; transition: none !important; }
-#player-basket { position: absolute; font-size: 40px; bottom: 20px; transition: left 0.1s linear; }
+#player-basket {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    bottom: 15px;
+    transition: left 0.1s linear;
+}
+#player-basket svg {
+    width: 100%;
+    height: 100%;
+}
 #touch-controls { position: absolute; top: 0; width: 100%; height: 100%; display: flex; z-index: 5; }
 #touch-left, #touch-right { flex: 1; }
-#game-header { display: flex; justify-content: space-between; padding: 15px; background: #0d1a24; border-bottom: 1px solid #4dd0e1; color: white;}
+#game-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    padding: 12px 15px; 
+    background: #0d1a24; 
+    border-bottom: 1px solid #4dd0e1; 
+    color: white;
+}
+#minigame-timer {
+    color: #ffcc00;
+    font-weight: bold;
+    font-size: 14px;
+    text-shadow: 0 0 8px rgba(255, 204, 0, 0.3);
+}
+#minigame-score {
+    color: #00e5ff;
+    font-weight: bold;
+    font-size: 14px;
+    text-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
+}
 
 /* 3. SANTUARIO */
 .sanctuary-grid { padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; overflow-y: auto; flex: 1; }
@@ -452,4 +527,71 @@
     bottom: 0;
     animation: restBoltFloat ease-in infinite;
     filter: drop-shadow(0 0 5px #4CAF50);
+}
+
+/* ========================================= */
+/* VISTAS DE PERFIL SIMULADAS Y FLAPPY GENO  */
+/* ========================================= */
+
+#flappy-player {
+    position: absolute;
+    width: 65px;
+    height: 65px;
+    z-index: 10;
+}
+#flappy-player svg {
+    width: 100%;
+    height: 100%;
+}
+
+/* Perfil Izquierdo (Simulado 3D sin cosméticos) */
+.profile-left .g-ojos > *, .profile-view .g-ojos > * {
+    transform: translate(-16px, 0px) scaleX(0.65) !important;
+    transform-origin: 80px 85px !important;
+}
+.profile-left .g-boca > *, .profile-view .g-boca > * {
+    transform: translate(-14px, 1px) scaleX(0.65) !important;
+    transform-origin: 80px 110px !important;
+}
+.profile-left .g-cuerpo, .profile-view .g-cuerpo {
+    transform: scaleX(0.92) translate(-4px, 0px) !important;
+    transform-origin: 80px 136px !important;
+}
+/* Ocultar cosméticos (sombreros, alas, drones, auras y efectos) */
+.profile-left .g-sombrero-anchor, .profile-view .g-sombrero-anchor,
+.profile-left .g-alas-anchor, .profile-view .g-alas-anchor,
+.profile-left .g-dron-anchor, .profile-view .g-dron-anchor,
+.profile-left [class*="anim-holograma"], .profile-view [class*="anim-holograma"],
+.profile-left [class*="anim-emblema"], .profile-view [class*="anim-emblema"] {
+    display: none !important;
+}
+.profile-left svg > *:not(defs):not(style):not(.g-cuerpo),
+.profile-view svg > *:not(defs):not(style):not(.g-cuerpo) {
+    display: none !important;
+}
+
+/* Perfil Derecho (Simulado 3D sin cosméticos) */
+.profile-right .g-ojos > *, .profile-view-right .g-ojos > * {
+    transform: translate(16px, 0px) scaleX(0.65) !important;
+    transform-origin: 80px 85px !important;
+}
+.profile-right .g-boca > *, .profile-view-right .g-boca > * {
+    transform: translate(14px, 1px) scaleX(0.65) !important;
+    transform-origin: 80px 110px !important;
+}
+.profile-right .g-cuerpo, .profile-view-right .g-cuerpo {
+    transform: scaleX(0.92) translate(4px, 0px) !important;
+    transform-origin: 80px 136px !important;
+}
+/* Ocultar cosméticos (sombreros, alas, drones, auras y efectos) */
+.profile-right .g-sombrero-anchor, .profile-view-right .g-sombrero-anchor,
+.profile-right .g-alas-anchor, .profile-view-right .g-alas-anchor,
+.profile-right .g-dron-anchor, .profile-view-right .g-dron-anchor,
+.profile-right [class*="anim-holograma"], .profile-view-right [class*="anim-holograma"],
+.profile-right [class*="anim-emblema"], .profile-view-right [class*="anim-emblema"] {
+    display: none !important;
+}
+.profile-right svg > *:not(defs):not(style):not(.g-cuerpo),
+.profile-view-right svg > *:not(defs):not(style):not(.g-cuerpo) {
+    display: none !important;
 }

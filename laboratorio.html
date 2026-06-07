@@ -1224,6 +1224,7 @@
         <button class="tab-btn" onclick="switchTab('tab-implantes', this)">⚙️ Implantes y Stats</button>
         <button class="tab-btn" onclick="switchTab('tab-combat', this)">⚔️ Simulación Combate</button>
         <button class="tab-btn" onclick="switchTab('tab-animaciones', this)">✨ Prueba de Animaciones</button>
+        <button class="tab-btn" onclick="switchTab('tab-arcade', this)">🎮 Previews de Arcade</button>
     </div>
 
     <!-- PESTAÑA 1: BIOLOGÍA Y ADN -->
@@ -1684,6 +1685,76 @@
         </div>
     </div>
 
+    <!-- PESTAÑA 5: PREVIEWS DE ARCADE -->
+    <div id="tab-arcade" class="tab-content lab-container" style="flex-direction: column; gap: 20px; width: 100%; max-width: 1200px; box-sizing: border-box;">
+        <div class="action-bar" style="display: flex; justify-content: space-between; align-items: center; width: 100%; gap: 10px; flex-wrap: wrap;">
+            <div style="font-size: 14px; font-weight: bold; color: #4dd0e1; text-shadow: 0 0 8px rgba(77,208,225,0.4);">🎮 PREVIEWS DE MINIJUEGOS ARCADE</div>
+            <div style="color: #aaa; font-size: 12px;">Simulación del comportamiento de los personajes sin cosméticos</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; width: 100%;">
+            <!-- 1. Cesta (Lluvia de Manzanas) -->
+            <div class="panel-preview" style="background: rgba(0,0,0,0.4); border: 1px solid #4dd0e1; border-radius: 8px; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 350px; position: relative; overflow: hidden;">
+                <div style="font-size: 13px; font-weight: bold; color: #ffcc00; text-transform: uppercase; margin-bottom: 10px; width: 100%; text-align: left;">🍎 Lluvia de Manzanas (Cesta Humana)</div>
+                
+                <!-- Área de movimiento -->
+                <div id="arcade-preview-catch-area" style="flex: 1; width: 100%; background: #0a1118; border: 1px solid #223; border-radius: 6px; position: relative; overflow: hidden; display: flex; align-items: flex-end; justify-content: center;">
+                    <!-- Manzana cayendo decorativa -->
+                    <div style="position: absolute; top: 20%; left: 45%; font-size: 24px; animation: previewAppleFall 2.5s infinite linear;">🍎</div>
+                    <div style="position: absolute; top: 10%; left: 75%; font-size: 24px; animation: previewAppleFall 1.8s infinite linear 0.5s;">🍎</div>
+                    <div style="position: absolute; top: 30%; left: 20%; font-size: 24px; animation: previewAppleFall 3s infinite linear 1s;">⚡</div>
+                    <!-- Geno recolector -->
+                    <div id="arcade-preview-catch-geno" style="width: 65px; height: 65px; position: absolute; bottom: 10px; left: 10%; animation: previewCatchMove 5s infinite ease-in-out;"></div>
+                </div>
+                
+                <div style="font-size: 11px; color: #aaa; margin-top: 10px; text-align: center; width: 100%;">El Geno de frente se desplaza de lado a lado atrapando las manzanas. Los cosméticos se eliminan automáticamente.</div>
+            </div>
+
+            <!-- 2. Flappy Geno -->
+            <div class="panel-preview" style="background: rgba(0,0,0,0.4); border: 1px solid #4dd0e1; border-radius: 8px; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; height: 350px; position: relative; overflow: hidden;">
+                <div style="font-size: 13px; font-weight: bold; color: #ffcc00; text-transform: uppercase; margin-bottom: 10px; width: 100%; text-align: left;">🐦 Flappy Geno (De Perfil)</div>
+                
+                <!-- Área de vuelo -->
+                <div id="arcade-preview-flappy-area" style="flex: 1; width: 100%; background: #0a1118; border: 1px solid #223; border-radius: 6px; position: relative; overflow: hidden; cursor: pointer;" onclick="previewFlappyJump()">
+                    <!-- Tubo decorativo -->
+                    <div style="position: absolute; right: 0; top: 0; width: 30px; height: 80px; background: linear-gradient(90deg, #1b5e20, #4caf50); border: 1px solid #00ffcc; border-top: none; border-radius: 0 0 4px 4px; animation: previewTubeMove 4s infinite linear;"></div>
+                    <div style="position: absolute; right: 0; bottom: 0; width: 30px; height: 90px; background: linear-gradient(90deg, #1b5e20, #4caf50); border: 1px solid #00ffcc; border-bottom: none; border-radius: 4px 4px 0 0; animation: previewTubeMove 4s infinite linear;"></div>
+                    <!-- Geno volando (de perfil) -->
+                    <div id="arcade-preview-flappy-geno" class="profile-view-right" style="width: 65px; height: 65px; position: absolute; left: 25%; top: 40%; transition: top 0.3s cubic-bezier(0.1, 0.8, 0.3, 1);"></div>
+                    <div style="position: absolute; top: 8px; right: 8px; font-size: 10px; color: #00ffcc; background: rgba(0,0,0,0.6); padding: 2px 6px; border-radius: 4px; pointer-events: none;">Click para saltar</div>
+                </div>
+
+                <div style="font-size: 11px; color: #aaa; margin-top: 10px; text-align: center; width: 100%;">El Geno se sitúa de lado mirando hacia adelante (`profile-view-right`) y aletea saltando. Los cosméticos se eliminan automáticamente.</div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes previewAppleFall {
+            0% { transform: translateY(-30px); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(220px); opacity: 0; }
+        }
+        @keyframes previewCatchMove {
+            0%, 100% { left: 10%; }
+            50% { left: 75%; }
+        }
+        @keyframes previewTubeMove {
+            0% { right: -40px; }
+            100% { right: 340px; }
+        }
+        /* Ocultar cosméticos automáticamente en previsualizaciones de arcade */
+        #arcade-preview-catch-geno .g-alas-anchor,
+        #arcade-preview-catch-geno .g-sombrero-anchor,
+        #arcade-preview-catch-geno .g-dron-anchor,
+        #arcade-preview-flappy-geno .g-alas-anchor,
+        #arcade-preview-flappy-geno .g-sombrero-anchor,
+        #arcade-preview-flappy-geno .g-dron-anchor {
+            display: none !important;
+        }
+    </style>
+
     <script>
         const engine = window.ColiseumLogic;
         window.currentAnimGroup = 1;
@@ -1707,6 +1778,20 @@
                 cargarGenosPreviewTest();
             }
         }
+
+        function previewFlappyJump() {
+            const flappyGeno = document.getElementById("arcade-preview-flappy-geno");
+            if (!flappyGeno) return;
+            
+            // Provocar el salto del Geno
+            flappyGeno.style.top = "20%";
+            
+            // Volver a bajar por gravedad después de 300ms
+            setTimeout(() => {
+                flappyGeno.style.top = "55%";
+            }, 300);
+        }
+
 
         function toggleSubTab(tab) {
             document.getElementById('st-atk').classList.remove('active');
@@ -3697,6 +3782,18 @@
             if (rightDisplay) {
                 rightDisplay.innerHTML = svgStr;
                 rightDisplay.style.color = adn.color;
+            }
+
+            // Renderizar vistas en arcade preview
+            const catchGeno = document.getElementById("arcade-preview-catch-geno");
+            const flappyGeno = document.getElementById("arcade-preview-flappy-geno");
+            if (catchGeno) {
+                catchGeno.innerHTML = svgStr;
+                catchGeno.style.color = adn.color;
+            }
+            if (flappyGeno) {
+                flappyGeno.innerHTML = svgStr;
+                flappyGeno.style.color = adn.color;
             }
 
             function actualizarTerminal() {

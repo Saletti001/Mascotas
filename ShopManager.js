@@ -465,6 +465,7 @@ window.ShopManager = {
             { id: "escaner_basico", name: "Escáner Básico", icon: this.iconosSVG["escaner_basico"], type: "basic", price: 0.15, currency: "EV", desc: "Revela slots activos del Geno." },
             { id: "escaner_completo", name: "Escáner Completo", icon: this.iconosSVG["escaner_completo"], type: "basic", price: 0.50, currency: "EV", desc: "Revela la genética exacta S-D." },
             { id: "antidoto_uni", name: "Antídoto Universal", icon: this.iconosSVG["antidoto_uni"], type: "consumable", price: 0.10, currency: "EV", desc: "Limpia cualquier estado alterado." },
+            { id: "nexo_charge", name: "Recarga Nexo", icon: "⚡", type: "consumable", price: 0.50, currency: "EV", desc: "Célula de energía Nexo ultraconcentrada. Restaura el 100% de la barra de Energía Nexo de forma inmediata." },
             { id: "comercio_licencia", name: "Permiso de Comercio", icon: "📜", type: "consumable", price: 15.00, currency: "EV", desc: "Permiso de Acceso a la Red de Comercio del Bazar. Permite depositar, retirar y vender Genos. (Requiere Laboratorio Nv. 5)" }
         ];
 
@@ -474,6 +475,7 @@ window.ShopManager = {
             else if (item.id === "incubator_01") tarjeta = this.crearTarjeta(item, "#ff9800", "#e65100", "POL");
             else if (item.id === "ration_auto") tarjeta = this.crearTarjeta(item, "#FF8A80", "#C62828", "EV");
             else if (item.id === "plasma_shower") tarjeta = this.crearTarjeta(item, "#80D8FF", "#1565C0", "EV");
+            else if (item.id === "nexo_charge") tarjeta = this.crearTarjeta(item, "#FFEA00", "#FFD600", "EV");
             else if (item.id === "comercio_licencia") tarjeta = this.crearTarjeta(item, "#FFD700", "#9A7B00", "EV");
             else tarjeta = this.crearTarjeta(item, "#69F0AE", "#2E7D32", "EV");
             

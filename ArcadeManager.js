@@ -88,6 +88,10 @@ class ArcadeManager {
         this.gameScreen.classList.remove("hidden");
         if (gameName === 'catch' && window.minigameCatch) {
             window.minigameCatch.start();
+        } else if (gameName === 'flappy' && window.minigameFlappy) {
+            window.minigameFlappy.start();
+        } else if (gameName === 'memory' && window.minigameMemory) {
+            window.minigameMemory.start();
         }
     }
 

@@ -54,11 +54,39 @@ class MinigameCatch {
         this.arcadeMenu.classList.add("hidden");
         this.screen.classList.remove("hidden");
         
+        // 🔥 Asegurar controles táctiles visibles
+        const touchControls = document.getElementById("touch-controls");
+        if (touchControls) touchControls.style.display = "flex";
+
+        // 🔥 Aplicar fondo dinámico verde
+        this.playArea.className = "";
+        this.playArea.classList.add("game-catch-bg");
+
         this.score = 0;
         this.evGanada = 0;
         this.timeLeft = 30;
         this.basketX = 50;
         this.basket.style.left = this.basketX + "%";
+        
+        // Inyectar Geno principal sin cosméticos como el recolector
+        const activeGeno = window.miMascota || { body_shape: "frijol", base_color: "#77DD77", eye_type: "estandar", mouth_type: "estandar" };
+        const cleanAdn = {
+            body_shape: activeGeno.body_shape || "frijol",
+            base_color: activeGeno.base_color || activeGeno.color || "#77DD77",
+            color: activeGeno.base_color || activeGeno.color || "#77DD77",
+            eye_type: activeGeno.eye_type || "estandar",
+            mouth_type: activeGeno.mouth_type || "estandar",
+            wing_type: "ninguno",
+            hat_type: "ninguno",
+            skin_type: "ninguno",
+            aura_type: "ninguno",
+            isEgg: false,
+            scanned: false
+        };
+        this.basket.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(cleanAdn) : "🧺";
+        this.basket.style.fontSize = "initial";
+        this.basket.style.display = "block"; // Asegurar visibilidad
+        
         this.updateUI();
         
         Array.from(this.playArea.children).forEach(child => {
@@ -152,11 +180,17 @@ class MinigameCatch {
             const basketRect = this.basket.getBoundingClientRect();
             const itemRect   = item.getBoundingClientRect();
             
+            // Hitbox más ceñida: el objeto debe caer 20px más abajo (para tocar la cabeza/cuerpo del Geno)
+            // y estar alineado al centro del contenedor (márgenes horizontales de 12px a cada lado).
+            const collisionTop = basketRect.top + 20;
+            const collisionLeft = basketRect.left + 12;
+            const collisionRight = basketRect.right - 12;
+
             if (
-                itemRect.bottom >= basketRect.top &&
+                itemRect.bottom >= collisionTop &&
                 itemRect.top    <= basketRect.bottom &&
-                itemRect.right  >= basketRect.left &&
-                itemRect.left   <= basketRect.right
+                itemRect.right  >= collisionLeft &&
+                itemRect.left   <= collisionRight
             ) {
                 if (item.dataset.type === "apple") {
                     this.score++;
@@ -203,6 +237,9 @@ class MinigameCatch {
         this.isPlaying = false;
         clearInterval(this.gameInterval);
         clearInterval(this.spawnInterval);
+        
+        // 🔥 Limpiar clase de fondo de playArea
+        this.playArea.className = "";
         
         if (!quit) {
             const reward = Math.floor(this.score / 5);

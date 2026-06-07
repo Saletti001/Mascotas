@@ -1,8 +1,8 @@
-// ArcadeData.js - La base de datos de tus minijuegos (30 juegos listos)
+// ArcadeData.js - La base de datos de tus minijuegos (3 juegos listos)
 const ARCADE_GAMES_DATABASE = [
-    { id: 'catch', title: 'Lluvia de Manzanas', icon: '🍎', desc: 'Atrapa 5 manzanas para ganar 1 item.', locked: false },
-    { id: 'g2', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
-    { id: 'g3', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
+    { id: 'catch', title: 'Lluvia de Manzanas', icon: '🍎', desc: 'Atrapa manzanas y EV cayendo del cielo. ¡Evita las bombas!', locked: false },
+    { id: 'flappy', title: 'Flappy Geno', icon: '🐦', desc: 'Aletea y esquiva los tubos de ensayo para conseguir la puntuación más alta.', locked: false },
+    { id: 'memory', title: 'Memoria ADN', icon: '🧬', desc: 'Encuentra las parejas de genes compatibles antes de que se agote el tiempo.', locked: false },
     { id: 'g4', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
     { id: 'g5', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
     { id: 'g6', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
@@ -11,23 +11,5 @@ const ARCADE_GAMES_DATABASE = [
     { id: 'g9', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
     { id: 'g10', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
     { id: 'g11', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
-    { id: 'g12', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
-    { id: 'g13', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
-    { id: 'g14', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
-    { id: 'g15', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
-    { id: 'g16', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
-    { id: 'g17', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
-    { id: 'g18', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
-    { id: 'g19', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
-    { id: 'g20', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
-    { id: 'g21', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
-    { id: 'g22', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
-    { id: 'g23', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
-    { id: 'g24', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
-    { id: 'g25', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
-    { id: 'g26', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
-    { id: 'g27', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
-    { id: 'g28', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
-    { id: 'g29', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true },
-    { id: 'g30', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true }
+    { id: 'g12', title: 'Próximamente', icon: '🔒', desc: 'Nuevo minijuego en desarrollo.', locked: true }
 ];
