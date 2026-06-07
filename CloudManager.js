@@ -14,7 +14,7 @@ window.clockOffset = 0;
 window.obtenerHoraServidor = async function() {
     try {
         const respuesta = await fetch(supabaseUrl + '/auth/v1/health', {
-            method: 'HEAD',
+            method: 'GET',
             headers: { 'apikey': supabaseKey }
         });
         const fechaHeader = respuesta.headers.get('Date');
