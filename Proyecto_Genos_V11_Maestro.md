@@ -1,6 +1,6 @@
 PROYECTO GENOS
 
-Documento Maestro V10.2 — Hoja de Ruta + Sistema de Combate
+Documento Maestro V11 — Hoja de Ruta + Sistema de Combate
 
 Tamagotchi genetico · Breeding estrategico · Coliseo Web3
 
@@ -51,9 +51,9 @@ Este cuadro representa el estado de desarrollo real del software validado direct
 
 
 
-1. Novedades en V10.2 — Documento Maestro Definitivo
+1. Novedades en V11 — Documento Maestro Definitivo
 
-V10.2 fusiona la Hoja de Ruta V9.1 con el Sistema de Combate V1.1, el Balance V13.9 y el sistema completo de Torneos Tematicos. Es el documento mas completo del proyecto.
+V11 fusiona la Hoja de Ruta V9.1 con el Sistema de Combate V1.1, el Balance V13.9 y el sistema completo de Torneos Tematicos. Es el documento mas completo del proyecto.
 
 
 
@@ -69,7 +69,7 @@ Sistema de Calificacion S-D, Plaza de Comercio, Mecanica Gordo, Actualizaciones 
 
 
 
-Incorporado del Sistema de Combate V1.1 (nuevo en V10.2):
+Incorporado del Sistema de Combate V1.1 (nuevo en V11):
 
 Los 4 Slots de Ataque por Geno: Basico / Especial / Buff-Debuff / Definitivo (nivel 25).
 
@@ -79,9 +79,9 @@ Nuevo stat Defensa (DEF): 5to stat. Formula actualizada: max(ATK-DEF, ATK x 0.35
 
 8 Genes nuevos de combate (G_COMBAT y G_PROG). 11 Estados de combate documentados.
 
-[V10.2 NUEVO] Generacion Procedural de Accesorios PvE: rivales del Coliseo equipan hasta 4 accesorios cosmeticos (sombrero, alas, gafas, extras) segun rareza (hasta 85% en Legendarios).
+[V11 NUEVO] Generacion Procedural de Accesorios PvE: rivales del Coliseo equipan hasta 4 accesorios cosmeticos (sombrero, alas, gafas, extras) segun rareza (hasta 85% en Legendarios).
 
-[V10.2 NUEVO] Limites estrictos de inventario: 99 basicos / 20 consumibles / 1 equipo por slot.
+[V11 NUEVO] Limites estrictos de inventario: 99 basicos / 20 consumibles / 1 equipo por slot.
 
 
 
@@ -141,7 +141,7 @@ Pixels gano Mejor Juego de Navegador GAM3 2025 con HTML/JS y alcanzo 1M de usuar
 
 
 
-3. Hoja de Ruta V10.2 — Fases Detalladas
+3. Hoja de Ruta V11 — Fases Detalladas
 
 Fase 0 — Go-to-Market y Semilla Genesis ❌ PENDIENTE
 
@@ -169,7 +169,7 @@ Formas Gen 0: Gota (10%), Frijol (10%), Estrella, Circulo (26.7%), Cuadrado Redo
 
 [V8] Mecanica Gordo (0.1%): probabilidad de que un Nucleo de ADN estandar contenga un Geno Legendario Gen 0. ✅ Implementado.
 
-[V10.2 NUEVO] Generacion Procedural de Accesorios PvE: los rivales del Coliseo (Torre de Mutacion) equipan hasta 4 accesorios cosmeticos (sombrero, alas, gafas, extras) usando el sistema de Doble Dado. Probabilidad basada en rareza: hasta 85% en Legendarios. Aumenta la diversidad visual en PvE. ✅ Implementado en ColiseumLogic.js.
+[V11 NUEVO] Generacion Procedural de Accesorios PvE: los rivales del Coliseo (Torre de Mutacion) equipan hasta 4 accesorios cosmeticos (sombrero, alas, gafas, extras) usando el sistema de Doble Dado. Probabilidad basada en rareza: hasta 85% en Legendarios. Aumenta la diversidad visual en PvE. ✅ Implementado en ColiseumLogic.js.
 
 [V9.1] Laboratorio Morfologico WYSIWYG. Boton Revelar Genes consume Escaner ADN del inventario. Titulo con cian #80deea. ✅ Implementado (laboratorio.html).
 
@@ -177,18 +177,18 @@ Fase 2 — Economia Basica y Supervivencia ✅ COMPLETADA
 
 [ESTADO CODIGO] InventoryManager.js + EnergyManager.js + ArcadeManager.js + ShopManager.js. Todo operacional.
 
-[V10.2 ACTUALIZADO] Inventario Bolsillos Rotos: 10 slots gratuitos. Expansion hasta 40 con $POL. Limite estricto por slot: 99 basicos / 20 consumibles / 1 equipo. El jugador debe descartar o consumir para liberar espacio. ✅ Implementado.
+[V11 ACTUALIZADO] Inventario Bolsillos Rotos: 10 slots gratuitos. Expansion hasta 40 con $POL. Limite estricto por slot: 99 basicos / 20 consumibles / 1 equipo. El jugador debe descartar o consumir para liberar espacio. ✅ Implementado.
 
 Modo Arcade Lluvia de Manzanas: 30 segundos, ratio 5:1. Consume 5 de Energía Nexo. ✅ Implementado en ArcadeManager.js + MinigameCatch.js.
 
 Esencia Vital: off-chain. No vendible por $POL. Sin precio externo hasta Fase 6. Fuentes: victorias, minijuegos y cuidado diario pasivo. ✅ Implementado.
 
-[V10.2 NUEVO] Sistema de Energía Nexo y Resistencia: ✅ Implementado en EnergyManager.js.
+[V11 NUEVO] Sistema de Energía Nexo y Resistencia: ✅ Implementado en EnergyManager.js.
 - Energía Nexo (Cuenta global): Max 100. Consume 5 en Arcade y 10 en Coliseo. Recupera 1 cada 12 minutos (5/hora).
 - Resistencia del Geno (Individual): Max 100. Consume 20 en Coliseo. Recupera 25/hora descansando en el Centro de Cuidado.
 - Recuperación Offline: Calcula la regeneración de forma retrospectiva al reconectarse.
 
-[V10.2 NUEVO] Sistema de Cuidado (Estilo Pou/Tamagotchi): ✅ Implementado en EnergyManager.js y app.js.
+[V11 NUEVO] Sistema de Cuidado (Estilo Pou/Tamagotchi): ✅ Implementado en EnergyManager.js y app.js.
 - Barras de Necesidades: Hambre (vacía en 12h), Diversión (vacía en 16h), Higiene (vacía en 24h) y Resistencia.
 - Cuidado Activo vs Reserva: Los Genos en reserva reducen sus necesidades 5x más despacio.
 - Bazar Consumibles: Ración Automática (🍱 costo: 2.00 EV, alimenta y congela Hambre de reservas por 24h) y Ducha de Plasma (🧼 costo: 1.00 EV, limpia Higiene al 100% de todos). ✅ En ShopManager.js.
@@ -306,7 +306,7 @@ Dashboard RORS: ratio EV generada/consumida. Objetivo >= 0.70. Alarma <0.65. ❌
 
 4. ADN, Stats y Sistema de Progresion
 
-4.1 Los 5 Stats de Combate — Tabla V10.2
+4.1 Los 5 Stats de Combate — Tabla V11
 
 Rareza
 
@@ -482,7 +482,7 @@ Posible mutacion aleatoria — puede salir un gen nuevo.
 
 
 
-## 5. El Coliseo — Sistema de Combate 1v1 y 3v3 (V10.2)
+## 5. El Coliseo — Sistema de Combate 1v1 y 3v3 (V11)
 
 El Coliseo de Proyecto Genos es un sistema de combate por turnos por equipos con 5 stats, 6 elementos, 60 ataques especiales, 11 estados y dos modos de juego (1v1 y 3v3). Todo el sistema esta disenado para que la estrategia del jugador importe mas que la rareza del Geno.
 
@@ -586,7 +586,7 @@ Mitico
 
 
 
-1.2 Formula de Dano — V10.2
+1.2 Formula de Dano — V11
 
 // Formula base (todos los ataques fisicos):
 
@@ -728,7 +728,7 @@ Ciclo (positivo): Biomutante > Sintetico > Toxico > Radiactivo > Cibernetico > V
 
 Situacion
 
-Multiplicador V10.2
+Multiplicador V11
 
 Antes V10.0
 
@@ -1074,7 +1074,7 @@ Potencia: 85% ATK  |  Precision: 100%  |  Usos: Ilimitado
 
 Requiere setup previo. Ya no supera el dano de un Definitivo.
 
-Efecto: 100% ATK. Con Quemadura activa: 135% ATK (nerf de V10.2). STAB. [NERFADO: antes 140/175]
+Efecto: 100% ATK. Con Quemadura activa: 135% ATK (nerf de V11). STAB. [NERFADO: antes 140/175]
 
 Potencia: 100% / 135% con Quemadura  |  Precision: 80%  |  Usos: 3/combate
 
@@ -1922,13 +1922,13 @@ Acceso al 3v3 requiere 10 combates en Liga 1v1 completados. El nuevo jugador apr
 
 ### 5.6 Resumen Técnico para Implementación del Coliseo
 
-Este documento es la referencia tecnica completa para implementar el sistema de combate en ColiseumLogic.js, AttackCatalog.js y la UI del Coliseo. Todos los valores numericos son definitivos para V10.2.
+Este documento es la referencia tecnica completa para implementar el sistema de combate en ColiseumLogic.js, AttackCatalog.js y la UI del Coliseo. Todos los valores numericos son definitivos para V11.
 
 
 
 Variables clave del motor
 
-// Multiplicadores elementales V10.2
+// Multiplicadores elementales V11
 
 VENTAJA_ELEMENTAL = 1.35
 
@@ -1940,13 +1940,13 @@ CRITICO = 1.50
 
 
 
-// Formula DEF V10.2
+// Formula DEF V11
 
 MINIMO_DANO = 0.35  // 35% del ATK atacante como minimo garantizado
 
 
 
-// Penetracion de armadura V10.2
+// Penetracion de armadura V11
 
 PERFORANTE_ESPECIAL = 0.50  // Ignora 50% DEF
 
@@ -1970,7 +1970,7 @@ CORROSION_ES_PERMANENTE_Y_AFECTA_A_TODO_EL_EQUIPO_RIVAL = true
 
 
 
-Proyecto Genos — Sistema de Combate Completo V10.2 · Documento Tecnico · Abril 2026
+Proyecto Genos — Sistema de Combate Completo V11 · Documento Tecnico · Abril 2026
 
 ## 6. Arquitectura Técnica y Seguridad Financiera (Web3, Privy y Safe)
 
@@ -2302,7 +2302,7 @@ Requiere inyección de capital constante (pérdidas).
 
 Autofinanciable. La comisión del 3.5% en Plaza y 10% en Torneos cubre los costes de sobra.
 
-### 6.10 Referencias de Integración en el Documento Maestro V10.2
+### 6.10 Referencias de Integración en el Documento Maestro V11
 
 Este sistema de contención e infraestructura de red híbrida debe integrarse en las siguientes áreas del Documento Maestro definitivo del proyecto:
 
@@ -2721,7 +2721,7 @@ NUNCA estado de juego on-chain. Solo finanzas on-chain. El stat DEF, los ataques
 
 
 
-## 9. Genopedia — Índice del GitBook V10.2
+## 9. Genopedia — Índice del GitBook V11
 
 ### Capítulo 1 — Bienvenido al Laboratorio
 
@@ -2813,7 +2813,7 @@ Peg al Dolar: por que los precios no cambian aunque $POL suba o baje.
 
 ## 10. Veredicto y Siguientes Pasos — Actualizado Junio 2026
 
-Proyecto Genos V10.2 es el documento mas completo del proyecto. El balance V13.9 resuelve la dependencia del RNG elemental. Los 3 Definitivos por elemento crean mind games reales. Los Torneos Tematicos hacen que el esfuerzo de criar y mejorar Genos tenga recompensa competitiva directa.
+Proyecto Genos V11 es el documento mas completo del proyecto. El balance V13.9 resuelve la dependencia del RNG elemental. Los 3 Definitivos por elemento crean mind games reales. Los Torneos Tematicos hacen que el esfuerzo de criar y mejorar Genos tenga recompensa competitiva directa.
 
 ESTADO ACTUAL (Junio 2026): El motor del juego está completo y funcional. Las Fases 1-3 están 100% implementadas. La Fase 4 (ADN), la Fase 5 (Coliseo), la Fase 6 (Web3) y la Fase 7 (Torneos) tienen sus motores y flujos principales funcionando off-chain y parcialmente on-chain (integración de MetaMask en la testnet Polygon Amoy para la Plaza de Comercio P2P y Torneos). La brecha crítica actual es el despliegue del Libro de Linaje en blockchain y contratos inteligentes on-chain para becas.
 
@@ -2865,7 +2865,7 @@ PRIORIDAD BAJA: Gen 0.5 — mecanica de Genos de evento esteriles.
 
 
 
-Proyecto Genos V10.2 — Documento Maestro Definitivo · Actualizado Junio 2026
+Proyecto Genos V11 — Documento Maestro Definitivo · Actualizado Junio 2026
 Codigo fuente: https://github.com/Saletti001/Mascotas
 Estado: Motor de juego completo. Blockchain layer pendiente.
 
