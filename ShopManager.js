@@ -21,7 +21,9 @@ window.ShopManager = {
         
         "exp_20": `<svg viewBox="0 0 100 100" width="1em" height="1em"><rect x="20" y="30" width="60" height="60" rx="10" fill="#8A2BE2"/><path d="M35 30 L35 15 A15 15 0 0 1 65 15 L65 30" fill="none" stroke="#8A2BE2" stroke-width="8"/><rect x="28" y="50" width="44" height="25" rx="5" fill="#5E35B1"/><circle cx="50" cy="62" r="5" fill="#D1C4E9"/><path d="M20 40 L80 40" stroke="#5E35B1" stroke-width="4"/></svg>`,
         "exp_30": `<svg viewBox="0 0 100 100" width="1em" height="1em"><rect x="15" y="25" width="70" height="65" rx="12" fill="#D500F9"/><path d="M30 25 L30 10 A20 20 0 0 1 70 10 L70 25" fill="none" stroke="#D500F9" stroke-width="10"/><rect x="22" y="45" width="56" height="30" rx="8" fill="#AA00FF"/><circle cx="38" cy="60" r="6" fill="#EA80FC"/><circle cx="62" cy="60" r="6" fill="#EA80FC"/><path d="M15 35 L85 35" stroke="#AA00FF" stroke-width="5"/></svg>`,
-        "exp_40": `<svg viewBox="0 0 100 100" width="1em" height="1em"><rect x="10" y="20" width="80" height="70" rx="6" fill="#FFD700"/><rect x="18" y="28" width="64" height="54" rx="4" fill="#F57F17"/><circle cx="50" cy="55" r="16" fill="#FFF59D"/><circle cx="50" cy="55" r="6" fill="#F57F17"/><line x1="50" y1="39" x2="50" y2="45" stroke="#F57F17" stroke-width="4"/><line x1="30" y1="20" x2="30" y2="28" stroke="#F57F17" stroke-width="4"/><line x1="70" y1="20" x2="70" y2="28" stroke="#F57F17" stroke-width="4"/></svg>`
+        "exp_40": `<svg viewBox="0 0 100 100" width="1em" height="1em"><rect x="10" y="20" width="80" height="70" rx="6" fill="#FFD700"/><rect x="18" y="28" width="64" height="54" rx="4" fill="#F57F17"/><circle cx="50" cy="55" r="16" fill="#FFF59D"/><circle cx="50" cy="55" r="6" fill="#F57F17"/><line x1="50" y1="39" x2="50" y2="45" stroke="#F57F17" stroke-width="4"/><line x1="30" y1="20" x2="30" y2="28" stroke="#F57F17" stroke-width="4"/><line x1="70" y1="20" x2="70" y2="28" stroke="#F57F17" stroke-width="4"/></svg>`,
+        "catalizador_xp": `<svg viewBox="0 0 100 100" width="1em" height="1em"><defs><radialGradient id="cgGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fff176"/><stop offset="100%" stop-color="#f9a825"/></radialGradient></defs><circle cx="50" cy="50" r="38" fill="#1a1a2e" stroke="#f9a825" stroke-width="4"/><circle cx="50" cy="50" r="24" fill="url(#cgGlow)" opacity="0.9"/><path d="M50 18 L56 38 L76 38 L60 50 L66 70 L50 58 L34 70 L40 50 L24 38 L44 38 Z" fill="#fff" opacity="0.95"/><circle cx="50" cy="50" r="38" fill="none" stroke="#ffe082" stroke-width="2" stroke-dasharray="8 4"/></svg>`,
+        "acelerador_elite": `<svg viewBox="0 0 100 100" width="1em" height="1em"><defs><linearGradient id="eliteGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e040fb"/><stop offset="100%" stop-color="#00e5ff"/></linearGradient></defs><polygon points="50,8 93,32 93,68 50,92 7,68 7,32" fill="#0d1b2a" stroke="url(#eliteGrad)" stroke-width="5"/><path d="M50 22 L57 42 L78 42 L62 55 L68 75 L50 62 L32 75 L38 55 L22 42 L43 42 Z" fill="url(#eliteGrad)" opacity="0.95"/><circle cx="50" cy="50" r="6" fill="#fff"/><circle cx="50" cy="22" r="4" fill="#e040fb"/><circle cx="50" cy="78" r="4" fill="#00e5ff"/><circle cx="22" cy="42" r="4" fill="#e040fb"/><circle cx="78" cy="42" r="4" fill="#00e5ff"/><circle cx="22" cy="60" r="4" fill="#00e5ff"/><circle cx="78" cy="60" r="4" fill="#e040fb"/></svg>`
     },
 
     init: function() {
@@ -403,10 +405,43 @@ window.ShopManager = {
                 if(window.guardarJuego) window.guardarJuego();
             }
 
+            // === LAB XP BOOST ===
+            if (item.type === "lab_xp_boost") {
+                const xpNecesaria = window.obtenerXPRequeridaLaboratorio(window.labLevel);
+                const xpBoost = Math.ceil(xpNecesaria * item.levelsGranted) - window.labXP;
+                window.miInventario.vitalEssence -= item.price;
+                if (typeof window.registrarLogEconomia === "function") {
+                    window.registrarLogEconomia('sink', item.price, 'bazar');
+                }
+                window.miInventario.updateUI();
+                window.ganarXPLaboratorio(Math.max(0, xpBoost), item.name);
+                if (window.guardarJuego) window.guardarJuego();
+                return;
+            }
+
         } else if (item.currency === "POL") {
             if (!window.miWallet) window.miWallet = { pol: 0 };
             if (window.miWallet.pol < item.price) {
                 alert(`❌ No tienes suficiente $POL. Necesitas ${item.price.toFixed(2)} 🔷`);
+                return;
+            }
+
+            // === ACELERADOR ELITE (Lab XP Boost con POL) ===
+            if (item.type === "lab_xp_boost_pol") {
+                let xpTotal = 0;
+                let nivelSim = window.labLevel;
+                let xpSim = window.labXP;
+                for (let i = 0; i < item.levelsGranted; i++) {
+                    const xpParaEsteNivel = window.obtenerXPRequeridaLaboratorio(nivelSim);
+                    xpTotal += (xpParaEsteNivel - xpSim);
+                    nivelSim++;
+                    xpSim = 0;
+                }
+                window.miWallet.pol -= item.price;
+                if (typeof window.WalletManager !== 'undefined') window.WalletManager.actualizarBoton();
+                else { const polText = document.getElementById("pol-amount"); if(polText) polText.innerText = `${window.miWallet.pol.toFixed(1)} POL`; }
+                window.ganarXPLaboratorio(Math.max(0, xpTotal), item.name);
+                if (window.guardarJuego) window.guardarJuego();
                 return;
             }
 
@@ -466,6 +501,7 @@ window.ShopManager = {
             { id: "escaner_completo", name: "Escáner Completo", icon: this.iconosSVG["escaner_completo"], type: "basic", price: 0.50, currency: "EV", desc: "Revela la genética exacta S-D." },
             { id: "antidoto_uni", name: "Antídoto Universal", icon: this.iconosSVG["antidoto_uni"], type: "consumable", price: 0.10, currency: "EV", desc: "Limpia cualquier estado alterado." },
             { id: "nexo_charge", name: "Recarga Nexo", icon: "⚡", type: "consumable", price: 0.50, currency: "EV", desc: "Célula de energía Nexo ultraconcentrada. Restaura el 100% de la barra de Energía Nexo de forma inmediata." },
+            { id: "catalizador_xp", name: "Catalizador Científico", icon: this.iconosSVG["catalizador_xp"], type: "lab_xp_boost", levelsGranted: 1, price: 50.00, currency: "EV", desc: "Inyección de conocimiento puro. Otorga exactamente la XP necesaria para subir 1 nivel completo de Laboratorio al instante." },
             { id: "comercio_licencia", name: "Permiso de Comercio", icon: "📜", type: "consumable", price: 15.00, currency: "EV", desc: "Permiso de Acceso a la Red de Comercio del Bazar. Permite depositar, retirar y vender Genos. (Requiere Laboratorio Nv. 5)" }
         ];
 
@@ -476,6 +512,7 @@ window.ShopManager = {
             else if (item.id === "ration_auto") tarjeta = this.crearTarjeta(item, "#FF8A80", "#C62828", "EV");
             else if (item.id === "plasma_shower") tarjeta = this.crearTarjeta(item, "#80D8FF", "#1565C0", "EV");
             else if (item.id === "nexo_charge") tarjeta = this.crearTarjeta(item, "#FFEA00", "#FFD600", "EV");
+            else if (item.id === "catalizador_xp") tarjeta = this.crearTarjeta(item, "#f9a825", "#e65100", "EV");
             else if (item.id === "comercio_licencia") tarjeta = this.crearTarjeta(item, "#FFD700", "#9A7B00", "EV");
             else tarjeta = this.crearTarjeta(item, "#69F0AE", "#2E7D32", "EV");
             
@@ -551,7 +588,8 @@ window.ShopManager = {
         const items = [
             { id: "exp_20", name: "Bolsillos Nv. 2", icon: this.iconosSVG["exp_20"], type: "expansion", value: 20, price: 2.00, currency: "POL", desc: "Expande el inventario a 20 ranuras." },
             { id: "exp_30", name: "Bolsillos Nv. 3", icon: this.iconosSVG["exp_30"], type: "expansion", value: 30, price: 5.00, currency: "POL", desc: "Expande el inventario a 30 ranuras." },
-            { id: "exp_40", name: "Caja Fuerte Nv. 4", icon: this.iconosSVG["exp_40"], type: "expansion", value: 40, price: 10.00, currency: "POL", desc: "Expande el inventario a 40 ranuras." }
+            { id: "exp_40", name: "Caja Fuerte Nv. 4", icon: this.iconosSVG["exp_40"], type: "expansion", value: 40, price: 10.00, currency: "POL", desc: "Expande el inventario a 40 ranuras." },
+            { id: "acelerador_elite", name: "Acelerador Elite", icon: this.iconosSVG["acelerador_elite"], type: "lab_xp_boost_pol", levelsGranted: 3, price: 0.50, currency: "POL", desc: "Módulo de conocimiento élite. Otorga al instante la XP exacta para subir 3 niveles completos de Laboratorio." }
         ];
 
         items.forEach(item => {
