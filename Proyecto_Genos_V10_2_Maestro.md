@@ -2116,6 +2116,14 @@ El equipo de desarrollo no almacena claves privadas, no puede mover saldos de lo
 
 Legalmente, el juego es un mero software intermediario que facilita la firma de transacciones autónomas por parte de los propios usuarios en la blockchain pública de Polygon.
 
+5.3 Coexistencia de Billeteras: Privy (MPC) y MetaMask (Externa)
+
+Para asegurar la accesibilidad para todo tipo de usuarios sin comprometer la descentralización ni la autocustodia, el sistema implementa un modelo de interfaz dual de billetera:
+
+- **Billetera Embebida (Privy - MPC):** Para usuarios Web2 tradicionales. El SDK genera de forma invisible una Smart Account en la red Polygon utilizando el inicio de sesión social del jugador. La clave privada se fragmenta en múltiples partes mediante criptografía MPC (Multi-Party Computation) y se distribuye de manera que el servidor del juego nunca tiene acceso a la clave completa ni puede firmar transacciones de forma unilateral. El jugador es el único que posee el control criptográfico final de su cuenta inteligente.
+- **Billetera Externa (MetaMask / Extensiones Web3):** Para usuarios Web3 experimentados. Permite conectar billeteras de autocustodia tradicionales a través de su propia extensión de navegador. El flujo de transacciones es clásico: cada operación (compra, entrada, retiro) invoca una ventana emergente de MetaMask para que el usuario firme manualmente la transacción con su clave privada local.
+- **Interoperabilidad:** Ambos tipos de billeteras operan de manera análoga en los contratos de la Plaza de Comercio y Ligas de Torneos. En la base de datos de Supabase, la propiedad de las criaturas y los registros de transacciones se asocian de forma transparente a la `wallet_address` del jugador, independientemente del método de firma utilizado, garantizando que el dinero y los Genos de los jugadores pertenezcan 100% a los usuarios y nunca sean custodiados por el juego.
+
 ### 6.6 Componente 4: Abstracción de Cuentas (ERC-4337) para Micropagos
 
 Para garantizar que el jugador pueda realizar micropagos de forma rápida, económica (compras de consumibles o entradas de ligas de tan solo  en POL) y sin romper la jugabilidad con constantes firmas o cobros de comisiones invasivas, se implementa el estándar ERC-4337 (Account Abstraction) integrado nativamente con Privy.
