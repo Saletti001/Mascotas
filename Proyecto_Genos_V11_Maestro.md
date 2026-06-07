@@ -2354,7 +2354,22 @@ El hacker no tiene ninguna vía técnica para extraer el dinero acumulado en la 
 
 Cualquier movimiento de retiro de fondos acumulados para sufragar costes operativos del estudio requiere obligatoriamente una firma física offline del equipo, manteniendo las finanzas del proyecto bajo un entorno de seguridad de nivel bancario de forma totalmente gratuita.
 
+### 6.12 Catálogo Consolidado de Contratos Inteligentes (Solidity)
+
+Para dar una visión de conjunto sobre la descentralización del proyecto, a continuación se detallan todos los contratos inteligentes de la red Polygon que integran el ecosistema de Genos, tanto los ya implementados en el directorio `/contracts` como los planificados para futuras fases.
+
+| Nombre del Contrato | Tipo / Estándar | Estado actual | Ubicación del código | Propósito y Funcionalidad Principal |
+| :--- | :--- | :--- | :--- | :--- |
+| **`GenosPlazaComercio`** | Custom Settlement | **L100% Implementado** | [GenosPlazaComercio.sol](file:///c:/Users/STT/Documents/GitHub/Mascotas/contracts/GenosPlazaComercio.sol) | Gestiona los pagos P2P en $POL entre cuentas del juego. Realiza de forma atómica y directa en la blockchain la deducción del **3.5%** de comisión hacia la tesorería multi-firma y el 96.5% restante al vendedor. |
+| **`GenosTorneos`** | Custom Matchmaking | **L100% Implementado** | [GenosTorneos.sol](file:///c:/Users/STT/Documents/GitHub/Mascotas/contracts/GenosTorneos.sol) | Gestiona las inscripciones y el pozo de premios de torneos. Soporta devoluciones FIFO diferidas en `saldosPendientes`, reinversión interna con 0 gas y desviación del premio de NPCs ganadores a la tesorería. |
+| **`GenosNFT`** | `ERC-721` / `ERC-1155` | ❌ *Planificado* (Fase 6) | *Pendiente de creación* | Representa a los Genos en la blockchain de Polygon. Permite el "minting" bajo demanda de criaturas off-chain de Supabase a la blockchain por un coste inferior a $3 de gas para su libre transferencia o venta externa. |
+| **`LibroLinaje`** | Registro Inmutable | ❌ *Planificado* (Fase 4) | *Pendiente de creación* | Registro histórico y de pedigrí on-chain. Guarda la genealogía (padres, abuelos), victorias en torneos temáticos y combos genéticos activos para que viajen inmutablemente junto al NFT del Geno. |
+| **`GenosBecas`** | Custodia / Escrow | ❌ *Planificado* (Fase 6) | *Pendiente de creación* | Contrato de alquiler que bloquea temporalmente el NFT en custodia segura y reparte automáticamente las recompensas obtenidas (split 70% becario / 30% mánager) eliminando el riesgo de robo del Geno. |
+
+El estado actual del ecosistema es de un **40% de contratos implementados on-chain** (Plaza y Torneos en testnet Amoy/MetaMask y localmente Privy), con un **60% restante planificado** para la migración del motor de base de datos de Supabase a la blockchain cuando se inicie la Fase 4 (Linaje on-chain) y Fase 6 (NFT y Becas reales).
+
 ## 7. Sistema de Recompensas Diarias Rotativas (Daily Check-in)
+
 
 Este sistema regula el incentivo de conexión diaria del jugador en un bucle infinito automatizado de 4 semanas (28 días), alineado con el calendario de Torneos Temáticos del Coliseo.
 
