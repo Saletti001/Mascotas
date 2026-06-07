@@ -1105,6 +1105,114 @@
             75% { transform: translate(-50%, -50%) scale(1.35) rotate(540deg); opacity: 1; filter: brightness(2); }
             100% { transform: translate(-50%, -50%) scale(1.5) rotate(720deg); opacity: 0; }
         }
+
+        /* --- SIMULACIÓN DE VISTA DE PERFIL (V10.2) --- */
+        /* Transición de giro interactivo para visor y pedestales */
+        .geno-display-box svg *, .mini-viewer svg * {
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* Perfil Izquierdo (Simulado 3D sin cosméticos) */
+        .profile-left .g-ojos > *, .profile-view .g-ojos > * {
+            transform: translate(-16px, 0px) scaleX(0.65) !important;
+            transform-origin: 80px 85px !important;
+        }
+        .profile-left .g-boca > *, .profile-view .g-boca > * {
+            transform: translate(-14px, 1px) scaleX(0.65) !important;
+            transform-origin: 80px 110px !important;
+        }
+        .profile-left .g-cuerpo, .profile-view .g-cuerpo {
+            transform: scaleX(0.92) translate(-4px, 0px) !important;
+            transform-origin: 80px 136px !important;
+        }
+        /* Ocultar cosméticos (sombreros, alas, drones, auras y efectos) */
+        .profile-left .g-sombrero-anchor, .profile-view .g-sombrero-anchor,
+        .profile-left .g-alas-anchor, .profile-view .g-alas-anchor,
+        .profile-left .g-dron-anchor, .profile-view .g-dron-anchor,
+        .profile-left [class*="anim-holograma"], .profile-view [class*="anim-holograma"],
+        .profile-left [class*="anim-emblema"], .profile-view [class*="anim-emblema"] {
+            display: none !important;
+        }
+        .profile-left svg > *:not(defs):not(style):not(.g-cuerpo),
+        .profile-view svg > *:not(defs):not(style):not(.g-cuerpo) {
+            display: none !important;
+        }
+
+        /* Perfil Derecho (Simulado 3D sin cosméticos) */
+        .profile-right .g-ojos > *, .profile-view-right .g-ojos > * {
+            transform: translate(16px, 0px) scaleX(0.65) !important;
+            transform-origin: 80px 85px !important;
+        }
+        .profile-right .g-boca > *, .profile-view-right .g-boca > * {
+            transform: translate(14px, 1px) scaleX(0.65) !important;
+            transform-origin: 80px 110px !important;
+        }
+        .profile-right .g-cuerpo, .profile-view-right .g-cuerpo {
+            transform: scaleX(0.92) translate(4px, 0px) !important;
+            transform-origin: 80px 136px !important;
+        }
+        /* Ocultar cosméticos (sombreros, alas, drones, auras y efectos) */
+        .profile-right .g-sombrero-anchor, .profile-view-right .g-sombrero-anchor,
+        .profile-right .g-alas-anchor, .profile-view-right .g-alas-anchor,
+        .profile-right .g-dron-anchor, .profile-view-right .g-dron-anchor,
+        .profile-right [class*="anim-holograma"], .profile-view-right [class*="anim-holograma"],
+        .profile-right [class*="anim-emblema"], .profile-view-right [class*="anim-emblema"] {
+            display: none !important;
+        }
+        .profile-right svg > *:not(defs):not(style):not(.g-cuerpo),
+        .profile-view-right svg > *:not(defs):not(style):not(.g-cuerpo) {
+            display: none !important;
+        }
+
+        /* Estilos de pedestales multi-ángulo */
+        .profile-preview-card {
+            margin-top: 15px;
+            background: rgba(13, 22, 28, 0.85);
+            border: 1px solid #1e3a5f;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        .mini-viewer-grid {
+            display: flex;
+            gap: 15px;
+            justify-content: space-around;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px dashed rgba(77, 208, 225, 0.2);
+        }
+        .mini-viewer-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        .mini-viewer-label {
+            font-size: 10px;
+            color: #80deea;
+            font-weight: bold;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .mini-viewer-box {
+            width: 100px;
+            height: 100px;
+            background: rgba(49, 196, 216, 0.1);
+            border: 1px solid rgba(77, 208, 225, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        .mini-viewer-box svg {
+            width: 90% !important;
+            height: 90% !important;
+        }
     </style>
 </head>
 <body>
@@ -1158,6 +1266,15 @@
                 <button class="btn-secundario" onclick="document.getElementById('geno-display-1').classList.toggle('flipped')" title="Invierte visualmente al Geno">🔄 VOLTEAR</button>
             </div>
 
+            <div class="control-group" style="margin-top: 10px; border-left: 3px solid #22d3ee; background: rgba(34, 211, 238, 0.03); padding: 8px 12px; border-radius: 0 12px 12px 0;">
+                <label style="color:#22d3ee">Ángulo de Vista (Main)</label>
+                <select id="sel-angulo-vista" onchange="actualizarAnguloMain(this.value)" style="margin-top: 5px;">
+                    <option value="front">👤 Frente (Estándar)</option>
+                    <option value="left">◀️ Perfil Izquierdo</option>
+                    <option value="right">Perfil Derecho ▶️</option>
+                </select>
+            </div>
+
             <div class="control-group" style="border-left: 3px solid #ff5722; background: rgba(255, 87, 34, 0.05); padding: 12px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px;">
                 <label style="color:#ff7043">Visualización y Exportar</label>
                 <div style="display: flex; gap: 8px; width: 100%;">
@@ -1191,6 +1308,41 @@
                 <div class="pedestal-container"><div class="pedestal-ring"></div><div class="pedestal-light"></div><div class="pedestal-shadow"><div class="pedestal-core"></div></div></div>
                 <div id="geno-display-1" class="geno-display-box"></div>
             </div>
+
+            <!-- PROYECCIÓN MULTI-ÁNGULO (VISTA EN PERFIL) -->
+            <div class="profile-preview-card">
+                <div style="color: #4dd0e1; font-weight: 900; font-size: 12px; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px; display: flex; align-items: center; justify-content: space-between;">
+                    <span>📐 Proyección de Perfil y Ángulos</span>
+                    <span style="background: rgba(34, 211, 238, 0.15); color: #22d3ee; border: 1px solid #22d3ee; font-size: 8px; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Simulación 3D</span>
+                </div>
+                <div class="mini-viewer-grid">
+                    <!-- Vista Izquierda -->
+                    <div class="mini-viewer-col">
+                        <div class="mini-viewer-label">Perfil Izquierdo</div>
+                        <div class="mini-viewer-box profile-left">
+                            <div id="geno-display-left" style="width: 100%; height: 100%;"></div>
+                        </div>
+                    </div>
+                    <!-- Vista Frontal -->
+                    <div class="mini-viewer-col">
+                        <div class="mini-viewer-label">Frente</div>
+                        <div class="mini-viewer-box">
+                            <div id="geno-display-front" style="width: 100%; height: 100%;"></div>
+                        </div>
+                    </div>
+                    <!-- Vista Derecha -->
+                    <div class="mini-viewer-col">
+                        <div class="mini-viewer-label">Perfil Derecho</div>
+                        <div class="mini-viewer-box profile-right">
+                            <div id="geno-display-right" style="width: 100%; height: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-top: 10px; font-size: 10px; color: #888; text-align: center; line-height: 1.4;">
+                    El rostro y cuerpo se ajustan usando transformaciones de escala y traslación CSS sobre el SVG dinámico para simular una perspectiva tridimensional interactiva.
+                </div>
+            </div>
+
             <div class="terminal"><div class="term-title">/// DIAGNÓSTICO BIOLÓGICO ///</div><div id="terminal-content"></div></div>
         </div>
     </div>
@@ -1661,6 +1813,42 @@
                 svgEl.setAttribute('height', '100%');
                 svgEl.setAttribute('viewBox', '-20 0 200 160');
                 svgEl.style.overflow = 'visible';
+
+                // --- ARQUITECTURA DE ANCLAJES RELATIVOS DINÁMICOS EN TIEMPO DE EJECUCIÓN ---
+                const cuerpo = svgEl.querySelector('.g-cuerpo');
+                if (cuerpo) {
+                    // 1. Alas: Primer hijo de g-cuerpo es el contenedor de alas
+                    const wingGroup = cuerpo.firstElementChild;
+                    if (wingGroup && wingGroup.tagName.toLowerCase() === 'g') {
+                        // Envolver en alas-anchor
+                        const alasAnchor = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                        alasAnchor.setAttribute('class', 'g-alas-anchor');
+                        cuerpo.replaceChild(alasAnchor, wingGroup);
+                        alasAnchor.appendChild(wingGroup);
+                    }
+                    
+                    // 2. Sombrero: Último hijo de g-cuerpo es el sombrero
+                    const hatGroup = cuerpo.lastElementChild;
+                    if (hatGroup && hatGroup.tagName.toLowerCase() === 'g') {
+                        // Envolver en sombrero-anchor
+                        const sombreroAnchor = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                        sombreroAnchor.setAttribute('class', 'g-sombrero-anchor');
+                        cuerpo.replaceChild(sombreroAnchor, hatGroup);
+                        sombreroAnchor.appendChild(hatGroup);
+                    }
+                }
+                
+                // 3. Dron: Buscamos el elemento de dron cibernético
+                const dronAnim = svgEl.querySelector('.anim-flotar-dron');
+                if (dronAnim) {
+                    const dronGroup = dronAnim.parentElement; // El <g transform="translate(-45, 25)">
+                    if (dronGroup && dronGroup.parentElement) {
+                        const dronAnchor = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                        dronAnchor.setAttribute('class', 'g-dron-anchor');
+                        dronGroup.parentElement.replaceChild(dronAnchor, dronGroup);
+                        dronAnchor.appendChild(dronGroup);
+                    }
+                }
             }
             return tempDiv.innerHTML;
         }
@@ -3494,6 +3682,23 @@
             document.getElementById("geno-display-1").style.color = adn.color; 
             document.getElementById("implants-geno-preview").style.color = adn.color; 
             
+            // Renderizar vistas multi-ángulo en miniatura
+            const leftDisplay = document.getElementById("geno-display-left");
+            const frontDisplay = document.getElementById("geno-display-front");
+            const rightDisplay = document.getElementById("geno-display-right");
+            if (leftDisplay) {
+                leftDisplay.innerHTML = svgStr;
+                leftDisplay.style.color = adn.color;
+            }
+            if (frontDisplay) {
+                frontDisplay.innerHTML = svgStr;
+                frontDisplay.style.color = adn.color;
+            }
+            if (rightDisplay) {
+                rightDisplay.innerHTML = svgStr;
+                rightDisplay.style.color = adn.color;
+            }
+
             function actualizarTerminal() {
                 const term = document.getElementById("terminal-content");
                 if (!document.getElementById("chk-escaneado").checked) { term.innerHTML = `<div style="color:#ff6b6b">> ERROR: ADN BLOQUEADO. Active el escáner.</div>`; return; }
@@ -3512,6 +3717,17 @@
                 term.innerHTML = log;
             }
             actualizarTerminal();
+        }
+
+        function actualizarAnguloMain(angulo) {
+            const mainBox = document.getElementById("geno-display-1");
+            if (!mainBox) return;
+            mainBox.classList.remove("profile-view", "profile-view-right");
+            if (angulo === "left") {
+                mainBox.classList.add("profile-view");
+            } else if (angulo === "right") {
+                mainBox.classList.add("profile-view-right");
+            }
         }
 
         // ==========================================
