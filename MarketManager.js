@@ -945,13 +945,14 @@ window.renderizarMisVentas = async function() {
             
             const row = document.createElement("div");
             row.className = "listed-item-row";
+            const usdVal = window.PriceOracleManager ? ` (~$${window.PriceOracleManager.polToUsd(parseFloat(venta.pricePol)).toFixed(2)} USD)` : "";
             row.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 8px; pointer-events: none;">
                     <span style="font-size: 16px; display: flex; align-items: center; justify-content: center; width: 20px; height: 20px;">${iconoListado}</span>
                     <span style="font-weight: bold; font-size: 13px;">${nombreMostrar} ${isItem ? '(x1)' : ''}</span>
                 </div>
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="color: #D500F9; font-weight: 900; pointer-events: none;">🔷 ${venta.pricePol}</span>
+                    <span style="color: #D500F9; font-weight: 900; pointer-events: none;">🔷 ${venta.pricePol}${usdVal ? ` <span style="font-size: 10px; color: #aaa; font-weight: normal;">${usdVal}</span>` : ""}</span>
                     <button class="market-btn-neon red btn-cancel-sale" style="padding: 5px 10px; width: auto; font-size: 10px; margin: 0; position: relative; z-index: 2;">Cancelar</button>
                 </div>
             `;
@@ -1168,13 +1169,14 @@ window.cargarMercadoGlobal = async function() {
             const card = document.createElement("div");
             card.className = "market-card-neon";
             if (esObjeto) card.style.border = "1px solid #4dd0e1";
+            const usdVal = window.PriceOracleManager ? ` (~$${window.PriceOracleManager.polToUsd(parseFloat(listing.pricePol)).toFixed(2)} USD)` : "";
 
             card.innerHTML = `
                 <div style="width: 55px; height: 55px; margin-bottom: 10px; filter: drop-shadow(0px 5px 8px rgba(0,0,0,0.6)); pointer-events: none;">${svgIcon}</div>
                 <h4 style="margin: 0 0 5px 0; font-size: 13px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">${nombre}</h4>
                 <p style="font-size: 11px; color: #cbd5e1; margin: 0 0 10px 0; pointer-events: none;">${subtitulo}</p>
                 <div style="margin-top: auto; width: 100%; display: flex; flex-direction: column; gap: 5px;">
-                    <span style="color: #D500F9; font-weight: 900; font-size: 12px;">🔷 ${listing.pricePol} POL</span>
+                    <span style="color: #D500F9; font-weight: 900; font-size: 12px;">🔷 ${listing.pricePol} POL${usdVal ? ` <span style="font-size: 10px; color: #aaa; font-weight: normal; display: block; margin-top: 2px;">${usdVal}</span>` : ""}</span>
                     <button class="market-btn-neon green">Comprar</button>
                 </div>
             `;
@@ -1217,11 +1219,12 @@ window.abrirDetalleMercadoRemoto = function(listing) {
     
     // Hacemos que actionContainer espere la compilación antes de sobreescribirlo
     window.abrirDetalleMercado(data, 'inspeccion');
+    const usdVal = window.PriceOracleManager ? ` (~$${window.PriceOracleManager.polToUsd(parseFloat(data.pricePol)).toFixed(2)} USD)` : "";
     
     actionContainer.innerHTML = `
         <div style="background: rgba(0,0,0,0.4); border-radius: 8px; padding: 10px; border: 1px solid #384a5e; margin-bottom: 15px;">
             <div style="color: #cbd5e1; font-size: 12px; line-height: 1.5; margin-bottom: 5px;">Vendedor: ${data.sellerId ? (data.sellerId.substring(0,6) + "...") : "Desconocido"}</div>
-            <div style="color: #D500F9; font-size: 16px; font-weight: bold; text-align: center;">🔷 ${data.pricePol} POL</div>
+            <div style="color: #D500F9; font-size: 16px; font-weight: bold; text-align: center;">🔷 ${data.pricePol} POL${usdVal ? ` <span style="font-size: 12px; color: #aaa; font-weight: normal; display: block; margin-top: 4px;">${usdVal}</span>` : ""}</div>
         </div>
         <button id="modal-btn-action-buy" class="market-btn-neon green" style="width: 100%; font-size: 14px; padding: 12px;">Comprar Espécimen</button>
     `;

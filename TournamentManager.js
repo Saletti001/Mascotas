@@ -343,6 +343,26 @@ window.TournamentManager = {
             tabBrackets?.classList.add("active");
         }
 
+        // Actualizar los costes dinámicos de las copas estándar con la cotización del oráculo
+        if (window.PriceOracleManager) {
+            const neonCard = document.querySelector(".tourney-option-card[onclick*='neon']");
+            if (neonCard) {
+                const priceDiv = neonCard.querySelector("div:nth-child(2)");
+                if (priceDiv) {
+                    const usdVal = window.PriceOracleManager.polToUsd(1.0).toFixed(2);
+                    priceDiv.innerHTML = `1.00 POL <span style="font-size: 10px; color: #aaa; display: block; font-weight: normal; margin-top: 2px;">(~$${usdVal} USD)</span>`;
+                }
+            }
+            const sateliteCard = document.querySelector(".tourney-option-card[onclick*='satelite']");
+            if (sateliteCard) {
+                const priceDiv = sateliteCard.querySelector("div:nth-child(2)");
+                if (priceDiv) {
+                    const usdVal = window.PriceOracleManager.polToUsd(0.5).toFixed(2);
+                    priceDiv.innerHTML = `0.50 POL <span style="font-size: 10px; color: #aaa; display: block; font-weight: normal; margin-top: 2px;">(~$${usdVal} USD)</span>`;
+                }
+            }
+        }
+
         // Determinar qué panel mostrar
         const lobbyPanel = document.getElementById("tourney-lobby-panel");
         const queuePanel = document.getElementById("tourney-queue-panel");
@@ -419,7 +439,10 @@ window.TournamentManager = {
             const canEnter = validation.puede;
             const btnClass = canEnter ? "neon" : "disabled";
             const disabledAttr = canEnter ? "" : "disabled";
-            const btnText = canEnter ? `Inscribirse (${t.costo.toFixed(2)} POL)` : `No Disponible`;
+            
+            // Integración de oráculo de precios
+            const usdCosto = window.PriceOracleManager ? ` (~$${window.PriceOracleManager.polToUsd(t.costo).toFixed(2)} USD)` : "";
+            const btnText = canEnter ? `Inscribirse (${t.costo.toFixed(2)} POL${usdCosto})` : `No Disponible`;
 
             let restriccionHtml = `<span style="color: #ff55a3; font-weight: bold;">${t.restriccionDesc}</span>`;
             if (t.id === "elemental_pura") {
@@ -441,7 +464,7 @@ window.TournamentManager = {
                         </div>
                         <div style="text-align: right; flex-shrink: 0;">
                             <span style="font-size: 13px; font-weight: bold; color: #ffd700;">${t.costo.toFixed(2)} POL</span>
-                            <div style="font-size: 8px; color: #888; text-transform: uppercase; letter-spacing: 0.5px;">Costo</div>
+                            <div style="font-size: 8px; color: #888; text-transform: uppercase; letter-spacing: 0.5px;">Costo${usdCosto ? ` <span style="color:#aaa">${usdCosto}</span>` : ""}</div>
                         </div>
                     </div>
                     

@@ -190,9 +190,13 @@ window.ShopManager = {
         div.className = "shop-card-neon";
         
         div.style.cssText = `--card-color: ${colorLuz}; --card-color-dark: ${colorOscuro}; --card-color-glow: ${colorLuz}60;`;
+        let usdVal = "";
+        if (tipoMoneda === "POL" && window.PriceOracleManager) {
+            usdVal = ` <span style="font-size: 10px; color: #aaa; font-weight: normal;">(~$${window.PriceOracleManager.polToUsd(item.price).toFixed(2)} USD)</span>`;
+        }
         let precioTag = tipoMoneda === "EV" 
             ? `<div style="font-weight: 900; color: ${colorLuz}; margin: 10px 0 15px 0; font-size: 15px; text-shadow: 0 0 8px ${colorLuz}80;">✨ ${item.price.toFixed(2)} EV</div>` 
-            : `<div style="font-weight: 900; color: ${colorLuz}; margin: 10px 0 15px 0; font-size: 15px; text-shadow: 0 0 8px ${colorLuz}80;">🔷 ${item.price.toFixed(2)} POL</div>`;
+            : `<div style="font-weight: 900; color: ${colorLuz}; margin: 10px 0 15px 0; font-size: 15px; text-shadow: 0 0 8px ${colorLuz}80;">🔷 ${item.price.toFixed(2)} POL${usdVal}</div>`;
         div.innerHTML = `
             <div style="font-size: 3.5rem; margin-bottom: 10px; filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.8)); pointer-events: none;">${item.icon}</div>
             <h4 style="margin: 5px 0 8px 0; font-size: 14px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">${item.name}</h4>
@@ -246,9 +250,13 @@ window.ShopManager = {
             tagsHTML += createTag(item.type === "consumable" ? "Consumible" : "Herramienta", colorLuz);
         }
         tagsContainer.innerHTML = tagsHTML;
+        let usdValDetail = "";
+        if (item.currency === "POL" && window.PriceOracleManager) {
+            usdValDetail = ` <span style="font-size: 12px; color: #aaa; font-weight: normal;">(~$${window.PriceOracleManager.polToUsd(item.price).toFixed(2)} USD)</span>`;
+        }
         priceEl.innerHTML = item.currency === "EV" 
             ? `<span style="color: ${colorLuz}; text-shadow: 0 0 8px ${colorLuz}80;">✨ ${item.price.toFixed(2)} EV</span>` 
-            : `<span style="color: ${colorLuz}; text-shadow: 0 0 8px ${colorLuz}80;">🔷 ${item.price.toFixed(2)} POL</span>`;
+            : `<span style="color: ${colorLuz}; text-shadow: 0 0 8px ${colorLuz}80;">🔷 ${item.price.toFixed(2)} POL${usdValDetail}</span>`;
         modal.style.display = "flex";
 
         const btnClose = document.getElementById("close-shop-detail");
