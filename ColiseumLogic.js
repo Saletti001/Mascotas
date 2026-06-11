@@ -47,6 +47,14 @@ window.ColiseumLogic = {
     },
 
     generarRivalProcedural: function(nivelJugador, esJefeDeLiga = false) {
+        if (this.modoCombate === 'pvp') {
+            return; // Rival already assigned externally via matchmaking
+        }
+        if (this.modoCombate === 'torre') {
+            const floor = window.currentTowerFloor || 1;
+            this.enemy = this.crearRivalTorre(floor);
+            return;
+        }
         if (this.modoCombate === '3v3') {
             const raritiesOrder = { "Común": 1, "Raro": 2, "Épico": 3, "Legendario": 4, "Mítico": 5 };
             let maxRarityVal = 0;
@@ -374,7 +382,7 @@ window.ColiseumLogic = {
 
         let nivelEnemigo = this.trainingSupportActive 
             ? (nivelJugador + (esJefeDeLiga ? 2 : 0)) 
-            : (nivelJugador + (esJefeDeLiga ? 5 : 3));
+            : (nivelJugador + (esJefeDeLiga ? 3 : 0)); // PvE estándar no tiene ventaja de nivel
         if (nivelEnemigo < 1) nivelEnemigo = 1;
 
         if (this.trainingSupportActive) {
@@ -471,7 +479,8 @@ window.ColiseumLogic = {
         
         const counterDelJugador = { "Biomutante": "Viral", "Sintético": "Biomutante", "Tóxico": "Sintético", "Radiactivo": "Tóxico", "Cibernético": "Radiactivo", "Viral": "Cibernético" };
         let pElement = this.player ? this.player.element : "Normal";
-        let elementoCounter = counterDelJugador[pElement] || eElemento;
+        // En PvE estándar no se fuerza contra-elemento del jugador para mantenerlo equilibrado, solo Jefes
+        let elementoCounter = esJefeDeLiga ? (counterDelJugador[pElement] || eElemento) : eElemento;
 
         let atkEsp = pAtks.atk_2 ? this.obtenerAtaqueAleatorio(eElemento, "especiales") : null;
         let atkTac = pAtks.atk_3 ? this.obtenerAtaqueAleatorio(eElemento, "soportes") : null;
@@ -1154,7 +1163,7 @@ window.ColiseumLogic = {
         return "ataque";
     },
 
-    crearRivalObjeto: function(nivelJugador, rarezaJugador, esJefeDeLiga = false) {
+    crearRivalObjeto: function(nivelJugador, rarezaJugador, esJefeDeLiga = false, esPvP = false) {
         let eRareza = "Común";
         if (esJefeDeLiga) {
             if (rarezaJugador === "Común") eRareza = "Raro";
@@ -1188,7 +1197,7 @@ window.ColiseumLogic = {
 
         let nivelEnemigo = trainingSupport 
             ? (nivelJugador + (esJefeDeLiga ? 2 : 0)) 
-            : (nivelJugador + (esJefeDeLiga ? 5 : 3));
+            : (nivelJugador + (esJefeDeLiga ? 5 : (esPvP ? 3 : 0))); // PvP tiene ventaja de nivel, PvE estándar o 3v3 no
         if (nivelEnemigo < 1) nivelEnemigo = 1;
 
         if (trainingSupport) {
@@ -1281,7 +1290,8 @@ window.ColiseumLogic = {
         let pAtks = window.miMascota && window.miMascota.ataques ? window.miMascota.ataques : {};
         const counterDelJugador = { "Biomutante": "Viral", "Sintético": "Biomutante", "Tóxico": "Sintético", "Radiactivo": "Tóxico", "Cibernético": "Radiactivo", "Viral": "Cibernético" };
         let pElement = this.player ? this.player.element : "Normal";
-        let elementoCounter = counterDelJugador[pElement] || eElemento;
+        // En PvE estándar/3v3 no se fuerza contra-elemento del jugador para mantenerlo equilibrado, solo en PvP o Jefes
+        let elementoCounter = (esPvP || esJefeDeLiga) ? (counterDelJugador[pElement] || eElemento) : eElemento;
 
         let atkEsp = pAtks.atk_2 ? this.obtenerAtaqueAleatorio(eElemento, "especiales") : null;
         let atkTac = pAtks.atk_3 ? this.obtenerAtaqueAleatorio(eElemento, "soportes") : null;
@@ -1309,6 +1319,104 @@ window.ColiseumLogic = {
             danoRecibidoEsteTurno: 0, danoRecibidoTurnoAnterior: 0, proxVenenoDoble: false,
             ataquesEquipados: enemyAtaques,
             esJefeDeLiga: esJefeDeLiga
+        };
+    },
+
+    crearRivalTorre: function(floor) {
+        let eRareza = "Común";
+        if (floor >= 101) eRareza = "Mítico";
+        else if (floor >= 76) eRareza = "Legendario";
+        else if (floor >= 51) eRareza = "Épico";
+        else if (floor >= 26) eRareza = "Raro";
+
+        let floorOffset = (floor - 1) % 25;
+        let purezaEnemigo = 40;
+        if (floorOffset < 5) purezaEnemigo = 40;
+        else if (floorOffset < 10) purezaEnemigo = 60;
+        else if (floorOffset < 15) purezaEnemigo = 70;
+        else if (floorOffset < 20) purezaEnemigo = 85;
+        else purezaEnemigo = 95;
+
+        const eStats = window.generarStatsPorRareza ? window.generarStatsPorRareza(eRareza) : {hp: 120, atk: 12, def: 8, spd: 10, luk: 5};
+        eStats.pureza = purezaEnemigo;
+
+        let bonoPureza = purezaEnemigo >= 90 ? 4 : (purezaEnemigo >= 80 ? 3 : (purezaEnemigo >= 60 ? 1 : 0));
+        eStats.hp += bonoPureza * 3;
+        eStats.atk += bonoPureza;
+        eStats.def += bonoPureza;
+        eStats.spd += bonoPureza;
+        eStats.luk += bonoPureza;
+
+        let nivelEnemigo = floor;
+        if (nivelEnemigo < 1) nivelEnemigo = 1;
+
+        let eHiddenGenes = {A: null, B: null, C: null};
+        if (typeof window.generarGenesV9 === 'function') eHiddenGenes = window.generarGenesV9(eRareza);
+        let gB = (eHiddenGenes.B?.id || "ninguno").toLowerCase();
+        let gC = (eHiddenGenes.C?.id || "ninguno").toLowerCase();
+        const genesEnemigo = [gB, gC];
+
+        let pesos = { hp: 20, atk: 20, def: 20, spd: 20, luk: 20 };
+        const elementos = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
+        const eElemento = elementos[Math.floor(Math.random() * elementos.length)];
+
+        if (eElemento === "Biomutante") { pesos.hp += 40; pesos.def += 20; pesos.spd -= 10; }
+        else if (eElemento === "Sintético") { pesos.spd += 40; pesos.luk += 30; pesos.def -= 10; }
+        else if (eElemento === "Cibernético") { pesos.def += 40; pesos.atk += 20; pesos.luk -= 10; }
+        else if (eElemento === "Viral") { pesos.spd += 25; pesos.atk += 25; pesos.hp += 10; }
+        else if (eElemento === "Radiactivo") { pesos.atk += 40; pesos.hp += 20; pesos.def -= 10; }
+        else if (eElemento === "Tóxico") { pesos.hp += 30; pesos.def += 30; pesos.atk -= 10; }
+
+        if (genesEnemigo.includes("velocidad_fantasma") || genesEnemigo.includes("esquiva_genetica")) pesos.spd += 50;
+        if (genesEnemigo.includes("vampirismo_genetico") || genesEnemigo.includes("instinto_caza") || genesEnemigo.includes("ruptura_defensiva")) pesos.atk += 50;
+        if (genesEnemigo.includes("armadura_adaptativa") || genesEnemigo.includes("postura_inquebrantable") || genesEnemigo.includes("nucleo_coraza")) pesos.def += 50;
+        if (genesEnemigo.includes("resiliencia_ultima") || genesEnemigo.includes("frenesi") || genesEnemigo.includes("barrera_limite")) { pesos.hp += 40; pesos.atk += 20; }
+        if (genesEnemigo.includes("reflejo_genetico")) pesos.luk += 50;
+
+        for (let stat in pesos) if (pesos[stat] < 1) pesos[stat] = 1;
+
+        let bolsaStats = [];
+        for (let stat in pesos) for (let i = 0; i < pesos[stat]; i++) bolsaStats.push(stat);
+
+        let puntosExtra = (nivelEnemigo > 1) ? (nivelEnemigo - 1) * 3 : 0;
+        for(let i=0; i<puntosExtra; i++) {
+            let rStat = bolsaStats[Math.floor(Math.random() * bolsaStats.length)];
+            if(rStat === 'hp') eStats.hp += 5; else eStats[rStat] += 1;
+        }
+
+        const formas = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "diamante"];
+        const colores = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77", "#ff9800", "#ffb347", "#a8e6cf"];
+        const opcionesOjos = typeof dicOjos !== 'undefined' ? Object.keys(dicOjos) : ["estandar", "cute", "angry", "cibernetico", "alien", "ojeras"];
+        const opcionesBocas = typeof dicBocas !== 'undefined' ? Object.keys(dicBocas) : ["estandar", "feliz", "colmillos", "abierta", "sorpresa", "lengua"];
+        
+        let eHat = "ninguno", eWing = "ninguno", eGlasses = "ninguno", eExtra = "ninguno";
+
+        const adn = { 
+            id: 999, scanned: true, rarity: eRareza, stats: eStats, element: eElemento,
+            body_shape: formas[Math.floor(Math.random() * formas.length)], color: colores[Math.floor(Math.random() * colores.length)],
+            eye_type: opcionesOjos[Math.floor(Math.random() * opcionesOjos.length)], mouth_type: opcionesBocas[Math.floor(Math.random() * opcionesBocas.length)], 
+            wing_type: eWing, hat_type: eHat, glasses_type: eGlasses, extra_type: eExtra,
+            hidden_genes: eHiddenGenes, level: nivelEnemigo
+        };
+
+        let enemyAtaques = {
+            "ataque": this.obtenerAtaqueAleatorio(eElemento, "basicos"),
+            "especial": this.obtenerAtaqueAleatorio(eElemento, "especiales"),
+            "tactica": this.obtenerAtaqueAleatorio(eElemento, "soportes"),
+            "definitivo": nivelEnemigo >= 25 ? this.obtenerAtaqueAleatorio(eElemento, "definitivos") : null
+        };
+        
+        return {
+            nombre: `Geno Mutador F-${floor}`, isPlayer: false, adn: adn,
+            maxHp: eStats.hp, hp: eStats.hp, atk: eStats.atk, def: eStats.def || 5, spd: eStats.spd, luk: eStats.luk,
+            baseAtk: eStats.atk, baseDef: eStats.def || 5, baseSpd: eStats.spd, baseLuk: eStats.luk,
+            element: eElemento, rareza: eRareza, genesId: genesEnemigo,
+            estados: [], efectosActivos: [], cooldowns: { especial: 0, tactica: 0, definitivo: 0 },
+            escudoCibernetico: eElemento === "Cibernético", 
+            crystalSkin: gB === "piel_cristal" || gC === "piel_cristal",
+            decoyUsado: false, coreArUsado: false, rachaGolpes: 0, adaptativaStacks: 0, ultimoElementoRecibido: null,
+            danoRecibidoEsteTurno: 0, danoRecibidoTurnoAnterior: 0, proxVenenoDoble: false,
+            ataquesEquipados: enemyAtaques
         };
     },
 

@@ -59,8 +59,10 @@ window.cargarConfiguracionBalance = async function() {
             }
         },
         tournaments: {
-            neon: { costo: 1.0, payouts: { 1: 9.0, 2: 3.6, 3: 1.8 } },
-            satelite: { costo: 0.5, payouts: { 1: 4.5, 2: 1.8, 3: 0.9 } },
+            practicante: { costo: 0.15, payouts: { 1: 1.20, 2: 0.66, 3: 0.30 } },
+            casual: { costo: 0.50, payouts: { 1: 4.00, 2: 2.20, 3: 1.00 } },
+            competitivo: { costo: 2.00, payouts: { 1: 16.00, 2: 8.80, 3: 4.00 } },
+            elite: { costo: 5.00, payouts: { 1: 40.00, 2: 22.00, 3: 10.00 } },
             tematicos: {
                 solo_comunes: { costo: 0.05, payouts: { 1: 0.40, 2: 0.16, 3: 0.08 } },
                 copa_raro: { costo: 0.10, payouts: { 1: 0.80, 2: 0.32, 3: 0.16 } },
@@ -260,6 +262,17 @@ window.respaldarEnNube = async function() {
         tournamentSaldosPendientes: window.TournamentManager ? window.TournamentManager.saldosPendientes : 0.0,
         tournamentActive: window.TournamentManager ? window.TournamentManager.activeTournament : null,
         becasPlaza: window.becasPlaza || [],
+        prBronce: window.prBronce !== undefined ? window.prBronce : 0,
+        prPlata: window.prPlata !== undefined ? window.prPlata : 0,
+        prOro: window.prOro !== undefined ? window.prOro : 0,
+        prDiamante: window.prDiamante !== undefined ? window.prDiamante : 0,
+        arenaTicketActive: window.arenaTicketActive !== undefined ? window.arenaTicketActive : false,
+        arenaBattlesPlayed: window.arenaBattlesPlayed !== undefined ? window.arenaBattlesPlayed : 0,
+        arenaWins: window.arenaWins !== undefined ? window.arenaWins : 0,
+        arenaLosses: window.arenaLosses !== undefined ? window.arenaLosses : 0,
+        maxFloor: window.maxFloor !== undefined ? window.maxFloor : 0,
+        towerClaimedFloorThisWeek: window.towerClaimedFloorThisWeek !== undefined ? window.towerClaimedFloorThisWeek : 0,
+        lastTowerResetAt: window.lastTowerResetAt !== undefined ? window.lastTowerResetAt : 0,
         // Guardar nivel de laboratorio en JSONB como respaldo
         labLevel: window.labLevel || 1,
         labXP: window.labXP || 0,
@@ -274,6 +287,17 @@ window.respaldarEnNube = async function() {
         lab_level: window.labLevel || 1,
         lab_xp: window.labXP || 0,
         comercio_desbloqueado: window.comercioDesbloqueado || false,
+        pr_bronce: window.prBronce !== undefined ? window.prBronce : 0,
+        pr_plata: window.prPlata !== undefined ? window.prPlata : 0,
+        pr_oro: window.prOro !== undefined ? window.prOro : 0,
+        pr_diamante: window.prDiamante !== undefined ? window.prDiamante : 0,
+        saldo_pendiente_pol: window.TournamentManager ? (window.TournamentManager.saldosPendientes || 0.0) : 0.0,
+        arena_ticket_active: window.arenaTicketActive !== undefined ? window.arenaTicketActive : false,
+        arena_battles_played: window.arenaBattlesPlayed !== undefined ? window.arenaBattlesPlayed : 0,
+        arena_wins: window.arenaWins !== undefined ? window.arenaWins : 0,
+        arena_losses: window.arenaLosses !== undefined ? window.arenaLosses : 0,
+        max_floor: window.maxFloor !== undefined ? window.maxFloor : 0,
+        ifttt_script: window.miMascota ? (window.miMascota.iftttRules || []) : [],
         last_active_at: new Date().toISOString()
     };
 
@@ -335,7 +359,7 @@ async function cargarDatosDeLaNube() {
 
     let result = await supabaseClient
         .from('jugadores')
-        .select('datos_juego, lab_level, lab_xp, comercio_desbloqueado')
+        .select('datos_juego, lab_level, lab_xp, comercio_desbloqueado, pr_bronce, pr_plata, pr_oro, pr_diamante, saldo_pendiente_pol, arena_ticket_active, arena_battles_played, arena_wins, arena_losses, max_floor, ifttt_script')
         .eq('id', window.miUsuarioCloud.id)
         .single();
 
@@ -401,11 +425,30 @@ async function cargarDatosDeLaNube() {
         window.labXP = data.lab_xp !== undefined && data.lab_xp !== null ? data.lab_xp : (dj.labXP || 0);
         window.comercioDesbloqueado = data.comercio_desbloqueado !== undefined && data.comercio_desbloqueado !== null ? data.comercio_desbloqueado : (dj.comercioDesbloqueado || false);
 
+        window.prBronce = data.pr_bronce !== undefined && data.pr_bronce !== null ? data.pr_bronce : (dj.prBronce || 0);
+        window.prPlata = data.pr_plata !== undefined && data.pr_plata !== null ? data.pr_plata : (dj.prPlata || 0);
+        window.prOro = data.pr_oro !== undefined && data.pr_oro !== null ? data.pr_oro : (dj.prOro || 0);
+        window.prDiamante = data.pr_diamante !== undefined && data.pr_diamante !== null ? data.pr_diamante : (dj.prDiamante || 0);
+        
+        window.arenaTicketActive = data.arena_ticket_active !== undefined && data.arena_ticket_active !== null ? data.arena_ticket_active : (dj.arenaTicketActive || false);
+        window.arenaBattlesPlayed = data.arena_battles_played !== undefined && data.arena_battles_played !== null ? data.arena_battles_played : (dj.arenaBattlesPlayed || 0);
+        window.arenaWins = data.arena_wins !== undefined && data.arena_wins !== null ? data.arena_wins : (dj.arenaWins || 0);
+        window.arenaLosses = data.arena_losses !== undefined && data.arena_losses !== null ? data.arena_losses : (dj.arenaLosses || 0);
+        window.maxFloor = data.max_floor !== undefined && data.max_floor !== null ? data.max_floor : (dj.maxFloor || 0);
+        
+        window.towerClaimedFloorThisWeek = dj.towerClaimedFloorThisWeek !== undefined ? dj.towerClaimedFloorThisWeek : 0;
+        window.lastTowerResetAt = dj.lastTowerResetAt !== undefined ? dj.lastTowerResetAt : 0;
+
         if (typeof window.actualizarHUDLaboratorio === 'function') {
             window.actualizarHUDLaboratorio();
         }
         
-        if (dj.mascotaActiva) window.miMascota = dj.mascotaActiva;
+        if (dj.mascotaActiva) {
+            window.miMascota = dj.mascotaActiva;
+            if (data.ifttt_script) {
+                window.miMascota.iftttRules = data.ifttt_script;
+            }
+        }
         if (dj.inventario && window.miInventario) {
             window.miInventario.slots = Array.isArray(dj.inventario.slots) ? dj.inventario.slots : (dj.inventario.items || []);
             window.miInventario.vitalEssence = dj.inventario.vitalEssence || 0;
@@ -418,8 +461,8 @@ async function cargarDatosDeLaNube() {
         if (dj.rationAutoActiveUntil !== undefined) window.rationAutoActiveUntil = dj.rationAutoActiveUntil;
         if (dj.dailyLogin !== undefined) window.dailyLoginData = dj.dailyLogin;
         if (dj.newsMailbox !== undefined) window.newsMailboxData = dj.newsMailbox;
-        if (dj.tournamentSaldosPendientes !== undefined && window.TournamentManager) {
-            window.TournamentManager.saldosPendientes = dj.tournamentSaldosPendientes;
+        if (window.TournamentManager) {
+            window.TournamentManager.saldosPendientes = data.saldo_pendiente_pol !== undefined && data.saldo_pendiente_pol !== null ? parseFloat(data.saldo_pendiente_pol) : (dj.tournamentSaldosPendientes || 0.0);
         }
         if (dj.tournamentActive !== undefined && window.TournamentManager) {
             window.TournamentManager.activeTournament = dj.tournamentActive;

@@ -89,6 +89,20 @@ window.cargarProgreso = function() {
         if (data.rationAutoActiveUntil !== undefined) window.rationAutoActiveUntil = data.rationAutoActiveUntil;
         if (data.dailyLogin !== undefined) window.dailyLoginData = data.dailyLogin;
         if (data.newsMailbox !== undefined) window.newsMailboxData = data.newsMailbox;
+
+        // Cargar nuevos campos Arena y Torre
+        window.prBronce = data.prBronce !== undefined ? data.prBronce : 0;
+        window.prPlata = data.prPlata !== undefined ? data.prPlata : 0;
+        window.prOro = data.prOro !== undefined ? data.prOro : 0;
+        window.prDiamante = data.prDiamante !== undefined ? data.prDiamante : 0;
+        window.arenaTicketActive = data.arenaTicketActive !== undefined ? data.arenaTicketActive : false;
+        window.arenaBattlesPlayed = data.arenaBattlesPlayed !== undefined ? data.arenaBattlesPlayed : 0;
+        window.arenaWins = data.arenaWins !== undefined ? data.arenaWins : 0;
+        window.arenaLosses = data.arenaLosses !== undefined ? data.arenaLosses : 0;
+        window.maxFloor = data.maxFloor !== undefined ? data.maxFloor : 0;
+        window.towerClaimedFloorThisWeek = data.towerClaimedFloorThisWeek !== undefined ? data.towerClaimedFloorThisWeek : 0;
+        window.lastTowerResetAt = data.lastTowerResetAt !== undefined ? data.lastTowerResetAt : 0;
+
         if (window.NexoEnergyManager && data.lastActiveTime) {
             window.NexoEnergyManager.aplicarRecuperacionPasiva(data.lastActiveTime);
         }
@@ -182,6 +196,17 @@ window.guardarLocalSilencioso = function() {
         tournamentSaldosPendientes: window.TournamentManager ? window.TournamentManager.saldosPendientes : 0.0,
         tournamentActive: window.TournamentManager ? window.TournamentManager.activeTournament : null,
         becasPlaza: window.becasPlaza || [],
+        prBronce: window.prBronce !== undefined ? window.prBronce : 0,
+        prPlata: window.prPlata !== undefined ? window.prPlata : 0,
+        prOro: window.prOro !== undefined ? window.prOro : 0,
+        prDiamante: window.prDiamante !== undefined ? window.prDiamante : 0,
+        arenaTicketActive: window.arenaTicketActive !== undefined ? window.arenaTicketActive : false,
+        arenaBattlesPlayed: window.arenaBattlesPlayed !== undefined ? window.arenaBattlesPlayed : 0,
+        arenaWins: window.arenaWins !== undefined ? window.arenaWins : 0,
+        arenaLosses: window.arenaLosses !== undefined ? window.arenaLosses : 0,
+        maxFloor: window.maxFloor !== undefined ? window.maxFloor : 0,
+        towerClaimedFloorThisWeek: window.towerClaimedFloorThisWeek !== undefined ? window.towerClaimedFloorThisWeek : 0,
+        lastTowerResetAt: window.lastTowerResetAt !== undefined ? window.lastTowerResetAt : 0,
         lastActiveTime: typeof window.obtenerTiempoSeguro === 'function' ? window.obtenerTiempoSeguro() : Date.now()
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(dataToSave));

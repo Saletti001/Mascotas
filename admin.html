@@ -1122,8 +1122,75 @@
                         <span style="font-size: 10px; color: var(--text-muted);">Bóveda Global del Juego:</span>
                         <span id="val-boveda-balance" style="font-weight: bold; color: var(--neon-green); font-family: var(--font-mono); font-size: 11px;">0.00 POL</span>
                     </div>
+            </div>
+
+            <!-- COLISEUM METRICS SECTION -->
+            <div class="chart-card-header" style="border-left-color: var(--neon-cyan); margin-top: 25px; margin-bottom: 15px;">MONITOREO DE COLISEO Y ARENA (PVP)</div>
+            <div class="kpi-grid" style="grid-template-columns: repeat(4, 1fr) !important; margin-bottom: 25px; gap: 15px;">
+                <!-- KPI: Real vs Ghost -->
+                <div class="glass-panel kpi-card">
+                    <div class="kpi-header">
+                        <span>Combates Real vs Fantasma</span>
+                        <span class="kpi-icon" style="color: var(--neon-cyan); font-size: 14px;">⚔️</span>
+                    </div>
+                    <div>
+                        <div id="kpi-pvp-ratio" class="kpi-value">---</div>
+                        <div class="kpi-meta">
+                            <span>Distribución de partidas</span>
+                        </div>
+                    </div>
+                    <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; margin-top: 10px; font-size: 10px; color: var(--text-muted);">
+                        En Vivo: <b id="val-pvp-real" style="color:#fff;">0</b> | Fantasma: <b id="val-pvp-ghost" style="color:#fff;">0</b>
+                    </div>
                 </div>
 
+                <!-- KPI: Win Rate Global -->
+                <div class="glass-panel kpi-card">
+                    <div class="kpi-header">
+                        <span>Win Rate Global (Jugadores)</span>
+                        <span class="kpi-icon" style="color: var(--neon-green); font-size: 14px;">📈</span>
+                    </div>
+                    <div>
+                        <div id="kpi-pvp-winrate" class="kpi-value">---</div>
+                        <div class="kpi-meta">
+                            <span>Tasa de éxito agregada</span>
+                        </div>
+                    </div>
+                    <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; margin-top: 10px; font-size: 10px; color: var(--text-muted);">
+                        Total Combates: <b id="val-pvp-total" style="color:#fff;">0</b>
+                    </div>
+                </div>
+
+                <!-- KPI: Pool Global Neto (80%) -->
+                <div class="glass-panel kpi-card">
+                    <div class="kpi-header">
+                        <span>Saldo Pool Global (80%)</span>
+                        <span class="kpi-icon" style="color: var(--neon-purple); font-size: 14px;">💰</span>
+                    </div>
+                    <div>
+                        <div id="kpi-pvp-pool" class="kpi-value" style="color: var(--neon-purple);">---</div>
+                        <div class="kpi-meta">
+                            <span>Fondo autosuficiente inmediato</span>
+                        </div>
+                    </div>
+                    <div style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px; margin-top: 10px; font-size: 10px; color: var(--text-muted);">
+                        Bote Temporada (10%): <b id="val-pvp-season" style="color: var(--neon-yellow);">0.00 POL</b>
+                    </div>
+                </div>
+
+                <!-- KPI: Balances de Pool por Liga -->
+                <div class="glass-panel kpi-card" style="padding-bottom: 12px;">
+                    <div class="kpi-header" style="margin-bottom: 10px;">
+                        <span>Saldo de Pool por Ligas</span>
+                        <span class="kpi-icon" style="color: var(--neon-yellow); font-size: 14px;">🏆</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 5px; font-size: 11px; font-family: var(--font-mono);">
+                        <div style="display: flex; justify-content: space-between;"><span>Bronce:</span> <b id="val-pool-bronce" style="color:#fff;">0.00 POL</b></div>
+                        <div style="display: flex; justify-content: space-between;"><span>Plata:</span> <b id="val-pool-plata" style="color:#fff;">0.00 POL</b></div>
+                        <div style="display: flex; justify-content: space-between;"><span>Oro:</span> <b id="val-pool-oro" style="color:#fff;">0.00 POL</b></div>
+                        <div style="display: flex; justify-content: space-between;"><span>Diamante:</span> <b id="val-pool-diamante" style="color:#fff;">0.00 POL</b></div>
+                    </div>
+                </div>
             </div>
 
             <!-- Charts Grid Row -->
@@ -2078,6 +2145,35 @@
             // 4. POL Metrics
             document.getElementById("kpi-total-pol-used").innerText = Number(data.total_market_volume_pol || 0).toFixed(2) + " POL";
             document.getElementById("val-boveda-balance").innerText = Number(data.total_boveda_pol || 0).toFixed(2) + " POL";
+
+            // 7. Coliseum PvP Metrics
+            const totalCombates = data.pvp_total_combates || 0;
+            const realtimeCombates = data.pvp_realtime_combates || 0;
+            const ghostCombates = totalCombates - realtimeCombates;
+            
+            let pvpRatioText = "---";
+            if (totalCombates > 0) {
+                const pctReal = (realtimeCombates / totalCombates * 100).toFixed(0);
+                const pctGhost = (ghostCombates / totalCombates * 100).toFixed(0);
+                pvpRatioText = `${pctReal}% / ${pctGhost}%`;
+            }
+            
+            document.getElementById("kpi-pvp-ratio").innerText = pvpRatioText;
+            document.getElementById("val-pvp-real").innerText = realtimeCombates;
+            document.getElementById("val-pvp-ghost").innerText = ghostCombates;
+            
+            document.getElementById("kpi-pvp-winrate").innerText = (data.pvp_winrate_global || 0).toFixed(1) + "%";
+            document.getElementById("val-pvp-total").innerText = totalCombates;
+            
+            document.getElementById("kpi-pvp-pool").innerText = Number(data.pvp_pool_global_neto || 0).toFixed(2) + " POL";
+            document.getElementById("val-pvp-season").innerText = Number(data.pvp_season_jackpot_acum || 0).toFixed(2) + " POL";
+            
+            // Leagues Pool Balances
+            const ligaBal = data.pvp_liga_balances || {};
+            document.getElementById("val-pool-bronce").innerText = Number(ligaBal.Bronce || 0).toFixed(2) + " POL";
+            document.getElementById("val-pool-plata").innerText = Number(ligaBal.Plata || 0).toFixed(2) + " POL";
+            document.getElementById("val-pool-oro").innerText = Number(ligaBal.Oro || 0).toFixed(2) + " POL";
+            document.getElementById("val-pool-diamante").innerText = Number(ligaBal.Diamante || 0).toFixed(2) + " POL";
 
             // 5. Build Charts
             buildHistoryChart(data.daily_history || []);

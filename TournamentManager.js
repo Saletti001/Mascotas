@@ -15,20 +15,36 @@ window.TournamentManager = {
 
     // Configuración de Torneos
     CONFIG: {
-        neon: {
-            id: "neon",
-            nombre: "Copa Neón Nexo",
-            costo: 1.0,
-            division: "Neón",
-            premios: { 1: 9.0, 2: 3.6, 3: 1.8 },
+        practicante: {
+            id: "practicante",
+            nombre: "Copa Practicante",
+            costo: 0.15,
+            division: "Practicante",
+            premios: { 1: 1.20, 2: 0.66, 3: 0.30 },
             minLevel: 1
         },
-        satelite: {
-            id: "satelite",
-            nombre: "Copa Satélite",
-            costo: 0.5,
-            division: "Satélite",
-            premios: { 1: 4.5, 2: 1.8, 3: 0.9 },
+        casual: {
+            id: "casual",
+            nombre: "Copa Casual",
+            costo: 0.50,
+            division: "Casual",
+            premios: { 1: 4.00, 2: 2.20, 3: 1.00 },
+            minLevel: 1
+        },
+        competitivo: {
+            id: "competitivo",
+            nombre: "Copa Competitiva",
+            costo: 2.00,
+            division: "Competitivo",
+            premios: { 1: 16.00, 2: 8.80, 3: 4.00 },
+            minLevel: 1
+        },
+        elite: {
+            id: "elite",
+            nombre: "Copa Élite",
+            costo: 5.00,
+            division: "Élite",
+            premios: { 1: 40.00, 2: 22.00, 3: 10.00 },
             minLevel: 1
         }
     },
@@ -259,13 +275,12 @@ window.TournamentManager = {
     sincronizarConBalance: function() {
         if (window.GameEconomyConfig && window.GameEconomyConfig.tournaments) {
             const configTourneys = window.GameEconomyConfig.tournaments;
-            if (configTourneys.neon) {
-                if (configTourneys.neon.costo !== undefined) this.CONFIG.neon.costo = configTourneys.neon.costo;
-                if (configTourneys.neon.payouts !== undefined) this.CONFIG.neon.premios = configTourneys.neon.payouts;
-            }
-            if (configTourneys.satelite) {
-                if (configTourneys.satelite.costo !== undefined) this.CONFIG.satelite.costo = configTourneys.satelite.costo;
-                if (configTourneys.satelite.payouts !== undefined) this.CONFIG.satelite.premios = configTourneys.satelite.payouts;
+            for (let key in this.CONFIG) {
+                const confItem = configTourneys[key];
+                if (confItem) {
+                    if (confItem.costo !== undefined) this.CONFIG[key].costo = confItem.costo;
+                    if (confItem.payouts !== undefined) this.CONFIG[key].premios = confItem.payouts;
+                }
             }
             if (configTourneys.tematicos) {
                 for (let key in this.TEMATICOS_CONFIG) {
@@ -666,12 +681,27 @@ window.TournamentManager = {
             return;
         }
 
+        // Determinar si es inscripción anticipada o en vivo
+        const dia = new Date().getDay();
+        const isWeekend = (dia === 0 || dia === 6);
+        let modoRegistro = "vivo"; // "vivo" o "anticipado"
+        
+        if (!isWeekend) {
+            const opc = confirm(`🏛️ PROTOCOLO DE INSCRIPCIÓN:\nHoy es un día de semana.\n\n- Aceptar: Realizar INSCRIPCIÓN ANTICIPADA (Congela tu snapshot IFTTT y difiere la recompensa en EV).\n- Cancelar: SIMULAR FIN DE SEMANA (Entrar a la cola FIFO en vivo de inmediato para testear).`);
+            if (opc) {
+                modoRegistro = "anticipado";
+            } else {
+                modoRegistro = "vivo";
+            }
+        }
+
         // Confirmación consciente
         const msgTorneo = isThematic ? `el Torneo Temático ${conf.nombre}` : `la ${conf.nombre}`;
+        const msgModo = modoRegistro === "anticipado" ? "Inscripción Anticipada en" : "Inscripción en Vivo en";
         const walletReal = window.miWallet && window.miWallet.address && !window.miWallet.isSimulated;
         const confirmMsg = walletReal
-            ? `¿Deseas inscribir a tu Geno en ${msgTorneo} por un valor de ${conf.costo.toFixed(2)} POL?\n\n💡 Se realizará una transacción en la red Polygon.`
-            : `¿Deseas inscribir a tu Geno en ${msgTorneo} por un valor de ${conf.costo.toFixed(2)} POL?`;
+            ? `¿Deseas realizar la ${msgModo} ${msgTorneo} por un valor de ${conf.costo.toFixed(2)} POL?\n\n💡 Se realizará una transacción en la red Polygon.`
+            : `¿Deseas realizar la ${msgModo} ${msgTorneo} por un valor de ${conf.costo.toFixed(2)} POL?`;
 
         if (!confirm(confirmMsg)) {
             return;
@@ -707,18 +737,47 @@ window.TournamentManager = {
         // Añadir historial local
         window.miWallet.history = window.miWallet.history || [];
         window.miWallet.history.unshift({
-            tipo: isThematic ? 'Torneo Temático' : 'Inscripción Torneo',
+            tipo: modoRegistro === "anticipado" ? "Inscripción Anticipada" : (isThematic ? 'Torneo Temático' : 'Inscripción Torneo'),
             monto: conf.costo,
             fecha: new Date().toLocaleTimeString(),
             onChain: walletReal
         });
 
-        // Iniciar Simulación de Cola
-        this.iniciarSimulacionCola(conf);
+        if (modoRegistro === "anticipado") {
+            // Registrar en la base de datos Supabase
+            if (window.supabaseClient && window.miUsuarioCloud) {
+                try {
+                    const { error } = await window.supabaseClient
+                        .from('tournament_registrations')
+                        .upsert({
+                            player_id: window.miUsuarioCloud.id,
+                            tournament_id: conf.id,
+                            tier: conf.costo,
+                            registered_at: new Date().toISOString(),
+                            is_early: true,
+                            early_ev_reward_paid: false,
+                            ifttt_snapshot: window.miMascota.iftttRules || []
+                        });
+                    if (error) console.error("Error al registrar en Supabase:", error);
+                } catch (e) {
+                    console.error("Excepción al registrar:", e);
+                }
+            }
+            
+            // Guardar estado local
+            localStorage.setItem(`early_registered_${conf.id}`, "true");
+            alert(`🏛️ ¡INSCRIPCIÓN ANTICIPADA CONFIRMADA!\n\nTu Geno ha quedado registrado en la Copa. Su configuración IFTTT actual ha sido congelada y guardada como snapshot para el combate autónomo. Recibirás tu recompensa en EV al finalizar el torneo.`);
+            this.actualizarVista();
+        } else {
+            // Iniciar Simulación de Cola
+            this.iniciarSimulacionCola(conf);
+        }
     },
 
     iniciarSimulacionCola: function(conf) {
         this.activeQueueConfig = conf;
+        this.queueTimeRemaining = 360; // 6 minutos en segundos
+        this.isGracePeriod = false;
         
         const elementActual = (window.miMascota.genes && window.miMascota.genes.afinidad) ? window.miMascota.genes.afinidad.dom : (window.miMascota.element || "Normal");
         
@@ -729,64 +788,190 @@ window.TournamentManager = {
         this.injectedBotUsed = false;
         this.actualizarVista();
 
-        // Llenado aleatorio inicial
-        const initialCount = Math.floor(Math.random() * 5) + 6; // 6 a 10 jugadores
+        // Llenado aleatorio inicial de bots
+        const initialCount = Math.floor(Math.random() * 4) + 4; // 4 a 7 jugadores al iniciar
         for (let i = 0; i < initialCount; i++) {
             this.queuePlayers.push(this.generarRivalCola(conf));
         }
         this.renderizarQueue();
+        this.actualizarTimerDisplay();
 
-        // Programar ticks de cola
+        // Ticks de cola cada 1 segundo (realtime countdown)
         if (this.queueTimer) clearInterval(this.queueTimer);
         
-        let overflowTriggered = false;
-
         this.queueTimer = setInterval(() => {
-            if (this.queuePlayers.length < 15) {
-                // Añadir un bot aleatorio
-                this.queuePlayers.push(this.generarRivalCola(conf));
-                this.renderizarQueue();
-            } else if (this.queuePlayers.length === 15) {
-                // 10% probabilidad de overflow FIFO antes del 16 si coincide
-                if (Math.random() < 0.12 && !overflowTriggered && conf.id === "neon") {
-                    overflowTriggered = true;
-                    // Simular entrada masiva que empuja al jugador fuera
-                    this.queuePlayers.push(this.generarRivalCola(conf));
-                    this.queuePlayers.push(this.generarRivalCola(conf));
-                    this.renderizarQueue();
-                    
-                    setTimeout(() => {
-                        clearInterval(this.queueTimer);
-                        this.queueTimer = null;
-                        
-                        alert(`⚠️ ¡DIVISIÓN LLENA! (Cola Desbordada)\n\nLa Copa Neón ha alcanzado el límite de 16 jugadores antes de tu confirmación de bloque. \n\nPor protocolo FIFO, has sido reubicado automáticamente en la Copa Satélite (0.50 POL). Los 0.50 POL de exceso se han reembolsado a tus saldos pendientes.`);
-                        
-                        // Añadir saldo pendiente
-                        this.saldosPendientes += 0.50;
-                        this.guardarEstado();
+            this.tickQueue();
+        }, 1000);
+    },
 
-                        // Cancelar cola y arrancar la Copa Satélite inmediatamente
-                        this.queuePlayers = [];
-                        this.iniciarSimulacionCola(this.CONFIG.satelite);
-                    }, 1200);
-                } else {
-                    // Llenar el 16 con inyección de bot NPC subsidiado
-                    clearInterval(this.queueTimer);
-                    this.queueTimer = null;
+    tickQueue: function() {
+        if (!this.activeQueueConfig) {
+            clearInterval(this.queueTimer);
+            return;
+        }
 
-                    const npcSubsidio = this.generarRivalCola(conf);
-                    npcSubsidio.nombre = "[NPC] " + npcSubsidio.nombre;
-                    npcSubsidio.isBotSubsidiado = true;
-                    this.queuePlayers.push(npcSubsidio);
-                    this.renderizarQueue();
+        this.queueTimeRemaining--;
+        this.actualizarTimerDisplay();
 
-                    setTimeout(() => {
-                        alert(`⚙️ QUÓRUM COMPLETADO\n\nSe ha inyectado el competidor número 16 (${npcSubsidio.nombre}) subsidiado por la casa para evitar demoras competitivas. ¡Comienza el Torneo!`);
-                        this.inicializarBracketTorneo(conf);
-                    }, 1500);
+        // Agregar un bot cada 15 a 25 segundos aleatoriamente hasta un máximo de 15 jugadores
+        if (this.queuePlayers.length < 15 && this.queueTimeRemaining % (Math.floor(Math.random() * 10) + 15) === 0) {
+            this.queuePlayers.push(this.generarRivalCola(this.activeQueueConfig));
+            this.renderizarQueue();
+        }
+
+        // Si por casualidad se llena a 16 (puede pasar con inyecciones de simulación)
+        if (this.queuePlayers.length >= 16) {
+            clearInterval(this.queueTimer);
+            this.queueTimer = null;
+            alert("⚙️ QUÓRUM COMPLETADO\n\nEl lobby se ha completado con 16 participantes. ¡Comienza el Torneo!");
+            this.inicializarBracketTorneo(this.activeQueueConfig);
+            return;
+        }
+
+        // Si se acaba el tiempo
+        if (this.queueTimeRemaining <= 0) {
+            this.procesarExpiracionTiempoCola();
+        }
+    },
+
+    actualizarTimerDisplay: function() {
+        const timerEl = document.getElementById("tourney-queue-timer-display");
+        if (timerEl) {
+            const mins = Math.floor(this.queueTimeRemaining / 60);
+            const secs = this.queueTimeRemaining % 60;
+            timerEl.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        const statusEl = document.getElementById("tourney-queue-status-text");
+        if (statusEl) {
+            statusEl.innerText = this.isGracePeriod ? "⚠️ Período de Gracia (Prórroga)" : "Lobby Regular";
+            statusEl.style.color = this.isGracePeriod ? "#ffcc00" : "#aaa";
+        }
+    },
+
+    speedUpQueue: function() {
+        if (!this.activeQueueConfig) return;
+        this.queueTimeRemaining = 2;
+        this.actualizarTimerDisplay();
+        console.log("[LOBBY QUEUE] Tiempo acelerado por el usuario.");
+    },
+
+    procesarExpiracionTiempoCola: function() {
+        clearInterval(this.queueTimer);
+        this.queueTimer = null;
+
+        const conf = this.activeQueueConfig;
+        const count = this.queuePlayers.length;
+
+        // 1. Si son exactamente 15 jugadores: se inyecta 1 bot NPC subsidiado y arranca
+        if (count === 15) {
+            const npcSubsidio = this.generarRivalCola(conf);
+            npcSubsidio.nombre = "[NPC] " + npcSubsidio.nombre;
+            npcSubsidio.isBotSubsidiado = true;
+            this.queuePlayers.push(npcSubsidio);
+            this.renderizarQueue();
+            
+            setTimeout(() => {
+                alert(`⚙️ QUÓRUM COMPLETADO\n\nSe ha inyectado el competidor número 16 (${npcSubsidio.nombre}) subsidiado por la casa. ¡Comienza el Torneo!`);
+                this.inicializarBracketTorneo(conf);
+            }, 1000);
+            return;
+        }
+
+        // 2. Si hay entre 8 y 14 inscritos: se ofrece la contracción de bracket a 8
+        if (count >= 8 && count <= 14) {
+            const aceptarContr = confirm(`🔔 CONTRACCIÓN DE LLAVES:\nSe han reunido ${count} participantes en sala de espera.\n\n¿Deseas contraer el torneo a un bracket de 8 jugadores para iniciar de inmediato? (Si aceptas, el torneo arranca en Cuartos de Final).`);
+            if (aceptarContr) {
+                // Contraer a los primeros 8 jugadores
+                this.queuePlayers = this.queuePlayers.slice(0, 8);
+                
+                // Si el jugador humano quedó fuera, meterlo en el primer slot
+                const playerIdx = this.queuePlayers.findIndex(p => p.isPlayer);
+                if (playerIdx === -1) {
+                    this.queuePlayers[0] = { nombre: "TÚ (" + (window.miMascota.name || "Geno") + ")", isPlayer: true, level: window.miMascota.level || 1, element: window.miMascota.element };
                 }
+
+                alert(`⚙️ BRACKET CONTRAÍDO A 8 PARTICIPANTES\n¡Arranca el torneo en Cuartos de Final!`);
+                this.inicializarBracketTorneo(conf, true); // true = bracket contraído
+                return;
             }
-        }, 1200);
+        }
+
+        // 3. Prórroga / Tiempo de Gracia de 6 minutos si es la primera expiración
+        if (!this.isGracePeriod) {
+            this.isGracePeriod = true;
+            this.queueTimeRemaining = 360; // 6 minutos más
+            this.actualizarTimerDisplay();
+            
+            alert(`⌛ TIEMPO EXPENDIDO\nNo se alcanzó el quórum de 16 jugadores. Se inicia una prórroga de gracia de 6 minutos para conseguir competidores adicionales.`);
+            
+            this.queueTimer = setInterval(() => {
+                this.tickQueue();
+            }, 1000);
+            return;
+        }
+
+        // 4. Si expira la prórroga y es menor a 7 o no se aceptó la contracción: protocolo FIFO descent o cancelación
+        this.procesarDesplazamientoFIFOOCancelacion();
+    },
+
+    procesarDesplazamientoFIFOOCancelacion: function() {
+        const conf = this.activeQueueConfig;
+        
+        // Si hay menos de 7 participantes, o es imposible arrancar:
+        if (this.queuePlayers.length < 7) {
+            // Cancelación del torneo y reembolso del 100%
+            const reembolso = conf.costo;
+            this.saldosPendientes += reembolso;
+            this.guardarEstado();
+            
+            alert(`❌ TORNEO CANCELADO\nNo se reunieron suficientes participantes (<7) tras el período de gracia. Se ha cancelado el torneo. \n\n¡Tus fondos están seguros! Los ${reembolso.toFixed(2)} POL de la entrada se han devuelto en tu totalidad a tus saldos pendientes en el Baúl.`);
+            
+            this.queuePlayers = [];
+            this.activeQueueConfig = null;
+            this.actualizarVista();
+            return;
+        }
+
+        // Desplazamiento FIFO a la categoría inferior
+        let targetTier = null;
+        let diferenciaReembolso = 0;
+        
+        if (conf.id === "elite") {
+            targetTier = "competitivo";
+            diferenciaReembolso = 3.00; // 5.00 - 2.00
+        } else if (conf.id === "competitivo") {
+            targetTier = "casual";
+            diferenciaReembolso = 1.50; // 2.00 - 0.50
+        } else if (conf.id === "casual") {
+            targetTier = "practicante";
+            diferenciaReembolso = 0.35; // 0.50 - 0.15
+        }
+
+        if (targetTier) {
+            // Reembolso del diferencial a saldos pendientes (Pull-over-Push)
+            this.saldosPendientes += diferenciaReembolso;
+            this.guardarEstado();
+            
+            // Pop-up visual de transparencia económica (Sección 10.4)
+            alert(`¡Ajuste de categoría para inicio rápido!\n\nEl temporizador de la cola ${conf.division} (${conf.costo.toFixed(2)} POL) ha expirado sin encontrar los 16 rivales requeridos. Para que no tengas que seguir esperando, el Laboratorio te ha trasladado automáticamente al próximo torneo de la categoría ${this.CONFIG[targetTier].division} (${this.CONFIG[targetTier].costo.toFixed(2)} POL), donde la batalla comienza ya.\n\n¡Tus fondos están seguros! Los ${diferenciaReembolso.toFixed(2)} POL de diferencia han sido devueltos instantáneamente a tus saldos pendientes en el Baúl.`);
+            
+            // Re-iniciar la cola en la categoría inferior
+            const nextConf = this.CONFIG[targetTier];
+            this.queuePlayers = [];
+            this.iniciarSimulacionCola(nextConf);
+        } else {
+            // Si es la categoría Practicante (0.15 POL, el suelo) y expira, se llena con bots NPC y arranca
+            alert(`⚙️ SUELO ALCANZADO\nSe ha alcanzado la categoría Practicante. El torneo se completará con agentes virtuales NPC subsidiados por el Coliseo de inmediato.`);
+            
+            while (this.queuePlayers.length < 16) {
+                const npc = this.generarRivalCola(conf);
+                npc.nombre = "[NPC] " + npc.nombre;
+                npc.isBotSubsidiado = true;
+                this.queuePlayers.push(npc);
+            }
+            this.renderizarQueue();
+            this.inicializarBracketTorneo(conf);
+        }
     },
 
     generarRivalCola: function(conf) {
@@ -859,7 +1044,7 @@ window.TournamentManager = {
         this.actualizarVista();
     },
 
-    inicializarBracketTorneo: function(conf) {
+    inicializarBracketTorneo: function(conf, isContracted = false) {
         // Mezclar participantes
         const participantes = [...this.queuePlayers].sort(() => 0.5 - Math.random());
         
@@ -872,23 +1057,41 @@ window.TournamentManager = {
         // Estructura de Brackets
         // Rondas: 0 = Octavos (16), 1 = Cuartos (8), 2 = Semifinales (4), 3 = Final (2), 4 = Campeón
         const matches = [];
-        // Generar 8 encuentros iniciales
-        for (let i = 0; i < 8; i++) {
-            matches.push({
-                id: i + 1,
-                round: 0,
-                p1: participantes[i * 2],
-                p2: participantes[i * 2 + 1],
-                score1: null,
-                score2: null,
-                winner: null
-            });
+        const rondaActual = isContracted ? 1 : 0;
+        
+        if (isContracted) {
+            // Generar 4 encuentros de Cuartos
+            for (let i = 0; i < 4; i++) {
+                matches.push({
+                    id: i + 1,
+                    round: 1, // Cuartos
+                    p1: participantes[i * 2],
+                    p2: participantes[i * 2 + 1],
+                    score1: null,
+                    score2: null,
+                    winner: null
+                });
+            }
+        } else {
+            // Generar 8 encuentros de Octavos
+            for (let i = 0; i < 8; i++) {
+                matches.push({
+                    id: i + 1,
+                    round: 0, // Octavos
+                    p1: participantes[i * 2],
+                    p2: participantes[i * 2 + 1],
+                    score1: null,
+                    score2: null,
+                    winner: null
+                });
+            }
         }
 
         this.activeTournament = {
             id: Date.now(),
             config: conf,
-            rondaActual: 0, // Octavos
+            rondaActual: rondaActual,
+            isContracted: isContracted,
             matches: matches,
             participantes: participantes,
             log: [ `🏆 Torneo ${conf.nombre} iniciado.` ],
@@ -919,7 +1122,8 @@ window.TournamentManager = {
         let html = "";
         const nombresRondas = ["Octavos", "Cuartos", "Semifinal", "Final"];
         
-        for (let r = 0; r < 4; r++) {
+        const startRound = (t && t.isContracted) ? 1 : 0;
+        for (let r = startRound; r < 4; r++) {
             const listMatches = rondas[r];
             html += `
                 <div class="bracket-column round-${r}">
@@ -1009,15 +1213,25 @@ window.TournamentManager = {
             let payout = 0;
             if (playerPos === 1) {
                 payout = t.config.premios[1];
-                payoutText = `<div style="color: #69f0ae; font-weight: bold; margin-top: 10px;">🎁 Premio por 1er Lugar: +${payout.toFixed(2)} POL</div>`;
             } else if (playerPos === 2) {
                 payout = t.config.premios[2];
-                payoutText = `<div style="color: #80deea; font-weight: bold; margin-top: 10px;">🎁 Premio por 2do Lugar: +${payout.toFixed(2)} POL</div>`;
             } else if (playerPos === 3) {
                 payout = t.config.premios[3];
+            }
+            if (t.isContracted) {
+                payout = payout / 2;
+            }
+
+            if (playerPos === 1) {
+                payoutText = `<div style="color: #69f0ae; font-weight: bold; margin-top: 10px;">🎁 Premio por 1er Lugar: +${payout.toFixed(2)} POL</div>`;
+            } else if (playerPos === 2) {
+                payoutText = `<div style="color: #80deea; font-weight: bold; margin-top: 10px;">🎁 Premio por 2do Lugar: +${payout.toFixed(2)} POL</div>`;
+            } else if (playerPos === 3) {
                 payoutText = `<div style="color: #ffb300; font-weight: bold; margin-top: 10px;">🎁 Premio por 3er Lugar: +${payout.toFixed(2)} POL</div>`;
             } else {
-                payoutText = `<div style="color: #888; margin-top: 10px;">Posición final: R16/Cuartos. Sigue entrenando para el próximo torneo.</div>`;
+                payoutText = t.isContracted
+                    ? `<div style="color: #888; margin-top: 10px;">Posición final: Cuartos. Sigue entrenando para el próximo torneo.</div>`
+                    : `<div style="color: #888; margin-top: 10px;">Posición final: R16/Cuartos. Sigue entrenando para el próximo torneo.</div>`;
             }
 
             sidePanel.innerHTML = `
@@ -1319,6 +1533,10 @@ window.TournamentManager = {
                     premio = t.config.premios[3];
                 }
 
+                if (t.isContracted) {
+                    premio = premio / 2;
+                }
+
                 if (premio > 0) {
                     if (window.miMascota && window.miMascota.scholarship && window.ScholarshipManager) {
                         window.ScholarshipManager.aplicarSplitPremio(premio, window.miMascota);
@@ -1338,6 +1556,35 @@ window.TournamentManager = {
                         fecha: new Date().toLocaleTimeString(),
                         onChain: walletReal
                     });
+                }
+
+                // Recompensa por Inscripción Anticipada
+                const earlyRegKey = `early_registered_${t.config.id}`;
+                if (localStorage.getItem(earlyRegKey) === "true") {
+                    localStorage.removeItem(earlyRegKey);
+                    
+                    if (!window.miInventario) window.miInventario = { vitalEssence: 0, items: [] };
+                    window.miInventario.vitalEssence = (window.miInventario.vitalEssence || 0) + 15;
+                    
+                    if (typeof window.registrarLogEconomia === "function") {
+                        window.registrarLogEconomia('ev_reward', 15, 'tournament_early_reg');
+                    }
+                    
+                    setTimeout(() => {
+                        alert(`🏛️ ¡Bono de Inscripción Anticipada reclamado!\n\nSe te han acreditado +15 EV (Esencia Vital) en tu inventario por registrarte con anticipación al torneo.`);
+                    }, 500);
+
+                    // Actualizar en Supabase para marcar que ya se pagó
+                    if (window.supabaseClient && window.miUsuarioCloud) {
+                        window.supabaseClient
+                            .from('tournament_registrations')
+                            .update({ early_ev_reward_paid: true })
+                            .eq('player_id', window.miUsuarioCloud.id)
+                            .eq('tournament_id', t.config.id)
+                            .then(({ error }) => {
+                                if (error) console.error("Error al actualizar early_ev_reward_paid en Supabase:", error);
+                            });
+                    }
                 }
 
                 if (window.WalletManager && window.WalletManager.actualizarBoton) {

@@ -625,6 +625,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 const nameEl = document.getElementById('geno-name');
                 if (nameEl) nameEl.innerText = `${geno.name} #${geno.id}`;
                 if(typeof window.actualizarPanelRPG === 'function') window.actualizarPanelRPG();
+                if (window.ColiseumManager && typeof window.ColiseumManager.actualizarLobbyUI === 'function') {
+                    window.ColiseumManager.actualizarLobbyUI();
+                }
                 modalSwap.classList.add("hidden");
                 if (typeof window.guardarJuego === 'function') window.guardarJuego();
                 else if (typeof window.guardarProgreso === 'function') window.guardarProgreso();

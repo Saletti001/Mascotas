@@ -66,6 +66,10 @@ document.addEventListener("DOMContentLoaded", () => {
             window.ColiseumManager.mostrarAyuda(true);
             window.ColiseumManager.ayudaBajoNivelMostrada = true;
         }
+
+        if (typeof window.ColiseumManager.actualizarLobbyUI === 'function') {
+            window.ColiseumManager.actualizarLobbyUI();
+        }
     };
 
     // Configurar manejadores de eventos para el modal
@@ -224,6 +228,44 @@ document.addEventListener("DOMContentLoaded", () => {
                 procesarRonda("swap_b");
             }
         };
+
+        let btnLeave = document.getElementById("btn-leave-battle");
+        if (btnLeave) {
+            btnLeave.onclick = (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                window.ColiseumManager.detenerTemporizadorTurno();
+                
+                if (window.ColiseumLogic.modoCombate === 'torre') {
+                    const combatActive = document.getElementById("battle-controls").style.display === "grid";
+                    if (combatActive) {
+                        ColiseumUI.agregarLog("<span style='color:#ffcc00;'>⚠️ Retirada voluntaria del combate. Se conserva tu progreso actual.</span>");
+                    }
+                    window.navegarA('coliseum-lobby-screen');
+                    if (window.guardarProgreso) window.guardarProgreso();
+                } else if (window.ColiseumLogic.modoCombate === 'pvp') {
+                    // Abandono voluntario en PvP cuenta como derrota
+                    window.ColiseumManager.detenerTemporizadorTurno();
+                    window.arenaBattlesPlayed++;
+                    window.arenaLosses++;
+                    
+                    let activeLeague = window.ColiseumManager.obtenerLigaPorGeno(window.miMascota);
+                    let prField = window.ColiseumManager.obtenerPrFieldPorLiga(activeLeague);
+                    if (prField) {
+                        window[prField] = Math.max(0, (window[prField] || 0) - 15);
+                    }
+                    
+                    if (window.arenaBattlesPlayed >= 5) {
+                        window.ColiseumManager.liquidarPaseArena();
+                    } else {
+                        window.navegarA('coliseum-lobby-screen');
+                        if (window.guardarProgreso) window.guardarProgreso();
+                    }
+                } else {
+                    window.navegarA('coliseum-lobby-screen');
+                }
+            };
+        }
     };
 
     function iniciarPelea() {
@@ -355,8 +397,17 @@ document.addEventListener("DOMContentLoaded", () => {
         let controls = document.getElementById("battle-controls");
         
         if(btnStart) btnStart.style.setProperty("display", "none", "important");
-        if(btnLeave) btnLeave.style.setProperty("display", "none", "important");
         if(controls) controls.style.setProperty("display", "grid", "important");
+        
+        if (ColiseumLogic.modoCombate === 'torre') {
+            if(btnLeave) {
+                btnLeave.style.setProperty("display", "block", "important");
+                const textEl = btnLeave.querySelector(".fab-content");
+                if (textEl) textEl.innerText = "RETIRARSE";
+            }
+        } else {
+            if(btnLeave) btnLeave.style.setProperty("display", "none", "important");
+        }
         
         const titleEl = document.querySelector(".coliseum-title-inside") || document.querySelector("#coliseum-screen .screen-title");
         if (titleEl) titleEl.classList.add("hidden");
@@ -418,6 +469,13 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function procesarRonda(accionJugador) {
+        if (typeof window.ColiseumManager.detenerTemporizadorTurno === 'function') {
+            window.ColiseumManager.detenerTemporizadorTurno();
+        }
+        // Restablecer el contador de timeouts consecutivos si el jugador realiza una acción manual
+        if (!window.ColiseumLogic.playerAutopilot) {
+            window.ColiseumLogic.playerTimeouts = 0;
+        }
         if (ColiseumLogic.modoCombate === '3v3' && ColiseumLogic.esperandoSwapForzado) {
             if (accionJugador === "swap_a" || accionJugador === "swap_b") {
                 const activeIdx = ColiseumLogic.playerActiveIndex;
@@ -754,10 +812,109 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function terminarCombate() {
         bloquearBotones(true);
+        window.ColiseumManager.detenerTemporizadorTurno();
         ColiseumUI.agregarLog(`<br><span style="color:#ffcc00; font-size: 16px; font-weight: bold;">--- FIN DEL COMBATE ---</span>`);
         const playerGano = ColiseumLogic.modoCombate === '3v3' ? ColiseumLogic.playerTeam.some(g => g.hp > 0) : (ColiseumLogic.player.hp > 0);
+        
+        // Registrar uso y recompensas pasivas del fantasma en Supabase
+        if (ColiseumLogic.modoCombate === 'pvp' && ColiseumLogic.enemy && ColiseumLogic.enemy.ownerId) {
+            const ghostOwnerId = ColiseumLogic.enemy.ownerId;
+            const ghostGano = !playerGano;
+            window.supabaseClient
+                .rpc('registrar_batalla_fantasma', {
+                    p_ghost_owner_id: ghostOwnerId,
+                    p_ghost_gano: ghostGano
+                })
+                .then(({ data, error }) => {
+                    if (error) {
+                        console.error("[GHOST REGISTRATION ERROR]", error);
+                    } else {
+                        console.log("[GHOST REGISTRATION SUCCESS]", data);
+                    }
+                });
+        }
+        
         if (playerGano) {
             ColiseumUI.agregarLog(`<span style="color:#4CAF50">🏆 ¡VICTORIA!</span>`, "#ffd54f");
+            
+            if (ColiseumLogic.modoCombate === 'torre') {
+                const floor = window.currentTowerFloor || 1;
+                let isClaimedThisWeek = (floor <= window.towerClaimedFloorThisWeek);
+                let isFirstTimeUnlock = (floor > window.maxFloor);
+                let evReward = 0;
+                let rewardMsg = "";
+                
+                if (!isClaimedThisWeek) {
+                    evReward = 10 + floor * 2;
+                    if (isFirstTimeUnlock) {
+                        evReward = Math.round(evReward * 1.5);
+                        rewardMsg += `¡BONO DE PRIMER DESBLOQUEO! (+50% EV). `;
+                        if (Math.random() < 0.10) {
+                            if (window.miInventario && window.miInventario.items) {
+                                const itemObj = { id: "plano_cosmetico_raro", name: "Plano Cosmético Raro", quantity: 1, type: "cosmetic_plan" };
+                                window.miInventario.items.push(itemObj);
+                                rewardMsg += `¡Y encontraste un Plano Cosmético Raro! `;
+                            }
+                        }
+                    }
+                    
+                    if (!window.miInventario) window.miInventario = { vitalEssence: 0, items: [] };
+                    window.miInventario.vitalEssence = (window.miInventario.vitalEssence || 0) + evReward;
+                    window.towerClaimedFloorThisWeek = Math.max(window.towerClaimedFloorThisWeek, floor);
+                } else {
+                    evReward = Math.max(2, Math.round((10 + floor * 2) * 0.20));
+                    rewardMsg = "¡Compensación por piso repetido! (20% EV). ";
+                    if (!window.miInventario) window.miInventario = { vitalEssence: 0, items: [] };
+                    window.miInventario.vitalEssence = (window.miInventario.vitalEssence || 0) + evReward;
+                }
+                
+                window.maxFloor = Math.max(window.maxFloor, floor);
+                
+                ColiseumUI.agregarLog(`<span style="color:#69f0ae; font-weight:bold;">🗼 PISO ${floor} SUPERADO.</span>`);
+                if (evReward > 0) {
+                    ColiseumUI.agregarLog(`<span style="color:#69f0ae; font-weight:bold;">¡Recompensa: +${evReward} EV! ${rewardMsg}</span>`);
+                }
+                
+                window.currentTowerFloor = floor + 1;
+                if (window.guardarProgreso) window.guardarProgreso();
+            } else if (ColiseumLogic.modoCombate === 'pvp') {
+                window.arenaBattlesPlayed++;
+                window.arenaWins++;
+                ColiseumUI.agregarLog(`<span style="color:#00e5ff; font-weight:bold;">⚔️ Combate PvP registrado. ¡Victoria! (${window.arenaBattlesPlayed}/5)</span>`);
+                
+                let activeLeague = window.ColiseumManager.obtenerLigaPorGeno(window.miMascota);
+                let prField = window.ColiseumManager.obtenerPrFieldPorLiga(activeLeague);
+                if (prField) {
+                    let gain = 20;
+                    if (window.ColiseumManager.isLiveMatch) {
+                        gain = Math.round(gain * 1.15);
+                        ColiseumUI.agregarLog(`<span style="color:#ffd700; font-weight:bold;">🔥 ¡Bono de Combate en Vivo! +15% Puntos de Rango (+${gain} PR).</span>`);
+                    } else {
+                        ColiseumUI.agregarLog(`<span style="color:#69f0ae;">+20 Puntos de Rango (${prField.toUpperCase()}).</span>`);
+                    }
+                    window[prField] = (window[prField] || 0) + gain;
+                }
+
+                // Registrar combate individual en Supabase
+                const isRealtime = window.ColiseumManager.isLiveMatch || false;
+                window.supabaseClient
+                    .from('combates_coliseo')
+                    .insert([{
+                        jugador_id: window.miUsuarioCloud.id,
+                        liga: activeLeague,
+                        es_realtime: isRealtime,
+                        es_victoria: true
+                    }])
+                    .then(({ error }) => {
+                        if (error) console.error("[STATS LOG ERROR] Fallo al registrar victoria:", error);
+                    });
+                
+                if (window.arenaBattlesPlayed >= 5) {
+                    window.ColiseumManager.liquidarPaseArena();
+                    return;
+                }
+            }
+
             let winXp = 25;
             if (window.GameEconomyConfig && window.GameEconomyConfig.gameplay_rewards && window.GameEconomyConfig.gameplay_rewards.coliseum && window.GameEconomyConfig.gameplay_rewards.coliseum.win_xp !== undefined) {
                 winXp = window.GameEconomyConfig.gameplay_rewards.coliseum.win_xp;
@@ -865,7 +1022,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 ColiseumUI.agregarLog(`<span style="color:#aaa">Ganaste ${xpGanada} XP.</span>`);
                 if (window.ganarXP) window.ganarXP(xpGanada);
 
-                // Cuidado / Necesidades: +15 Diversión, e Incrementar Amistad por combate (1 a 3, una vez al día)
                 if (window.miMascota) {
                     if (window.miMascota.diversion === undefined) window.miMascota.diversion = 100;
                     if (window.miMascota.amistad === undefined) window.miMascota.amistad = 0;
@@ -904,6 +1060,45 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         } else {
             ColiseumUI.agregarLog(`<span style="color:#f44336">💀 DERROTA. Tu equipo debe descansar.</span>`);
+            
+            if (ColiseumLogic.modoCombate === 'torre') {
+                const floor = window.currentTowerFloor || 1;
+                const checkpoint = Math.floor((floor - 1) / 10) * 10 + 1;
+                window.currentTowerFloor = checkpoint;
+                ColiseumUI.agregarLog(`<span style="color:#f44336; font-weight:bold;">💀 HAS CAÍDO EN EL PISO ${floor}. Deberás reanudar desde el checkpoint: Piso ${checkpoint}.</span>`);
+                if (window.guardarProgreso) window.guardarProgreso();
+            } else if (ColiseumLogic.modoCombate === 'pvp') {
+                window.arenaBattlesPlayed++;
+                window.arenaLosses++;
+                ColiseumUI.agregarLog(`<span style="color:#ff5722; font-weight:bold;">⚔️ Combate PvP registrado. Derrota. (${window.arenaBattlesPlayed}/5)</span>`);
+                
+                let activeLeague = window.ColiseumManager.obtenerLigaPorGeno(window.miMascota);
+                let prField = window.ColiseumManager.obtenerPrFieldPorLiga(activeLeague);
+                if (prField) {
+                    window[prField] = Math.max(0, (window[prField] || 0) - 15);
+                    ColiseumUI.agregarLog(`<span style="color:#ff8a80;">-15 Puntos de Rango (${prField.toUpperCase()}).</span>`);
+                }
+
+                // Registrar combate individual en Supabase
+                const isRealtime = window.ColiseumManager.isLiveMatch || false;
+                window.supabaseClient
+                    .from('combates_coliseo')
+                    .insert([{
+                        jugador_id: window.miUsuarioCloud.id,
+                        liga: activeLeague,
+                        es_realtime: isRealtime,
+                        es_victoria: false
+                    }])
+                    .then(({ error }) => {
+                        if (error) console.error("[STATS LOG ERROR] Fallo al registrar derrota:", error);
+                    });
+                
+                if (window.arenaBattlesPlayed >= 5) {
+                    window.ColiseumManager.liquidarPaseArena();
+                    return;
+                }
+            }
+
             let loseXp = 5;
             if (window.GameEconomyConfig && window.GameEconomyConfig.gameplay_rewards && window.GameEconomyConfig.gameplay_rewards.coliseum && window.GameEconomyConfig.gameplay_rewards.coliseum.lose_xp !== undefined) {
                 loseXp = window.GameEconomyConfig.gameplay_rewards.coliseum.lose_xp;
@@ -920,8 +1115,14 @@ document.addEventListener("DOMContentLoaded", () => {
             let btnLeave = document.getElementById("btn-leave-battle"); 
             
             if(controls) controls.style.setProperty("display", "none", "important");
-            if(btnStart) { btnStart.style.setProperty("display", "block", "important"); 
-            btnStart.innerText = "Buscar otro rival"; }
+            if(btnStart) { 
+                btnStart.style.setProperty("display", "block", "important"); 
+                if (ColiseumLogic.modoCombate === 'torre') {
+                    btnStart.innerText = `Iniciar Piso ${window.currentTowerFloor}`;
+                } else {
+                    btnStart.innerText = "Buscar otro rival"; 
+                }
+            }
             if(btnLeave) btnLeave.style.setProperty("display", "", "important"); 
             
             const titleEl = document.querySelector(".coliseum-title-inside") || document.querySelector("#coliseum-screen .screen-title");
@@ -954,6 +1155,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         bloquearBotones(false);
+        if (typeof window.ColiseumManager.iniciarTemporizadorTurno === 'function') {
+            window.ColiseumManager.iniciarTemporizadorTurno();
+        }
         const p = ColiseumLogic.player;
         const equipados = p.ataquesEquipados;
 
@@ -1206,4 +1410,1004 @@ document.addEventListener("DOMContentLoaded", () => {
     window.ColiseumManager.iniciarPelea = iniciarPelea;
     window.ColiseumManager.iniciarPeleaConfirmada = iniciarPeleaConfirmada;
     window.ColiseumManager.terminarCombate = terminarCombate;
+
+    // ==========================================
+    // SISTEMA DE PESTAÑAS (PVE VS PVP LOBBY)
+    // ==========================================
+    window.ColiseumManager.activeTab = 'pve';
+
+    window.ColiseumManager.cambiarTabLobby = function(tab) {
+        window.ColiseumManager.activeTab = tab;
+        const pveBtn = document.getElementById("tab-pve-btn");
+        const pvpBtn = document.getElementById("tab-pvp-btn");
+        
+        if (pveBtn && pvpBtn) {
+            if (tab === 'pve') {
+                pveBtn.style.border = "1.5px solid #ff8c00";
+                pveBtn.style.background = "rgba(255, 140, 0, 0.05)";
+                pveBtn.style.color = "#ff9800";
+                pvpBtn.style.border = "1.5px solid rgba(255,255,255,0.1)";
+                pvpBtn.style.background = "rgba(255,255,255,0.02)";
+                pvpBtn.style.color = "#aaa";
+            } else {
+                pvpBtn.style.border = "1.5px solid #00e5ff";
+                pvpBtn.style.background = "rgba(0, 229, 255, 0.05)";
+                pvpBtn.style.color = "#00e5ff";
+                pveBtn.style.border = "1.5px solid rgba(255,255,255,0.1)";
+                pveBtn.style.background = "rgba(255,255,255,0.02)";
+                pveBtn.style.color = "#aaa";
+            }
+        }
+        window.ColiseumManager.actualizarLobbyUI();
+    };
+
+    window.checkWeeklyReset = function() {
+        const now = window.obtenerTiempoSeguro ? window.obtenerTiempoSeguro() : Date.now();
+        const lastReset = window.lastTowerResetAt || 0;
+        const dateNow = new Date(now);
+        const day = dateNow.getDay(); 
+        const diff = dateNow.getDate() - day + (day === 0 ? -6 : 1);
+        const monday = new Date(dateNow.setDate(diff));
+        monday.setHours(0, 0, 0, 0);
+        const mondayTimestamp = monday.getTime();
+
+        if (lastReset < mondayTimestamp) {
+            window.towerClaimedFloorThisWeek = 0;
+            window.lastTowerResetAt = now;
+            console.log("[TOWER RESET] Weekly reset triggered. towerClaimedFloorThisWeek reset to 0.");
+            if (typeof window.guardarLocalSilencioso === 'function') window.guardarLocalSilencioso();
+        }
+    };
+
+    window.ColiseumManager.actualizarLobbyUI = function() {
+        const listContainer = document.getElementById("coliseum-lobby-list");
+        if (!listContainer) return;
+        
+        window.checkWeeklyReset();
+        listContainer.innerHTML = "";
+        const tab = window.ColiseumManager.activeTab || 'pve';
+        
+        if (tab === 'pve') {
+            // 1. COMBATE ESTANDAR
+            const estandarCard = document.createElement("div");
+            estandarCard.className = "lobby-card card-estandar";
+            estandarCard.onclick = () => window.ColiseumManager.seleccionarModo('estandar');
+            estandarCard.innerHTML = `
+                <div style="background: rgba(255, 140, 0, 0.1); border: 1px solid #ff8c00; border-radius: 10px; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff8c00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="20" y1="20" x2="14" y2="14" /><line x1="10" y1="10" x2="4" y2="4" /><line x1="15" y1="19" x2="19" y2="15" /><line x1="4" y1="20" x2="20" y2="4" /><line x1="5" y1="15" x2="9" y2="19" />
+                    </svg>
+                </div>
+                <div style="flex: 1;">
+                    <h3 style="color: #ff9800; margin: 0 0 3px 0; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Combate Estándar (IA)</h3>
+                    <p style="color: #cbd5e1; margin: 0; font-size: 11px; line-height: 1.25;">Duelo clásico contra Genos aleatorios controlados por la IA de la arena. Gana EV y sube de nivel.</p>
+                </div>
+            `;
+            listContainer.appendChild(estandarCard);
+            
+            // 2. TORRE DE MUTACION
+            const maxFloor = window.maxFloor || 0;
+            const towerCard = document.createElement("div");
+            towerCard.className = "lobby-card card-tournament";
+            towerCard.style.borderColor = "#d500f9";
+            towerCard.onclick = () => window.ColiseumManager.entrarTorreMutacion();
+            towerCard.innerHTML = `
+                <div style="background: rgba(213, 0, 249, 0.1); border: 1px solid #d500f9; border-radius: 10px; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d500f9" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
+                    </svg>
+                </div>
+                <div style="flex: 1;">
+                    <h3 style="color: #d500f9; margin: 0 0 3px 0; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Torre de Mutación</h3>
+                    <p style="color: #cbd5e1; margin: 0; font-size: 11px; line-height: 1.25;">Modo supervivencia de escalada infinita. Récord: <strong style="color:#ffd700;">Piso ${maxFloor}</strong>. Recompensas de EV con reset semanal.</p>
+                </div>
+            `;
+            listContainer.appendChild(towerCard);
+            
+            // 3. SIMULADOR DE CLON
+            const cloneCard = document.createElement("div");
+            cloneCard.className = "lobby-card card-clon";
+            cloneCard.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 12px; cursor: pointer; width: 100%;" onclick="ColiseumManager.seleccionarModo('clon')">
+                    <div style="background: rgba(0, 172, 193, 0.1); border: 1px solid #00acc1; border-radius: 10px; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4.5 16.5c-1.5 1.26-2.5 3.19-2.5 5.5h20c0-2.31-1-4.24-2.5-5.5"/><path d="M12 2C9.24 2 7 4.24 7 7c0 2.04 1.22 3.79 3 4.54V14h4v-2.46c1.78-.75 3-2.5 3-4.54 0-2.76-2.24-5-5-5z"/>
+                        </svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <h3 style="color: #00e5ff; margin: 0 0 3px 0; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Simulador de Clon</h3>
+                        <p style="color: #cbd5e1; margin: 0; font-size: 11px; line-height: 1.25;">Réplica exacta de tu Geno para testear scripts IFTTT.</p>
+                    </div>
+                </div>
+                <div style="border-top: 1px solid rgba(0, 172, 193, 0.2); padding-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%;">
+                    <span style="color: #00e5ff; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Elemento:</span>
+                    <select id="lobby-clone-element-select" style="background:#0c1620; color:#fff; border:1px solid #00acc1; padding:3px 8px; border-radius:4px; font-size:10px; font-weight:bold;">
+                        <option value="mismo" selected>Mismo que tu Geno</option>
+                        <option value="Biomutante">Biomutante</option>
+                        <option value="Viral">Viral</option>
+                        <option value="Cibernético">Cibernético</option>
+                        <option value="Radiactivo">Radiactivo</option>
+                        <option value="Tóxico">Tóxico</option>
+                        <option value="Sintético">Sintético</option>
+                    </select>
+                </div>
+            `;
+            listContainer.appendChild(cloneCard);
+            
+            // 4. DESAFIO TACTICO
+            const desafioCard = document.createElement("div");
+            desafioCard.className = "lobby-card card-desafio";
+            desafioCard.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 12px; cursor: pointer; width: 100%;" onclick="ColiseumManager.seleccionarModo('desafio')">
+                    <div style="background: rgba(138, 43, 226, 0.1); border: 1px solid #8A2BE2; border-radius: 10px; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A2BE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/>
+                        </svg>
+                    </div>
+                    <div style="flex: 1;">
+                        <h3 style="color: #b85cff; margin: 0 0 3px 0; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Desafío Táctico</h3>
+                        <p style="color: #cbd5e1; margin: 0; font-size: 11px; line-height: 1.25;">Duelos contra IAs preprogramadas con dificultades.</p>
+                    </div>
+                </div>
+                <div style="border-top: 1px solid rgba(138, 43, 226, 0.2); padding-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%;">
+                    <span style="color: #b85cff; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Oponente:</span>
+                    <select id="lobby-npc-select" style="background:#0c1620; color:#fff; border:1px solid #8A2BE2; padding:3px 8px; border-radius:4px; font-size:10px; font-weight:bold;">
+                        <option value="cyborg" selected>Cyborg Defensivo</option>
+                        <option value="viral">Infeccioso Viral</option>
+                        <option value="sintetico">Rápido Sintético</option>
+                        <option value="biomutante">Titán Biomutante</option>
+                        <option value="radiactivo">Radiador Mutado</option>
+                        <option value="toxico">Tóxico Mutante</option>
+                    </select>
+                </div>
+                <div style="border-top: 1px solid rgba(138, 43, 226, 0.1); padding-top: 8px; display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%;">
+                    <span style="color: #b85cff; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">Dificultad:</span>
+                    <select id="lobby-npc-level-select" style="background:#0c1620; color:#fff; border:1px solid #8A2BE2; padding:3px 8px; border-radius:4px; font-size:10px; font-weight:bold;">
+                        <option value="10">Nivel 10 (Fácil)</option>
+                        <option value="25" selected>Nivel 25 (Normal)</option>
+                        <option value="40">Nivel 40 (Difícil)</option>
+                        <option value="50">Nivel 50 (Élite)</option>
+                    </select>
+                </div>
+            `;
+            listContainer.appendChild(desafioCard);
+            
+            // 5. COMBATE 3v3 DE EQUIPOS
+            const teamCard = document.createElement("div");
+            teamCard.className = "lobby-card card-3v3";
+            teamCard.onclick = () => window.ColiseumManager.abrirSeleccion3v3();
+            teamCard.innerHTML = `
+                <div style="background: rgba(0, 229, 255, 0.1); border: 1px solid #00e5ff; border-radius: 10px; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                </div>
+                <div style="flex: 1;">
+                    <h3 style="color: #00e5ff; margin: 0 0 3px 0; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Combate 3v3 de Equipos</h3>
+                    <p style="color: #cbd5e1; margin: 0; font-size: 11px; line-height: 1.25;">Duelos tácticos con relevos usando un equipo de 3 Genos.</p>
+                </div>
+            `;
+            listContainer.appendChild(teamCard);
+        } else {
+            // 1. BAÚL BALANCE (Free-gas internal account)
+            const pendingBalance = window.TournamentManager ? (window.TournamentManager.saldosPendientes || 0.0) : 0.0;
+            const vaultCard = document.createElement("div");
+            vaultCard.className = "lobby-card";
+            vaultCard.style.borderColor = "#ffd700";
+            vaultCard.style.cursor = "default";
+            vaultCard.innerHTML = `
+                <div style="background: rgba(255, 215, 0, 0.1); border: 1px solid #ffd700; border-radius: 10px; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="7" width="20" height="14" rx="2" ry="2" /><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                    </svg>
+                </div>
+                <div style="flex: 1; display:flex; align-items:center; justify-content:space-between;">
+                    <div>
+                        <h3 style="color: #ffd700; margin: 0 0 3px 0; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Baúl del Jugador</h3>
+                        <p style="color: #cbd5e1; margin: 0; font-size: 11px;">Bolsa de saldo $POL libre de gas: <strong style="color:#00ffcc;">${pendingBalance.toFixed(2)} POL</strong></p>
+                    </div>
+                    <button onclick="window.ColiseumManager.retirarSaldoWallet()" class="market-btn-neon" style="margin:0; padding:6px 12px; font-size:9px; background:linear-gradient(90deg, #1e293b, #334155); border:1px solid #475569; color:#fff; cursor:pointer; border-radius:6px; font-weight:bold;">Retirar</button>
+                </div>
+            `;
+            listContainer.appendChild(vaultCard);
+            
+            // 2. ARENA DEL NEXO
+            const activeLeague = window.ColiseumManager.obtenerLigaPorGeno(window.miMascota);
+            const prField = window.ColiseumManager.obtenerPrFieldPorLiga(activeLeague);
+            const prPoints = window[prField] || 0;
+            
+            const arenaCard = document.createElement("div");
+            arenaCard.className = "lobby-card card-estandar";
+            arenaCard.style.borderColor = "#00e5ff";
+            
+            if (!window.arenaTicketActive) {
+                arenaCard.innerHTML = `
+                    <div style="background: rgba(0, 229, 255, 0.1); border: 1px solid #00e5ff; border-radius: 10px; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2" />
+                        </svg>
+                    </div>
+                    <div style="flex: 1; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                        <div>
+                            <h3 style="color: #00e5ff; margin: 0 0 3px 0; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Arena del Nexo (PvP)</h3>
+                            <p style="color: #cbd5e1; margin: 0; font-size: 11px;">Liga actual: <strong style="color:#ff007f;">${activeLeague}</strong> (${prPoints} PR). Coste pase (5 peleas): 0.50 $POL.</p>
+                        </div>
+                        <button onclick="window.ColiseumManager.comprarPaseArena()" class="market-btn-neon" style="margin:0; padding:8px 12px; font-size:10px; font-weight:bold; background:linear-gradient(90deg, #00b4d8, #0077b6); border:1px solid #0096c7; color:#fff; cursor:pointer; border-radius:6px; box-shadow:0 0 10px rgba(0,229,255,0.3);">Comprar</button>
+                    </div>
+                `;
+            } else {
+                const played = window.arenaBattlesPlayed || 0;
+                const wins = window.arenaWins || 0;
+                const losses = window.arenaLosses || 0;
+                arenaCard.innerHTML = `
+                    <div style="background: rgba(0, 229, 255, 0.2); border: 1px solid #00e5ff; border-radius: 10px; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; flex-shrink: 0; animation: status-pulse 1.5s infinite alternate;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2" />
+                        </svg>
+                    </div>
+                    <div style="flex: 1; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                        <div>
+                            <h3 style="color: #00e5ff; margin: 0 0 3px 0; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Pase Activo: ${played}/5 peleas</h3>
+                            <p style="color: #cbd5e1; margin: 0; font-size: 11px;">Récord de ronda: <strong style="color:#69f0ae;">${wins}V</strong> - <strong style="color:#ff3d00;">${losses}D</strong> en Liga ${activeLeague}.</p>
+                        </div>
+                        <button onclick="window.ColiseumManager.buscarOponentePvP()" class="market-btn-neon" style="margin:0; padding:8px 12px; font-size:10px; font-weight:bold; background:linear-gradient(90deg, #ff007f, #b85cff); border:1px solid #ff007f; color:#fff; cursor:pointer; border-radius:6px; box-shadow:0 0 10px rgba(255,0,127,0.3); animation: status-pulse 1.5s infinite alternate;">Pelear</button>
+                    </div>
+                `;
+            }
+            listContainer.appendChild(arenaCard);
+            
+            // 3. TORNEO DE LLAVES
+            const tourneyCard = document.createElement("div");
+            tourneyCard.className = "lobby-card card-tournament";
+            tourneyCard.onclick = () => window.TournamentManager.abrirTorneos();
+            tourneyCard.innerHTML = `
+                <div style="background: rgba(255, 0, 127, 0.1); border: 1px solid #ff007f; border-radius: 10px; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ff007f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="8" r="7" /><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+                    </svg>
+                </div>
+                <div style="flex: 1;">
+                    <h3 style="color: #ff007f; margin: 0 0 3px 0; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Torneos de Fin de Semana</h3>
+                    <p style="color: #cbd5e1; margin: 0; font-size: 11px; line-height: 1.25;">Torneos Sit & Go con eliminación de 16 participantes, descenso FIFO y colas por stakes de $POL.</p>
+                </div>
+            `;
+            listContainer.appendChild(tourneyCard);
+            
+            // 4. VOTOS DE GOBERNANZA SEMANAL
+            const govCard = document.createElement("div");
+            govCard.className = "lobby-card card-desafio";
+            govCard.id = "gov-voting-card";
+            govCard.innerHTML = `
+                <div style="width: 100%;">
+                    <h3 style="color: #b85cff; margin: 0 0 5px 0; font-size: 12px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Votación de Gobernanza (Catálogo)</h3>
+                    <p style="color: #cbd5e1; margin: 0 0 8px 0; font-size: 10px; line-height: 1.25;">Selecciona el modificador del torneo de este fin de semana. (Nivel de Lab >= 5 + Licencia requerido).</p>
+                    <div id="gov-options-container" style="display:flex; flex-direction:column; gap:5px;">
+                        <span style="color:#aaa; font-size:10px;">Cargando propuestas de gobernanza en tiempo real...</span>
+                    </div>
+                </div>
+            `;
+            listContainer.appendChild(govCard);
+            window.ColiseumManager.cargarOpcionesVotacion();
+            
+            // 5. RANKING DE LEADERBOARDS POR LIGA
+            const leadCard = document.createElement("div");
+            leadCard.className = "lobby-card card-clon";
+            leadCard.onclick = () => window.ColiseumManager.abrirLeaderboardsLobby();
+            leadCard.innerHTML = `
+                <div style="background: rgba(0, 172, 193, 0.1); border: 1px solid #00acc1; border-radius: 10px; width: 44px; height: 44px; display: flex; justify-content: center; align-items: center; flex-shrink: 0;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00acc1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" />
+                    </svg>
+                </div>
+                <div style="flex: 1;">
+                    <h3 style="color: #00e5ff; margin: 0 0 3px 0; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Leaderboards de Ligas</h3>
+                    <p style="color: #cbd5e1; margin: 0; font-size: 11px; line-height: 1.25;">Visualiza las tablas de posiciones y los PR de Bronce, Plata, Oro y Diamante en tiempo real.</p>
+                </div>
+            `;
+            listContainer.appendChild(leadCard);
+        }
+    };
+
+    window.ColiseumManager.obtenerLigaPorGeno = function(geno) {
+        if (!geno) return "Bronce";
+        const level = geno.level || 1;
+        const rarity = geno.rarity || geno.rareza || "Común";
+        
+        if (rarity === "Épica" || rarity === "Legendaria" || rarity === "Épico" || rarity === "Legendario") {
+            return "Diamante";
+        }
+        if (rarity === "Rara" || rarity === "Raro" || rarity === "Mítica" || rarity === "Mítico") {
+            return "Oro";
+        }
+        if (level >= 20) {
+            return "Plata";
+        }
+        return "Bronce";
+    };
+
+    window.ColiseumManager.obtenerPrFieldPorLiga = function(liga) {
+        if (liga === "Bronce") return "prBronce";
+        if (liga === "Plata") return "prPlata";
+        if (liga === "Oro") return "prOro";
+        if (liga === "Diamante") return "prDiamante";
+        return "prBronce";
+    };
+
+    window.ColiseumManager.comprarPaseArena = async function() {
+        if (!window.miWallet || window.miWallet.pol < 0.50) {
+            alert("Saldo de Wallet insuficiente. Necesitas al menos 0.50 POL en tu balance.");
+            return;
+        }
+        
+        ColiseumUI.agregarLog("<span style='color:#ffd700;'>[WEB3] Firmando transacción de compra de pase con Privy...</span>");
+        
+        // Simular distribución de comisiones
+        window.miWallet.pol -= 0.50;
+        window.arenaTicketActive = true;
+        window.arenaBattlesPlayed = 0;
+        window.arenaWins = 0;
+        window.arenaLosses = 0;
+        
+        ColiseumUI.agregarLog("<span style='color:#69f0ae;'>[WEB3] Pase de Arena de 5 combates adquirido con éxito en Polygon Testnet.</span>");
+        
+        const activeLeagueForTicket = window.ColiseumManager.obtenerLigaPorGeno(window.miMascota);
+        if (typeof window.registrarLogEconomia === 'function') {
+            window.registrarLogEconomia("arena_ticket_buy", 0.50, "MetaMask - " + activeLeagueForTicket);
+        }
+        
+        if (window.guardarProgreso) window.guardarProgreso();
+        window.ColiseumManager.actualizarLobbyUI();
+        
+        alert("¡Pase de Arena activado! Tienes 5 combates de Liga disponibles.");
+    };
+
+    window.ColiseumManager.buscarOponentePvP = function() {
+        if (!window.arenaTicketActive) {
+            alert("No tienes un pase de arena activo.");
+            return;
+        }
+        
+        ColiseumUI.limpiarLog();
+        ColiseumUI.agregarLog("<span style='color:#00e5ff;'>🔍 Escaneando canales de Supabase Realtime Broadcast...</span>");
+        ColiseumUI.agregarLog("<span style='color:#aaa;'>Buscando rival en vivo en tu misma liga (Espera de 30 segundos)...</span>");
+        
+        let seconds = 30;
+        let overlay = document.getElementById("coliseum-matchmaking-overlay");
+        
+        if (!overlay) {
+            overlay = document.createElement("div");
+            overlay.id = "coliseum-matchmaking-overlay";
+            overlay.style.position = "absolute";
+            overlay.style.top = "0";
+            overlay.style.left = "0";
+            overlay.style.width = "100%";
+            overlay.style.height = "100%";
+            overlay.style.background = "rgba(13, 22, 30, 0.95)";
+            overlay.style.display = "flex";
+            overlay.style.flexDirection = "column";
+            overlay.style.justifyContent = "center";
+            overlay.style.alignItems = "center";
+            overlay.style.zIndex = "2000";
+            overlay.style.borderRadius = "16px";
+            overlay.style.border = "2px solid #00e5ff";
+            overlay.style.boxShadow = "0 0 30px rgba(0, 229, 255, 0.4)";
+            
+            overlay.innerHTML = `
+                <div class="spinner" style="border: 4px solid rgba(0,229,255,0.1); border-top: 4px solid #00e5ff; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 20px;"></div>
+                <h3 style="color:#00e5ff; text-transform:uppercase; letter-spacing:1px; margin:0 0 10px 0; font-size:14px; font-weight:bold;">Buscando Rival en Vivo</h3>
+                <div id="matchmaking-countdown" style="font-size:24px; font-weight:bold; color:#fff; margin-bottom:10px;">30s</div>
+                <p style="color:#cbd5e1; font-size:11px; text-align:center; padding:0 20px; line-height:1.3;">Escaneando canal de Supabase Broadcast en tiempo real...</p>
+                <button id="cancel-matchmaking-btn" style="margin-top:20px; background:#111b24; border:1px solid #ff3d00; color:#ff3d00; padding:8px 16px; border-radius:6px; font-size:10px; font-weight:bold; cursor:pointer;">Cancelar</button>
+                <style>
+                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                </style>
+            `;
+            
+            const coliseumScreen = document.getElementById("coliseum-screen");
+            if (coliseumScreen) coliseumScreen.appendChild(overlay);
+        }
+        
+        overlay.style.display = "flex";
+        window.navegarA('coliseum-screen');
+        
+        let timer = null;
+        
+        const cancelBtn = document.getElementById("cancel-matchmaking-btn");
+        cancelBtn.onclick = () => {
+            clearInterval(timer);
+            overlay.style.display = "none";
+            window.navegarA('coliseum-lobby-screen');
+            window.ColiseumManager.actualizarLobbyUI();
+        };
+        
+        timer = setInterval(async () => {
+            seconds--;
+            const countdownEl = document.getElementById("matchmaking-countdown");
+            if (countdownEl) countdownEl.innerText = `${seconds}s`;
+            
+            // Simular un 15% de probabilidad de conexión live con otro navegador por segundo (matchmaking preferente)
+            if (seconds > 0 && Math.random() < 0.15) {
+                clearInterval(timer);
+                overlay.style.display = "none";
+                window.ColiseumManager.isLiveMatch = true; 
+                await window.ColiseumManager.cargarOponentePvP(true);
+                return;
+            }
+            
+            if (seconds <= 0) {
+                clearInterval(timer);
+                overlay.style.display = "none";
+                window.ColiseumManager.isLiveMatch = false; 
+                
+                ColiseumUI.agregarLog("<span style='color:#ff8c00;'>⏱️ Tiempo de espera agotado. Activando respaldo asíncrono...</span>");
+                ColiseumUI.agregarLog("<span style='color:#b85cff;'>🔮 Cargando Fantasma IFTTT de la misma liga...</span>");
+                
+                await window.ColiseumManager.cargarOponentePvP(false);
+            }
+        }, 1000);
+    };
+
+    window.ColiseumManager.cargarOponentePvP = async function(isLive) {
+        const activeGeno = window.miMascota;
+        const activeLeague = window.ColiseumManager.obtenerLigaPorGeno(activeGeno);
+        const counterMap = {
+            "Biomutante": "Sintético",
+            "Sintético": "Tóxico",
+            "Tóxico": "Radiactivo",
+            "Radiactivo": "Cibernético",
+            "Cibernético": "Viral",
+            "Viral": "Biomutante"
+        };
+        const excludedElement = counterMap[activeGeno.element] || "Normal";
+        
+        let rivalGeno = null;
+        let rivalName = "";
+        let ghostOwnerId = null;
+        
+        if (!isLive) {
+            try {
+                // Consultamos desde la vista de fantasmas para obtener los usos diarios
+                const { data: profiles, error } = await window.supabaseClient
+                    .from('vista_fantasmas')
+                    .select('id, email, datos_juego, ifttt_script, usos_hoy')
+                    .neq('id', window.miUsuarioCloud.id);
+                    
+                if (!error && profiles && profiles.length > 0) {
+                    const validGhosts = profiles.filter(p => {
+                        if (!p.datos_juego || !p.datos_juego.mascotaActiva) return false;
+                        const mascot = p.datos_juego.mascotaActiva;
+                        const gLeague = window.ColiseumManager.obtenerLigaPorGeno(mascot);
+                        if (gLeague !== activeLeague) return false;
+                        if (mascot.element === excludedElement) return false;
+                        return true;
+                    });
+                    
+                    if (validGhosts.length > 0) {
+                        // Preferimos fantasmas que tengan menos de 5 usos hoy
+                        let ghostsUnderLimit = validGhosts.filter(g => (g.usos_hoy || 0) < 5);
+                        const chosenGhost = ghostsUnderLimit.length > 0 
+                            ? ghostsUnderLimit[Math.floor(Math.random() * ghostsUnderLimit.length)]
+                            : validGhosts[Math.floor(Math.random() * validGhosts.length)];
+                        
+                        rivalGeno = chosenGhost.datos_juego.mascotaActiva;
+                        rivalName = rivalGeno.alias || rivalGeno.name || "Geno Fantasma";
+                        rivalGeno.iftttRules = chosenGhost.ifttt_script || [];
+                        ghostOwnerId = chosenGhost.id;
+                        
+                        // Dado genético asíncrono
+                        const rollLvl = Math.random();
+                        let lvlBonus = rollLvl < 0.50 ? 1 : 2; // Garantiza +1 o +2 niveles de ventaja
+                        const rollQual = Math.random();
+                        let qualBonus = rollQual < 0.33 ? 0 : (rollQual < 0.66 ? 1 : 2);
+                        
+                        rivalGeno.level = (rivalGeno.level || 1) + lvlBonus;
+                        if (rivalGeno.stats) {
+                            rivalGeno.stats.hp += lvlBonus * 5 + qualBonus * 8;
+                            rivalGeno.stats.atk += lvlBonus * 1 + qualBonus * 2;
+                            rivalGeno.stats.def += lvlBonus * 1 + qualBonus * 2;
+                            rivalGeno.stats.spd += lvlBonus * 1 + qualBonus * 2;
+                            rivalGeno.stats.luk += lvlBonus * 1 + qualBonus * 2;
+                        }
+                    }
+                }
+            } catch(e) {
+                console.error("[MATCHMAKING GHOST ERROR]", e);
+            }
+        }
+        
+        if (!rivalGeno) {
+            let targetRarity = "Común";
+            if (activeLeague === "Diamante") targetRarity = "Legendario";
+            else if (activeLeague === "Oro") targetRarity = "Raro";
+            else if (activeLeague === "Plata") targetRarity = "Raro";
+            
+            let targetLevel = activeGeno.level || 10;
+            if (isLive) {
+                ColiseumUI.agregarLog("<span style='color:#00ffcc;'>¡Rival en vivo encontrado! Iniciando emparejamiento interactivo...</span>");
+            } else {
+                ColiseumUI.agregarLog("<span style='color:#b85cff;'>No se encontraron fantasmas guardados en esta liga. Inyectando IA de Liga.</span>");
+            }
+            
+            const procRivalObj = window.ColiseumLogic.crearRivalObjeto(targetLevel, targetRarity, false, true);
+            rivalGeno = procRivalObj.adn;
+            rivalName = procRivalObj.nombre;
+        }
+        
+        window.ColiseumLogic.modoCombate = 'pvp';
+        window.ColiseumLogic.playerTimeouts = 0;
+        window.ColiseumLogic.playerAutopilot = false;
+        
+        window.ColiseumLogic.enemy = {
+            nombre: rivalName,
+            isPlayer: false,
+            adn: rivalGeno,
+            ownerId: ghostOwnerId, // ID del dueño para acreditar EV pasivo
+            maxHp: rivalGeno.stats?.hp || 100,
+            hp: rivalGeno.stats?.hp || 100,
+            atk: rivalGeno.stats?.atk || 15,
+            def: rivalGeno.stats?.def || 5,
+            spd: rivalGeno.stats?.spd || 10,
+            luk: rivalGeno.stats?.luk || 5,
+            baseAtk: rivalGeno.stats?.atk || 15,
+            baseDef: rivalGeno.stats?.def || 5,
+            baseSpd: rivalGeno.stats?.spd || 10,
+            baseLuk: rivalGeno.stats?.luk || 5,
+            element: rivalGeno.element || "Normal",
+            rareza: rivalGeno.rarity || rivalGeno.rareza || "Común",
+            genesId: [
+                (rivalGeno.hidden_genes?.B?.id || "ninguno").toLowerCase(),
+                (rivalGeno.hidden_genes?.C?.id || "ninguno").toLowerCase()
+            ],
+            estados: [],
+            efectosActivos: [],
+            cooldowns: { especial: 0, tactica: 0, definitivo: 0 },
+            escudoCibernetico: rivalGeno.element === "Cibernético",
+            crystalSkin: false,
+            decoyUsado: false,
+            coreArUsado: false,
+            rachaGolpes: 0,
+            adaptativaStacks: 0,
+            ultimoElementoRecibido: null,
+            danoRecibidoEsteTurno: 0,
+            danoRecibidoTurnoAnterior: 0,
+            proxVenenoDoble: false,
+            ataquesEquipados: {
+                "ataque": window.ColiseumLogic.obtenerAtaqueAleatorio(rivalGeno.element || "Normal", "basicos"),
+                "especial": window.ColiseumLogic.obtenerAtaqueAleatorio(rivalGeno.element || "Normal", "especiales"),
+                "tactica": window.ColiseumLogic.obtenerAtaqueAleatorio(rivalGeno.element || "Normal", "soportes"),
+                "definitivo": rivalGeno.level >= 25 ? window.ColiseumLogic.obtenerAtaqueAleatorio(rivalGeno.element || "Normal", "definitivos") : null
+            }
+        };
+        
+        window.ColiseumManager.iniciarPeleaConfirmada(false);
+    };
+
+    window.ColiseumManager.entrarTorreMutacion = function() {
+        if (!window.miMascota || window.miMascota.id === "temp") {
+            alert("No tienes un Geno activo para entrar a la Torre de Mutación.");
+            return;
+        }
+        
+        const rarity = window.miMascota.rarity || window.miMascota.rareza || "Común";
+        let startingFloor = 1;
+        if (rarity === "Mítica" || rarity === "Mítico") startingFloor = 101;
+        else if (rarity === "Legendaria" || rarity === "Legendario") startingFloor = 76;
+        else if (rarity === "Épica" || rarity === "Épico") startingFloor = 51;
+        else if (rarity === "Rara" || rarity === "Raro") startingFloor = 26;
+        
+        const currentFloor = window.currentTowerFloor || 1;
+        
+        if (currentFloor < startingFloor) {
+            let totalEVGranted = 0;
+            for (let f = currentFloor; f < startingFloor; f++) {
+                let isFirstTime = (f > window.maxFloor);
+                let ev = 10 + f * 2;
+                if (isFirstTime) ev = Math.round(ev * 1.5);
+                if (f > window.towerClaimedFloorThisWeek) {
+                    totalEVGranted += ev;
+                }
+            }
+            
+            window.currentTowerFloor = startingFloor;
+            window.maxFloor = Math.max(window.maxFloor, startingFloor - 1);
+            window.towerClaimedFloorThisWeek = Math.max(window.towerClaimedFloorThisWeek, startingFloor - 1);
+            
+            if (totalEVGranted > 0) {
+                if (!window.miInventario) window.miInventario = { vitalEssence: 0, items: [] };
+                window.miInventario.vitalEssence = (window.miInventario.vitalEssence || 0) + totalEVGranted;
+                alert(`🛡️ AUTO-ASCENSO: Tu Geno es de categoría [${rarity}]. Has sido elevado directamente al Piso ${startingFloor}.\n¡Se te han acreditado +${totalEVGranted} EV de forma automática!`);
+            } else {
+                alert(`🛡️ AUTO-ASCENSO: Tu Geno es de categoría [${rarity}]. Elevado directamente al Piso ${startingFloor}.`);
+            }
+            if (window.guardarProgreso) window.guardarProgreso();
+        }
+        
+        window.ColiseumLogic.modoCombate = 'torre';
+        window.navegarA('coliseum-screen');
+        window.iniciarColiseo();
+    };
+
+    window.ColiseumManager.cargarOpcionesVotacion = async function() {
+        const container = document.getElementById("gov-options-container");
+        if (!container) return;
+        
+        try {
+            const opciones = [
+                { id: "solo_comunes", name: "Solo Comunes", desc: "Solo Genos Comunes. Habilidades básicas sin desbalance." },
+                { id: "modo_berserker", name: "Modo Berserker", desc: "Defensa = 0. Puro ataque. Combates de 3 turnos." },
+                { id: "sin_genes", name: "Sin Genes", desc: "Genes ocultos y pasivas desactivados. Stats puros." }
+            ];
+            
+            let counts = { solo_comunes: 0, modo_berserker: 0, sin_genes: 0 };
+            let totalVotes = 0;
+            
+            for (let opId in counts) {
+                const { count, error: countErr } = await window.supabaseClient
+                    .from('tournament_votes')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('torneo_id', opId);
+                if (!countErr && count !== null) {
+                    counts[opId] = count;
+                    totalVotes += count;
+                }
+            }
+            
+            container.innerHTML = "";
+            opciones.forEach(op => {
+                const votesCount = counts[op.id] || 0;
+                const pct = totalVotes > 0 ? Math.round((votesCount / totalVotes) * 100) : 0;
+                
+                const btn = document.createElement("button");
+                btn.className = "market-btn-neon";
+                btn.style.width = "100%";
+                btn.style.margin = "4px 0";
+                btn.style.padding = "10px";
+                btn.style.textAlign = "left";
+                btn.style.display = "flex";
+                btn.style.justifyContent = "space-between";
+                btn.style.alignItems = "center";
+                btn.style.background = "rgba(13, 22, 30, 0.6)";
+                btn.style.border = "1px solid rgba(184, 92, 255, 0.3)";
+                btn.style.borderRadius = "8px";
+                btn.style.cursor = "pointer";
+                
+                btn.innerHTML = `
+                    <div>
+                        <span style="font-weight:bold; color:#b85cff; font-size:11px; text-transform:uppercase;">${op.name}</span><br>
+                        <span style="font-size:9px; color:#aaa;">${op.desc}</span>
+                    </div>
+                    <div style="text-align:right;">
+                        <span style="font-size:12px; font-weight:bold; color:#00ffcc;">${pct}%</span><br>
+                        <span style="font-size:8px; color:#888;">(${votesCount} votos)</span>
+                    </div>
+                `;
+                
+                btn.onclick = () => window.ColiseumManager.emitirVoto(op.id);
+                container.appendChild(btn);
+            });
+        } catch(e) {
+            console.error("[GOV LOAD ERROR]", e);
+            container.innerHTML = "<span style='color:#ff5722;'>Fallo al conectar con el senado Nexo.</span>";
+        }
+    };
+
+    window.ColiseumManager.emitirVoto = async function(torneoId) {
+        if (!window.miUsuarioCloud) {
+            alert("Debes iniciar sesión para votar.");
+            return;
+        }
+        
+        const labLvl = window.labLevel || 1;
+        const hasLicense = window.comercioDesbloqueado || false;
+        
+        if (labLvl < 5 || !hasLicense) {
+            alert("⚠️ RESTRICCIÓN DE URNAS Nexo:\nSe requiere Nivel 5 de Laboratorio y Licencia de Comercio Web3 desbloqueada para participar en la Gobernanza Semanal.");
+            return;
+        }
+        
+        try {
+            ColiseumUI.agregarLog("<span style='color:#b85cff;'>[SENADO] Registrando tu voto en la base de datos...</span>");
+            
+            const { error } = await window.supabaseClient
+                .from('tournament_votes')
+                .upsert({
+                    player_id: window.miUsuarioCloud.id,
+                    torneo_id: torneoId,
+                    voted_at: new Date().toISOString()
+                });
+                
+            if (error) {
+                if (error.message && error.message.includes("unique")) {
+                    alert("Ya has emitido tu voto esta semana. Cada cuenta está limitada a un voto por ciclo.");
+                } else {
+                    alert("Error al emitir voto: " + error.message);
+                }
+            } else {
+                alert("¡Voto registrado con éxito! Gracias por tu participación.");
+                window.ColiseumManager.cargarOpcionesVotacion();
+            }
+        } catch(e) {
+            console.error("[VOTE ERROR]", e);
+        }
+    };
+
+    window.ColiseumManager.retirarSaldoWallet = function() {
+        const pendingBalance = window.TournamentManager ? (window.TournamentManager.saldosPendientes || 0.0) : 0.0;
+        if (pendingBalance <= 0) {
+            alert("No tienes saldo acumulado para retirar.");
+            return;
+        }
+        
+        const address = window.miWallet ? window.miWallet.address : null;
+        if (!address) {
+            alert("Asocia o conecta una Wallet en tu perfil primero.");
+            return;
+        }
+        
+        if (confirm(`¿Deseas retirar ${pendingBalance.toFixed(2)} POL a tu Wallet Privy (${address})?`)) {
+            ColiseumUI.agregarLog(`<span style='color:#ffd700;'>[WEB3] Procesando retiro de ${pendingBalance.toFixed(2)} POL hacia ${address}...</span>`);
+            if (!window.miWallet) window.miWallet = { pol: 0.0 };
+            window.miWallet.pol = (window.miWallet.pol || 0.0) + pendingBalance;
+            window.TournamentManager.saldosPendientes = 0.0;
+            
+            if (window.guardarProgreso) window.guardarProgreso();
+            alert(`¡Retiro exitoso! Se han transferido los fondos a tu wallet.`);
+            window.ColiseumManager.actualizarLobbyUI();
+        }
+    };
+
+    window.ColiseumManager.abrirLeaderboardsLobby = async function() {
+        let modal = document.getElementById("lobby-leaderboards-modal");
+        if (!modal) {
+            modal = document.createElement("div");
+            modal.id = "lobby-leaderboards-modal";
+            modal.style.position = "absolute";
+            modal.style.top = "0";
+            modal.style.left = "0";
+            modal.style.width = "100%";
+            modal.style.height = "100%";
+            modal.style.background = "rgba(15, 23, 42, 0.98)";
+            modal.style.padding = "20px";
+            modal.style.boxSizing = "border-box";
+            modal.style.zIndex = "3000";
+            modal.style.display = "flex";
+            modal.style.flexDirection = "column";
+            modal.style.borderRadius = "16px";
+            modal.style.border = "1.5px solid #00e5ff";
+            
+            const coliseumScreen = document.getElementById("coliseum-lobby-screen");
+            if (coliseumScreen) coliseumScreen.appendChild(modal);
+        }
+        
+        modal.style.display = "flex";
+        modal.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px; margin-bottom:15px;">
+                <h3 style="color:#00e5ff; margin:0; text-transform:uppercase; letter-spacing:1px; font-size:14px; font-weight:bold;">Rankings de Ligas</h3>
+                <button id="close-leaderboards-btn" style="background:transparent; border:1px solid #ff3d00; color:#ff3d00; padding:4px 8px; border-radius:6px; cursor:pointer; font-size:9px; font-weight:bold;">Cerrar</button>
+            </div>
+            <div style="display:flex; gap:5px; margin-bottom:15px; flex-shrink:0;">
+                <button class="rank-tab-btn" onclick="window.ColiseumManager.cargarLeaderboardLiga('Bronce')" style="flex:1; padding:6px; font-size:9px; font-weight:bold; cursor:pointer; border-radius:4px; border:1px solid #cd7f32; background:rgba(205,127,50,0.1); color:#cd7f32;">Bronce</button>
+                <button class="rank-tab-btn" onclick="window.ColiseumManager.cargarLeaderboardLiga('Plata')" style="flex:1; padding:6px; font-size:9px; font-weight:bold; cursor:pointer; border-radius:4px; border:1px solid #c0c0c0; background:rgba(192,192,192,0.1); color:#c0c0c0;">Plata</button>
+                <button class="rank-tab-btn" onclick="window.ColiseumManager.cargarLeaderboardLiga('Oro')" style="flex:1; padding:6px; font-size:9px; font-weight:bold; cursor:pointer; border-radius:4px; border:1px solid #ffd700; background:rgba(255,215,0,0.1); color:#ffd700;">Oro</button>
+                <button class="rank-tab-btn" onclick="window.ColiseumManager.cargarLeaderboardLiga('Diamante')" style="flex:1; padding:6px; font-size:9px; font-weight:bold; cursor:pointer; border-radius:4px; border:1px solid #00e5ff; background:rgba(0,229,255,0.1); color:#00e5ff;">Diamante</button>
+            </div>
+            <div id="leaderboard-players-list" style="flex-grow:1; overflow-y:auto; display:flex; flex-direction:column; gap:8px;">
+                <span style="color:#aaa; font-size:11px; text-align:center; margin-top:20px;">Cargando clasificaciones...</span>
+            </div>
+        `;
+        
+        document.getElementById("close-leaderboards-btn").onclick = () => {
+            modal.style.display = "none";
+        };
+        
+        const activeGeno = window.miMascota;
+        const activeLeague = window.ColiseumManager.obtenerLigaPorGeno(activeGeno);
+        window.ColiseumManager.cargarLeaderboardLiga(activeLeague);
+    };
+
+    window.ColiseumManager.cargarLeaderboardLiga = async function(liga) {
+        const listContainer = document.getElementById("leaderboard-players-list");
+        if (!listContainer) return;
+        
+        listContainer.innerHTML = "<span style='color:#aaa; font-size:11px; text-align:center; margin-top:20px;'>Descargando posiciones Nexo...</span>";
+        
+        try {
+            const prField = window.ColiseumManager.obtenerPrFieldPorLiga(liga);
+            const dbCol = prField === "prBronce" ? "pr_bronce" : (prField === "prPlata" ? "pr_plata" : (prField === "prOro" ? "pr_oro" : "pr_diamante"));
+            
+            const { data: players, error } = await window.supabaseClient
+                .from('jugadores')
+                .select(`email, ${dbCol}`)
+                .order(dbCol, { ascending: false })
+                .limit(10);
+                
+            if (error) {
+                listContainer.innerHTML = `<span style='color:#ff3d00; font-size:11px; text-align:center;'>Error: ${error.message}</span>`;
+                return;
+            }
+            
+            listContainer.innerHTML = "";
+            if (players.length === 0) {
+                listContainer.innerHTML = "<span style='color:#888; font-size:11px; text-align:center; margin-top:20px;'>Nadie ha combatido en esta liga aún.</span>";
+                return;
+            }
+            
+            players.forEach((p, idx) => {
+                const item = document.createElement("div");
+                item.style.display = "flex";
+                item.style.justifyContent = "space-between";
+                item.style.alignItems = "center";
+                item.style.padding = "8px 12px";
+                item.style.background = "rgba(255,255,255,0.02)";
+                item.style.border = "1px solid rgba(255,255,255,0.05)";
+                item.style.borderRadius = "8px";
+                
+                const isMe = p.email === window.miUsuarioCloud?.email;
+                const rankColor = idx === 0 ? "#ffd700" : (idx === 1 ? "#c0c0c0" : (idx === 2 ? "#cd7f32" : "#fff"));
+                
+                item.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <span style="font-weight:bold; color:${rankColor}; font-size:13px;">#${idx + 1}</span>
+                        <span style="font-size:11px; color:${isMe ? '#00ffcc' : '#fff'}; font-weight:${isMe ? 'bold' : 'normal'};">${p.email.split('@')[0]} ${isMe ? '(Tú)' : ''}</span>
+                    </div>
+                    <span style="font-weight:bold; color:#00e5ff; font-size:12px;">${p[dbCol] || 0} PR</span>
+                `;
+                listContainer.appendChild(item);
+            });
+        } catch(e) {
+            console.error(e);
+            listContainer.innerHTML = "<span style='color:#ff3d00; font-size:11px; text-align:center;'>Excepción al conectar con Supabase.</span>";
+        }
+    };
+
+    window.ColiseumManager.liquidarPaseArena = function() {
+        const wins = window.arenaWins || 0;
+        let polPayout = 0.0;
+        let evPayout = 0.0;
+        let itemsGranted = [];
+        
+        if (wins === 5) {
+            polPayout = 1.50;
+            evPayout = 12.00; // Compensación con buena progresión en EV
+            itemsGranted.push({ id: "implante_raro", name: "Implante Raro", qty: 2 });
+        } else if (wins === 4) {
+            polPayout = 0.80;
+            evPayout = 10.00;
+            itemsGranted.push({ id: "implante_raro", name: "Implante Raro", qty: 1 });
+            itemsGranted.push({ id: "implante_comun", name: "Implante Común", qty: 1 });
+        } else if (wins === 3) {
+            polPayout = 0.50; // Break-even
+            evPayout = 8.00;
+            itemsGranted.push({ id: "implante_comun", name: "Implante Común", qty: 1 });
+        } else if (wins === 2) {
+            polPayout = 0.20;
+            evPayout = 6.00;
+            itemsGranted.push({ id: "implante_comun", name: "Implante Común", qty: 1 });
+        } else if (wins === 1) {
+            polPayout = 0.00;
+            evPayout = 4.00;
+            itemsGranted.push({ id: "implante_comun", name: "Implante Común", qty: 1 });
+        } else {
+            polPayout = 0.00;
+            evPayout = 2.00;
+            itemsGranted.push({ id: "implante_comun", name: "Implante Común", qty: 1 });
+        }
+        
+        if (evPayout > 0) {
+            if (!window.miInventario) window.miInventario = { vitalEssence: 0, items: [] };
+            window.miInventario.vitalEssence = (window.miInventario.vitalEssence || 0) + evPayout;
+        }
+        
+        if (polPayout > 0) {
+            if (!window.TournamentManager) window.TournamentManager = { saldosPendientes: 0.0 };
+            window.TournamentManager.saldosPendientes = (window.TournamentManager.saldosPendientes || 0.0) + polPayout;
+            
+            const activeLeagueForPayout = window.ColiseumManager.obtenerLigaPorGeno(window.miMascota);
+            if (typeof window.registrarLogEconomia === 'function') {
+                window.registrarLogEconomia("arena_payout", polPayout, "Nexus Arena - " + activeLeagueForPayout);
+            }
+        }
+        
+        itemsGranted.forEach(item => {
+            if (window.miInventario && window.miInventario.items) {
+                const existing = window.miInventario.items.find(i => i.id === item.id);
+                if (existing) {
+                    existing.quantity = (existing.quantity || 0) + item.qty;
+                } else {
+                    window.miInventario.items.push({ id: item.id, name: item.name, quantity: item.qty, type: "implant" });
+                }
+            }
+        });
+        
+        window.arenaTicketActive = false;
+        window.arenaBattlesPlayed = 0;
+        window.arenaWins = 0;
+        window.arenaLosses = 0;
+        
+        if (window.guardarProgreso) window.guardarProgreso();
+        
+        let msg = `¡Ronda de Arena de 5 combates completada! \nResultados: ${wins} Victorias y ${5 - wins} Derrotas.\nRecompensas:\n`;
+        if (polPayout > 0) msg += `- $POL: +${polPayout} (añadido a saldos pendientes)\n`;
+        if (evPayout > 0) msg += `- EV: +${evPayout}\n`;
+        if (itemsGranted.length > 0) {
+            msg += `- Objetos: ${itemsGranted.map(i => i.name).join(", ")}\n`;
+        }
+        
+        alert(msg);
+        window.navegarA('coliseum-lobby-screen');
+        window.ColiseumManager.actualizarLobbyUI();
+    };
+
+    // ==========================================
+    // PROTOCOLO DE DESCONEXIÓN Y TIMEOUTS (IFTTT AUTOPILOT)
+    // ==========================================
+    let turnoTimer = null;
+    
+    window.ColiseumManager.iniciarTemporizadorTurno = function() {
+        if (turnoTimer) clearTimeout(turnoTimer);
+        const esTorneo = window.TournamentManager && window.TournamentManager.activeMatch;
+        if (window.ColiseumLogic.modoCombate !== 'pvp' && !esTorneo) return;
+        
+        let secondsLeft = 30;
+        if (window.ColiseumLogic.playerAutopilot) {
+            window.ColiseumManager.ejecutarTurnoAutopilot();
+            return;
+        }
+        
+        const updateTimer = () => {
+            let timerEl = document.getElementById("coliseum-turn-timer");
+            if (!timerEl) {
+                timerEl = document.createElement("div");
+                timerEl.id = "coliseum-turn-timer";
+                timerEl.style.position = "absolute";
+                timerEl.style.top = "10px";
+                timerEl.style.right = "20px";
+                timerEl.style.color = "#ff3d00";
+                timerEl.style.fontWeight = "bold";
+                timerEl.style.fontSize = "16px";
+                timerEl.style.textShadow = "0 0 5px rgba(255, 61, 0, 0.5)";
+                timerEl.style.zIndex = "100";
+                const battleArea = document.getElementById("battle-area");
+                if (battleArea) battleArea.appendChild(timerEl);
+            }
+            timerEl.style.display = "block";
+            timerEl.innerText = `⏱️ ${secondsLeft}s`;
+            
+            if (secondsLeft <= 0) {
+                clearTimeout(turnoTimer);
+                timerEl.style.display = "none";
+                window.ColiseumManager.registrarTimeoutJugador();
+            } else {
+                secondsLeft--;
+                turnoTimer = setTimeout(updateTimer, 1000);
+            }
+        };
+        updateTimer();
+    };
+    
+    window.ColiseumManager.detenerTemporizadorTurno = function() {
+        if (turnoTimer) clearTimeout(turnoTimer);
+        const timerEl = document.getElementById("coliseum-turn-timer");
+        if (timerEl) timerEl.style.display = "none";
+    };
+    
+    window.ColiseumManager.registrarTimeoutJugador = function() {
+        if (!window.ColiseumLogic.playerTimeouts) window.ColiseumLogic.playerTimeouts = 0;
+        window.ColiseumLogic.playerTimeouts++;
+        
+        ColiseumUI.agregarLog(`<span style="color:#ff3d00; font-weight:bold;">⚠️ ¡Tiempo de turno agotado! (${window.ColiseumLogic.playerTimeouts}/2)</span>`);
+        
+        if (window.ColiseumLogic.playerTimeouts >= 2) {
+            window.ColiseumLogic.playerAutopilot = true;
+            ColiseumUI.agregarLog(`<span style="color:#d500f9; font-weight:bold; font-size:13px; text-shadow:0 0 5px rgba(213,0,249,0.5);">⚠️ PILOTO AUTOMÁTICO ACTIVADO: Se ejecutará el script IFTTT de tu Geno para el resto del combate.</span>`);
+        }
+        window.ColiseumManager.ejecutarTurnoAutopilot();
+    };
+    
+    window.ColiseumManager.ejecutarTurnoAutopilot = function() {
+        const p = window.ColiseumLogic.player;
+        const e = window.ColiseumLogic.enemy;
+        let accionAuto = window.ColiseumLogic.resolverAccionIFTTT(p, e);
+        procesarRonda(accionAuto);
+    };
 });
