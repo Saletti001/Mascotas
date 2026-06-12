@@ -86,6 +86,44 @@ window.cargarConfiguracionBalance = async function() {
                 win_xp: 25,
                 lose_xp: 5
             }
+        },
+        mechanics: {
+            reactor: {
+                cost_lvl1: 5000,
+                cost_lvl2: 15000,
+                cost_lvl3: 30000,
+                refund_lvl1: 8000,
+                refund_lvl2: 25000,
+                refund_lvl3: 60000
+            },
+            breeding: {
+                cost_0: 1000,
+                cost_1: 1500,
+                cost_2: 2500,
+                cost_3: 4500,
+                cost_4: 7000,
+                cost_5_plus_base: 5000,
+                incubator_basic: 1000,
+                incubator_plasma: 0.20,
+                skip_hatch: 0.50
+            },
+            arena: {
+                ticket_cost: 0.50
+            },
+            slots: {
+                slot_7_ev: 1500,
+                slot_8_ev: 3000,
+                slot_9_ev: 6000,
+                slot_9_pol: 0.50,
+                slot_10_ev: 12000,
+                slot_10_pol: 1.00,
+                slot_11_ev: 15000,
+                slot_11_pol: 2.00
+            },
+            daily_care: {
+                harvest_limit: 150,
+                passive_rate_day: 50
+            }
         }
     };
 

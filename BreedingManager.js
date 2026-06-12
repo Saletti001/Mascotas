@@ -9,13 +9,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const c2 = g2.breedCount || 0;
         const totalCrias = c1 + c2;
         
-        if (totalCrias === 0) return 1000;
-        if (totalCrias === 1) return 1500;
-        if (totalCrias === 2) return 2500;
-        if (totalCrias === 3) return 4500;
-        if (totalCrias === 4) return 7000;
+        const b = window.GameEconomyConfig?.mechanics?.breeding || {};
+        const cost_0 = b.cost_0 !== undefined ? b.cost_0 : 1000;
+        const cost_1 = b.cost_1 !== undefined ? b.cost_1 : 1500;
+        const cost_2 = b.cost_2 !== undefined ? b.cost_2 : 2500;
+        const cost_3 = b.cost_3 !== undefined ? b.cost_3 : 4500;
+        const cost_4 = b.cost_4 !== undefined ? b.cost_4 : 7000;
+        const cost_5_plus_base = b.cost_5_plus_base !== undefined ? b.cost_5_plus_base : 5000;
+
+        if (totalCrias === 0) return cost_0;
+        if (totalCrias === 1) return cost_1;
+        if (totalCrias === 2) return cost_2;
+        if (totalCrias === 3) return cost_3;
+        if (totalCrias === 4) return cost_4;
         
-        return 7000 + (totalCrias - 4) * 5000;
+        return cost_4 + (totalCrias - 4) * cost_5_plus_base;
     };
     
     const style = document.createElement('style');
@@ -750,25 +758,33 @@ document.addEventListener("DOMContentLoaded", () => {
                 timerHtml = `<div id="timer-${huevo.id}" style="font-size: 11px; font-weight: bold; color: #aaa; margin-top: 8px; letter-spacing: 1px;">INACTIVO</div>`;
                 
                 const evDisponibles = window.miInventario ? (window.miInventario.vitalEssence || 0) : 0;
+                const b = window.GameEconomyConfig?.mechanics?.breeding || {};
+                const incBasicCost = b.incubator_basic !== undefined ? b.incubator_basic : 1000;
+                const incPlasmaCost = b.incubator_plasma !== undefined ? b.incubator_plasma : 0.20;
+
                 let btnBasicoStyle = "margin-top: 6px; font-size: 9px; width: 100%; border: none; border-radius: 6px; padding: 5px; font-weight: bold; text-transform: uppercase;";
-                if (evDisponibles >= 1000) {
+                if (evDisponibles >= incBasicCost) {
                     btnBasicoStyle += " background: linear-gradient(135deg, #a5d6a7, #81c784); color: #0d1a24; cursor: pointer;";
                 } else {
                     btnBasicoStyle += " background: #444; color: #777; cursor: not-allowed;";
                 }
                 
                 let btnPlasmaStyle = "margin-top: 6px; font-size: 9px; width: 100%; border: none; border-radius: 6px; padding: 5px; font-weight: bold; text-transform: uppercase; background: linear-gradient(135deg, #00e5ff, #8b5cf6); color: white; cursor: pointer;";
-                const plasmaLabel = countInc > 0 ? "🔋 Plasma (Usa Batería)" : "🔋 Plasma (0.20 POL)";
+                const plasmaLabel = countInc > 0 ? "🔋 Plasma (Usa Batería)" : `🔋 Plasma (${incPlasmaCost.toFixed(2)} POL)`;
+
+                const basicLabelEv = typeof window.formatEVDisplay === 'function' ? window.formatEVDisplay(incBasicCost) : (incBasicCost >= 1000 ? (incBasicCost / 1000) + "K" : incBasicCost);
 
                 actionHtml = `
-                    <button id="btn-activate-basic-${huevo.id}" style="${btnBasicoStyle}" ${evDisponibles < 1000 ? 'disabled' : ''}>🐣 Básica (1K EV / 4h)</button>
+                    <button id="btn-activate-basic-${huevo.id}" style="${btnBasicoStyle}" ${evDisponibles < incBasicCost ? 'disabled' : ''}>🐣 Básica (${basicLabelEv} EV / 4h)</button>
                     <button id="btn-activate-plasma-${huevo.id}" style="${btnPlasmaStyle}">${plasmaLabel} (15m)</button>
                 `;
             } else {
+                const b = window.GameEconomyConfig?.mechanics?.breeding || {};
+                const costSkip = b.skip_hatch !== undefined ? b.skip_hatch : 0.50;
                 const restante = huevo.hatchTime - Date.now();
                 if (restante > 0) {
                     timerHtml = `<div id="timer-${huevo.id}" style="font-size: 12px; font-weight: bold; color: #ffbf00; margin-top: 8px; letter-spacing: 1px;">Calc...</div>`;
-                    actionHtml = `<button id="btn-skip-${huevo.id}" style="margin-top: 8px; font-size: 10px; background: linear-gradient(135deg, #8b5cf6, #3b82f6); color: white; border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4); text-transform: uppercase;">⚡ 0.5 POL</button>`;
+                    actionHtml = `<button id="btn-skip-${huevo.id}" style="margin-top: 8px; font-size: 10px; background: linear-gradient(135deg, #8b5cf6, #3b82f6); color: white; border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4); text-transform: uppercase;">⚡ ${costSkip.toFixed(2)} POL</button>`;
                 } else {
                     timerHtml = `<div id="timer-${huevo.id}" style="font-size: 12px; font-weight: bold; color: #4dd0e1; margin-top: 8px; letter-spacing: 1px;">¡LISTO!</div>`;
                     actionHtml = `<button id="btn-claim-${huevo.id}" style="margin-top: 8px; font-size: 10px; background: linear-gradient(135deg, #77DD77, #3b82f6); color: #0d1a24; border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 8px rgba(119, 221, 119, 0.4); text-transform: uppercase;">✨ RECLAMAR</button>`;
@@ -785,7 +801,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!huevo.incubating) {
                 card.querySelector(`#btn-activate-basic-${huevo.id}`)?.addEventListener("click", () => {
-                    const costo = 1000;
+                    const b = window.GameEconomyConfig?.mechanics?.breeding || {};
+                    const costo = b.incubator_basic !== undefined ? b.incubator_basic : 1000;
                     const evDisponibles = window.miInventario ? (window.miInventario.vitalEssence || 0) : 0;
                     if (evDisponibles >= costo) {
                         if (window.miInventario && typeof window.miInventario.addEssence === 'function') {
@@ -822,7 +839,8 @@ document.addEventListener("DOMContentLoaded", () => {
                             }
                         }
                     } else {
-                        const costo = 0.20;
+                        const b = window.GameEconomyConfig?.mechanics?.breeding || {};
+                        const costo = b.incubator_plasma !== undefined ? b.incubator_plasma : 0.20;
                         if (window.miWallet && window.miWallet.pol >= costo) {
                             window.miWallet.pol -= costo;
                             actualizarPolUI();
@@ -847,8 +865,10 @@ document.addEventListener("DOMContentLoaded", () => {
                             return;
                         }
 
-                        if(window.miWallet && window.miWallet.pol >= 0.5) {
-                            window.miWallet.pol -= 0.5; actualizarPolUI();
+                        const b = window.GameEconomyConfig?.mechanics?.breeding || {};
+                        const costSkip = b.skip_hatch !== undefined ? b.skip_hatch : 0.50;
+                        if(window.miWallet && window.miWallet.pol >= costSkip) {
+                            window.miWallet.pol -= costSkip; actualizarPolUI();
                             huevo.isEgg = false; 
                             
                             if(window.miInventario && window.miInventario.slots) {

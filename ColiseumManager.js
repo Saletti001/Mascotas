@@ -1707,6 +1707,9 @@ document.addEventListener("DOMContentLoaded", () => {
             const prField = window.ColiseumManager.obtenerPrFieldPorLiga(activeLeague);
             const prPoints = window[prField] || 0;
             
+            const arenaConfig = window.GameEconomyConfig?.mechanics?.arena || {};
+            const ticketCost = arenaConfig.ticket_cost !== undefined ? arenaConfig.ticket_cost : 0.50;
+            
             const arenaCard = document.createElement("div");
             arenaCard.className = "lobby-card card-estandar";
             arenaCard.style.borderColor = "#00e5ff";
@@ -1721,7 +1724,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     <div style="flex: 1; display:flex; align-items:center; justify-content:space-between; gap:10px;">
                         <div>
                             <h3 style="color: #00e5ff; margin: 0 0 3px 0; font-size: 13px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Arena del Nexo (PvP)</h3>
-                            <p style="color: #cbd5e1; margin: 0; font-size: 11px;">Liga actual: <strong style="color:#ff007f;">${activeLeague}</strong> (${prPoints} PR). Coste pase (5 peleas): 0.50 $POL.</p>
+                            <p style="color: #cbd5e1; margin: 0; font-size: 11px;">Liga actual: <strong style="color:#ff007f;">${activeLeague}</strong> (${prPoints} PR). Coste pase (5 peleas): ${ticketCost.toFixed(2)} $POL.</p>
                         </div>
                         <button onclick="window.ColiseumManager.comprarPaseArena()" class="market-btn-neon" style="margin:0; padding:8px 12px; font-size:10px; font-weight:bold; background:linear-gradient(90deg, #00b4d8, #0077b6); border:1px solid #0096c7; color:#fff; cursor:pointer; border-radius:6px; box-shadow:0 0 10px rgba(0,229,255,0.3);">Comprar</button>
                     </div>
@@ -1825,15 +1828,18 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     window.ColiseumManager.comprarPaseArena = async function() {
-        if (!window.miWallet || window.miWallet.pol < 0.50) {
-            alert("Saldo de Wallet insuficiente. Necesitas al menos 0.50 POL en tu balance.");
+        const arenaConfig = window.GameEconomyConfig?.mechanics?.arena || {};
+        const ticketCost = arenaConfig.ticket_cost !== undefined ? arenaConfig.ticket_cost : 0.50;
+
+        if (!window.miWallet || window.miWallet.pol < ticketCost) {
+            alert(`Saldo de Wallet insuficiente. Necesitas al menos ${ticketCost.toFixed(2)} POL en tu balance.`);
             return;
         }
         
         ColiseumUI.agregarLog("<span style='color:#ffd700;'>[WEB3] Firmando transacción de compra de pase con Privy...</span>");
         
         // Simular distribución de comisiones
-        window.miWallet.pol -= 0.50;
+        window.miWallet.pol -= ticketCost;
         window.arenaTicketActive = true;
         window.arenaBattlesPlayed = 0;
         window.arenaWins = 0;
@@ -1843,7 +1849,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         const activeLeagueForTicket = window.ColiseumManager.obtenerLigaPorGeno(window.miMascota);
         if (typeof window.registrarLogEconomia === 'function') {
-            window.registrarLogEconomia("arena_ticket_buy", 0.50, "MetaMask - " + activeLeagueForTicket);
+            window.registrarLogEconomia("arena_ticket_buy", ticketCost, "MetaMask - " + activeLeagueForTicket);
         }
         
         if (window.guardarProgreso) window.guardarProgreso();

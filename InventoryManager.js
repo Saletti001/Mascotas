@@ -425,6 +425,17 @@ class InventoryManager {
         else if (item.id === "tinta_habilidad") {
             alert(`🧪 La Tinta de Habilidad es un material genético. Se utiliza en el Laboratorio para el refinamiento de genes y habilidades.`);
         }
+        else if (item.id.startsWith("capsula_ev_")) {
+            const evContenido = item.evContenido || parseInt(item.id.replace("capsula_ev_", "")) || 0;
+            if (evContenido > 0) {
+                this.addEssence(evContenido);
+                this.consumeItem(item.id, 1);
+                alert(`✨ Has abierto la cápsula e inyectado ${typeof window.formatFullNumber === 'function' ? window.formatFullNumber(evContenido) : evContenido} EV en tu saldo digital.`);
+                if (window.NexoEnergyManager) window.NexoEnergyManager.actualizarUI();
+                this.guardarCambios();
+                if (window.Sonidos) window.Sonidos.play("heal");
+            }
+        }
         else {
             alert(`El objeto ${item.name} no se puede usar directamente.`);
         }

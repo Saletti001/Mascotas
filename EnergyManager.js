@@ -154,7 +154,9 @@ window.NexoEnergyManager = {
 
                 // Generación de Esencia Pasiva
                 if (window.isGenoHappy && window.isGenoHappy(geno)) {
-                    const baseEvRate = 50.0 / 86400; // 50 EV al día
+                    const careConfig = window.GameEconomyConfig?.mechanics?.daily_care || {};
+                    const passiveRateDay = careConfig.passive_rate_day !== undefined ? careConfig.passive_rate_day : 50.0;
+                    const baseEvRate = passiveRateDay / 86400; // EV al día
                     const essCMultiplier = (window.tieneGenActivoV9 && window.tieneGenActivoV9(geno, "esencia_concentrada")) ? 2.0 : 1.0;
                     const friendshipMultiplier = 1.0 + ((geno.amistad || 0) / 100.0);
                     const happyMultiplier = 2.0;

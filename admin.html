@@ -1507,6 +1507,149 @@
                     </div>
                 </div>
 
+                <!-- Card 4: Parámetros de Mecánicas de Juego (Ancho Completo) -->
+                <div class="glass-panel logs-panel" style="grid-column: span 2; display: flex; flex-direction: column; gap: 15px;">
+                    <div class="chart-card-header" style="border-left-color: var(--neon-cyan);">Configuración de Mecánicas del Nexo (Reactor, Crianza, Arena, Slots, Cuidado Diario)</div>
+                    
+                    <div style="background: rgba(0,0,0,0.15); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03);">
+                        <span style="color: var(--neon-cyan); font-weight: bold; font-size: 11px; display: block; margin-bottom: 8px;">SELECCIONAR MECÁNICA A CONFIGURAR:</span>
+                        <div class="custom-select-wrapper cyan" id="select-mechanic-wrapper" data-selected-value="" style="width: 100%; margin-bottom: 12px;">
+                            <input type="hidden" id="select-mechanic" value="">
+                            <div class="custom-select-trigger" id="select-mechanic-trigger">Seleccionar...</div>
+                            <div class="custom-select-options"></div>
+                        </div>
+                        
+                        <!-- Dynamic details block for mechanics -->
+                        <div id="mechanic-details" style="background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05); display: none; margin-top: 15px;">
+                            
+                            <!-- Reactor Section -->
+                            <div id="mech-sec-reactor" class="mech-sub-section hidden" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">FUSIÓN COMÚN - COSTO (EV)</label>
+                                    <input type="number" id="input-mech-reactor-cost-lvl1" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">FUSIÓN COMÚN - COMPENSACIÓN COLAPSO (EV)</label>
+                                    <input type="number" id="input-mech-reactor-refund-lvl1" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">FUSIÓN RARA - COSTO (EV)</label>
+                                    <input type="number" id="input-mech-reactor-cost-lvl2" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">FUSIÓN RARA - COMPENSACIÓN COLAPSO (EV)</label>
+                                    <input type="number" id="input-mech-reactor-refund-lvl2" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">FUSIÓN ÉPICA - COSTO (EV)</label>
+                                    <input type="number" id="input-mech-reactor-cost-lvl3" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">FUSIÓN ÉPICA - COMPENSACIÓN COLAPSO (EV)</label>
+                                    <input type="number" id="input-mech-reactor-refund-lvl3" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                            </div>
+
+                            <!-- Breeding Section -->
+                            <div id="mech-sec-breeding" class="mech-sub-section hidden" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">CRIANZA - 0 CRÍAS (EV)</label>
+                                    <input type="number" id="input-mech-breeding-cost-0" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">CRIANZA - 1 CRÍA (EV)</label>
+                                    <input type="number" id="input-mech-breeding-cost-1" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">CRIANZA - 2 CRÍAS (EV)</label>
+                                    <input type="number" id="input-mech-breeding-cost-2" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">CRIANZA - 3 CRÍAS (EV)</label>
+                                    <input type="number" id="input-mech-breeding-cost-3" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">CRIANZA - 4 CRÍAS (EV)</label>
+                                    <input type="number" id="input-mech-breeding-cost-4" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">INCREMENTO 5+ CRÍAS (EV)</label>
+                                    <input type="number" id="input-mech-breeding-cost-5-plus-base" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">INCUBACIÓN BÁSICA (EV)</label>
+                                    <input type="number" id="input-mech-breeding-incubator-basic" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">INCUBACIÓN PLASMA (POL)</label>
+                                    <input type="number" id="input-mech-breeding-incubator-plasma" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div style="grid-column: span 2;">
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">SALTAR INCUBACIÓN (POL)</label>
+                                    <input type="number" id="input-mech-breeding-skip-hatch" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                            </div>
+
+                            <!-- Arena Section -->
+                            <div id="mech-sec-arena" class="mech-sub-section hidden" style="display: grid; grid-template-columns: 1fr; gap: 15px;">
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">COSTE PASE DE ARENA (POL)</label>
+                                    <input type="number" id="input-mech-arena-ticket-cost" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                            </div>
+
+                            <!-- Slots Section -->
+                            <div id="mech-sec-slots" class="mech-sub-section hidden" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">SLOT #7 (EV)</label>
+                                    <input type="number" id="input-mech-slots-slot7-ev" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">SLOT #8 (EV)</label>
+                                    <input type="number" id="input-mech-slots-slot8-ev" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">SLOT #9 (EV)</label>
+                                    <input type="number" id="input-mech-slots-slot9-ev" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">SLOT #9 (POL)</label>
+                                    <input type="number" id="input-mech-slots-slot9-pol" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">SLOT #10 (EV)</label>
+                                    <input type="number" id="input-mech-slots-slot10-ev" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">SLOT #10 (POL)</label>
+                                    <input type="number" id="input-mech-slots-slot10-pol" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">SLOT #11+ (EV)</label>
+                                    <input type="number" id="input-mech-slots-slot11-ev" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">SLOT #11+ (POL)</label>
+                                    <input type="number" id="input-mech-slots-slot11-pol" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                            </div>
+
+                            <!-- Daily Care Section -->
+                            <div id="mech-sec-daily-care" class="mech-sub-section hidden" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">LÍMITE DE COSECHA DIARIO (EV)</label>
+                                    <input type="number" id="input-mech-daily-care-harvest-limit" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                                <div>
+                                    <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">GENERACIÓN PASIVA DIARIA (EV)</label>
+                                    <input type="number" id="input-mech-daily-care-passive-rate-day" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
             <!-- Publish Button Panel -->
@@ -1661,6 +1804,7 @@
                 document.getElementById("select-login-reward").onchange = onLoginRewardChange;
                 document.getElementById("select-gameplay-reward").onchange = onGameplayRewardChange;
                 document.getElementById("select-tournament").onchange = onTournamentChange;
+                document.getElementById("select-mechanic").onchange = onMechanicChange;
 
                 // Setup add trigger events
                 document.getElementById("btn-add-bazar-item-trigger").onclick = () => openAddModal('bazar', 'AÑADIR ÍTEM DEL BAZAR', 'Bazar (EV)');
@@ -1735,10 +1879,14 @@
         }
 
         // Show Access Denied UI
-        function showAccessDenied() {
+        function showAccessDenied(email = "") {
             document.getElementById("auth-screen").classList.add("hidden");
             document.getElementById("admin-dashboard").classList.add("hidden");
             document.getElementById("denied-screen").classList.remove("hidden");
+            const desc = document.querySelector("#denied-screen .denied-desc");
+            if (desc) {
+                desc.innerHTML = `El correo electrónico <strong style="color: var(--neon-cyan);">${email}</strong> no cuenta con autorizaciones en el registro central <span style="font-family: var(--font-mono); color: var(--neon-pink);">admin_whitelist</span>. Si crees que esto es un error, por favor contacta al administrador de la base de datos de Supabase.`;
+            }
         }
 
         // Show Admin Console UI
@@ -1757,7 +1905,7 @@
                 if (error) {
                     console.error("[WHITELIST CHECK ERROR]", error);
                     if (error.message.includes("Acceso denegado") || error.message.includes("authorized")) {
-                        showAccessDenied();
+                        showAccessDenied(user.email);
                     } else {
                         showToast("Fallo de conexión central: " + error.message, true);
                         showAuthPortal();
@@ -2508,6 +2656,17 @@
                     }
 
                     const conf = activeBalanceConfig;
+
+                    // Ensure mechanics object exists
+                    if (!conf.mechanics) {
+                        conf.mechanics = {
+                            reactor: { cost_lvl1: 5000, cost_lvl2: 15000, cost_lvl3: 30000, refund_lvl1: 8000, refund_lvl2: 25000, refund_lvl3: 60000 },
+                            breeding: { cost_0: 1000, cost_1: 1500, cost_2: 2500, cost_3: 4500, cost_4: 7000, cost_5_plus_base: 5000, incubator_basic: 1000, incubator_plasma: 0.20, skip_hatch: 0.50 },
+                            arena: { ticket_cost: 0.50 },
+                            slots: { slot_7_ev: 1500, slot_8_ev: 3000, slot_9_ev: 6000, slot_9_pol: 0.50, slot_10_ev: 12000, slot_10_pol: 1.00, slot_11_ev: 15000, slot_11_pol: 2.00 },
+                            daily_care: { harvest_limit: 150, passive_rate_day: 50 }
+                        };
+                    }
                     
                     // Populating dropdowns
                     populateDropdown("select-bazar-item", conf.shop_items.bazar);
@@ -2531,6 +2690,9 @@
                     const tourneys = ["neon", "satelite", ...Object.keys(conf.tournaments.tematicos)];
                     populateDropdown("select-tournament", tourneys);
 
+                    // Mechanics
+                    populateDropdown("select-mechanic", ["reactor", "breeding", "arena", "slots", "daily_care"]);
+
                     // Setup Initial Values
                     onBazarItemChange();
                     onDojoCategoryChange();
@@ -2538,6 +2700,7 @@
                     onLoginRewardChange();
                     onGameplayRewardChange();
                     onTournamentChange();
+                    onMechanicChange();
                 }
             } catch (e) {
                 console.error("[LOAD BALANCE ERROR]", e);
@@ -2725,6 +2888,58 @@
             }
         }
 
+        function onMechanicChange() {
+            const selected = document.getElementById("select-mechanic").value;
+            if (!selected || !activeBalanceConfig) return;
+            
+            // Hide all sub-sections
+            document.querySelectorAll(".mech-sub-section").forEach(sec => sec.classList.add("hidden"));
+            
+            // Show details block
+            document.getElementById("mechanic-details").style.display = "block";
+            
+            // Show the selected sub-section
+            const targetSec = document.getElementById(`mech-sec-${selected}`);
+            if (targetSec) targetSec.classList.remove("hidden");
+            
+            // Load values from activeBalanceConfig.mechanics
+            const m = activeBalanceConfig.mechanics;
+            if (!m) return;
+            
+            if (selected === "reactor" && m.reactor) {
+                document.getElementById("input-mech-reactor-cost-lvl1").value = m.reactor.cost_lvl1 || 5000;
+                document.getElementById("input-mech-reactor-refund-lvl1").value = m.reactor.refund_lvl1 || 8000;
+                document.getElementById("input-mech-reactor-cost-lvl2").value = m.reactor.cost_lvl2 || 15000;
+                document.getElementById("input-mech-reactor-refund-lvl2").value = m.reactor.refund_lvl2 || 25000;
+                document.getElementById("input-mech-reactor-cost-lvl3").value = m.reactor.cost_lvl3 || 30000;
+                document.getElementById("input-mech-reactor-refund-lvl3").value = m.reactor.refund_lvl3 || 60000;
+            } else if (selected === "breeding" && m.breeding) {
+                document.getElementById("input-mech-breeding-cost-0").value = m.breeding.cost_0 || 1000;
+                document.getElementById("input-mech-breeding-cost-1").value = m.breeding.cost_1 || 1500;
+                document.getElementById("input-mech-breeding-cost-2").value = m.breeding.cost_2 || 2500;
+                document.getElementById("input-mech-breeding-cost-3").value = m.breeding.cost_3 || 4500;
+                document.getElementById("input-mech-breeding-cost-4").value = m.breeding.cost_4 || 7000;
+                document.getElementById("input-mech-breeding-cost-5-plus-base").value = m.breeding.cost_5_plus_base || 5000;
+                document.getElementById("input-mech-breeding-incubator-basic").value = m.breeding.incubator_basic || 1000;
+                document.getElementById("input-mech-breeding-incubator-plasma").value = m.breeding.incubator_plasma || 0.20;
+                document.getElementById("input-mech-breeding-skip-hatch").value = m.breeding.skip_hatch || 0.50;
+            } else if (selected === "arena" && m.arena) {
+                document.getElementById("input-mech-arena-ticket-cost").value = m.arena.ticket_cost || 0.50;
+            } else if (selected === "slots" && m.slots) {
+                document.getElementById("input-mech-slots-slot7-ev").value = m.slots.slot_7_ev || 1500;
+                document.getElementById("input-mech-slots-slot8-ev").value = m.slots.slot_8_ev || 3000;
+                document.getElementById("input-mech-slots-slot9-ev").value = m.slots.slot_9_ev || 6000;
+                document.getElementById("input-mech-slots-slot9-pol").value = m.slots.slot_9_pol || 0.50;
+                document.getElementById("input-mech-slots-slot10-ev").value = m.slots.slot_10_ev || 12000;
+                document.getElementById("input-mech-slots-slot10-pol").value = m.slots.slot_10_pol || 1.00;
+                document.getElementById("input-mech-slots-slot11-ev").value = m.slots.slot_11_ev || 15000;
+                document.getElementById("input-mech-slots-slot11-pol").value = m.slots.slot_11_pol || 2.00;
+            } else if (selected === "daily_care" && m.daily_care) {
+                document.getElementById("input-mech-daily-care-harvest-limit").value = m.daily_care.harvest_limit || 150;
+                document.getElementById("input-mech-daily-care-passive-rate-day").value = m.daily_care.passive_rate_day || 50;
+            }
+        }
+
         function bindInputSync() {
             document.getElementById("input-bazar-item-price").oninput = function() {
                 const selected = document.getElementById("select-bazar-item").value;
@@ -2795,6 +3010,93 @@
             document.getElementById("input-tournament-p1").oninput = syncTourney;
             document.getElementById("input-tournament-p2").oninput = syncTourney;
             document.getElementById("input-tournament-p3").oninput = syncTourney;
+
+            // Reactor inputs sync
+            const syncReactor = function() {
+                if (activeBalanceConfig && activeBalanceConfig.mechanics && activeBalanceConfig.mechanics.reactor) {
+                    const r = activeBalanceConfig.mechanics.reactor;
+                    r.cost_lvl1 = parseInt(document.getElementById("input-mech-reactor-cost-lvl1").value) || 0;
+                    r.refund_lvl1 = parseInt(document.getElementById("input-mech-reactor-refund-lvl1").value) || 0;
+                    r.cost_lvl2 = parseInt(document.getElementById("input-mech-reactor-cost-lvl2").value) || 0;
+                    r.refund_lvl2 = parseInt(document.getElementById("input-mech-reactor-refund-lvl2").value) || 0;
+                    r.cost_lvl3 = parseInt(document.getElementById("input-mech-reactor-cost-lvl3").value) || 0;
+                    r.refund_lvl3 = parseInt(document.getElementById("input-mech-reactor-refund-lvl3").value) || 0;
+                }
+            };
+            document.getElementById("input-mech-reactor-cost-lvl1").oninput = syncReactor;
+            document.getElementById("input-mech-reactor-refund-lvl1").oninput = syncReactor;
+            document.getElementById("input-mech-reactor-cost-lvl2").oninput = syncReactor;
+            document.getElementById("input-mech-reactor-refund-lvl2").oninput = syncReactor;
+            document.getElementById("input-mech-reactor-cost-lvl3").oninput = syncReactor;
+            document.getElementById("input-mech-reactor-refund-lvl3").oninput = syncReactor;
+
+            // Breeding inputs sync
+            const syncBreeding = function() {
+                if (activeBalanceConfig && activeBalanceConfig.mechanics && activeBalanceConfig.mechanics.breeding) {
+                    const b = activeBalanceConfig.mechanics.breeding;
+                    b.cost_0 = parseInt(document.getElementById("input-mech-breeding-cost-0").value) || 0;
+                    b.cost_1 = parseInt(document.getElementById("input-mech-breeding-cost-1").value) || 0;
+                    b.cost_2 = parseInt(document.getElementById("input-mech-breeding-cost-2").value) || 0;
+                    b.cost_3 = parseInt(document.getElementById("input-mech-breeding-cost-3").value) || 0;
+                    b.cost_4 = parseInt(document.getElementById("input-mech-breeding-cost-4").value) || 0;
+                    b.cost_5_plus_base = parseInt(document.getElementById("input-mech-breeding-cost-5-plus-base").value) || 0;
+                    b.incubator_basic = parseInt(document.getElementById("input-mech-breeding-incubator-basic").value) || 0;
+                    b.incubator_plasma = parseFloat(document.getElementById("input-mech-breeding-incubator-plasma").value) || 0;
+                    b.skip_hatch = parseFloat(document.getElementById("input-mech-breeding-skip-hatch").value) || 0;
+                }
+            };
+            document.getElementById("input-mech-breeding-cost-0").oninput = syncBreeding;
+            document.getElementById("input-mech-breeding-cost-1").oninput = syncBreeding;
+            document.getElementById("input-mech-breeding-cost-2").oninput = syncBreeding;
+            document.getElementById("input-mech-breeding-cost-3").oninput = syncBreeding;
+            document.getElementById("input-mech-breeding-cost-4").oninput = syncBreeding;
+            document.getElementById("input-mech-breeding-cost-5-plus-base").oninput = syncBreeding;
+            document.getElementById("input-mech-breeding-incubator-basic").oninput = syncBreeding;
+            document.getElementById("input-mech-breeding-incubator-plasma").oninput = syncBreeding;
+            document.getElementById("input-mech-breeding-skip-hatch").oninput = syncBreeding;
+
+            // Arena inputs sync
+            const syncArena = function() {
+                if (activeBalanceConfig && activeBalanceConfig.mechanics && activeBalanceConfig.mechanics.arena) {
+                    const a = activeBalanceConfig.mechanics.arena;
+                    a.ticket_cost = parseFloat(document.getElementById("input-mech-arena-ticket-cost").value) || 0;
+                }
+            };
+            document.getElementById("input-mech-arena-ticket-cost").oninput = syncArena;
+
+            // Slots inputs sync
+            const syncSlots = function() {
+                if (activeBalanceConfig && activeBalanceConfig.mechanics && activeBalanceConfig.mechanics.slots) {
+                    const s = activeBalanceConfig.mechanics.slots;
+                    s.slot_7_ev = parseInt(document.getElementById("input-mech-slots-slot7-ev").value) || 0;
+                    s.slot_8_ev = parseInt(document.getElementById("input-mech-slots-slot8-ev").value) || 0;
+                    s.slot_9_ev = parseInt(document.getElementById("input-mech-slots-slot9-ev").value) || 0;
+                    s.slot_9_pol = parseFloat(document.getElementById("input-mech-slots-slot9-pol").value) || 0;
+                    s.slot_10_ev = parseInt(document.getElementById("input-mech-slots-slot10-ev").value) || 0;
+                    s.slot_10_pol = parseFloat(document.getElementById("input-mech-slots-slot10-pol").value) || 0;
+                    s.slot_11_ev = parseInt(document.getElementById("input-mech-slots-slot11-ev").value) || 0;
+                    s.slot_11_pol = parseFloat(document.getElementById("input-mech-slots-slot11-pol").value) || 0;
+                }
+            };
+            document.getElementById("input-mech-slots-slot7-ev").oninput = syncSlots;
+            document.getElementById("input-mech-slots-slot8-ev").oninput = syncSlots;
+            document.getElementById("input-mech-slots-slot9-ev").oninput = syncSlots;
+            document.getElementById("input-mech-slots-slot9-pol").oninput = syncSlots;
+            document.getElementById("input-mech-slots-slot10-ev").oninput = syncSlots;
+            document.getElementById("input-mech-slots-slot10-pol").oninput = syncSlots;
+            document.getElementById("input-mech-slots-slot11-ev").oninput = syncSlots;
+            document.getElementById("input-mech-slots-slot11-pol").oninput = syncSlots;
+
+            // Daily Care inputs sync
+            const syncDailyCare = function() {
+                if (activeBalanceConfig && activeBalanceConfig.mechanics && activeBalanceConfig.mechanics.daily_care) {
+                    const d = activeBalanceConfig.mechanics.daily_care;
+                    d.harvest_limit = parseInt(document.getElementById("input-mech-daily-care-harvest-limit").value) || 0;
+                    d.passive_rate_day = parseInt(document.getElementById("input-mech-daily-care-passive-rate-day").value) || 0;
+                }
+            };
+            document.getElementById("input-mech-daily-care-harvest-limit").oninput = syncDailyCare;
+            document.getElementById("input-mech-daily-care-passive-rate-day").oninput = syncDailyCare;
         }
 
         // --- ADD CONFIG MODAL ---

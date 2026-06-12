@@ -651,12 +651,26 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const siguienteSlot = window.maxGenoSlots + 1;
+        const slotsConfig = window.GameEconomyConfig?.mechanics?.slots || {};
+        
+        const s7ev = slotsConfig.slot_7_ev !== undefined ? slotsConfig.slot_7_ev : 1500;
+        const s8ev = slotsConfig.slot_8_ev !== undefined ? slotsConfig.slot_8_ev : 3000;
+        
+        const s9ev = slotsConfig.slot_9_ev !== undefined ? slotsConfig.slot_9_ev : 6000;
+        const s9pol = slotsConfig.slot_9_pol !== undefined ? slotsConfig.slot_9_pol : 0.50;
+        
+        const s10ev = slotsConfig.slot_10_ev !== undefined ? slotsConfig.slot_10_ev : 12000;
+        const s10pol = slotsConfig.slot_10_pol !== undefined ? slotsConfig.slot_10_pol : 1.00;
+        
+        const s11ev = slotsConfig.slot_11_ev !== undefined ? slotsConfig.slot_11_ev : 15000;
+        const s11pol = slotsConfig.slot_11_pol !== undefined ? slotsConfig.slot_11_pol : 2.00;
+
         let costoDesc = "";
-        if (siguienteSlot === 7) costoDesc = "1,500 EV";
-        else if (siguienteSlot === 8) costoDesc = "3,000 EV";
-        else if (siguienteSlot === 9) costoDesc = "6,000 EV o 0.50 POL";
-        else if (siguienteSlot === 10) costoDesc = "12,000 EV o 1.00 POL";
-        else costoDesc = "15,000 EV o 2.00 POL";
+        if (siguienteSlot === 7) costoDesc = `${s7ev.toLocaleString()} EV`;
+        else if (siguienteSlot === 8) costoDesc = `${s8ev.toLocaleString()} EV`;
+        else if (siguienteSlot === 9) costoDesc = `${s9ev.toLocaleString()} EV o ${s9pol.toFixed(2)} POL`;
+        else if (siguienteSlot === 10) costoDesc = `${s10ev.toLocaleString()} EV o ${s10pol.toFixed(2)} POL`;
+        else costoDesc = `${s11ev.toLocaleString()} EV o ${s11pol.toFixed(2)} POL`;
 
         const buyCard = document.createElement("div");
         buyCard.style = "background: rgba(138, 43, 226, 0.1); border: 1px solid #8A2BE2; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;";
@@ -676,7 +690,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const slotNum = window.maxGenoSlots + 1;
             if (slotNum === 7) {
-                const costo = 1500;
+                const costo = s7ev;
                 const evDisponibles = window.miInventario ? (window.miInventario.vitalEssence || 0) : 0;
                 if (evDisponibles >= costo) {
                     if (confirm(`¿Confirmas la compra del Slot #7 por ${costo} EV?`)) {
@@ -688,7 +702,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     alert(`No tienes suficiente EV para el Slot #7. Requiere: ${costo} EV (Tienes: ${evDisponibles.toFixed(2)} EV).`);
                 }
             } else if (slotNum === 8) {
-                const costo = 3000;
+                const costo = s8ev;
                 const evDisponibles = window.miInventario ? (window.miInventario.vitalEssence || 0) : 0;
                 if (evDisponibles >= costo) {
                     if (confirm(`¿Confirmas la compra del Slot #8 por ${costo} EV?`)) {
@@ -700,14 +714,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     alert(`No tienes suficiente EV para el Slot #8. Requiere: ${costo} EV (Tienes: ${evDisponibles.toFixed(2)} EV).`);
                 }
             } else {
-                let costoEV = 15000;
-                let costoPOL = 2.00;
+                let costoEV = s11ev;
+                let costoPOL = s11pol;
                 if (slotNum === 9) {
-                    costoEV = 6000;
-                    costoPOL = 0.50;
+                    costoEV = s9ev;
+                    costoPOL = s9pol;
                 } else if (slotNum === 10) {
-                    costoEV = 12000;
-                    costoPOL = 1.00;
+                    costoEV = s10ev;
+                    costoPOL = s10pol;
                 }
                 
                 const evDisponibles = window.miInventario ? (window.miInventario.vitalEssence || 0) : 0;
@@ -1058,9 +1072,12 @@ function iniciarSecuenciaBienvenida() {
                         window.dailyCareHarvest = { date: todayStr, harvested: 0 };
                     }
 
+                    const careConfig = window.GameEconomyConfig?.mechanics?.daily_care || {};
+                    const harvestLimit = careConfig.harvest_limit !== undefined ? careConfig.harvest_limit : 150.0;
+
                     const evARecolectar = window.miMascota.evAcumulada || 0;
                     let recolectadoEfectivo = 0;
-                    const restanteAlCap = Math.max(0, 150.0 - window.dailyCareHarvest.harvested);
+                    const restanteAlCap = Math.max(0, harvestLimit - window.dailyCareHarvest.harvested);
 
                     if (restanteAlCap > 0) {
                         recolectadoEfectivo = Math.min(evARecolectar, restanteAlCap);
@@ -1077,9 +1094,9 @@ function iniciarSecuenciaBienvenida() {
                     }
 
                     if (recolectadoEfectivo > 0) {
-                        alert(`✨ ¡Has cosechado ${recolectadoEfectivo.toFixed(2)} EV de tu Geno! (Cosechado hoy: ${window.dailyCareHarvest.harvested.toFixed(2)}/150 EV)`);
+                        alert(`✨ ¡Has cosechado ${recolectadoEfectivo.toFixed(2)} EV de tu Geno! (Cosechado hoy: ${window.dailyCareHarvest.harvested.toFixed(2)}/${harvestLimit} EV)`);
                     } else {
-                        alert(`✨ +0 EV (Límite diario de 150 EV alcanzado)`);
+                        alert(`✨ +0 EV (Límite diario de ${harvestLimit} EV alcanzado)`);
                     }
 
                     window.miMascota.evAcumulada = 0;

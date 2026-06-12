@@ -209,25 +209,37 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }, 50);
 
-    const reactorRules = {
-        "1": { 
-            reqRarity: "Común", cost: 5000, refund: 8000, probCrit: 3, probNorm: 35, probStag: 35, 
-            resCrit: { rarity: "Épico" },
-            resNorm: { rarity: "Raro" },
-            resStag: { rarity: "Común+" }
-        },
-        "2": { 
-            reqRarity: "Raro", cost: 15000, refund: 25000, probCrit: 0.5, probNorm: 25, probStag: 35, 
-            resCrit: { rarity: "Legendario" },
-            resNorm: { rarity: "Épico" },
-            resStag: { rarity: "Raro+" }
-        },
-        "3": { 
-            reqRarity: "Épico", cost: 30000, refund: 60000, probCrit: 0.1, probNorm: 5, probStag: 40, 
-            resCrit: { rarity: "Mítico" },
-            resNorm: { rarity: "Legendario" },
-            resStag: { rarity: "Épico+" }
-        }
+    const obtenerReglasReactor = () => {
+        const r = window.GameEconomyConfig?.mechanics?.reactor || {};
+        return {
+            "1": { 
+                reqRarity: "Común", 
+                cost: r.cost_lvl1 !== undefined ? r.cost_lvl1 : 5000, 
+                refund: r.refund_lvl1 !== undefined ? r.refund_lvl1 : 8000, 
+                probCrit: 3, probNorm: 35, probStag: 35, 
+                resCrit: { rarity: "Épico" },
+                resNorm: { rarity: "Raro" },
+                resStag: { rarity: "Común+" }
+            },
+            "2": { 
+                reqRarity: "Raro", 
+                cost: r.cost_lvl2 !== undefined ? r.cost_lvl2 : 15000, 
+                refund: r.refund_lvl2 !== undefined ? r.refund_lvl2 : 25000, 
+                probCrit: 0.5, probNorm: 25, probStag: 35, 
+                resCrit: { rarity: "Legendario" },
+                resNorm: { rarity: "Épico" },
+                resStag: { rarity: "Raro+" }
+            },
+            "3": { 
+                reqRarity: "Épico", 
+                cost: r.cost_lvl3 !== undefined ? r.cost_lvl3 : 30000, 
+                refund: r.refund_lvl3 !== undefined ? r.refund_lvl3 : 60000, 
+                probCrit: 0.1, probNorm: 5, probStag: 40, 
+                resCrit: { rarity: "Mítico" },
+                resNorm: { rarity: "Legendario" },
+                resStag: { rarity: "Épico+" }
+            }
+        };
     };
 
     const selectNivel = document.getElementById("reactor-level-select");
@@ -303,7 +315,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if(!selectNivel) return;
 
         const nivel = selectNivel.value;
-        const reglas = reactorRules[nivel];
+        const reglas = obtenerReglasReactor()[nivel];
         
         const descEl = document.getElementById("reactor-description");
         if(descEl) descEl.innerText = `COMBINA 5 ESPECÍMENES (${reglas.reqRarity.toUpperCase()}S) PARA INICIAR LA SECUENCIA DE FUSIÓN.`;
@@ -487,7 +499,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if(btnFuseGenos) {
         btnFuseGenos.addEventListener("click", () => {
             const nivel = selectNivel.value;
-            const reglas = reactorRules[nivel];
+            const reglas = obtenerReglasReactor()[nivel];
             
             let totalPeso = 0;
             window.genosEnReactor.forEach(g => {
