@@ -118,7 +118,7 @@ window.ShopManager = {
                         
                         <div style="display: flex; justify-content: center; margin-bottom: 15px; padding: 0; border-bottom: 1px solid #384a5e;">
                             <button id="tab-shop-bazar" class="shop-tab-neon" style="--tab-color: #69F0AE;">Suministros</button>
-                            <button id="tab-shop-dojo" class="shop-tab-neon" style="--tab-color: #00E5FF;">Matriz Táctica</button>
+                            <button id="tab-shop-dojo" class="shop-tab-neon" style="--tab-color: #00E5FF;">Lab. de Implantes</button>
                             <button id="tab-shop-premium" class="shop-tab-neon" style="--tab-color: #E040FB;">Premium</button>
                         </div>
                     </div>
@@ -131,7 +131,7 @@ window.ShopManager = {
                         </div>
                         
                         <div id="shop-dojo-view" class="shop-view hidden">
-                            <p style="text-align: center; color: #80deea; font-size: 10px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Módulos de Técnica. Límite: 1 en mochila.</p>
+                            <p style="text-align: center; color: #80deea; font-size: 10px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Módulos de Implante. Límite: 1 en mochila.</p>
                             <div id="shop-dojo-grid" class="shop-grid"></div>
                         </div>
                         
@@ -501,16 +501,16 @@ window.ShopManager = {
         }
         
         const items = [
-            { id: "bio_nucleo_basico", name: "Bio-Núcleo Básico", icon: iconoBioNucleo, type: "egg", price: 200, currency: "EV", desc: "Espécimen base (Común) inyectado aleatoriamente. Ideal para iniciar nuevas líneas de sangre." },
+            { id: "bio_nucleo_basico", name: "Bio-Núcleo Básico", icon: iconoBioNucleo, type: "egg", price: 3000, currency: "EV", desc: "Espécimen base (Común) inyectado aleatoriamente. Ideal para iniciar nuevas líneas de sangre." },
             { id: "incubator_01", name: "Incubadora Térmica", icon: this.iconosSVG["incubator_01"], type: "consumable", price: 0.20, currency: "POL", desc: "Batería térmica de alta capacidad. Proporciona la energía necesaria para incubar un Bio-Núcleo." },
-            { id: "ration_auto", name: "Ración Automática", icon: "🍱", type: "consumable", price: 2.00, currency: "EV", desc: "Alimenta automáticamente a todos tus Genos en reserva por 24 horas." },
-            { id: "plasma_shower", name: "Ducha de Plasma", icon: "🧼", type: "consumable", price: 1.00, currency: "EV", desc: "Limpia a todo tu inventario de mascotas a 100% de Higiene." },
-            { id: "escaner_basico", name: "Escáner Básico", icon: this.iconosSVG["escaner_basico"], type: "basic", price: 0.15, currency: "EV", desc: "Revela slots activos del Geno." },
-            { id: "escaner_completo", name: "Escáner Completo", icon: this.iconosSVG["escaner_completo"], type: "basic", price: 0.50, currency: "EV", desc: "Revela la genética exacta S-D." },
-            { id: "antidoto_uni", name: "Antídoto Universal", icon: this.iconosSVG["antidoto_uni"], type: "consumable", price: 0.10, currency: "EV", desc: "Limpia cualquier estado alterado." },
-            { id: "nexo_charge", name: "Recarga Nexo", icon: "⚡", type: "consumable", price: 0.50, currency: "EV", desc: "Célula de energía Nexo ultraconcentrada. Restaura el 100% de la barra de Energía Nexo de forma inmediata." },
-            { id: "catalizador_xp", name: "Catalizador Científico", icon: this.iconosSVG["catalizador_xp"], type: "lab_xp_boost", levelsGranted: 1, price: 50.00, currency: "EV", desc: "Inyección de conocimiento puro. Otorga exactamente la XP necesaria para subir 1 nivel completo de Laboratorio al instante." },
-            { id: "comercio_licencia", name: "Permiso de Comercio", icon: "📜", type: "consumable", price: 15.00, currency: "EV", desc: "Permiso de Acceso a la Red de Comercio del Bazar. Permite depositar, retirar y vender Genos. (Requiere Laboratorio Nv. 5)" }
+            { id: "ration_auto", name: "Ración Automática", icon: "🍱", type: "consumable", price: 200.00, currency: "EV", desc: "Alimenta automáticamente a todos tus Genos en reserva por 24 horas." },
+            { id: "plasma_shower", name: "Ducha de Plasma", icon: "🧼", type: "consumable", price: 100.00, currency: "EV", desc: "Limpia a todo tu inventario de mascotas a 100% de Higiene." },
+            { id: "escaner_basico", name: "Escáner Básico", icon: this.iconosSVG["escaner_basico"], type: "basic", price: 1500.00, currency: "EV", desc: "Revela slots activos del Geno." },
+            { id: "escaner_completo", name: "Escáner Completo", icon: this.iconosSVG["escaner_completo"], type: "basic", price: 5000.00, currency: "EV", desc: "Revela la genética exacta S-D." },
+            { id: "antidoto_uni", name: "Antídoto Universal", icon: this.iconosSVG["antidoto_uni"], type: "consumable", price: 10.00, currency: "EV", desc: "Limpia cualquier estado alterado." },
+            { id: "nexo_charge", name: "Recarga Nexo", icon: "⚡", type: "consumable", price: 2000.00, currency: "EV", desc: "Célula de energía Nexo ultraconcentrada. Restaura el 100% de la barra de Energía Nexo de forma inmediata." },
+            { id: "catalizador_xp", name: "Catalizador Científico", icon: this.iconosSVG["catalizador_xp"], type: "lab_xp_boost", levelsGranted: 1, price: 5000.00, currency: "EV", desc: "Inyección de conocimiento puro. Otorga exactamente la XP necesaria para subir 1 nivel completo de Laboratorio al instante." },
+            { id: "comercio_licencia", name: "Permiso de Comercio", icon: "📜", type: "consumable", price: 3000.00, currency: "EV", desc: "Permiso de Acceso a la Red de Comercio del Bazar. Permite depositar, retirar y vender Genos. (Requiere Laboratorio Nv. 5)" }
         ];
 
         // Sobrescribir con precios dinámicos de Supabase si están disponibles

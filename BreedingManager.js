@@ -3,6 +3,20 @@
 // =========================================
 
 document.addEventListener("DOMContentLoaded", () => {
+    window.calcularCostoCrianza = function(g1, g2) {
+        if (!g1 || !g2) return 1000;
+        const c1 = g1.breedCount || 0;
+        const c2 = g2.breedCount || 0;
+        const totalCrias = c1 + c2;
+        
+        if (totalCrias === 0) return 1000;
+        if (totalCrias === 1) return 1500;
+        if (totalCrias === 2) return 2500;
+        if (totalCrias === 3) return 4500;
+        if (totalCrias === 4) return 7000;
+        
+        return 7000 + (totalCrias - 4) * 5000;
+    };
     
     const style = document.createElement('style');
     style.innerHTML = `
@@ -149,7 +163,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if(btnBreeding) {
             btnBreeding.disabled = !(padre1 && padre2);
             if(!btnBreeding.disabled) {
-                if (reqDiv) reqDiv.innerHTML = `COSTE: <span style="display: inline-block; width: 1.2em; height: 1.2em; vertical-align: middle; margin-right: 4px; transform: translateY(-2px);">${window.iconoEV || ''}</span> 500 Esencia Vital`;
+                const costo = window.calcularCostoCrianza(padre1, padre2);
+                if (reqDiv) reqDiv.innerHTML = `COSTE: <span style="display: inline-block; width: 1.2em; height: 1.2em; vertical-align: middle; margin-right: 4px; transform: translateY(-2px);">${window.iconoEV || ''}</span> ${costo} Esencia Vital`;
                 btnBreeding.innerText = "SINTETIZAR BIO-NÚCLEO";
                 btnBreeding.style.background = "linear-gradient(90deg, #4dd0e1, #8A2BE2)";
                 btnBreeding.style.opacity = "1"; btnBreeding.style.cursor = "pointer";
@@ -504,13 +519,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
             
+            const costo = window.calcularCostoCrianza(padre1, padre2);
             let esenciaActual = (window.miInventario && typeof window.miInventario.vitalEssence !== 'undefined') ? window.miInventario.vitalEssence : 9999; 
-            if (esenciaActual < 500) { alert("⚠️ No tienes suficiente Esencia Vital (✨ 500)."); return; }
+            if (esenciaActual < costo) { alert(`⚠️ No tienes suficiente Esencia Vital (✨ ${costo}).`); return; }
             
             if(window.miInventario && typeof window.miInventario.addEssence === 'function') { 
-                window.miInventario.addEssence(-500); 
+                window.miInventario.addEssence(-costo); 
                 if (typeof window.registrarLogEconomia === "function") {
-                    window.registrarLogEconomia('sink', 500, 'breeding');
+                    window.registrarLogEconomia('sink', costo, 'breeding');
                 }
             }
             actualizarPolUI();
@@ -724,17 +740,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
         huevos.forEach(huevo => {
             const card = document.createElement("div");
-            card.style = "min-width: 95px; background: #1e293b; border: 1px solid #3b82f6; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); position: relative;";
+            card.style = "min-width: 150px; background: #1e293b; border: 1px solid #3b82f6; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.5); position: relative;";
             let actionHtml = '';
             let timerHtml = '';
-
+ 
             if (!huevo.incubating) {
-                timerHtml = `<div id="timer-${huevo.id}" style="font-size: 12px; font-weight: bold; color: #aaa; margin-top: 8px; letter-spacing: 1px;">INACTIVO</div>`;
-                if (countInc > 0) {
-                    actionHtml = `<button id="btn-activate-${huevo.id}" style="margin-top: 8px; font-size: 10px; background: linear-gradient(135deg, #4dd0e1, #3b82f6); color: #0d1a24; border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 8px rgba(77, 208, 225, 0.4); text-transform: uppercase;">ACTIVAR (Usa 1🔋)</button>`;
+                timerHtml = `<div id="timer-${huevo.id}" style="font-size: 11px; font-weight: bold; color: #aaa; margin-top: 8px; letter-spacing: 1px;">INACTIVO</div>`;
+                
+                const evDisponibles = window.miInventario ? (window.miInventario.vitalEssence || 0) : 0;
+                let btnBasicoStyle = "margin-top: 6px; font-size: 9px; width: 100%; border: none; border-radius: 6px; padding: 5px; font-weight: bold; text-transform: uppercase;";
+                if (evDisponibles >= 1000) {
+                    btnBasicoStyle += " background: linear-gradient(135deg, #a5d6a7, #81c784); color: #0d1a24; cursor: pointer;";
                 } else {
-                    actionHtml = `<button id="btn-buy-${huevo.id}" style="margin-top: 8px; font-size: 10px; background: linear-gradient(135deg, #ff9800, #ff5722); color: white; border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer; font-weight: bold; box-shadow: 0 2px 8px rgba(255, 152, 0, 0.4); text-transform: uppercase;">🛒 🔋 0.2 POL</button>`;
+                    btnBasicoStyle += " background: #444; color: #777; cursor: not-allowed;";
                 }
+                
+                let btnPlasmaStyle = "margin-top: 6px; font-size: 9px; width: 100%; border: none; border-radius: 6px; padding: 5px; font-weight: bold; text-transform: uppercase; background: linear-gradient(135deg, #00e5ff, #8b5cf6); color: white; cursor: pointer;";
+                const plasmaLabel = countInc > 0 ? "🔋 Plasma (Usa Batería)" : "🔋 Plasma (0.20 POL)";
+
+                actionHtml = `
+                    <button id="btn-activate-basic-${huevo.id}" style="${btnBasicoStyle}" ${evDisponibles < 1000 ? 'disabled' : ''}>🐣 Básica (1K EV / 4h)</button>
+                    <button id="btn-activate-plasma-${huevo.id}" style="${btnPlasmaStyle}">${plasmaLabel} (15m)</button>
+                `;
             } else {
                 const restante = huevo.hatchTime - Date.now();
                 if (restante > 0) {
@@ -755,24 +782,57 @@ document.addEventListener("DOMContentLoaded", () => {
             `;
 
             if (!huevo.incubating) {
-                card.querySelector(`#btn-activate-${huevo.id}`)?.addEventListener("click", () => {
-                    if(window.miInventario && typeof window.miInventario.consumeItem === 'function') { 
-                        if(window.miInventario.consumeItem("incubator_01", 1)) {
+                card.querySelector(`#btn-activate-basic-${huevo.id}`)?.addEventListener("click", () => {
+                    const costo = 1000;
+                    const evDisponibles = window.miInventario ? (window.miInventario.vitalEssence || 0) : 0;
+                    if (evDisponibles >= costo) {
+                        if (window.miInventario && typeof window.miInventario.addEssence === 'function') {
+                            window.miInventario.addEssence(-costo);
+                        } else {
+                            window.miInventario.vitalEssence -= costo;
+                        }
+                        if (typeof window.registrarLogEconomia === "function") {
+                            window.registrarLogEconomia('sink', costo, 'incubator_basic');
+                        }
+                        
+                        const isAccelerated = huevo.hatchDuration === 60000;
+                        huevo.incubating = true;
+                        huevo.hatchTime = Date.now() + (isAccelerated ? 7200000 : 14400000);
+                        
+                        window.renderizarIncubadora();
+                        if (typeof window.guardarJuego === 'function') window.guardarJuego();
+                        else if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
+                    }
+                });
+                
+                card.querySelector(`#btn-activate-plasma-${huevo.id}`)?.addEventListener("click", () => {
+                    const isAccelerated = huevo.hatchDuration === 60000;
+                    const duracion = isAccelerated ? 450000 : 900000;
+                    
+                    if (countInc > 0) {
+                        if (window.miInventario && typeof window.miInventario.consumeItem === 'function') {
+                            if (window.miInventario.consumeItem("incubator_01", 1)) {
+                                huevo.incubating = true;
+                                huevo.hatchTime = Date.now() + duracion;
+                                window.renderizarIncubadora();
+                                if (typeof window.guardarJuego === 'function') window.guardarJuego();
+                                else if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
+                            }
+                        }
+                    } else {
+                        const costo = 0.20;
+                        if (window.miWallet && window.miWallet.pol >= costo) {
+                            window.miWallet.pol -= costo;
+                            actualizarPolUI();
                             huevo.incubating = true;
-                            huevo.hatchTime = Date.now() + (huevo.hatchDuration || 120000);
+                            huevo.hatchTime = Date.now() + duracion;
                             window.renderizarIncubadora();
                             if (typeof window.guardarJuego === 'function') window.guardarJuego();
                             else if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
+                        } else {
+                            alert("❌ No tienes suficiente POL.");
                         }
-                    } 
-                });
-                card.querySelector(`#btn-buy-${huevo.id}`)?.addEventListener("click", () => {
-                    const costo = 0.2;
-                    if (window.miWallet && window.miWallet.pol >= costo) {
-                        window.miWallet.pol -= costo;
-                        window.miInventario.addItem({ id: "incubator_01", name: "Incubadora Térmica", icon: "🔋", type: "consumible", maxStack: 20 }, 1);
-                        actualizarPolUI(); window.renderizarIncubadora(); 
-                    } else { alert("❌ No tienes suficiente POL."); }
+                    }
                 });
             } else {
                 const restante = huevo.hatchTime - Date.now();

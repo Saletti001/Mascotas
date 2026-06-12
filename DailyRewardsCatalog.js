@@ -95,6 +95,9 @@ window.DailyRewardsCatalog = {
         if (name === "tinta_habilidad") {
             return `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg" filter="drop-shadow(0 0 4px rgba(255,64,129,0.5))"><path d="M12 3C8 3 6 6 6 10V18C6 19 7 20 8 20H16C17 20 18 19 18 18V10C18 6 16 3 12 3Z" stroke="#FF4081" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="#FF4081" opacity="0.5"/><path d="M10 20L8 22H16L14 20" stroke="#FF4081" stroke-width="2"/></svg>`;
         }
+        if (name === "plasma_shower") {
+            return `<svg viewBox="0 0 24 24" width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg" filter="drop-shadow(0 0 4px rgba(0,172,193,0.5))"><rect x="3" y="10" width="18" height="11" rx="3" stroke="#00E5FF" stroke-width="2"/><circle cx="7" cy="13" r="1.5" fill="#00E5FF"/><circle cx="12" cy="15" r="2" fill="#00E5FF"/><circle cx="17" cy="13" r="1" fill="#00E5FF"/><path d="M12 2V10" stroke="#00E5FF" stroke-width="2" stroke-linecap="round"/><path d="M10 5L12 7L14 5" stroke="#00E5FF" stroke-width="2" stroke-linecap="round"/></svg>`;
+        }
         return "🎁";
     },
 

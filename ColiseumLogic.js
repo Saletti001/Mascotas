@@ -1163,7 +1163,7 @@ window.ColiseumLogic = {
         return "ataque";
     },
 
-    crearRivalObjeto: function(nivelJugador, rarezaJugador, esJefeDeLiga = false, esPvP = false) {
+    crearRivalObjeto: function(nivelJugador, rarezaJugador, esJefeDeLiga = false, esPvP = false, esValvulaSeguridad = false) {
         let eRareza = "Común";
         if (esJefeDeLiga) {
             if (rarezaJugador === "Común") eRareza = "Raro";
@@ -1184,6 +1184,10 @@ window.ColiseumLogic = {
         else if (rollCalidad < 0.90) purezaEnemigo = 70; 
         else purezaEnemigo = 40; 
 
+        if (esValvulaSeguridad) {
+            purezaEnemigo = 95;
+        }
+
         eStats.pureza = purezaEnemigo;
         
         let bonoPureza = purezaEnemigo >= 90 ? 4 : (purezaEnemigo >= 80 ? 3 : (purezaEnemigo >= 60 ? 1 : 0));
@@ -1197,7 +1201,7 @@ window.ColiseumLogic = {
 
         let nivelEnemigo = trainingSupport 
             ? (nivelJugador + (esJefeDeLiga ? 2 : 0)) 
-            : (nivelJugador + (esJefeDeLiga ? 5 : (esPvP ? 3 : 0))); // PvP tiene ventaja de nivel, PvE estándar o 3v3 no
+            : (nivelJugador + (esJefeDeLiga ? 5 : (esValvulaSeguridad ? 4 : (esPvP ? 3 : 0)))); // PvP tiene ventaja de nivel, Válvula tiene +4
         if (nivelEnemigo < 1) nivelEnemigo = 1;
 
         if (trainingSupport) {
@@ -1213,7 +1217,14 @@ window.ColiseumLogic = {
         }
 
         const elementos = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
-        const eElemento = elementos[Math.floor(Math.random() * elementos.length)];
+        let eElemento = elementos[Math.floor(Math.random() * elementos.length)];
+        
+        const counterDelJugador = { "Biomutante": "Viral", "Sintético": "Biomutante", "Tóxico": "Sintético", "Radiactivo": "Tóxico", "Cibernético": "Radiactivo", "Viral": "Cibernético" };
+        let pElement = (window.miMascota ? window.miMascota.element : (this.player ? this.player.element : "Normal")) || "Normal";
+        
+        if (esValvulaSeguridad) {
+            eElemento = counterDelJugador[pElement] || eElemento;
+        }
         
         let eHiddenGenes = {A: null, B: null, C: null};
         if (typeof window.generarGenesV9 === 'function') eHiddenGenes = window.generarGenesV9(eRareza);
@@ -1244,6 +1255,15 @@ window.ColiseumLogic = {
         for(let i=0; i<puntosExtra; i++) {
             let rStat = bolsaStats[Math.floor(Math.random() * bolsaStats.length)];
             if(rStat === 'hp') eStats.hp += 5; else eStats[rStat] += 1;
+        }
+
+        if (esValvulaSeguridad && window.miMascota && window.miMascota.stats) {
+            const pStats = window.miMascota.stats;
+            eStats.hp = Math.max(eStats.hp, Math.floor(pStats.hp * 1.15));
+            eStats.atk = Math.max(eStats.atk, Math.floor(pStats.atk * 1.15));
+            eStats.def = Math.max(eStats.def, Math.floor(pStats.def * 1.15));
+            eStats.spd = Math.max(eStats.spd, Math.floor(pStats.spd * 1.12));
+            eStats.luk = Math.max(eStats.luk, Math.floor(pStats.luk * 1.15));
         }
             
         const formas = ["gota", "frijol", "circulo", "cuadrado", "triangulo", "hongo", "estrella", "pentagono", "nube", "chili", "diamante"];
@@ -1288,10 +1308,9 @@ window.ColiseumLogic = {
         };
 
         let pAtks = window.miMascota && window.miMascota.ataques ? window.miMascota.ataques : {};
-        const counterDelJugador = { "Biomutante": "Viral", "Sintético": "Biomutante", "Tóxico": "Sintético", "Radiactivo": "Tóxico", "Cibernético": "Radiactivo", "Viral": "Cibernético" };
         let pElement = this.player ? this.player.element : "Normal";
         // En PvE estándar/3v3 no se fuerza contra-elemento del jugador para mantenerlo equilibrado, solo en PvP o Jefes
-        let elementoCounter = (esPvP || esJefeDeLiga) ? (counterDelJugador[pElement] || eElemento) : eElemento;
+        let elementoCounter = (esPvP || esJefeDeLiga || esValvulaSeguridad) ? (counterDelJugador[pElement] || eElemento) : eElemento;
 
         let atkEsp = pAtks.atk_2 ? this.obtenerAtaqueAleatorio(eElemento, "especiales") : null;
         let atkTac = pAtks.atk_3 ? this.obtenerAtaqueAleatorio(eElemento, "soportes") : null;
@@ -1301,10 +1320,15 @@ window.ColiseumLogic = {
             else atkTac = this.obtenerAtaqueAleatorio(elementoCounter, "soportes");
         } else if (pAtks.atk_2) atkEsp = this.obtenerAtaqueAleatorio(elementoCounter, "especiales");
 
+        if (esValvulaSeguridad) {
+            atkEsp = this.obtenerAtaqueAleatorio(eElemento, "especiales");
+            atkTac = this.obtenerAtaqueAleatorio(eElemento, "soportes");
+        }
+
         let enemyAtaques = {
             "ataque": this.obtenerAtaqueAleatorio(eElemento, "basicos"),
             "especial": atkEsp, "tactica": atkTac,
-            "definitivo": (pAtks.atk_4 && nivelEnemigo >= 25) ? this.obtenerAtaqueAleatorio(eElemento, "definitivos") : null
+            "definitivo": ((pAtks.atk_4 && nivelEnemigo >= 25) || (esValvulaSeguridad && nivelEnemigo >= 20)) ? this.obtenerAtaqueAleatorio(eElemento, "definitivos") : null
         };
         
         return {

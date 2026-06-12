@@ -249,6 +249,7 @@ class MinigameMemory {
         if (basket) basket.style.display = "block";
 
         if (!quit) {
+            let evGanada = 0;
             if (won) {
                 if (window.Sonidos) {
                     window.Sonidos.play("heal");
@@ -256,7 +257,7 @@ class MinigameMemory {
                 
                 // Premios basados en rendimiento de tiempo
                 const rewardApples = Math.floor(this.timeLeft / 8) + 1; // 1 a 5 manzanas
-                const evGanada = parseFloat((this.timeLeft * 0.06).toFixed(2)); // EV por tiempo restante
+                evGanada = 100 + (this.timeLeft * 5); // 100 EV base + 5 EV por segundo restante
 
                 if (rewardApples > 0 && window.miInventario) {
                     window.miInventario.addItem({
@@ -269,9 +270,9 @@ class MinigameMemory {
                     });
                 }
 
-                // Acumular EV ganada al Geno activo
-                if (evGanada > 0 && window.miMascota && window.miMascota.id && window.miMascota.id !== "temp") {
-                    window.miMascota.evAcumulada = Math.min(10.0, (window.miMascota.evAcumulada || 0) + evGanada);
+                // Acumular EV ganada directamente al inventario del jugador
+                if (evGanada > 0 && window.miInventario && typeof window.miInventario.addEssence === "function") {
+                    window.miInventario.addEssence(evGanada);
                 }
 
                 const xpObtenida = typeof window.completarMinijuegoArcade === 'function' 
@@ -298,7 +299,6 @@ class MinigameMemory {
                         if (idx !== -1) {
                             window.misGenos[idx].diversion = window.miMascota.diversion;
                             window.misGenos[idx].amistad = window.miMascota.amistad;
-                            window.misGenos[idx].evAcumulada = window.miMascota.evAcumulada;
                             window.misGenos[idx].registroAmistadDiaria = window.miMascota.registroAmistadDiaria;
                         }
                     }
@@ -306,13 +306,13 @@ class MinigameMemory {
                     if (window.guardarJuego) window.guardarJuego();
                     else if (window.guardarProgreso) window.guardarProgreso();
 
-                    let msg = `¡EXCELENTE TRABAJO!\nCompletaste la secuencia en ${35 - this.timeLeft}s.\nGanas: ${rewardApples} 🍎.\n⚡ +${evGanada.toFixed(2)} EV acumulada!`;
+                    let msg = `¡EXCELENTE TRABAJO!\nCompletaste la secuencia en ${35 - this.timeLeft}s.\nGanas: ${rewardApples} 🍎.\n⚡ +${evGanada} EV cargada al balance!`;
                     if (xpObtenida > 0) msg += `\n🧪 +${xpObtenida} XP de Laboratorio!`;
                     if (gananciaExplicita > 0) msg += `\n¡Diversión +20% y Amistad +${gananciaExplicita}!`;
                     else                       msg += `\n¡Diversión +20%! (Amistad por Arcade ya obtenida hoy)`;
                     alert(msg);
                 } else {
-                    let msg = `¡EXCELENTE TRABAJO!\nCompletaste la secuencia en ${35 - this.timeLeft}s.\nGanas: ${rewardApples} 🍎.`;
+                    let msg = `¡EXCELENTE TRABAJO!\nCompletaste la secuencia en ${35 - this.timeLeft}s.\nGanas: ${rewardApples} 🍎.\n⚡ +${evGanada} EV cargada al balance!`;
                     if (xpObtenida > 0) msg += `\n🧪 +${xpObtenida} XP de Laboratorio!`;
                     alert(msg);
                 }
@@ -320,7 +320,22 @@ class MinigameMemory {
                 if (window.Sonidos) {
                     window.Sonidos.play("lose");
                 }
-                alert("¡Se acabó el tiempo!\nNo pudiste sincronizar todos los genes. ¡Inténtalo de nuevo!");
+
+                evGanada = this.matchesFound * 10;
+                if (evGanada > 0 && window.miInventario && typeof window.miInventario.addEssence === "function") {
+                    window.miInventario.addEssence(evGanada);
+                }
+
+                // Afectar necesidades del Geno activo por intentar jugar
+                if (window.miMascota && window.miMascota.id && window.miMascota.id !== "temp") {
+                    if (window.miMascota.diversion === undefined) window.miMascota.diversion = 100;
+                    window.miMascota.diversion = Math.min(100, window.miMascota.diversion + 15);
+                }
+                
+                if (window.guardarJuego) window.guardarJuego();
+                else if (window.guardarProgreso) window.guardarProgreso();
+
+                alert(`¡Se acabó el tiempo!\nNo pudiste sincronizar todos los genes. ¡Inténtalo de nuevo!\nConsolación: ¡Obtienes +${evGanada} EV (+10 EV por cada una de tus ${this.matchesFound} parejas encontradas)!`);
             }
         }
 

@@ -5,72 +5,15 @@
 window.DailyLoginManager = {
     // 1. Obtiene la lista de recompensas de la semana actual del ciclo
     getRewards: function() {
-        const weekNum = window.DailyRewardsCatalog ? window.DailyRewardsCatalog.getCicloSemana() : 1;
-        const mult = window.labLevel || 1;
-
-        let baseDay1 = 15;
-        let baseDay4 = 25;
-        if (window.GameEconomyConfig && window.GameEconomyConfig.login_rewards) {
-            const lr = window.GameEconomyConfig.login_rewards;
-            if (lr.essence_day1 !== undefined) baseDay1 = lr.essence_day1;
-            if (lr.essence_day4 !== undefined) baseDay4 = lr.essence_day4;
-        }
-
-        // Días intermedios (1, 2, 4, 5) siempre entregan EV o Manzanas escaladas por el nivel de laboratorio
-        const day1 = { day: 1, name: `${baseDay1 * mult} EV`, type: "essence", amount: baseDay1 * mult, iconName: "essence", desc: "Esencia Vital" };
-        const day2 = { day: 2, name: `${1 * mult} Manzana${mult > 1 ? 's' : ''}`, type: "item", id: "apple_01", amount: 1 * mult, iconName: "apple", desc: "Manzana Nexo para tu Geno." };
-        const day4 = { day: 4, name: `${baseDay4 * mult} EV`, type: "essence", amount: baseDay4 * mult, iconName: "essence", desc: "Esencia Vital" };
-        const day5 = { day: 5, name: `${2 * mult} Manzana${mult > 1 ? 's' : ''}`, type: "item", id: "apple_01", amount: 2 * mult, iconName: "apple", desc: "Manzana Nexo para tu Geno." };
-
-        if (weekNum === 1) {
-            // Enfoque Recursos Básicos (Meta: Solo Comunes / Copa Raro)
-            // Día 3 y 6: Consumibles Tamagotchi. Día 7: Herramienta Genética Básica.
-            return [
-                day1,
-                day2,
-                { day: 3, name: "Poción Energía", type: "item", id: "pocion_energia", amount: 1, iconName: "pocion_energia", desc: "Recupera 50% de Resistencia." },
-                day4,
-                day5,
-                { day: 6, name: "Ración Automática", type: "item", id: "ration_auto", amount: 1, iconName: "ration", desc: "Alimento automático 24h." },
-                { day: 7, name: "Escáner ADN Básico", type: "item", id: "escaner_basico", amount: 1, iconName: "escaner_basico", desc: "Revela la presencia de genes." }
-            ];
-        } else if (weekNum === 2) {
-            // Enfoque Consumibles/Elementos (Meta: Elemental)
-            // Día 3 y 6: Herramientas Genéticas. Día 7: Ítems Competitivos.
-            return [
-                day1,
-                day2,
-                { day: 3, name: "Caja Genética", type: "random", pool: "HERRAMIENTAS_GENETICAS", iconName: "escaner_basico", desc: "ADN Básico o Completo." },
-                day4,
-                day5,
-                { day: 6, name: "Caja Genética", type: "random", pool: "HERRAMIENTAS_GENETICAS", iconName: "escaner_basico", desc: "ADN Básico o Completo." },
-                { day: 7, name: "Tinta Habilidad", type: "random", pool: "ITEMS_COMPETITIVOS", iconName: "tinta_habilidad", desc: "Tinta para refinar genes.", multiplier: 1 }
-            ];
-        } else if (weekNum === 3) {
-            // Enfoque Herramientas Genéticas (Meta: Linaje / Sin Genes)
-            // Día 3 y 6: Herramientas Genéticas completas. Día 7: Ítems Competitivos x2.
-            return [
-                day1,
-                day2,
-                { day: 3, name: "Caja Genética C.", type: "random", pool: "HERRAMIENTAS_GENETICAS", iconName: "escaner_completo", desc: "ADN Básico o Completo." },
-                day4,
-                day5,
-                { day: 6, name: "Caja Genética C.", type: "random", pool: "HERRAMIENTAS_GENETICAS", iconName: "escaner_completo", desc: "ADN Básico o Completo." },
-                { day: 7, name: "Tinta Habilidad x2", type: "random", pool: "ITEMS_COMPETITIVOS", iconName: "tinta_habilidad", desc: "Tinta para refinar genes.", multiplier: 2 }
-            ];
-        } else {
-            // Enfoque Ítems Competitivos (Meta: Olimpo / Berserker / Espejo)
-            // Día 3 y 6: Ítems Competitivos. Día 7: Ítems Competitivos x3.
-            return [
-                day1,
-                day2,
-                { day: 3, name: "Tinta Habilidad", type: "random", pool: "ITEMS_COMPETITIVOS", iconName: "tinta_habilidad", desc: "Tinta para refinar genes.", multiplier: 1 },
-                day4,
-                day5,
-                { day: 6, name: "Tinta Habilidad", type: "random", pool: "ITEMS_COMPETITIVOS", iconName: "tinta_habilidad", desc: "Tinta para refinar genes.", multiplier: 1 },
-                { day: 7, name: "Tinta Habilidad x3", type: "random", pool: "ITEMS_COMPETITIVOS", iconName: "tinta_habilidad", desc: "Tinta para refinar genes.", multiplier: 3 }
-            ];
-        }
+        return [
+            { day: 1, name: "100 EV", type: "essence", amount: 100, iconName: "essence", desc: "Esencia Vital" },
+            { day: 2, name: "150 EV", type: "essence", amount: 150, iconName: "essence", desc: "Esencia Vital" },
+            { day: 3, name: "200 EV + Ración", type: "dual", amount: 200, id: "apple_01", amountItem: 1, iconName: "apple", desc: "200 EV y 1 Ración de Comida Básica" },
+            { day: 4, name: "250 EV", type: "essence", amount: 250, iconName: "essence", desc: "Esencia Vital" },
+            { day: 5, name: "300 EV", type: "essence", amount: 300, iconName: "essence", desc: "Esencia Vital" },
+            { day: 6, name: "400 EV + Ducha", type: "dual", amount: 400, id: "plasma_shower", amountItem: 1, iconName: "plasma_shower", desc: "400 EV y 1 Ducha de Plasma" },
+            { day: 7, name: "1000 EV + Escáner", type: "dual", amount: 1000, id: "escaner_basico", amountItem: 1, iconName: "escaner_basico", desc: "1000 EV y 1 Caja de Escáner de ADN Básico" }
+        ];
     },
 
     // 2. Resolver los iconos SVG
@@ -107,14 +50,14 @@ window.DailyLoginManager = {
 
     // Auxiliares de tipo e inventario
     obtenerTipoDeItemPorId: function(id) {
-        if (id === "apple_01" || id === "ration_auto" || id === "pocion_energia") {
+        if (id === "apple_01" || id === "ration_auto" || id === "pocion_energia" || id === "plasma_shower") {
             return "consumable";
         }
         return "basic";
     },
 
     obtenerMaxStackPorId: function(id) {
-        if (id === "apple_01" || id === "ration_auto" || id === "pocion_energia") {
+        if (id === "apple_01" || id === "ration_auto" || id === "pocion_energia" || id === "plasma_shower") {
             return 20;
         }
         return 99;
@@ -147,6 +90,39 @@ window.DailyLoginManager = {
                 if (exito) {
                     alert(`✨ ¡Felicidades! Has reclamado tu recompensa de Día ${reward.day}: ${reward.name}.`);
                 }
+            } else {
+                alert("❌ Error: El sistema de inventario no está listo.");
+            }
+        } else if (reward.type === "dual") {
+            let exitoEssence = false;
+            let exitoItem = false;
+
+            if (window.miInventario && typeof window.miInventario.addEssence === "function") {
+                window.miInventario.addEssence(reward.amount);
+                if (typeof window.registrarLogEconomia === "function") {
+                    window.registrarLogEconomia('reward', reward.amount, 'checkin');
+                }
+                exitoEssence = true;
+            }
+
+            if (window.miInventario && typeof window.miInventario.addItem === "function") {
+                const nombreItem = reward.id === "apple_01" ? "Manzana Nexo" : (reward.id === "plasma_shower" ? "Ducha de Plasma" : "Escáner ADN Básico");
+                const itemObj = {
+                    id: reward.id,
+                    name: nombreItem,
+                    icon: this.getSVG(reward.iconName),
+                    type: this.obtenerTipoDeItemPorId(reward.id),
+                    maxStack: this.obtenerMaxStackPorId(reward.id),
+                    desc: reward.desc,
+                    count: reward.amountItem || 1
+                };
+                exitoItem = window.miInventario.addItem(itemObj);
+            }
+
+            if (exitoEssence && exitoItem) {
+                alert(`✨ ¡Felicidades! Has reclamado tu recompensa de Día ${reward.day}: +${reward.amount} Esencia Vital y ${reward.id === "apple_01" ? "1 Manzana Nexo" : (reward.id === "plasma_shower" ? "1 Ducha de Plasma" : "1 Escáner ADN Básico")}.`);
+            } else if (exitoEssence) {
+                alert(`✨ ¡Reclamado! Recibiste +${reward.amount} Esencia Vital, pero tu mochila está llena para el ítem.`);
             } else {
                 alert("❌ Error: El sistema de inventario no está listo.");
             }

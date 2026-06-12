@@ -643,25 +643,99 @@ document.addEventListener("DOMContentLoaded", () => {
             gridSwap.appendChild(emptyCard);
         }
 
-        const costoExpansion = parseFloat((0.5 + (window.maxGenoSlots - 6) * 0.1).toFixed(2));
         const siguienteSlot = window.maxGenoSlots + 1;
+        let costoDesc = "";
+        if (siguienteSlot === 7) costoDesc = "1,500 EV";
+        else if (siguienteSlot === 8) costoDesc = "3,000 EV";
+        else if (siguienteSlot === 9) costoDesc = "6,000 EV o 0.50 POL";
+        else if (siguienteSlot === 10) costoDesc = "12,000 EV o 1.00 POL";
+        else costoDesc = "15,000 EV o 2.00 POL";
+
         const buyCard = document.createElement("div");
         buyCard.style = "background: rgba(138, 43, 226, 0.1); border: 1px solid #8A2BE2; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;";
         buyCard.onmouseover = () => buyCard.style.boxShadow = "0 0 15px rgba(138, 43, 226, 0.4)";
         buyCard.onmouseout = () => buyCard.style.boxShadow = "none";
-        buyCard.innerHTML = `<div style="width: 100px; height: 100px; display: flex; justify-content: center; align-items: center; font-size: 32px; color: #e0b0ff;">➕</div><span style="color: white; font-weight: bold; font-size: 12px; margin-top: 5px; text-align: center;">Comprar Slot #${siguienteSlot}</span><span style="color: #e0b0ff; font-weight: bold; font-size: 11px; margin-top: 5px; text-align: center;">${costoExpansion} POL</span>`;
+        buyCard.innerHTML = `<div style="width: 100px; height: 100px; display: flex; justify-content: center; align-items: center; font-size: 32px; color: #e0b0ff;">➕</div><span style="color: white; font-weight: bold; font-size: 12px; margin-top: 5px; text-align: center;">Comprar Slot #${siguienteSlot}</span><span style="color: #e0b0ff; font-weight: bold; font-size: 11px; margin-top: 5px; text-align: center;">${costoDesc}</span>`;
 
         buyCard.onclick = () => {
-            if (window.miWallet && window.miWallet.pol >= costoExpansion) {
-                window.miWallet.pol -= costoExpansion;
-                window.maxGenoSlots += 1;
+            const finalizarCompraSlot = () => {
                 if(typeof window.actualizarHUD === 'function') window.actualizarHUD();
                 if (typeof window.WalletManager !== 'undefined') window.WalletManager.actualizarBoton();
+                if (window.miInventario && typeof window.miInventario.updateUI === 'function') window.miInventario.updateUI();
                 renderizarInventarioGenos(); 
                 if (typeof window.guardarJuego === 'function') window.guardarJuego();
                 else if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
+            };
+
+            const slotNum = window.maxGenoSlots + 1;
+            if (slotNum === 7) {
+                const costo = 1500;
+                const evDisponibles = window.miInventario ? (window.miInventario.vitalEssence || 0) : 0;
+                if (evDisponibles >= costo) {
+                    if (confirm(`¿Confirmas la compra del Slot #7 por ${costo} EV?`)) {
+                        window.miInventario.vitalEssence -= costo;
+                        window.maxGenoSlots += 1;
+                        finalizarCompraSlot();
+                    }
+                } else {
+                    alert(`No tienes suficiente EV para el Slot #7. Requiere: ${costo} EV (Tienes: ${evDisponibles.toFixed(2)} EV).`);
+                }
+            } else if (slotNum === 8) {
+                const costo = 3000;
+                const evDisponibles = window.miInventario ? (window.miInventario.vitalEssence || 0) : 0;
+                if (evDisponibles >= costo) {
+                    if (confirm(`¿Confirmas la compra del Slot #8 por ${costo} EV?`)) {
+                        window.miInventario.vitalEssence -= costo;
+                        window.maxGenoSlots += 1;
+                        finalizarCompraSlot();
+                    }
+                } else {
+                    alert(`No tienes suficiente EV para el Slot #8. Requiere: ${costo} EV (Tienes: ${evDisponibles.toFixed(2)} EV).`);
+                }
             } else {
-                alert("No tienes suficiente $POL para expandir tu inventario. ¡Consigue más jugando o recargando!");
+                let costoEV = 15000;
+                let costoPOL = 2.00;
+                if (slotNum === 9) {
+                    costoEV = 6000;
+                    costoPOL = 0.50;
+                } else if (slotNum === 10) {
+                    costoEV = 12000;
+                    costoPOL = 1.00;
+                }
+                
+                const evDisponibles = window.miInventario ? (window.miInventario.vitalEssence || 0) : 0;
+                const polDisponibles = window.miWallet ? (window.miWallet.pol || 0) : 0;
+                
+                const msg = `Selecciona tu método de pago para el Slot #${slotNum}:\n\n` +
+                            `1. Pagar con Esencia Vital: ${costoEV} EV (Tienes: ${evDisponibles.toFixed(2)} EV)\n` +
+                            `2. Pagar con $POL: ${costoPOL} POL (Tienes: ${polDisponibles.toFixed(2)} POL)\n\n` +
+                            `Escribe 'EV' o 'POL' en el cuadro de texto abajo para confirmar tu pago:`;
+                            
+                const choice = prompt(msg);
+                if (!choice) return;
+                const cleanChoice = choice.trim().toUpperCase();
+                
+                if (cleanChoice === 'EV') {
+                    if (evDisponibles >= costoEV) {
+                        window.miInventario.vitalEssence -= costoEV;
+                        window.maxGenoSlots += 1;
+                        finalizarCompraSlot();
+                    } else {
+                        alert(`No tienes suficiente EV. Se requieren: ${costoEV} EV.`);
+                    }
+                } else if (cleanChoice === 'POL') {
+                    if (polDisponibles >= costoPOL) {
+                        window.miWallet.pol -= costoPOL;
+                        window.maxGenoSlots += 1;
+                        finalizarCompraSlot();
+                    } else {
+                        alert(`No tienes suficiente $POL. Se requieren: ${costoPOL} POL.`);
+                    }
+                } else {
+                    alert("Opción no válida. Debes escribir 'EV' o 'POL'.");
+                }
+            }
+        };pandir tu inventario. ¡Consigue más jugando o recargando!");
             }
         };
         gridSwap.appendChild(buyCard);
@@ -974,18 +1048,34 @@ function iniciarSecuenciaBienvenida() {
 
                 coin.addEventListener("click", (e) => {
                     e.stopPropagation();
+                    const todayStr = new Date().toDateString();
+                    if (!window.dailyCareHarvest || window.dailyCareHarvest.date !== todayStr) {
+                        window.dailyCareHarvest = { date: todayStr, harvested: 0 };
+                    }
+
                     const evARecolectar = window.miMascota.evAcumulada || 0;
-                    
-                    if (window.miInventario) {
-                        window.miInventario.addEssence(evARecolectar);
+                    let recolectadoEfectivo = 0;
+                    const restanteAlCap = Math.max(0, 150.0 - window.dailyCareHarvest.harvested);
+
+                    if (restanteAlCap > 0) {
+                        recolectadoEfectivo = Math.min(evARecolectar, restanteAlCap);
+                        window.dailyCareHarvest.harvested += recolectadoEfectivo;
+                    }
+
+                    if (window.miInventario && recolectadoEfectivo > 0) {
+                        window.miInventario.addEssence(recolectadoEfectivo);
                         if (typeof window.registrarLogEconomia === "function") {
-                            window.registrarLogEconomia('reward', evARecolectar, 'daily_care');
+                            window.registrarLogEconomia('reward', recolectadoEfectivo, 'daily_care');
                         }
                         window.miInventario.updateUI();
                         window.miInventario.renderGrid();
                     }
-                    
-                    alert(`✨ ¡Has cosechado ${evARecolectar.toFixed(2)} EV de tu Geno!`);
+
+                    if (recolectadoEfectivo > 0) {
+                        alert(`✨ ¡Has cosechado ${recolectadoEfectivo.toFixed(2)} EV de tu Geno! (Cosechado hoy: ${window.dailyCareHarvest.harvested.toFixed(2)}/150 EV)`);
+                    } else {
+                        alert(`✨ +0 EV (Límite diario de 150 EV alcanzado)`);
+                    }
 
                     window.miMascota.evAcumulada = 0;
                     if (window.misGenos) {

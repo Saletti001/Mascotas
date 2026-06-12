@@ -643,7 +643,7 @@ window.TournamentManager = {
 
     inscribirse: async function(tourneyId) {
         if (!window.comercioDesbloqueado) {
-            alert("⚠️ Se requiere el 'Permiso de Comercio' (adquirible en el Bazar por 15 EV al llegar a Nv. 5 de Laboratorio) para participar en Torneos competitivos.");
+            alert("⚠️ Se requiere el 'Permiso de Comercio' (adquirible en el Bazar por 3,000 EV al llegar a Nv. 5 de Laboratorio) para participar en Torneos competitivos.");
             return;
         }
 

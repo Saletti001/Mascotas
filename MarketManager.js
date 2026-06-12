@@ -27,7 +27,7 @@ window.vincularEventosBotonesBaul = function() {
     if (btnDeposit) {
         btnDeposit.onclick = () => {
             if (!window.comercioDesbloqueado) {
-                alert("⚠️ Se requiere el 'Permiso de Comercio' (adquirible en el Bazar por 15 EV al llegar a Nv. 5 de Laboratorio) para realizar depósitos o retiros.");
+                alert("⚠️ Se requiere el 'Permiso de Comercio' (adquirible en el Bazar por 3,000 EV al llegar a Nv. 5 de Laboratorio) para realizar depósitos o retiros.");
                 return;
             }
             if (!window.miWallet || !window.miWallet.address) {
@@ -60,7 +60,7 @@ window.vincularEventosBotonesBaul = function() {
     if (btnWithdraw) {
         btnWithdraw.onclick = () => {
             if (!window.comercioDesbloqueado) {
-                alert("⚠️ Se requiere el 'Permiso de Comercio' (adquirible en el Bazar por 15 EV al llegar a Nv. 5 de Laboratorio) para realizar depósitos o retiros.");
+                alert("⚠️ Se requiere el 'Permiso de Comercio' (adquirible en el Bazar por 3,000 EV al llegar a Nv. 5 de Laboratorio) para realizar depósitos o retiros.");
                 return;
             }
             if (!window.miWallet || !window.miWallet.address) {
@@ -153,7 +153,7 @@ window.actualizarVistaBaul = function() {
             if (btnFirstDeposit) {
                 btnFirstDeposit.onclick = () => {
                     if (!window.comercioDesbloqueado) {
-                        alert("⚠️ Se requiere el 'Permiso de Comercio' (adquirible en el Bazar por 15 EV al llegar a Nv. 5 de Laboratorio) para realizar depósitos o retiros.");
+                        alert("⚠️ Se requiere el 'Permiso de Comercio' (adquirible en el Bazar por 3,000 EV al llegar a Nv. 5 de Laboratorio) para realizar depósitos o retiros.");
                         return;
                     }
                     window.mostrarModalSaldoCero("deposit");
@@ -456,7 +456,7 @@ window.iniciarMercado = function() {
 
 window.abrirDetalleItem = function(itemBase, tipoAccion = 'publicar') {
     if (tipoAccion === 'publicar' && !window.comercioDesbloqueado) {
-        alert("⚠️ Se requiere el 'Permiso de Comercio' (adquirible en el Bazar por 15 EV al llegar a Nv. 5 de Laboratorio) para publicar objetos en venta.");
+        alert("⚠️ Se requiere el 'Permiso de Comercio' (adquirible en el Bazar por 3,000 EV al llegar a Nv. 5 de Laboratorio) para publicar objetos en venta.");
         return;
     }
     const modal = document.getElementById("market-detail-modal");
@@ -557,7 +557,7 @@ window.abrirDetalleItem = function(itemBase, tipoAccion = 'publicar') {
 
 window.abrirDetalleMercado = function(idGenoBuscar, tipoAccion) {
     if (tipoAccion === 'publicar' && !window.comercioDesbloqueado) {
-        alert("⚠️ Se requiere el 'Permiso de Comercio' (adquirible en el Bazar por 15 EV al llegar a Nv. 5 de Laboratorio) para publicar Genos en venta.");
+        alert("⚠️ Se requiere el 'Permiso de Comercio' (adquirible en el Bazar por 3,000 EV al llegar a Nv. 5 de Laboratorio) para publicar Genos en venta.");
         return;
     }
     const modal = document.getElementById("market-detail-modal");
@@ -1282,7 +1282,7 @@ window.cancelarVentaEnNube = async function(saleId) {
 // =========================================
 window.comprarListado = async function(listing) {
     if (!window.comercioDesbloqueado) {
-        alert("⚠️ Se requiere el 'Permiso de Comercio' (adquirible en el Bazar por 15 EV al llegar a Nv. 5 de Laboratorio) para realizar compras en el mercado.");
+        alert("⚠️ Se requiere el 'Permiso de Comercio' (adquirible en el Bazar por 3,000 EV al llegar a Nv. 5 de Laboratorio) para realizar compras en el mercado.");
         return;
     }
     if (!window.miUsuarioCloud) {

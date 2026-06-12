@@ -143,6 +143,7 @@ DECLARE
     pvp_pool_global_neto NUMERIC := 0;
     pvp_season_jackpot_acum NUMERIC := 0;
     pvp_liga_balances jsonb;
+    pvp_liga_combate_stats jsonb;
     
     rarity_counts jsonb;
     element_counts jsonb;
@@ -231,6 +232,23 @@ BEGIN
         FROM liga_stats
     ) sub;
 
+    -- Estadísticas de combate por ligas (wins, losses, realtime ratio)
+    WITH league_combat_stats AS (
+        SELECT 
+            liga,
+            COUNT(*) AS total,
+            COALESCE(SUM(CASE WHEN es_victoria THEN 1 ELSE 0 END), 0) AS victorias,
+            COALESCE(SUM(CASE WHEN es_realtime THEN 1 ELSE 0 END), 0) AS realtime
+        FROM public.combates_coliseo
+        GROUP BY liga
+    )
+    SELECT COALESCE(json_object_agg(liga, json_build_object(
+        'total', total,
+        'winrate', ROUND(COALESCE(victorias::numeric / NULLIF(total, 0), 0) * 100, 1),
+        'realtime_pct', ROUND(COALESCE(realtime::numeric / NULLIF(total, 0), 0) * 100, 0)
+    )), '{}'::jsonb) INTO pvp_liga_combate_stats
+    FROM league_combat_stats;
+
     -- E. DISTRIBUCIÓN DE RAREZAS Y ELEMENTOS DE MASCOTAS
     WITH all_genos AS (
         SELECT datos_juego->'mascotaActiva' AS g
@@ -314,6 +332,7 @@ BEGIN
         'pvp_pool_global_neto', pvp_pool_global_neto,
         'pvp_season_jackpot_acum', pvp_season_jackpot_acum,
         'pvp_liga_balances', COALESCE(pvp_liga_balances, '{}'::jsonb),
+        'pvp_liga_combate_stats', COALESCE(pvp_liga_combate_stats, '{}'::jsonb),
         'rarity_distribution', COALESCE(rarity_counts, '{}'::jsonb),
         'element_distribution', COALESCE(element_counts, '{}'::jsonb),
         'daily_history', COALESCE(daily_history, '[]'::jsonb),
@@ -323,3 +342,49 @@ BEGIN
     RETURN result;
 END;
 $$;
+
+-- 6. Función para evaluar estado de la válvula de seguridad de liga
+CREATE OR REPLACE FUNCTION obtener_estado_valvula(p_liga text)
+RETURNS boolean
+SECURITY DEFINER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    v_total_combates INT;
+    v_winrate NUMERIC;
+    v_balance NUMERIC;
+BEGIN
+    -- 1. Calcular winrate de la liga en los últimos 100 combates
+    SELECT COUNT(*), COALESCE(SUM(CASE WHEN es_victoria THEN 1 ELSE 0 END), 0)
+    INTO v_total_combates, v_winrate
+    FROM (
+        SELECT es_victoria 
+        FROM public.combates_coliseo
+        WHERE liga = p_liga
+        ORDER BY created_at DESC
+        LIMIT 100
+    ) sub;
+
+    IF v_total_combates > 0 THEN
+        v_winrate := (v_winrate::numeric / v_total_combates) * 100;
+    ELSE
+        v_winrate := 50.0;
+    END IF;
+
+    -- 2. Calcular balance del pool de esta liga
+    SELECT 
+        COALESCE(SUM(CASE WHEN action_type = 'arena_ticket_buy' THEN amount * 0.80 ELSE 0 END), 0) -
+        COALESCE(SUM(CASE WHEN action_type = 'arena_payout' THEN amount ELSE 0 END), 0)
+    INTO v_balance
+    FROM public.economy_logs
+    WHERE COALESCE(substring(source from ' - (.*)$'), 'General') = p_liga;
+
+    -- 3. Activar únicamente si el winrate de los jugadores es > 50% Y el balance está en déficit/negativo
+    IF v_winrate > 50.0 AND COALESCE(v_balance, 0) <= 0 THEN
+        RETURN TRUE;
+    ELSE
+        RETURN FALSE;
+    END IF;
+END;
+$$;
+

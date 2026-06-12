@@ -35,21 +35,21 @@ window.cargarConfiguracionBalance = async function() {
     const DEFAULT_CONFIG = {
         shop_items: {
             bazar: {
-                bio_nucleo_basico: { price: 200.0, currency: "EV" },
-                ration_auto: { price: 2.0, currency: "EV" },
-                plasma_shower: { price: 1.0, currency: "EV" },
-                escaner_basico: { price: 0.15, currency: "EV" },
-                escaner_completo: { price: 0.50, currency: "EV" },
-                antidoto_uni: { price: 0.10, currency: "EV" },
-                nexo_charge: { price: 0.50, currency: "EV" },
-                catalizador_xp: { price: 50.0, currency: "EV" },
-                comercio_licencia: { price: 15.0, currency: "EV" }
+                bio_nucleo_basico: { price: 3000.0, currency: "EV" },
+                ration_auto: { price: 200.0, currency: "EV" },
+                plasma_shower: { price: 100.0, currency: "EV" },
+                escaner_basico: { price: 1500.0, currency: "EV" },
+                escaner_completo: { price: 5000.0, currency: "EV" },
+                antidoto_uni: { price: 10.0, currency: "EV" },
+                nexo_charge: { price: 2000.0, currency: "EV" },
+                catalizador_xp: { price: 5000.0, currency: "EV" },
+                comercio_licencia: { price: 3000.0, currency: "EV" }
             },
             dojo_base_prices: {
-                Basico: 10.0,
-                Intermedio: 25.0,
-                Avanzado: 50.0,
-                Definitivo: 100.0
+                Basico: 1000.0,
+                Intermedio: 4000.0,
+                Avanzado: 6000.0,
+                Definitivo: 10000.0
             },
             premium: {
                 exp_20: { price: 2.0, currency: "POL" },

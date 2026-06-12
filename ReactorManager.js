@@ -211,19 +211,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const reactorRules = {
         "1": { 
-            reqRarity: "Común", cost: 100, probCrit: 3, probNorm: 35, probStag: 35, 
+            reqRarity: "Común", cost: 5000, refund: 8000, probCrit: 3, probNorm: 35, probStag: 35, 
             resCrit: { rarity: "Épico" },
             resNorm: { rarity: "Raro" },
             resStag: { rarity: "Común+" }
         },
         "2": { 
-            reqRarity: "Raro", cost: 500, probCrit: 0.5, probNorm: 25, probStag: 35, 
+            reqRarity: "Raro", cost: 15000, refund: 25000, probCrit: 0.5, probNorm: 25, probStag: 35, 
             resCrit: { rarity: "Legendario" },
             resNorm: { rarity: "Épico" },
             resStag: { rarity: "Raro+" }
         },
         "3": { 
-            reqRarity: "Épico", cost: 2500, probCrit: 0.1, probNorm: 5, probStag: 40, 
+            reqRarity: "Épico", cost: 30000, refund: 60000, probCrit: 0.1, probNorm: 5, probStag: 40, 
             resCrit: { rarity: "Mítico" },
             resNorm: { rarity: "Legendario" },
             resStag: { rarity: "Épico+" }
@@ -676,7 +676,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             mensaje = `MUTACIÓN ESTANCADA ⚠️\nLa inestabilidad destruyó a 4, pero lograste recuperar 1 [Geno ${reglas.resStag.rarity}]. ¡Sus genes han mutado!`;
                         }
                     } else {
-                        const compensacion = reglas.cost * 1.5; 
+                        const compensacion = reglas.refund !== undefined ? reglas.refund : reglas.cost * 1.5; 
                         if(typeof window.miInventario.addEssence === 'function') {
                             window.miInventario.addEssence(compensacion);
                         } else {

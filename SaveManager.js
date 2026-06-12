@@ -6,6 +6,9 @@ const SAVE_KEY = "proyecto_genos_save_v1";
 
 window.dailyLoginData = { lastClaimDate: "", currentDayStreak: 0 };
 window.newsMailboxData = { lastReadNewsId: 0 };
+window.dailyCareHarvest = { date: "", harvested: 0 };
+window.towerSessionActive = false;
+window.towerSessionEvAccumulated = 0;
 
 window.cargarProgreso = function() {
     const dataString = localStorage.getItem(SAVE_KEY);
@@ -102,6 +105,9 @@ window.cargarProgreso = function() {
         window.maxFloor = data.maxFloor !== undefined ? data.maxFloor : 0;
         window.towerClaimedFloorThisWeek = data.towerClaimedFloorThisWeek !== undefined ? data.towerClaimedFloorThisWeek : 0;
         window.lastTowerResetAt = data.lastTowerResetAt !== undefined ? data.lastTowerResetAt : 0;
+        window.dailyCareHarvest = data.dailyCareHarvest !== undefined ? data.dailyCareHarvest : { date: "", harvested: 0 };
+        window.towerSessionActive = data.towerSessionActive !== undefined ? data.towerSessionActive : false;
+        window.towerSessionEvAccumulated = data.towerSessionEvAccumulated !== undefined ? data.towerSessionEvAccumulated : 0;
 
         if (window.NexoEnergyManager && data.lastActiveTime) {
             window.NexoEnergyManager.aplicarRecuperacionPasiva(data.lastActiveTime);
@@ -207,6 +213,9 @@ window.guardarLocalSilencioso = function() {
         maxFloor: window.maxFloor !== undefined ? window.maxFloor : 0,
         towerClaimedFloorThisWeek: window.towerClaimedFloorThisWeek !== undefined ? window.towerClaimedFloorThisWeek : 0,
         lastTowerResetAt: window.lastTowerResetAt !== undefined ? window.lastTowerResetAt : 0,
+        dailyCareHarvest: window.dailyCareHarvest || { date: "", harvested: 0 },
+        towerSessionActive: window.towerSessionActive !== undefined ? window.towerSessionActive : false,
+        towerSessionEvAccumulated: window.towerSessionEvAccumulated !== undefined ? window.towerSessionEvAccumulated : 0,
         lastActiveTime: typeof window.obtenerTiempoSeguro === 'function' ? window.obtenerTiempoSeguro() : Date.now()
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(dataToSave));

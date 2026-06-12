@@ -154,13 +154,13 @@ window.NexoEnergyManager = {
 
                 // Generación de Esencia Pasiva
                 if (window.isGenoHappy && window.isGenoHappy(geno)) {
-                    const baseEvRate = 0.1 / 3600; // 0.1 EV/h en segundos
+                    const baseEvRate = 50.0 / 86400; // 50 EV al día
                     const essCMultiplier = (window.tieneGenActivoV9 && window.tieneGenActivoV9(geno, "esencia_concentrada")) ? 2.0 : 1.0;
                     const friendshipMultiplier = 1.0 + ((geno.amistad || 0) / 100.0);
                     const happyMultiplier = 2.0;
                     const evRate = baseEvRate * happyMultiplier * essCMultiplier * friendshipMultiplier;
                     
-                    geno.evAcumulada = Math.min(10.0, (geno.evAcumulada || 0) + evRate * segundosTranscurridos);
+                    geno.evAcumulada = Math.min(1000.0, (geno.evAcumulada || 0) + evRate * segundosTranscurridos);
                 }
 
                 // Decaimiento de amistad por negligencia (más de 24 horas desatendido)

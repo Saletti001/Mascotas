@@ -237,10 +237,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 window.ColiseumManager.detenerTemporizadorTurno();
                 
                 if (window.ColiseumLogic.modoCombate === 'torre') {
-                    const combatActive = document.getElementById("battle-controls").style.display === "grid";
-                    if (combatActive) {
-                        ColiseumUI.agregarLog("<span style='color:#ffcc00;'>⚠️ Retirada voluntaria del combate. Se conserva tu progreso actual.</span>");
+                    const evAPagar = window.towerSessionEvAccumulated || 0;
+                    if (evAPagar > 0) {
+                        if (!window.miInventario) window.miInventario = { vitalEssence: 0, items: [] };
+                        window.miInventario.vitalEssence = (window.miInventario.vitalEssence || 0) + evAPagar;
+                        alert(`✨ ¡Te has retirado de la Torre! Recibes el 100% de la esencia acumulada en esta tanda: +${evAPagar} EV.`);
+                        if (window.miInventario && typeof window.miInventario.updateUI === 'function') {
+                            window.miInventario.updateUI();
+                        }
                     }
+                    window.towerSessionActive = false;
+                    window.towerSessionEvAccumulated = 0;
+                    
                     window.navegarA('coliseum-lobby-screen');
                     if (window.guardarProgreso) window.guardarProgreso();
                 } else if (window.ColiseumLogic.modoCombate === 'pvp') {
@@ -269,35 +277,39 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     function iniciarPelea() {
-        if (window.nexoEnergy < 10) {
-            alert("No tienes suficiente Energía Nexo. Se requieren 10 de Energía Nexo para combatir (Tienes: " + Math.floor(window.nexoEnergy || 0) + ").");
-            return;
-        }
-        if (ColiseumLogic.modoCombate === '3v3') {
-            const teamGenos = (ColiseumLogic.playerTeamIds || []).map(id => window.misGenos.find(g => String(g.id) === String(id))).filter(Boolean);
-            if (teamGenos.length < 3) {
-                alert("No tienes un equipo de 3 Genos configurado correctamente.");
+        const esTorreActiva = (ColiseumLogic.modoCombate === 'torre' && window.towerSessionActive);
+        
+        if (!esTorreActiva) {
+            if (window.nexoEnergy < 10) {
+                alert("No tienes suficiente Energía Nexo. Se requieren 10 de Energía Nexo para combatir (Tienes: " + Math.floor(window.nexoEnergy || 0) + ").");
                 return;
             }
-            const sinResistencia = teamGenos.some(g => (g.resistencia !== undefined ? g.resistencia : 100) < 20);
-            if (sinResistencia) {
-                alert("Al menos uno de tus Genos seleccionados no tiene suficiente Resistencia. Se requieren 20 de Resistencia para combatir.");
-                return;
-            }
-            const enHuelga = teamGenos.some(g => window.isGenoNeglected && window.isGenoNeglected(g));
-            if (enHuelga) {
-                alert("⚠️ Al menos uno de tus Genos seleccionados está en huelga (necesidades básicas por debajo del 20%) y se niega a combatir. ¡Cuídalo en el Laboratorio!");
-                return;
-            }
-        } else {
-            const activeGenoRes = window.miMascota ? (window.miMascota.resistencia !== undefined ? window.miMascota.resistencia : 100) : 100;
-            if (activeGenoRes < 20) {
-                alert("Tu Geno activo no tiene suficiente Resistencia. Se requieren 20 de Resistencia para combatir (Tiene: " + Math.floor(activeGenoRes) + ").");
-                return;
-            }
-            if (window.isGenoNeglected && window.isGenoNeglected(window.miMascota)) {
-                alert("⚠️ Tu Geno activo está en huelga (necesidades básicas por debajo del 20%) y se niega a combatir. ¡Cuídalo en el Laboratorio!");
-                return;
+            if (ColiseumLogic.modoCombate === '3v3') {
+                const teamGenos = (ColiseumLogic.playerTeamIds || []).map(id => window.misGenos.find(g => String(g.id) === String(id))).filter(Boolean);
+                if (teamGenos.length < 3) {
+                    alert("No tienes un equipo de 3 Genos configurado correctamente.");
+                    return;
+                }
+                const sinResistencia = teamGenos.some(g => (g.resistencia !== undefined ? g.resistencia : 100) < 20);
+                if (sinResistencia) {
+                    alert("Al menos uno de tus Genos seleccionados no tiene suficiente Resistencia. Se requieren 20 de Resistencia para combatir.");
+                    return;
+                }
+                const enHuelga = teamGenos.some(g => window.isGenoNeglected && window.isGenoNeglected(g));
+                if (enHuelga) {
+                    alert("⚠️ Al menos uno de tus Genos seleccionados está en huelga (necesidades básicas por debajo del 20%) y se niega a combatir. ¡Cuídalo en el Laboratorio!");
+                    return;
+                }
+            } else {
+                const activeGenoRes = window.miMascota ? (window.miMascota.resistencia !== undefined ? window.miMascota.resistencia : 100) : 100;
+                if (activeGenoRes < 20) {
+                    alert("Tu Geno activo no tiene suficiente Resistencia. Se requieren 20 de Resistencia para combatir (Tiene: " + Math.floor(activeGenoRes) + ").");
+                    return;
+                }
+                if (window.isGenoNeglected && window.isGenoNeglected(window.miMascota)) {
+                    alert("⚠️ Tu Geno activo está en huelga (necesidades básicas por debajo del 20%) y se niega a combatir. ¡Cuídalo en el Laboratorio!");
+                    return;
+                }
             }
         }
 
@@ -348,47 +360,56 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function iniciarPeleaConfirmada(quiereJefe) {
-        if (window.nexoEnergy < 10) {
-            alert("No tienes suficiente Energía Nexo para combatir.");
-            return;
-        }
-        if (ColiseumLogic.modoCombate === '3v3') {
-            const teamGenos = (ColiseumLogic.playerTeamIds || []).map(id => window.misGenos.find(g => String(g.id) === String(id))).filter(Boolean);
-            if (teamGenos.length < 3) {
-                alert("No tienes un equipo de 3 Genos configurado correctamente.");
+        const esTorreActiva = (ColiseumLogic.modoCombate === 'torre' && window.towerSessionActive);
+        
+        if (!esTorreActiva) {
+            if (window.nexoEnergy < 10) {
+                alert("No tienes suficiente Energía Nexo para combatir.");
                 return;
             }
-            const sinResistencia = teamGenos.some(g => (g.resistencia !== undefined ? g.resistencia : 100) < 20);
-            if (sinResistencia) {
-                alert("Al menos uno de tus Genos seleccionados no tiene suficiente Resistencia.");
-                return;
-            }
-            const enHuelga = teamGenos.some(g => window.isGenoNeglected && window.isGenoNeglected(g));
-            if (enHuelga) {
-                alert("⚠️ Al menos uno de tus Genos seleccionados está en huelga (necesidades básicas por debajo del 20%) y se niega a combatir. ¡Cuídalo en el Laboratorio!");
-                return;
-            }
-        } else {
-            const activeGenoRes = window.miMascota ? (window.miMascota.resistencia !== undefined ? window.miMascota.resistencia : 100) : 100;
-            if (activeGenoRes < 20) {
-                alert("Tu Geno activo no tiene suficiente Resistencia.");
-                return;
-            }
-            if (window.isGenoNeglected && window.isGenoNeglected(window.miMascota)) {
-                alert("⚠️ Tu Geno activo está en huelga (necesidades básicas por debajo del 20%) y se niega a combatir. ¡Cuídalo en el Laboratorio!");
-                return;
-            }
-        }
-
-        if (window.NexoEnergyManager) {
-            window.NexoEnergyManager.descontarEnergia(10);
             if (ColiseumLogic.modoCombate === '3v3') {
                 const teamGenos = (ColiseumLogic.playerTeamIds || []).map(id => window.misGenos.find(g => String(g.id) === String(id))).filter(Boolean);
-                teamGenos.forEach(geno => {
-                    window.NexoEnergyManager.descontarResistenciaGeno(geno, 20);
-                });
+                if (teamGenos.length < 3) {
+                    alert("No tienes un equipo de 3 Genos configurado correctamente.");
+                    return;
+                }
+                const sinResistencia = teamGenos.some(g => (g.resistencia !== undefined ? g.resistencia : 100) < 20);
+                if (sinResistencia) {
+                    alert("Al menos uno de tus Genos seleccionados no tiene suficiente Resistencia.");
+                    return;
+                }
+                const enHuelga = teamGenos.some(g => window.isGenoNeglected && window.isGenoNeglected(g));
+                if (enHuelga) {
+                    alert("⚠️ Al menos uno de tus Genos seleccionados está en huelga (necesidades básicas por debajo del 20%) y se niega a combatir. ¡Cuídalo en el Laboratorio!");
+                    return;
+                }
             } else {
-                window.NexoEnergyManager.descontarResistenciaGeno(window.miMascota, 20);
+                const activeGenoRes = window.miMascota ? (window.miMascota.resistencia !== undefined ? window.miMascota.resistencia : 100) : 100;
+                if (activeGenoRes < 20) {
+                    alert("Tu Geno activo no tiene suficiente Resistencia.");
+                    return;
+                }
+                if (window.isGenoNeglected && window.isGenoNeglected(window.miMascota)) {
+                    alert("⚠️ Tu Geno activo está en huelga (necesidades básicas por debajo del 20%) y se niega a combatir. ¡Cuídalo en el Laboratorio!");
+                    return;
+                }
+            }
+
+            if (window.NexoEnergyManager) {
+                window.NexoEnergyManager.descontarEnergia(10);
+                if (ColiseumLogic.modoCombate === '3v3') {
+                    const teamGenos = (ColiseumLogic.playerTeamIds || []).map(id => window.misGenos.find(g => String(g.id) === String(id))).filter(Boolean);
+                    teamGenos.forEach(geno => {
+                        window.NexoEnergyManager.descontarResistenciaGeno(geno, 20);
+                    });
+                } else {
+                    window.NexoEnergyManager.descontarResistenciaGeno(window.miMascota, 20);
+                }
+            }
+
+            if (ColiseumLogic.modoCombate === 'torre') {
+                window.towerSessionActive = true;
+                window.towerSessionEvAccumulated = 0;
             }
         }
 
@@ -839,41 +860,73 @@ document.addEventListener("DOMContentLoaded", () => {
             
             if (ColiseumLogic.modoCombate === 'torre') {
                 const floor = window.currentTowerFloor || 1;
-                let isClaimedThisWeek = (floor <= window.towerClaimedFloorThisWeek);
                 let isFirstTimeUnlock = (floor > window.maxFloor);
                 let evReward = 0;
                 let rewardMsg = "";
                 
-                if (!isClaimedThisWeek) {
-                    evReward = 10 + floor * 2;
-                    if (isFirstTimeUnlock) {
-                        evReward = Math.round(evReward * 1.5);
-                        rewardMsg += `¡BONO DE PRIMER DESBLOQUEO! (+50% EV). `;
-                        if (Math.random() < 0.10) {
-                            if (window.miInventario && window.miInventario.items) {
-                                const itemObj = { id: "plano_cosmetico_raro", name: "Plano Cosmético Raro", quantity: 1, type: "cosmetic_plan" };
+                if (isFirstTimeUnlock) {
+                    if (floor >= 1 && floor <= 9) {
+                        evReward = 100;
+                    } else if (floor === 10) {
+                        evReward = 400;
+                        if (window.miInventario) {
+                            const itemObj = { id: "plano_cosmetico_raro", name: "Plano Cosmético Raro", count: 1, type: "cosmetic_plan" };
+                            if (!window.miInventario.items) window.miInventario.items = [];
+                            if (typeof window.miInventario.addItem === "function") {
+                                window.miInventario.addItem(itemObj);
+                            } else {
                                 window.miInventario.items.push(itemObj);
-                                rewardMsg += `¡Y encontraste un Plano Cosmético Raro! `;
                             }
+                            rewardMsg += `¡Y encontraste un Plano Cosmético Raro garantizado! `;
                         }
+                    } else if (floor >= 11 && floor <= 19) {
+                        evReward = 200;
+                    } else if (floor === 20) {
+                        evReward = 800;
+                        if (window.miInventario) {
+                            const itemObj = { id: "plano_cosmetico_raro", name: "Plano Cosmético Raro", count: 1, type: "cosmetic_plan" };
+                            if (!window.miInventario.items) window.miInventario.items = [];
+                            if (typeof window.miInventario.addItem === "function") {
+                                window.miInventario.addItem(itemObj);
+                            } else {
+                                window.miInventario.items.push(itemObj);
+                            }
+                            rewardMsg += `¡Y encontraste un Plano Cosmético Raro garantizado! `;
+                        }
+                    } else if (floor >= 21 && floor <= 25) {
+                        evReward = 300;
+                    } else if (floor >= 26 && floor <= 29) {
+                        evReward = 500;
+                    } else if (floor === 30) {
+                        evReward = 900;
+                        if (window.miInventario) {
+                            const itemObj = { id: "plano_cosmetico_raro", name: "Plano Cosmético Raro", count: 1, type: "cosmetic_plan" };
+                            if (!window.miInventario.items) window.miInventario.items = [];
+                            if (typeof window.miInventario.addItem === "function") {
+                                window.miInventario.addItem(itemObj);
+                            } else {
+                                window.miInventario.items.push(itemObj);
+                            }
+                            rewardMsg += `¡Y encontraste un Plano Cosmético Raro garantizado y Checkpoint 3! `;
+                        }
+                    } else {
+                        evReward = 500;
                     }
-                    
-                    if (!window.miInventario) window.miInventario = { vitalEssence: 0, items: [] };
-                    window.miInventario.vitalEssence = (window.miInventario.vitalEssence || 0) + evReward;
-                    window.towerClaimedFloorThisWeek = Math.max(window.towerClaimedFloorThisWeek, floor);
                 } else {
-                    evReward = Math.max(2, Math.round((10 + floor * 2) * 0.20));
-                    rewardMsg = "¡Compensación por piso repetido! (20% EV). ";
-                    if (!window.miInventario) window.miInventario = { vitalEssence: 0, items: [] };
-                    window.miInventario.vitalEssence = (window.miInventario.vitalEssence || 0) + evReward;
+                    evReward = 0;
+                    rewardMsg = "Piso repetido. ";
                 }
                 
+                window.towerSessionEvAccumulated = (window.towerSessionEvAccumulated || 0) + evReward;
                 window.maxFloor = Math.max(window.maxFloor, floor);
                 
                 ColiseumUI.agregarLog(`<span style="color:#69f0ae; font-weight:bold;">🗼 PISO ${floor} SUPERADO.</span>`);
                 if (evReward > 0) {
-                    ColiseumUI.agregarLog(`<span style="color:#69f0ae; font-weight:bold;">¡Recompensa: +${evReward} EV! ${rewardMsg}</span>`);
+                    ColiseumUI.agregarLog(`<span style="color:#69f0ae; font-weight:bold;">¡Recompensa acumulada: +${evReward} EV! ${rewardMsg}</span>`);
+                } else {
+                    ColiseumUI.agregarLog(`<span style="color:#aaa;">Piso repetido. 0 EV adicional.</span>`);
                 }
+                ColiseumUI.agregarLog(`<span style="color:#ffd700; font-weight:bold;">Esencia Acumulada en esta tanda: ${window.towerSessionEvAccumulated} EV</span>`);
                 
                 window.currentTowerFloor = floor + 1;
                 if (window.guardarProgreso) window.guardarProgreso();
@@ -935,6 +988,10 @@ document.addEventListener("DOMContentLoaded", () => {
             if (ColiseumLogic.modoCombate === '3v3') {
                 xpGanada *= 3;
                 ColiseumUI.agregarLog(`<span style="color:#aaa">Ganaste ${xpGanada} XP para cada miembro de tu equipo.</span>`);
+                
+                if (!window.miInventario) window.miInventario = { vitalEssence: 0, items: [] };
+                window.miInventario.vitalEssence = (window.miInventario.vitalEssence || 0) + 450;
+                ColiseumUI.agregarLog(`<span style="color:#69f0ae; font-weight:bold;">✨ ¡Recompensa de Combate 3v3: +450 EV!</span>`);
                 
                 const teamGenos = (ColiseumLogic.playerTeamIds || []).map(id => window.misGenos.find(g => String(g.id) === String(id))).filter(Boolean);
                 teamGenos.forEach(geno => {
@@ -1021,6 +1078,12 @@ document.addEventListener("DOMContentLoaded", () => {
             } else {
                 ColiseumUI.agregarLog(`<span style="color:#aaa">Ganaste ${xpGanada} XP.</span>`);
                 if (window.ganarXP) window.ganarXP(xpGanada);
+                
+                if (ColiseumLogic.modoCombate === 'estandar') {
+                    if (!window.miInventario) window.miInventario = { vitalEssence: 0, items: [] };
+                    window.miInventario.vitalEssence = (window.miInventario.vitalEssence || 0) + 300;
+                    ColiseumUI.agregarLog(`<span style="color:#69f0ae; font-weight:bold;">✨ ¡Recompensa de Combate 1v1: +300 EV!</span>`);
+                }
 
                 if (window.miMascota) {
                     if (window.miMascota.diversion === undefined) window.miMascota.diversion = 100;
@@ -1065,8 +1128,27 @@ document.addEventListener("DOMContentLoaded", () => {
                 const floor = window.currentTowerFloor || 1;
                 const checkpoint = Math.floor((floor - 1) / 10) * 10 + 1;
                 window.currentTowerFloor = checkpoint;
-                ColiseumUI.agregarLog(`<span style="color:#f44336; font-weight:bold;">💀 HAS CAÍDO EN EL PISO ${floor}. Deberás reanudar desde el checkpoint: Piso ${checkpoint}.</span>`);
+                
+                const evAPagar = window.towerSessionEvAccumulated || 0;
+                if (evAPagar > 0) {
+                    if (!window.miInventario) window.miInventario = { vitalEssence: 0, items: [] };
+                    window.miInventario.vitalEssence = (window.miInventario.vitalEssence || 0) + evAPagar;
+                    ColiseumUI.agregarLog(`<span style="color:#69f0ae; font-weight:bold;">✨ ¡Derrota! Recibes el 100% de la esencia acumulada en la tanda: +${evAPagar} EV.</span>`);
+                }
+                window.towerSessionActive = false;
+                window.towerSessionEvAccumulated = 0;
+                
+                ColiseumUI.agregarLog(`<span style="color:#f44336; font-weight:bold;">💀 HAS CAÍDO EN EL PISO ${floor}. Deberás reanudar desde el checkpoint: Piso ${checkpoint}. Tanda finalizada.</span>`);
                 if (window.guardarProgreso) window.guardarProgreso();
+            } else if (ColiseumLogic.modoCombate === 'estandar') {
+                if (!window.miInventario) window.miInventario = { vitalEssence: 0, items: [] };
+                window.miInventario.vitalEssence = (window.miInventario.vitalEssence || 0) + 50;
+                ColiseumUI.agregarLog(`<span style="color:#ff8a80; font-weight:bold;">✨ ¡Consolación 1v1: +50 EV!</span>`);
+            } else if (ColiseumLogic.modoCombate === '3v3') {
+                if (!window.miInventario) window.miInventario = { vitalEssence: 0, items: [] };
+                window.miInventario.vitalEssence = (window.miInventario.vitalEssence || 0) + 75;
+                ColiseumUI.agregarLog(`<span style="color:#ff8a80; font-weight:bold;">✨ ¡Consolación 3v3: +75 EV!</span>`);
+            }
             } else if (ColiseumLogic.modoCombate === 'pvp') {
                 window.arenaBattlesPlayed++;
                 window.arenaLosses++;
@@ -1107,6 +1189,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 window.ganarXPLaboratorio(loseXp, "Derrota en el Coliseo");
             }
             ColiseumUI.agregarLog(`<span style="color:#ff8a80; font-weight:bold;">🧪 +${loseXp} XP de Laboratorio.</span>`);
+        }
+        
+        if (window.miInventario && typeof window.miInventario.updateUI === 'function') {
+            window.miInventario.updateUI();
         }
 
         setTimeout(() => {
@@ -1769,9 +1855,9 @@ document.addEventListener("DOMContentLoaded", () => {
         
         ColiseumUI.limpiarLog();
         ColiseumUI.agregarLog("<span style='color:#00e5ff;'>🔍 Escaneando canales de Supabase Realtime Broadcast...</span>");
-        ColiseumUI.agregarLog("<span style='color:#aaa;'>Buscando rival en vivo en tu misma liga (Espera de 30 segundos)...</span>");
+        ColiseumUI.agregarLog("<span style='color:#aaa;'>Buscando rival en vivo en tu misma liga (Espera de 10 segundos)...</span>");
         
-        let seconds = 30;
+        let seconds = 10;
         let overlay = document.getElementById("coliseum-matchmaking-overlay");
         
         if (!overlay) {
@@ -1795,7 +1881,7 @@ document.addEventListener("DOMContentLoaded", () => {
             overlay.innerHTML = `
                 <div class="spinner" style="border: 4px solid rgba(0,229,255,0.1); border-top: 4px solid #00e5ff; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 20px;"></div>
                 <h3 style="color:#00e5ff; text-transform:uppercase; letter-spacing:1px; margin:0 0 10px 0; font-size:14px; font-weight:bold;">Buscando Rival en Vivo</h3>
-                <div id="matchmaking-countdown" style="font-size:24px; font-weight:bold; color:#fff; margin-bottom:10px;">30s</div>
+                <div id="matchmaking-countdown" style="font-size:24px; font-weight:bold; color:#fff; margin-bottom:10px;">10s</div>
                 <p style="color:#cbd5e1; font-size:11px; text-align:center; padding:0 20px; line-height:1.3;">Escaneando canal de Supabase Broadcast en tiempo real...</p>
                 <button id="cancel-matchmaking-btn" style="margin-top:20px; background:#111b24; border:1px solid #ff3d00; color:#ff3d00; padding:8px 16px; border-radius:6px; font-size:10px; font-weight:bold; cursor:pointer;">Cancelar</button>
                 <style>
@@ -1860,6 +1946,29 @@ document.addEventListener("DOMContentLoaded", () => {
         };
         const excludedElement = counterMap[activeGeno.element] || "Normal";
         
+        // Elemento que vence al jugador
+        const counterDelJugador = { "Biomutante": "Viral", "Sintético": "Biomutante", "Tóxico": "Sintético", "Radiactivo": "Tóxico", "Cibernético": "Radiactivo", "Viral": "Cibernético" };
+        const counterElement = counterDelJugador[activeGeno.element] || "Normal";
+
+        // Válvula de seguridad actuarial
+        const wins = window.arenaWins || 0;
+        const losses = window.arenaLosses || 0;
+        const cumpleRequisitosValvula = (wins >= 3) && (losses < 3);
+        let esValvulaActiva = false;
+
+        if (cumpleRequisitosValvula && window.supabaseClient) {
+            try {
+                const { data, error } = await window.supabaseClient
+                    .rpc('obtener_estado_valvula', { p_liga: activeLeague });
+                if (!error && data !== null) {
+                    esValvulaActiva = !!data;
+                }
+            } catch (err) {
+                console.error("[VALVULA CHECK ERROR]", err);
+            }
+        }
+        const aplicarValvula = esValvulaActiva && cumpleRequisitosValvula;
+        
         let rivalGeno = null;
         let rivalName = "";
         let ghostOwnerId = null;
@@ -1878,35 +1987,70 @@ document.addEventListener("DOMContentLoaded", () => {
                         const mascot = p.datos_juego.mascotaActiva;
                         const gLeague = window.ColiseumManager.obtenerLigaPorGeno(mascot);
                         if (gLeague !== activeLeague) return false;
-                        if (mascot.element === excludedElement) return false;
-                        return true;
+                        
+                        if (aplicarValvula) {
+                            // En modo válvula de seguridad, no excluimos ningún elemento
+                            return true;
+                        } else {
+                            if (mascot.element === excludedElement) return false;
+                            return true;
+                        }
                     });
                     
                     if (validGhosts.length > 0) {
+                        let candidates = validGhosts;
+                        if (aplicarValvula) {
+                            // Priorizar fantasmas que tengan el elemento counter
+                            const counterGhosts = validGhosts.filter(g => g.datos_juego.mascotaActiva.element === counterElement);
+                            if (counterGhosts.length > 0) {
+                                candidates = counterGhosts;
+                            }
+                        }
+
                         // Preferimos fantasmas que tengan menos de 5 usos hoy
-                        let ghostsUnderLimit = validGhosts.filter(g => (g.usos_hoy || 0) < 5);
+                        let ghostsUnderLimit = candidates.filter(g => (g.usos_hoy || 0) < 5);
                         const chosenGhost = ghostsUnderLimit.length > 0 
                             ? ghostsUnderLimit[Math.floor(Math.random() * ghostsUnderLimit.length)]
-                            : validGhosts[Math.floor(Math.random() * validGhosts.length)];
+                            : candidates[Math.floor(Math.random() * candidates.length)];
                         
                         rivalGeno = chosenGhost.datos_juego.mascotaActiva;
                         rivalName = rivalGeno.alias || rivalGeno.name || "Geno Fantasma";
                         rivalGeno.iftttRules = chosenGhost.ifttt_script || [];
                         ghostOwnerId = chosenGhost.id;
                         
-                        // Dado genético asíncrono
-                        const rollLvl = Math.random();
-                        let lvlBonus = rollLvl < 0.50 ? 1 : 2; // Garantiza +1 o +2 niveles de ventaja
-                        const rollQual = Math.random();
-                        let qualBonus = rollQual < 0.33 ? 0 : (rollQual < 0.66 ? 1 : 2);
-                        
-                        rivalGeno.level = (rivalGeno.level || 1) + lvlBonus;
-                        if (rivalGeno.stats) {
-                            rivalGeno.stats.hp += lvlBonus * 5 + qualBonus * 8;
-                            rivalGeno.stats.atk += lvlBonus * 1 + qualBonus * 2;
-                            rivalGeno.stats.def += lvlBonus * 1 + qualBonus * 2;
-                            rivalGeno.stats.spd += lvlBonus * 1 + qualBonus * 2;
-                            rivalGeno.stats.luk += lvlBonus * 1 + qualBonus * 2;
+                        if (aplicarValvula) {
+                            ColiseumUI.agregarLog("<span style='color:#ff003c; font-weight:bold;'>⚠️ [SEGURIDAD] Válvula Actuarial de Liga Activa. Calibrando rival asíncrono...</span>");
+                            
+                            rivalGeno.element = counterElement;
+                            rivalGeno.level = Math.max(rivalGeno.level || 1, (activeGeno.level || 1) + 3);
+                            
+                            rivalGeno.rarity = activeGeno.rarity || "Común";
+                            if (rivalGeno.quality !== undefined && activeGeno.quality !== undefined) {
+                                rivalGeno.quality = Math.max(rivalGeno.quality, activeGeno.quality + 5);
+                            }
+                            
+                            const playerStats = activeGeno.stats || { hp: 100, atk: 15, def: 5, spd: 10, luk: 5 };
+                            if (!rivalGeno.stats) rivalGeno.stats = {};
+                            rivalGeno.stats.hp = Math.max(rivalGeno.stats.hp || 100, Math.floor(playerStats.hp * 1.15));
+                            rivalGeno.stats.atk = Math.max(rivalGeno.stats.atk || 15, Math.floor(playerStats.atk * 1.15));
+                            rivalGeno.stats.def = Math.max(rivalGeno.stats.def || 5, Math.floor(playerStats.def * 1.15));
+                            rivalGeno.stats.spd = Math.max(rivalGeno.stats.spd || 10, Math.floor(playerStats.spd * 1.12));
+                            rivalGeno.stats.luk = Math.max(rivalGeno.stats.luk || 5, Math.floor(playerStats.luk * 1.15));
+                        } else {
+                            // Dado genético asíncrono
+                            const rollLvl = Math.random();
+                            let lvlBonus = rollLvl < 0.50 ? 1 : 2; // Garantiza +1 o +2 niveles de ventaja
+                            const rollQual = Math.random();
+                            let qualBonus = rollQual < 0.33 ? 0 : (rollQual < 0.66 ? 1 : 2);
+                            
+                            rivalGeno.level = (rivalGeno.level || 1) + lvlBonus;
+                            if (rivalGeno.stats) {
+                                rivalGeno.stats.hp += lvlBonus * 5 + qualBonus * 8;
+                                rivalGeno.stats.atk += lvlBonus * 1 + qualBonus * 2;
+                                rivalGeno.stats.def += lvlBonus * 1 + qualBonus * 2;
+                                rivalGeno.stats.spd += lvlBonus * 1 + qualBonus * 2;
+                                rivalGeno.stats.luk += lvlBonus * 1 + qualBonus * 2;
+                            }
                         }
                     }
                 }
@@ -1925,10 +2069,14 @@ document.addEventListener("DOMContentLoaded", () => {
             if (isLive) {
                 ColiseumUI.agregarLog("<span style='color:#00ffcc;'>¡Rival en vivo encontrado! Iniciando emparejamiento interactivo...</span>");
             } else {
-                ColiseumUI.agregarLog("<span style='color:#b85cff;'>No se encontraron fantasmas guardados en esta liga. Inyectando IA de Liga.</span>");
+                if (aplicarValvula) {
+                    ColiseumUI.agregarLog("<span style='color:#ff003c; font-weight:bold;'>⚠️ [SEGURIDAD] No se encontraron fantasmas. Inyectando IA de Liga calibrada...</span>");
+                } else {
+                    ColiseumUI.agregarLog("<span style='color:#b85cff;'>No se encontraron fantasmas guardados en esta liga. Inyectando IA de Liga.</span>");
+                }
             }
             
-            const procRivalObj = window.ColiseumLogic.crearRivalObjeto(targetLevel, targetRarity, false, true);
+            const procRivalObj = window.ColiseumLogic.crearRivalObjeto(targetLevel, targetRarity, false, true, aplicarValvula);
             rivalGeno = procRivalObj.adn;
             rivalName = procRivalObj.nombre;
         }
@@ -1971,7 +2119,12 @@ document.addEventListener("DOMContentLoaded", () => {
             danoRecibidoEsteTurno: 0,
             danoRecibidoTurnoAnterior: 0,
             proxVenenoDoble: false,
-            ataquesEquipados: {
+            ataquesEquipados: (aplicarValvula) ? {
+                "ataque": window.ColiseumLogic.obtenerAtaqueAleatorio(rivalGeno.element || "Normal", "basicos"),
+                "especial": window.ColiseumLogic.obtenerAtaqueAleatorio(rivalGeno.element || "Normal", "especiales"),
+                "tactica": window.ColiseumLogic.obtenerAtaqueAleatorio(rivalGeno.element || "Normal", "soportes"),
+                "definitivo": (rivalGeno.level >= 20) ? window.ColiseumLogic.obtenerAtaqueAleatorio(rivalGeno.element || "Normal", "definitivos") : null
+            } : {
                 "ataque": window.ColiseumLogic.obtenerAtaqueAleatorio(rivalGeno.element || "Normal", "basicos"),
                 "especial": window.ColiseumLogic.obtenerAtaqueAleatorio(rivalGeno.element || "Normal", "especiales"),
                 "tactica": window.ColiseumLogic.obtenerAtaqueAleatorio(rivalGeno.element || "Normal", "soportes"),
@@ -2268,29 +2421,24 @@ document.addEventListener("DOMContentLoaded", () => {
         
         if (wins === 5) {
             polPayout = 1.50;
-            evPayout = 12.00; // Compensación con buena progresión en EV
-            itemsGranted.push({ id: "implante_raro", name: "Implante Raro", qty: 2 });
+            evPayout = 0.50;
+            itemsGranted.push({ id: "implante_raro", name: "Implante Raro", qty: 1 });
         } else if (wins === 4) {
             polPayout = 0.80;
-            evPayout = 10.00;
-            itemsGranted.push({ id: "implante_raro", name: "Implante Raro", qty: 1 });
+            evPayout = 1.00;
             itemsGranted.push({ id: "implante_comun", name: "Implante Común", qty: 1 });
         } else if (wins === 3) {
             polPayout = 0.50; // Break-even
-            evPayout = 8.00;
-            itemsGranted.push({ id: "implante_comun", name: "Implante Común", qty: 1 });
+            evPayout = 2.50;
         } else if (wins === 2) {
             polPayout = 0.20;
-            evPayout = 6.00;
-            itemsGranted.push({ id: "implante_comun", name: "Implante Común", qty: 1 });
+            evPayout = 5.00; // Consolación
         } else if (wins === 1) {
             polPayout = 0.00;
-            evPayout = 4.00;
-            itemsGranted.push({ id: "implante_comun", name: "Implante Común", qty: 1 });
+            evPayout = 2.00;
         } else {
             polPayout = 0.00;
-            evPayout = 2.00;
-            itemsGranted.push({ id: "implante_comun", name: "Implante Común", qty: 1 });
+            evPayout = 0.50;
         }
         
         if (evPayout > 0) {

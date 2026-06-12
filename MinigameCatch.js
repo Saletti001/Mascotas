@@ -123,7 +123,7 @@ class MinigameCatch {
 
         if (rand < 0.15) {
             // Gema de EV — siempre cae rápido
-            type  = "ev";
+            type  = Math.random() < 0.70 ? "ev_small" : "ev_large";
             icon  = null; // usaremos SVG inline
             speed = 9 + Math.random() * 2; // 9-11 px/tick
         } else if (rand < 0.40) {
@@ -144,16 +144,19 @@ class MinigameCatch {
         item.style.top      = "-40px";
         item.dataset.type   = type;
 
-        if (type === "ev") {
+        if (type === "ev_small" || type === "ev_large") {
             item.style.fontSize = "0"; // sin emoji
-            item.style.width    = "22px";
-            item.style.height   = "22px";
+            const isLarge = type === "ev_large";
+            const size = isLarge ? "30px" : "22px";
+            const textVal = isLarge ? "10" : "5";
+            item.style.width    = size;
+            item.style.height   = size;
             item.style.display  = "flex";
             item.style.alignItems = "center";
             item.style.justifyContent = "center";
-            item.innerHTML = `<svg width="22" height="22" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <polygon points="12,2 20,7 20,17 12,22 4,17 4,7" fill="#FFD700" stroke="#FFA000" stroke-width="1.5"/>
-                <text x="12" y="16" text-anchor="middle" font-size="9" fill="#0d1a24" font-weight="bold" font-family="monospace">EV</text>
+            item.innerHTML = `<svg width="${size}" height="${size}" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="12,2 20,7 20,17 12,22 4,17 4,7" fill="${isLarge ? "#FF8F00" : "#FFD700"}" stroke="${isLarge ? "#D84315" : "#FFA000"}" stroke-width="1.5"/>
+                <text x="12" y="16" text-anchor="middle" font-size="9" fill="#0d1a24" font-weight="bold" font-family="monospace">${textVal}</text>
                 <circle cx="12" cy="12" r="4" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="0.5"/>
             </svg>`;
             // Brillo pulsante
@@ -194,15 +197,12 @@ class MinigameCatch {
             ) {
                 if (item.dataset.type === "apple") {
                     this.score++;
-                } else if (item.dataset.type === "ev") {
-                    let evGemVal = 0.05;
-                    if (window.GameEconomyConfig && window.GameEconomyConfig.gameplay_rewards && window.GameEconomyConfig.gameplay_rewards.arcade_catch && window.GameEconomyConfig.gameplay_rewards.arcade_catch.ev_gem_value !== undefined) {
-                        evGemVal = window.GameEconomyConfig.gameplay_rewards.arcade_catch.ev_gem_value;
-                    }
+                } else if (item.dataset.type === "ev_small" || item.dataset.type === "ev_large") {
+                    const evGemVal = item.dataset.type === "ev_large" ? 10 : 5;
                     this.evGanada = parseFloat((this.evGanada + evGemVal).toFixed(2));
-                    // Acumular en el Geno activo inmediatamente
-                    if (window.miMascota && window.miMascota.id && window.miMascota.id !== "temp") {
-                        window.miMascota.evAcumulada = Math.min(10.0, (window.miMascota.evAcumulada || 0) + evGemVal);
+                    // Acreditar directamente al inventario del jugador
+                    if (window.miInventario && typeof window.miInventario.addEssence === "function") {
+                        window.miInventario.addEssence(evGemVal);
                     }
                     // Feedback visual rápido
                     this.playArea.style.backgroundColor = "rgba(255, 215, 0, 0.15)";
@@ -273,11 +273,7 @@ class MinigameCatch {
                 if (window.miMascota.amistad   === undefined) window.miMascota.amistad   = 0;
                 window.miMascota.diversion = Math.min(100, window.miMascota.diversion + 20);
 
-                // Sincronizar EV acumulada durante la partida
-                if (this.evGanada > 0) {
-                    if (window.miMascota.evAcumulada === undefined) window.miMascota.evAcumulada = 0;
-                    window.miMascota.evAcumulada = Math.min(10.0, window.miMascota.evAcumulada);
-                }
+                // Sincronizar EV acumulada durante la partida - Eliminado para evitar que cuente contra el límite diario de cuidado
                 
                 const hoy = new Date().toDateString();
                 if (!window.miMascota.registroAmistadDiaria) window.miMascota.registroAmistadDiaria = {};

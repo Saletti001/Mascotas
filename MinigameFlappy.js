@@ -10,6 +10,7 @@ class MinigameFlappy {
         this.btnQuit = document.getElementById("btn-quit-minigame");
 
         this.score = 0;
+        this.evGanada = 0;
         this.isPlaying = false;
         
         // Parámetros de física
@@ -75,6 +76,7 @@ class MinigameFlappy {
         this.playArea.classList.add("game-flappy-bg");
 
         this.score = 0;
+        this.evGanada = 0;
         this.playerY = 130;
         this.playerVelocity = 0;
         this.tubes = [];
@@ -134,7 +136,8 @@ class MinigameFlappy {
     }
 
     updateUI() {
-        this.scoreDisplay.innerText = `Puntos: ${this.score}`;
+        const evStr = this.evGanada > 0 ? ` | ⚡ +${this.evGanada} EV` : "";
+        this.scoreDisplay.innerText = `Puntos: ${this.score}${evStr}`;
         this.timerDisplay.innerText = `⏱️ Supervivencia`;
     }
 
@@ -254,6 +257,16 @@ class MinigameFlappy {
             if (!tube.passed && tube.x + tube.width < playerX + 16) {
                 tube.passed = true;
                 this.score++;
+                
+                // Calcular EV ganada por este tubo
+                let evTubo = 10;
+                if (this.score > 20) {
+                    evTubo = 50;
+                } else if (this.score > 10) {
+                    evTubo = 20;
+                }
+                this.evGanada += evTubo;
+
                 this.updateUI();
                 if (window.Sonidos) {
                     window.Sonidos.play("select");
@@ -321,6 +334,10 @@ class MinigameFlappy {
                 });
             }
 
+            if (this.evGanada > 0 && window.miInventario && typeof window.miInventario.addEssence === "function") {
+                window.miInventario.addEssence(this.evGanada);
+            }
+
             const xpObtenida = typeof window.completarMinijuegoArcade === 'function' 
                 ? window.completarMinijuegoArcade("Flappy Geno") 
                 : 0;
@@ -353,12 +370,14 @@ class MinigameFlappy {
                 else if (window.guardarProgreso) window.guardarProgreso();
 
                 let msg = `¡Colisión detectada!\nConseguiste: ${this.score} puntos.\nRatio 5:1 = Ganas ${reward} 🍎.`;
+                if (this.evGanada > 0) msg += `\n⚡ +${this.evGanada} EV obtenidas!`;
                 if (xpObtenida > 0) msg += `\n🧪 +${xpObtenida} XP de Laboratorio!`;
                 if (gananciaExplicita > 0) msg += `\n¡Diversión +20% y Amistad +${gananciaExplicita}!`;
                 else                       msg += `\n¡Diversión +20%! (Amistad por Arcade ya obtenida hoy)`;
                 alert(msg);
             } else {
                 let msg = `¡Colisión detectada!\nConseguiste: ${this.score} puntos.\nRatio 5:1 = Ganas ${reward} 🍎.`;
+                if (this.evGanada > 0) msg += `\n⚡ +${this.evGanada} EV obtenidas!`;
                 if (xpObtenida > 0) msg += `\n🧪 +${xpObtenida} XP de Laboratorio!`;
                 alert(msg);
             }
