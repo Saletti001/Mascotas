@@ -117,7 +117,7 @@ window.ShopManager = {
                         <h2 class="screen-title" style="color: #4dd0e1; text-align: center; text-shadow: none; margin: 0 0 25px 0; font-weight: 900; letter-spacing: 2px;">TERMINAL COMERCIAL</h2>
                         
                         <div style="display: flex; justify-content: center; margin-bottom: 15px; padding: 0; border-bottom: 1px solid #384a5e;">
-                            <button id="tab-shop-bazar" class="shop-tab-neon" style="--tab-color: #69F0AE;">Suministros</button>
+                            <button id="tab-shop-bazar" class="shop-tab-neon" style="--tab-color: #69F0AE;">Tienda Nexo</button>
                             <button id="tab-shop-dojo" class="shop-tab-neon" style="--tab-color: #00E5FF;">Lab. de Implantes</button>
                             <button id="tab-shop-premium" class="shop-tab-neon" style="--tab-color: #E040FB;">Premium</button>
                         </div>
@@ -126,7 +126,7 @@ window.ShopManager = {
                     <div class="tienda-scroll-area" style="flex: 1; overflow-y: auto; padding: 0 10px 20px 10px;">
                         
                         <div id="shop-bazar-view" class="shop-view">
-                            <p style="text-align: center; color: #80deea; font-size: 10px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Consumibles y herramientas de supervivencia</p>
+                            <p style="text-align: center; color: #80deea; font-size: 10px; font-weight: bold; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px;">Tienda Nexo - Artículos y suministros esenciales</p>
                             <div id="shop-bazar-grid" class="shop-grid"></div>
                         </div>
                         
@@ -513,29 +513,34 @@ window.ShopManager = {
             { id: "antidoto_uni", name: "Antídoto Universal", icon: this.iconosSVG["antidoto_uni"], type: "consumable", price: 10.00, currency: "EV", desc: "Limpia cualquier estado alterado." },
             { id: "nexo_charge", name: "Recarga Nexo", icon: "⚡", type: "consumable", price: 2000.00, currency: "EV", desc: "Célula de energía Nexo ultraconcentrada. Restaura el 100% de la barra de Energía Nexo de forma inmediata." },
             { id: "catalizador_xp", name: "Catalizador Científico", icon: this.iconosSVG["catalizador_xp"], type: "lab_xp_boost", levelsGranted: 1, price: 5000.00, currency: "EV", desc: "Inyección de conocimiento puro. Otorga exactamente la XP necesaria para subir 1 nivel completo de Laboratorio al instante." },
-            { id: "comercio_licencia", name: "Permiso de Comercio", icon: "📜", type: "consumable", price: 3000.00, currency: "EV", desc: "Permiso de Acceso a la Red de Comercio del Bazar. Permite depositar, retirar y vender Genos. (Requiere Laboratorio Nv. 5)" }
+            { id: "comercio_licencia", name: "Permiso de Comercio", icon: "📜", type: "consumable", price: 3000.00, currency: "EV", desc: "Permiso de Acceso a la Red de Comercio de la Tienda Nexo. Permite depositar, retirar y vender Genos. (Requiere Laboratorio Nv. 5)" }
         ];
 
         // Sobrescribir con precios dinámicos de Supabase si están disponibles
         if (window.GameEconomyConfig && window.GameEconomyConfig.shop_items && window.GameEconomyConfig.shop_items.bazar) {
             items.forEach(item => {
                 const confItem = window.GameEconomyConfig.shop_items.bazar[item.id];
-                if (confItem && confItem.price !== undefined) {
-                    item.price = confItem.price;
+                if (confItem) {
+                    if (confItem.price !== undefined) {
+                        item.price = confItem.price;
+                    }
+                    if (confItem.currency !== undefined) {
+                        item.currency = confItem.currency;
+                    }
                 }
             });
         }
 
         items.forEach(item => {
             let tarjeta;
-            if(item.id === "bio_nucleo_basico") tarjeta = this.crearTarjeta(item, "#00d2ff", "#005c8a", "EV");
-            else if (item.id === "incubator_01") tarjeta = this.crearTarjeta(item, "#ff9800", "#e65100", "POL");
-            else if (item.id === "ration_auto") tarjeta = this.crearTarjeta(item, "#FF8A80", "#C62828", "EV");
-            else if (item.id === "plasma_shower") tarjeta = this.crearTarjeta(item, "#80D8FF", "#1565C0", "EV");
-            else if (item.id === "nexo_charge") tarjeta = this.crearTarjeta(item, "#FFEA00", "#FFD600", "EV");
-            else if (item.id === "catalizador_xp") tarjeta = this.crearTarjeta(item, "#f9a825", "#e65100", "EV");
-            else if (item.id === "comercio_licencia") tarjeta = this.crearTarjeta(item, "#FFD700", "#9A7B00", "EV");
-            else tarjeta = this.crearTarjeta(item, "#69F0AE", "#2E7D32", "EV");
+            if(item.id === "bio_nucleo_basico") tarjeta = this.crearTarjeta(item, "#00d2ff", "#005c8a", item.currency);
+            else if (item.id === "incubator_01") tarjeta = this.crearTarjeta(item, "#ff9800", "#e65100", item.currency);
+            else if (item.id === "ration_auto") tarjeta = this.crearTarjeta(item, "#FF8A80", "#C62828", item.currency);
+            else if (item.id === "plasma_shower") tarjeta = this.crearTarjeta(item, "#80D8FF", "#1565C0", item.currency);
+            else if (item.id === "nexo_charge") tarjeta = this.crearTarjeta(item, "#FFEA00", "#FFD600", item.currency);
+            else if (item.id === "catalizador_xp") tarjeta = this.crearTarjeta(item, "#f9a825", "#e65100", item.currency);
+            else if (item.id === "comercio_licencia") tarjeta = this.crearTarjeta(item, "#FFD700", "#9A7B00", item.currency);
+            else tarjeta = this.crearTarjeta(item, "#69F0AE", "#2E7D32", item.currency);
             
             // Estilos especiales de bloqueo/adquisición para el Permiso de Comercio
             if (item.id === "comercio_licencia") {
@@ -576,9 +581,10 @@ window.ShopManager = {
                 let price = defaultPrice;
                 if (window.GameEconomyConfig && window.GameEconomyConfig.shop_items && window.GameEconomyConfig.shop_items.dojo_base_prices) {
                     const dojoConfig = window.GameEconomyConfig.shop_items.dojo_base_prices;
-                    if (subType === "Soporte" && dojoConfig.Basico !== undefined) price = dojoConfig.Basico;
-                    else if (subType === "Especial" && dojoConfig.Intermedio !== undefined) price = dojoConfig.Intermedio;
+                    if (subType === "Soporte" && dojoConfig.Soporte !== undefined) price = dojoConfig.Soporte;
+                    else if (subType === "Especial" && dojoConfig.Tecnica !== undefined) price = dojoConfig.Tecnica;
                     else if (subType === "Definitivo" && dojoConfig.Definitivo !== undefined) price = dojoConfig.Definitivo;
+                    else if (subType === "Basico" && dojoConfig.Basico !== undefined) price = dojoConfig.Basico;
                 }
                 if(rama) {
                     rama.forEach(atk => {

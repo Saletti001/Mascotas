@@ -653,24 +653,42 @@ document.addEventListener("DOMContentLoaded", () => {
         const siguienteSlot = window.maxGenoSlots + 1;
         const slotsConfig = window.GameEconomyConfig?.mechanics?.slots || {};
         
-        const s7ev = slotsConfig.slot_7_ev !== undefined ? slotsConfig.slot_7_ev : 1500;
-        const s8ev = slotsConfig.slot_8_ev !== undefined ? slotsConfig.slot_8_ev : 3000;
+        let costoEV = slotsConfig[`slot_${siguienteSlot}_ev`];
+        let costoPOL = slotsConfig[`slot_${siguienteSlot}_pol`];
         
-        const s9ev = slotsConfig.slot_9_ev !== undefined ? slotsConfig.slot_9_ev : 6000;
-        const s9pol = slotsConfig.slot_9_pol !== undefined ? slotsConfig.slot_9_pol : 0.50;
+        // Fallback: If both are undefined, search for the highest defined slot configuration values
+        if (costoEV === undefined && costoPOL === undefined) {
+            let maxConfiguredNum = 6;
+            for (const key of Object.keys(slotsConfig)) {
+                const m = key.match(/^slot_(\d+)_(ev|pol)$/);
+                if (m) {
+                    const num = parseInt(m[1]);
+                    if (num > maxConfiguredNum) maxConfiguredNum = num;
+                }
+            }
+            if (maxConfiguredNum > 6) {
+                costoEV = slotsConfig[`slot_${maxConfiguredNum}_ev`];
+                costoPOL = slotsConfig[`slot_${maxConfiguredNum}_pol`];
+            }
+        }
         
-        const s10ev = slotsConfig.slot_10_ev !== undefined ? slotsConfig.slot_10_ev : 12000;
-        const s10pol = slotsConfig.slot_10_pol !== undefined ? slotsConfig.slot_10_pol : 1.00;
-        
-        const s11ev = slotsConfig.slot_11_ev !== undefined ? slotsConfig.slot_11_ev : 15000;
-        const s11pol = slotsConfig.slot_11_pol !== undefined ? slotsConfig.slot_11_pol : 2.00;
+        // Ultimate default fallback if still undefined
+        if (costoEV === undefined) costoEV = 15000;
+        if (costoPOL === undefined) costoPOL = 2.00;
 
         let costoDesc = "";
-        if (siguienteSlot === 7) costoDesc = `${s7ev.toLocaleString()} EV`;
-        else if (siguienteSlot === 8) costoDesc = `${s8ev.toLocaleString()} EV`;
-        else if (siguienteSlot === 9) costoDesc = `${s9ev.toLocaleString()} EV o ${s9pol.toFixed(2)} POL`;
-        else if (siguienteSlot === 10) costoDesc = `${s10ev.toLocaleString()} EV o ${s10pol.toFixed(2)} POL`;
-        else costoDesc = `${s11ev.toLocaleString()} EV o ${s11pol.toFixed(2)} POL`;
+        const hasEV = costoEV !== undefined && costoEV > 0;
+        const hasPOL = costoPOL !== undefined && costoPOL > 0;
+        
+        if (hasEV && hasPOL) {
+            costoDesc = `${costoEV.toLocaleString()} EV o ${costoPOL.toFixed(2)} POL`;
+        } else if (hasEV) {
+            costoDesc = `${costoEV.toLocaleString()} EV`;
+        } else if (hasPOL) {
+            costoDesc = `${costoPOL.toFixed(2)} POL`;
+        } else {
+            costoDesc = `${costoEV.toLocaleString()} EV`;
+        }
 
         const buyCard = document.createElement("div");
         buyCard.style = "background: rgba(138, 43, 226, 0.1); border: 1px solid #8A2BE2; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;";
@@ -688,46 +706,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 else if (typeof window.guardarProgreso === 'function') window.guardarProgreso();
             };
 
-            const slotNum = window.maxGenoSlots + 1;
-            if (slotNum === 7) {
-                const costo = s7ev;
-                const evDisponibles = window.miInventario ? (window.miInventario.vitalEssence || 0) : 0;
-                if (evDisponibles >= costo) {
-                    if (confirm(`¿Confirmas la compra del Slot #7 por ${costo} EV?`)) {
-                        window.miInventario.vitalEssence -= costo;
-                        window.maxGenoSlots += 1;
-                        finalizarCompraSlot();
-                    }
-                } else {
-                    alert(`No tienes suficiente EV para el Slot #7. Requiere: ${costo} EV (Tienes: ${evDisponibles.toFixed(2)} EV).`);
-                }
-            } else if (slotNum === 8) {
-                const costo = s8ev;
-                const evDisponibles = window.miInventario ? (window.miInventario.vitalEssence || 0) : 0;
-                if (evDisponibles >= costo) {
-                    if (confirm(`¿Confirmas la compra del Slot #8 por ${costo} EV?`)) {
-                        window.miInventario.vitalEssence -= costo;
-                        window.maxGenoSlots += 1;
-                        finalizarCompraSlot();
-                    }
-                } else {
-                    alert(`No tienes suficiente EV para el Slot #8. Requiere: ${costo} EV (Tienes: ${evDisponibles.toFixed(2)} EV).`);
-                }
-            } else {
-                let costoEV = s11ev;
-                let costoPOL = s11pol;
-                if (slotNum === 9) {
-                    costoEV = s9ev;
-                    costoPOL = s9pol;
-                } else if (slotNum === 10) {
-                    costoEV = s10ev;
-                    costoPOL = s10pol;
-                }
-                
-                const evDisponibles = window.miInventario ? (window.miInventario.vitalEssence || 0) : 0;
-                const polDisponibles = window.miWallet ? (window.miWallet.pol || 0) : 0;
-                
-                const msg = `Selecciona tu método de pago para el Slot #${slotNum}:\n\n` +
+            const evDisponibles = window.miInventario ? (window.miInventario.vitalEssence || 0) : 0;
+            const polDisponibles = window.miWallet ? (window.miWallet.pol || 0) : 0;
+
+            if (hasEV && hasPOL) {
+                const msg = `Selecciona tu método de pago para el Slot #${siguienteSlot}:\n\n` +
                             `1. Pagar con Esencia Vital: ${costoEV} EV (Tienes: ${evDisponibles.toFixed(2)} EV)\n` +
                             `2. Pagar con $POL: ${costoPOL} POL (Tienes: ${polDisponibles.toFixed(2)} POL)\n\n` +
                             `Escribe 'EV' o 'POL' en el cuadro de texto abajo para confirmar tu pago:`;
@@ -754,6 +737,26 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 } else {
                     alert("Opción no válida. Debes escribir 'EV' o 'POL'.");
+                }
+            } else if (hasEV) {
+                if (evDisponibles >= costoEV) {
+                    if (confirm(`¿Confirmas la compra del Slot #${siguienteSlot} por ${costoEV} EV?`)) {
+                        window.miInventario.vitalEssence -= costoEV;
+                        window.maxGenoSlots += 1;
+                        finalizarCompraSlot();
+                    }
+                } else {
+                    alert(`No tienes suficiente EV para el Slot #${siguienteSlot}. Requiere: ${costoEV} EV (Tienes: ${evDisponibles.toFixed(2)} EV).`);
+                }
+            } else if (hasPOL) {
+                if (polDisponibles >= costoPOL) {
+                    if (confirm(`¿Confirmas la compra del Slot #${siguienteSlot} por ${costoPOL} POL?`)) {
+                        window.miWallet.pol -= costoPOL;
+                        window.maxGenoSlots += 1;
+                        finalizarCompraSlot();
+                    }
+                } else {
+                    alert(`No tienes suficiente POL para el Slot #${siguienteSlot}. Requiere: ${costoPOL} POL (Tienes: ${polDisponibles.toFixed(2)} POL).`);
                 }
             }
         };

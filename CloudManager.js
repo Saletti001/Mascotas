@@ -36,6 +36,7 @@ window.cargarConfiguracionBalance = async function() {
         shop_items: {
             bazar: {
                 bio_nucleo_basico: { price: 3000.0, currency: "EV" },
+                incubator_01: { price: 0.20, currency: "POL" },
                 ration_auto: { price: 200.0, currency: "EV" },
                 plasma_shower: { price: 100.0, currency: "EV" },
                 escaner_basico: { price: 1500.0, currency: "EV" },
@@ -47,8 +48,8 @@ window.cargarConfiguracionBalance = async function() {
             },
             dojo_base_prices: {
                 Basico: 1000.0,
-                Intermedio: 4000.0,
-                Avanzado: 6000.0,
+                Tecnica: 4000.0,
+                Soporte: 6000.0,
                 Definitivo: 10000.0
             },
             premium: {
