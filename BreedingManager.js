@@ -118,7 +118,9 @@ document.addEventListener("DOMContentLoaded", () => {
             if(polText && window.miWallet) polText.innerText = `${window.miWallet.pol.toFixed(1)} POL`;
         }
         const essenceText = document.getElementById("vital-essence-amount");
-        if(essenceText && window.miInventario) essenceText.innerText = parseFloat(Number(window.miInventario.vitalEssence || 0).toFixed(1));
+        if(essenceText && window.miInventario) {
+            essenceText.innerText = typeof window.formatEVDisplay === 'function' ? window.formatEVDisplay(window.miInventario.vitalEssence) : parseFloat(Number(window.miInventario.vitalEssence || 0).toFixed(1));
+        }
     }
 
     function normalizarGenos() {

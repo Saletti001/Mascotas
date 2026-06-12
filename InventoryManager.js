@@ -2,6 +2,18 @@
 // InventoryManager.js - ALMACÉN CON EXPANSIÓN DEV AUTOMÁTICA
 // =========================================
 
+window.formatEVDisplay = function(amount) {
+    if (amount >= 1000) {
+        return (amount / 1000).toFixed(1).replace(/\.0$/, '') + " K";
+    }
+    return parseFloat(Number(amount || 0).toFixed(1));
+};
+
+window.formatFullNumber = function(num) {
+    if (num === undefined || num === null || isNaN(num)) return "0";
+    return Number(num).toLocaleString('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+};
+
 class InventoryManager {
     constructor() {
         this.maxSlots = 10;
@@ -122,8 +134,8 @@ class InventoryManager {
         
         const essenceDisplay = document.getElementById("vital-essence-amount");
         if (essenceDisplay) {
-            // Inyectamos solo el número, el SVG ya vive en el index.html y limitamos a un máximo de 1 decimal
-            essenceDisplay.innerText = parseFloat(Number(this.vitalEssence || 0).toFixed(1));
+            // Inyectamos solo el número, el SVG ya vive en el index.html y formateamos el valor para ahorrar espacio
+            essenceDisplay.innerText = window.formatEVDisplay(this.vitalEssence);
         }
     }
 

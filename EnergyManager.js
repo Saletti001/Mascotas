@@ -352,7 +352,7 @@ window.NexoEnergyManager = {
             if (gHygieneFill) gHygieneFill.style.width = `${higiene}%`;
             if (gFriendship) gFriendship.innerText = `${amistad}/100`;
             if (gFriendshipFill) gFriendshipFill.style.width = `${amistad}%`;
-            if (gEvAccum) gEvAccum.innerText = `${evAcumulada.toFixed(2)} EV`;
+            if (gEvAccum) gEvAccum.innerText = (typeof window.formatFullNumber === 'function' ? window.formatFullNumber(evAcumulada) : evAcumulada.toFixed(2)) + " EV";
         }
 
         if (typeof window.actualizarSuciedadVisual === 'function') window.actualizarSuciedadVisual();

@@ -6,16 +6,31 @@ window.EnergyPackager = {
     comision: 0.10, // 10% de impuesto anti-bot
 
     inyectarUI: function() {
-        // ✨ Inyectamos CSS para matar las flechas de los campos numéricos
+        // ✨ Inyectamos CSS para los botones de selección
         const style = document.createElement('style');
         style.innerHTML = `
-            #input-ev-capsula::-webkit-outer-spin-button,
-            #input-ev-capsula::-webkit-inner-spin-button {
-                -webkit-appearance: none;
-                margin: 0;
+            .capsule-size-btn {
+                background: rgba(0, 210, 255, 0.05) !important;
+                border: 1px solid #2a2a4a !important;
+                border-radius: 8px;
+                padding: 12px 10px;
+                color: white !important;
+                font-weight: bold;
+                font-size: 13.5px;
+                cursor: pointer;
+                transition: all 0.2s;
+                outline: none;
             }
-            #input-ev-capsula {
-                -moz-appearance: textfield;
+            .capsule-size-btn:hover {
+                background: rgba(0, 210, 255, 0.15) !important;
+                border-color: #00e5ff !important;
+                box-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
+            }
+            .capsule-size-btn.active {
+                background: linear-gradient(135deg, #00e5ff, #00838f) !important;
+                border-color: #00e5ff !important;
+                color: #000 !important;
+                box-shadow: 0 0 12px rgba(0, 229, 255, 0.6);
             }
         `;
         document.head.appendChild(style);
@@ -25,14 +40,26 @@ window.EnergyPackager = {
             <div id="packager-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:10000; justify-content:center; align-items:center;">
                 <div style="background:#1a1a2e; border: 2px solid #00d2ff; border-radius: 15px; padding: 25px; width: 85%; max-width: 320px; text-align: center; color: white; font-family: sans-serif; box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);">
                     
-                    <p style="font-size: 13px; color: #aaa; margin-top: 0; margin-bottom: 20px; line-height: 1.4;">
-                        Introduce la cantidad de EV que deseas encapsular. Se aplicará un impuesto de red del 10%.
+                    <div style="font-size: 13px; color: #aaa; margin-top: 0; margin-bottom: 15px; line-height: 1.4;">
+                        Esencia Vital disponible: <br>
+                        <span id="packager-ev-disponibles" style="color: #00d2ff; font-weight: bold; font-size: 18px;">0</span> EV
+                    </div>
+                    
+                    <p style="font-size: 11px; color: #888; margin-top: 0; margin-bottom: 20px; line-height: 1.3;">
+                        Selecciona un tamaño de cápsula para empaquetar tu Esencia Vital. Se aplicará un impuesto de red del 10%.
                     </p>
                     
                     <div style="background: #0f0f1a; border: 1px solid #2a2a4a; border-radius: 10px; padding: 15px; margin-bottom: 20px;">
                         <div style="margin-bottom: 15px; text-align: left;">
-                            <label style="font-size: 11px; color: #4dd0e1; font-weight: bold; text-transform: uppercase;">Cantidad a encapsular (EV):</label>
-                            <input type="number" id="input-ev-capsula" min="1" placeholder="Ej. 1000" style="width: 100%; padding: 10px; margin-top: 8px; border-radius: 5px; border: 1px solid #00d2ff; background: rgba(0, 210, 255, 0.1); color: white; font-size: 18px; box-sizing: border-box; text-align: center; font-weight: bold; outline: none;">
+                            <label style="font-size: 11.5px; color: #4dd0e1; font-weight: bold; text-transform: uppercase; display: block; margin-bottom: 10px; text-align: center;">Tamaño de la cápsula:</label>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;" id="capsule-options-container">
+                                <button type="button" class="capsule-size-btn" data-value="5000">5K EV</button>
+                                <button type="button" class="capsule-size-btn" data-value="10000">10K EV</button>
+                                <button type="button" class="capsule-size-btn" data-value="25000">25K EV</button>
+                                <button type="button" class="capsule-size-btn" data-value="50000">50K EV</button>
+                            </div>
+                            <input type="hidden" id="input-ev-capsula" value="">
                         </div>
                         <div style="display: flex; justify-content: space-between; font-size: 13px; color: #ff4757; margin-bottom: 8px; border-bottom: 1px dashed rgba(255, 71, 87, 0.3); padding-bottom: 8px;">
                             <span>Impuesto (10%):</span>
@@ -62,19 +89,31 @@ window.EnergyPackager = {
                 document.getElementById('input-ev-capsula').value = '';
                 document.getElementById('txt-comision-ev').innerText = '0';
                 document.getElementById('txt-total-ev').innerText = '0';
+                
+                // Desmarcar todos los botones
+                document.querySelectorAll('.capsule-size-btn').forEach(b => b.classList.remove('active'));
+
+                // Mostrar balance disponible completo (sin abreviar con K, usando separador de miles)
+                const disponible = window.miInventario ? (window.miInventario.vitalEssence || 0) : 0;
+                document.getElementById('packager-ev-disponibles').innerText = typeof window.formatFullNumber === 'function' ? window.formatFullNumber(disponible) : Number(disponible).toFixed(1).replace(/\.0$/, '');
             };
         }
 
-        const inputEv = document.getElementById('input-ev-capsula');
-        inputEv.addEventListener('input', (e) => {
-            let val = parseInt(e.target.value) || 0;
-            if (val < 0) { val = 0; e.target.value = 0; }
-            
-            let comision = Math.ceil(val * this.comision);
-            let total = val + comision;
-            
-            document.getElementById('txt-comision-ev').innerText = comision;
-            document.getElementById('txt-total-ev').innerText = total;
+        const sizeBtns = document.querySelectorAll('.capsule-size-btn');
+        sizeBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                sizeBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const val = parseInt(btn.getAttribute('data-value')) || 0;
+                document.getElementById('input-ev-capsula').value = val;
+                
+                let comision = Math.ceil(val * this.comision);
+                let total = val + comision;
+                
+                document.getElementById('txt-comision-ev').innerText = typeof window.formatFullNumber === 'function' ? window.formatFullNumber(comision) : comision;
+                document.getElementById('txt-total-ev').innerText = typeof window.formatFullNumber === 'function' ? window.formatFullNumber(total) : total;
+            });
         });
 
         document.getElementById('btn-crear-capsula').onclick = () => {
@@ -84,8 +123,8 @@ window.EnergyPackager = {
     },
 
     fabricarCapsula: function(valorDeseado) {
-        if (!valorDeseado || valorDeseado <= 0) {
-            alert("Introduce una cantidad válida superior a 0.");
+        if (!valorDeseado || valorDeseado <= 0 || isNaN(valorDeseado)) {
+            alert("Por favor, selecciona un tamaño de cápsula para fabricar.");
             return;
         }
 
