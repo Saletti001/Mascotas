@@ -1,12 +1,12 @@
 PROYECTO GENOS
 
-Documento Maestro V11 — Hoja de Ruta + Sistema de Combate
+Documento Maestro V12 — Hoja de Ruta + Sistema de Combate
 
 Tamagotchi genetico · Breeding estrategico · Coliseo Web3
 
-V9.1 + Sistema de Combate V1.1 + Balance V13.9 + Torneos Tematicos
+V9.1 + Sistema de Combate V1.1 + Balance V13.9 + Torneos Temáticos + Economía Consolidada V1.4 + Especificaciones Coliseo/Torneos V1.0
 
-Abril 2026 | Actualizado: Junio 2026 — Estado de implementacion real
+Abril 2026 | Actualizado: Junio 2026 — Estado de implementación real y consolidado
 
 > NOTA: Este documento es una guia de disenio. El codigo es la fuente de verdad.
 > Leyenda de estado: ✅ Completado en codigo | 🚧 Simulado/parcial (sin blockchain real) | ❌ Pendiente de implementar
@@ -19,18 +19,18 @@ Este cuadro representa el estado de desarrollo real del software validado direct
 | :--- | :---: | :--- | :--- |
 | **Fase 0 (Pre-lanzamiento)** | ❌ Pendiente | GitBook público, códigos semilla de comunidad y evento de Semilla Genesis pendientes. | `caras.js` (forma SVG de Hongo lista) |
 | **Fase 1 (Visual)** | ✅ Completada | Motor SVG dinámico de 7 capas, 6 formas corporales, mecánica Gordo y accesorios PvE de coliseo procedurales. | `SVGEngine.js`, `caras.js`, `accesorios.js` |
-| **Fase 2 (Supervivencia)** | ✅ Completada | Energía Nexo y Resistencia de Genos, necesidades Pou, Bazar de consumibles, lluvia de manzanas (Arcade) y decaimiento. | `InventoryManager.js`, `EnergyManager.js`, `MinigameCatch.js`, `ShopManager.js` |
+| **Fase 2 (Supervivencia)** | ✅ Completada | Energía Nexo y Resistencia de Genos, necesidades Pou, Bazar de consumibles, lluvia de manzanas (Arcade) y decaimiento. Formato abreviado K en el HUD principal, números completos con separador de miles en los detalles del juego, y empaquetador con 4 tamaños fijos de cápsulas (5K, 10K, 25K, 50K EV). | `InventoryManager.js`, `EnergyManager.js`, `MinigameCatch.js`, `ShopManager.js`, `EnergyPackager.js` |
 | **Fase 3 (Santuario + Reactor)** | ✅ Completada | Fusión de Genos con mutaciones, corrector de calidad para rarezas "+" y liberación diaria con límites. | `ReactorManager.js`, `SanctuaryManager.js` |
 | **Fase 4 (ADN y Linaje)** | 🔄 Parcial | Stats de combate, sistema de calidad S-D y Escáner básico/completo off-chain y on-chain vía MetaMask. Libro de Linaje en blockchain pendiente (es off-chain Supabase). | `RPGManager.js`, `BreedingManager.js`, `genes.js` |
-| **Fase 5 (Coliseo)** | 🔄 Parcial | Motor de combate 1v1 y 3v3 con ciclo elemental, STAB x1.20 y defensa mínima. 12 torneos jugables. PvP asíncrono real y ligas POL pendientes. | `ColiseumLogic.js`, `ColiseumManager.js`, `ColiseumUI.js`, `AttackCatalog.js` |
+| **Fase 5 (Coliseo)** | 🔄 Parcial | Motor de combate 1v1 y 3v3 con ciclo elemental, STAB x1.20 y defensa mínima. 12 torneos jugables. Válvula de Seguridad actuarial implementada (RPC Supabase + oponente contra-elemental con stats inflados en caso de winrate >50% y balance negativo del pool). PvP en vivo real y ligas POL reales pendientes. | `ColiseumLogic.js`, `ColiseumManager.js`, `ColiseumUI.js`, `AttackCatalog.js` |
 | **Fase 6 (Web3 y Becas)** | 🔄 Parcial | Integración real con Polygon Amoy Testnet (MetaMask) para Plaza P2P y Torneos. Privy y Scholarships son simulados (off-chain). | `WalletManager.js`, `MarketManager.js`, `ScholarshipManager.js` |
-| **Fase 7 (LiveOps y Torneos)** | 🔄 Parcial | 12 tipos de torneos (2 estándar + 10 temáticos) con reglas especiales totalmente programadas. Gen 0.5 y Dashboard RORS pendientes. | `TournamentManager.js`, `DailyLoginManager.js`, `DailyRewardsCatalog.js` |
+| **Fase 7 (LiveOps y Torneos)** | 🔄 Parcial | 12 tipos de torneos (2 estándar + 10 temáticos) Sit & Go de fin de semana unificados en una cola de modificador único. Algoritmo de descenso FIFO con bolsa neta (90%), retención (10%), descenso con devolución a saldosPendientes (Pull-over-Push) e inyección de NPCs en brackets. Gen 0.5 y Dashboard RORS pendientes. | `TournamentManager.js`, `DailyLoginManager.js`, `DailyRewardsCatalog.js` |
 
 ### 🛠️ Módulos de Producción Validados
 
 * **Completados ✅**:
   * **Motor SVG Dinámico (`SVGEngine.js`)**: 7 capas operacionales con auras de rareza.
-  * **Energía y Cuidado (`EnergyManager.js`)**: Energía Nexo (cuenta) y Resistencia (Geno). Necesidades de Hambre, Higiene y Diversión con inmunidad offline.
+  * **Energía y Cuidado (`EnergyManager.js`)**: Energía Nexo (cuenta) y Resistencia (Geno). Necesidades de Hambre, Higiene y Diversión con inmunidad offline. HUD principal muestra EV en formato abreviado K (10 K / 10.4 K) y modales/detalles muestran números completos dot-separados (10.000,45).
   * **Reactor y Santuario (`ReactorManager.js`, `SanctuaryManager.js`)**: Fusión de Genos y liberación con límites diarios (3/día, 48h CD) y recompensas escaladas.
   * **Crianza y ADN (`BreedingManager.js`, `RPGManager.js`)**: Sistema de herencia activa (30%/75%/70%), rango de calidad S-D y Escáner de ADN.
   * **Combate y Coliseo (`ColiseumLogic.js`, `ColiseumManager.js`, `ColiseumUI.js`)**: Combates de 6-9 turnos, ciclo elemental x1.35/x0.75, STAB x1.20 y Defensa DEF. Modos PvE elemental clone, NPC configurable y 3v3.
@@ -51,9 +51,9 @@ Este cuadro representa el estado de desarrollo real del software validado direct
 
 
 
-1. Novedades en V11 — Documento Maestro Definitivo
+1. Novedades en V12 — Documento Maestro Definitivo
 
-V11 fusiona la Hoja de Ruta V9.1 con el Sistema de Combate V1.1, el Balance V13.9 y el sistema completo de Torneos Tematicos. Es el documento mas completo del proyecto.
+V12 fusiona la Hoja de Ruta V9.1 con el Sistema de Combate V1.1, el Balance V13.9 y el sistema completo de Torneos Tematicos. Es el documento mas completo del proyecto.
 
 
 
@@ -69,7 +69,7 @@ Sistema de Calificacion S-D, Plaza de Comercio, Mecanica Gordo, Actualizaciones 
 
 
 
-Incorporado del Sistema de Combate V1.1 (nuevo en V11):
+Incorporado del Sistema de Combate V1.1 (nuevo en V12):
 
 Los 4 Slots de Ataque por Geno: Basico / Especial / Buff-Debuff / Definitivo (nivel 25).
 
@@ -79,9 +79,9 @@ Nuevo stat Defensa (DEF): 5to stat. Formula actualizada: max(ATK-DEF, ATK x 0.35
 
 8 Genes nuevos de combate (G_COMBAT y G_PROG). 11 Estados de combate documentados.
 
-[V11 NUEVO] Generacion Procedural de Accesorios PvE: rivales del Coliseo equipan hasta 4 accesorios cosmeticos (sombrero, alas, gafas, extras) segun rareza (hasta 85% en Legendarios).
+[V12 NUEVO] Generacion Procedural de Accesorios PvE: rivales del Coliseo equipan hasta 4 accesorios cosmeticos (sombrero, alas, gafas, extras) segun rareza (hasta 85% en Legendarios).
 
-[V11 NUEVO] Limites estrictos de inventario: 99 basicos / 20 consumibles / 1 equipo por slot.
+[V12 NUEVO] Limites estrictos de inventario: 99 basicos / 20 consumibles / 1 equipo por slot.
 
 
 
@@ -141,7 +141,7 @@ Pixels gano Mejor Juego de Navegador GAM3 2025 con HTML/JS y alcanzo 1M de usuar
 
 
 
-3. Hoja de Ruta V11 — Fases Detalladas
+3. Hoja de Ruta V12 — Fases Detalladas
 
 Fase 0 — Go-to-Market y Semilla Genesis ❌ PENDIENTE
 
@@ -169,7 +169,7 @@ Formas Gen 0: Gota (10%), Frijol (10%), Estrella, Circulo (26.7%), Cuadrado Redo
 
 [V8] Mecanica Gordo (0.1%): probabilidad de que un Nucleo de ADN estandar contenga un Geno Legendario Gen 0. ✅ Implementado.
 
-[V11 NUEVO] Generacion Procedural de Accesorios PvE: los rivales del Coliseo (Torre de Mutacion) equipan hasta 4 accesorios cosmeticos (sombrero, alas, gafas, extras) usando el sistema de Doble Dado. Probabilidad basada en rareza: hasta 85% en Legendarios. Aumenta la diversidad visual en PvE. ✅ Implementado en ColiseumLogic.js.
+[V12 NUEVO] Generacion Procedural de Accesorios PvE: los rivales del Coliseo (Torre de Mutacion) equipan hasta 4 accesorios cosmeticos (sombrero, alas, gafas, extras) usando el sistema de Doble Dado. Probabilidad basada en rareza: hasta 85% en Legendarios. Aumenta la diversidad visual en PvE. ✅ Implementado en ColiseumLogic.js.
 
 [V9.1] Laboratorio Morfologico WYSIWYG. Boton Revelar Genes consume Escaner ADN del inventario. Titulo con cian #80deea. ✅ Implementado (laboratorio.html).
 
@@ -177,18 +177,18 @@ Fase 2 — Economia Basica y Supervivencia ✅ COMPLETADA
 
 [ESTADO CODIGO] InventoryManager.js + EnergyManager.js + ArcadeManager.js + ShopManager.js. Todo operacional.
 
-[V11 ACTUALIZADO] Inventario Bolsillos Rotos: 10 slots gratuitos. Expansion hasta 40 con $POL. Limite estricto por slot: 99 basicos / 20 consumibles / 1 equipo. El jugador debe descartar o consumir para liberar espacio. ✅ Implementado.
+[V12 ACTUALIZADO] Inventario Bolsillos Rotos: 10 slots gratuitos. Expansion hasta 40 con $POL. Limite estricto por slot: 99 basicos / 20 consumibles / 1 equipo. El jugador debe descartar o consumir para liberar espacio. ✅ Implementado.
 
 Modo Arcade Lluvia de Manzanas: 30 segundos, ratio 5:1. Consume 5 de Energía Nexo. ✅ Implementado en ArcadeManager.js + MinigameCatch.js.
 
 Esencia Vital: off-chain. No vendible por $POL. Sin precio externo hasta Fase 6. Fuentes: victorias, minijuegos y cuidado diario pasivo. ✅ Implementado.
 
-[V11 NUEVO] Sistema de Energía Nexo y Resistencia: ✅ Implementado en EnergyManager.js.
+[V12 NUEVO] Sistema de Energía Nexo y Resistencia: ✅ Implementado en EnergyManager.js.
 - Energía Nexo (Cuenta global): Max 100. Consume 5 en Arcade y 10 en Coliseo. Recupera 1 cada 12 minutos (5/hora).
 - Resistencia del Geno (Individual): Max 100. Consume 20 en Coliseo. Recupera 25/hora descansando en el Centro de Cuidado.
 - Recuperación Offline: Calcula la regeneración de forma retrospectiva al reconectarse.
 
-[V11 NUEVO] Sistema de Cuidado (Estilo Pou/Tamagotchi): ✅ Implementado en EnergyManager.js y app.js.
+[V12 NUEVO] Sistema de Cuidado (Estilo Pou/Tamagotchi): ✅ Implementado en EnergyManager.js y app.js.
 - Barras de Necesidades: Hambre (vacía en 12h), Diversión (vacía en 16h), Higiene (vacía en 24h) y Resistencia.
 - Cuidado Activo vs Reserva: Los Genos en reserva reducen sus necesidades 5x más despacio.
 - Bazar Consumibles: Ración Automática (🍱 costo: 2.00 EV, alimenta y congela Hambre de reservas por 24h) y Ducha de Plasma (🧼 costo: 1.00 EV, limpia Higiene al 100% de todos). ✅ En ShopManager.js.
@@ -306,7 +306,7 @@ Dashboard RORS: ratio EV generada/consumida. Objetivo >= 0.70. Alarma <0.65. ❌
 
 4. ADN, Stats y Sistema de Progresion
 
-4.1 Los 5 Stats de Combate — Tabla V11
+4.1 Los 5 Stats de Combate — Tabla V12
 
 Rareza
 
@@ -482,7 +482,7 @@ Posible mutacion aleatoria — puede salir un gen nuevo.
 
 
 
-## 5. El Coliseo — Sistema de Combate 1v1 y 3v3 (V11)
+## 5. El Coliseo — Sistema de Combate 1v1 y 3v3 (V12)
 
 El Coliseo de Proyecto Genos es un sistema de combate por turnos por equipos con 5 stats, 6 elementos, 60 ataques especiales, 11 estados y dos modos de juego (1v1 y 3v3). Todo el sistema esta disenado para que la estrategia del jugador importe mas que la rareza del Geno.
 
@@ -586,7 +586,7 @@ Mitico
 
 
 
-1.2 Formula de Dano — V11
+1.2 Formula de Dano — V12
 
 // Formula base (todos los ataques fisicos):
 
@@ -728,7 +728,7 @@ Ciclo (positivo): Biomutante > Sintetico > Toxico > Radiactivo > Cibernetico > V
 
 Situacion
 
-Multiplicador V11
+Multiplicador V12
 
 Antes V10.0
 
@@ -1074,7 +1074,7 @@ Potencia: 85% ATK  |  Precision: 100%  |  Usos: Ilimitado
 
 Requiere setup previo. Ya no supera el dano de un Definitivo.
 
-Efecto: 100% ATK. Con Quemadura activa: 135% ATK (nerf de V11). STAB. [NERFADO: antes 140/175]
+Efecto: 100% ATK. Con Quemadura activa: 135% ATK (nerf de V12). STAB. [NERFADO: antes 140/175]
 
 Potencia: 100% / 135% con Quemadura  |  Precision: 80%  |  Usos: 3/combate
 
@@ -1922,13 +1922,13 @@ Acceso al 3v3 requiere 10 combates en Liga 1v1 completados. El nuevo jugador apr
 
 ### 5.6 Resumen Técnico para Implementación del Coliseo
 
-Este documento es la referencia tecnica completa para implementar el sistema de combate en ColiseumLogic.js, AttackCatalog.js y la UI del Coliseo. Todos los valores numericos son definitivos para V11.
+Este documento es la referencia tecnica completa para implementar el sistema de combate en ColiseumLogic.js, AttackCatalog.js y la UI del Coliseo. Todos los valores numericos son definitivos para V12.
 
 
 
 Variables clave del motor
 
-// Multiplicadores elementales V11
+// Multiplicadores elementales V12
 
 VENTAJA_ELEMENTAL = 1.35
 
@@ -1940,13 +1940,13 @@ CRITICO = 1.50
 
 
 
-// Formula DEF V11
+// Formula DEF V12
 
 MINIMO_DANO = 0.35  // 35% del ATK atacante como minimo garantizado
 
 
 
-// Penetracion de armadura V11
+// Penetracion de armadura V12
 
 PERFORANTE_ESPECIAL = 0.50  // Ignora 50% DEF
 
@@ -1970,7 +1970,7 @@ CORROSION_ES_PERMANENTE_Y_AFECTA_A_TODO_EL_EQUIPO_RIVAL = true
 
 
 
-Proyecto Genos — Sistema de Combate Completo V11 · Documento Tecnico · Abril 2026
+Proyecto Genos — Sistema de Combate Completo V12 · Documento Tecnico · Abril 2026
 
 ## 6. Arquitectura Técnica y Seguridad Financiera (Web3, Privy y Safe)
 
@@ -2302,7 +2302,7 @@ Requiere inyección de capital constante (pérdidas).
 
 Autofinanciable. La comisión del 3.5% en Plaza y 10% en Torneos cubre los costes de sobra.
 
-### 6.10 Referencias de Integración en el Documento Maestro V11
+### 6.10 Referencias de Integración en el Documento Maestro V12
 
 Este sistema de contención e infraestructura de red híbrida debe integrarse en las siguientes áreas del Documento Maestro definitivo del proyecto:
 
@@ -2736,7 +2736,7 @@ NUNCA estado de juego on-chain. Solo finanzas on-chain. El stat DEF, los ataques
 
 
 
-## 9. Genopedia — Índice del GitBook V11
+## 9. Genopedia — Índice del GitBook V12
 
 ### Capítulo 1 — Bienvenido al Laboratorio
 
@@ -2824,11 +2824,1932 @@ La Plaza de Comercio: como listar Genos y maximizar precio de venta.
 
 Peg al Dolar: por que los precios no cambian aunque $POL suba o baje.
 
+---
+
+## 10. Especificaciones Económicas Detalladas (Motor PvE, Reactor, Web3 y F2P)
+*Este capítulo transcribe en su totalidad y de forma oficial el pliego de condiciones del balance macroeconómico del proyecto.*
+
+PROYECTO GENOS
+Documento Maestro de Especificaciones Economicas
+Motor PvE  ·  Reactor de Fusion  ·  Ciclo del Jugador F2P  ·  Ecosistema Web3
+Version 1.4  |  Documento consolidado y definitivo  |  Confidencial
+ 
+Alcance de este documento
+Este documento unifica y consolida todos los documentos economicos anteriores de Proyecto Genos.
+Cubre: arquitectura y escala de la moneda EV, principios psicologicos del sistema de recompensas,
+todas las fuentes de ingreso PvE, logistica de crianza y almacen, el Reactor de Fusion con sus
+probabilidades completas, los sistemas de retencion, el Pase de Batalla, el ecosistema Web3 de
+encapsulacion de EV, y la auditoria matematica del ciclo de vida del jugador F2P.
+Sirve como manual tecnico de referencia para el equipo de desarrollo (Supabase, backend, smart contracts).
+ 
 
 
-## 10. Veredicto y Siguientes Pasos — Actualizado Junio 2026
+=== Seccion 1 — Filosofia de escala matematica y arquitectura de la moneda EV ===
 
-Proyecto Genos V11 es el documento mas completo del proyecto. El balance V13.9 resuelve la dependencia del RNG elemental. Los 3 Definitivos por elemento crean mind games reales. Los Torneos Tematicos hacen que el esfuerzo de criar y mejorar Genos tenga recompensa competitiva directa.
+ 
+La Esencia Vital (EV) es la moneda interna y universal de Proyecto Genos. Toda la economia del juego utiliza una escala uniforme de multiplicacion por 100 sobre los valores base originales. Esta decision no es estetica: tiene un fundamento psicologico, matematico y de negocio preciso.
+ 
+
+
+=== 1.1  Los tres principios psicoeconomicos de la escala x100 ===
+
+ 
+Principio 1 — Eliminacion de decimales: El cerebro humano procesa los numeros enteros grandes como botines de guerra reales. Ganar 250 EV activa el mismo circuito de recompensa que ganar una cantidad sustancial. Acumular 2.5 EV genera percepcion de miseria y lentitud, lo que reduce la retencion.
+ 
+Principio 2 — Percepcion de inversion fuerte: Un coste de 10,000 EV para aprender un ataque Definitivo en el Laboratorio de Implantes comunica inmediatamente que el jugador esta adquiriendo un activo de alto valor estrategico que requiere dedicacion real. El mismo coste en 100 EV parece trivial y erosiona la sensacion de logro.
+ 
+Principio 3 — Granularidad de recompensa: Trabajar con cientos y miles permite aplicar micro-bonificaciones por rendimiento excelente (combos perfectos, rachas, ventajas elementales, velocidad en misiones) sin romper la macroeconomia ni forzar al backend a manejar decimales.
+ 
+
+
+=== 1.2  Ratio de Retorno de Sumideros (RORS) ===
+
+El equilibrio macroeconomico del juego esta blindado en un RORS de 0.81. Esto significa que por cada unidad de EV que el sistema genera y pone en circulacion, el conjunto de sumideros (sinks) diseados absorbe el 81% de vuelta. El 19% restante se acumula de forma natural en las cuentas de los jugadores, generando una inflacion controlada y gradual que no compromete el valor percibido de la moneda.
+El RORS no cambia al aplicar la escala x100 porque multiplica tanto los ingresos como los sumideros por el mismo factor. El equilibrio matematico subyacente es identico; solo cambia la percepcion psicologica del jugador.
+ 
+
+
+=== 1.3  Tabla comparativa de escala: ingresos ===
+
+La siguiente tabla muestra todos los valores de ingreso en EV antes y despues de aplicar la escala x100, con su fuente exacta dentro del juego:
+ 
+Accion de juego (fuente de ingreso)
+EV original (base)
+EV nuevo (x100)
+Victoria en Liga Bronce (PvP)
+2 EV
+200 EV
+Victoria en Liga Diamante (PvP)
+5 EV
+500 EV
+Derrota en Liga (PvP)
+0.5 EV
+50 EV
+Cuidado diario por Geno (cap 3 activos)
+0.5 EV
+50 EV
+Victoria estandar en Arcade (media)
+1.5 EV
+150 EV
+Combate en Torre PvE (pisos iniciales)
+1-2 EV
+100-200 EV
+Santuario Comun
+3 EV
+300 EV
+Santuario Legendario
+50 EV
+5,000 EV
+Torneo Tematico (1er lugar)
+40-500 EV
+4,000-50,000 EV
+ 
+
+
+=== 1.4  Tabla comparativa de escala: sumideros (sinks) ===
+
+Los sumideros son los mecanismos que retiran EV de circulacion, controlando la inflacion de forma organica:
+ 
+Mecanica de consumo (sink)
+EV original (base)
+EV nuevo (x100)
+Activacion Reactor Nivel 1 (Comun a Raro)
+50 EV
+5,000 EV
+Activacion Reactor Nivel 2 (Raro a Epico)
+150 EV
+15,000 EV
+Activacion Reactor Nivel 3 (Epico a Legendario)
+300 EV
+30,000 EV
+Laboratorio de Implantes: aprender Ataque Basico
+10 EV
+1,000 EV
+Laboratorio de Implantes: aprender Ataque Especial (Slot 2)
+40 EV
+4,000 EV
+Laboratorio de Implantes: aprender Ataque Definitivo (Slot 3)
+100 EV
+10,000 EV
+Escaner de ADN Basico
+15 EV
+1,500 EV
+Escaner de ADN Completo
+50 EV
+5,000 EV
+Recarga de Energia de un Geno
+20 EV
+2,000 EV
+Licencia de Comercio Web3 (Bazar Nv.5)
+30 EV
+3,000 EV
+Entrada a Torneo Tematico
+5-200 EV
+500-20,000 EV
+Incubadora Basica (eclosion 4 horas)
+10 EV
+1,000 EV
+Ranura de almacen N.7
+15 EV
+1,500 EV
+Ranura de almacen N.8
+30 EV
+3,000 EV
+ 
+ 
+
+
+=== Seccion 2 — Limites del sistema: Energia Nexo y cap diario ===
+
+ 
+La contencion de la inflacion de la moneda EV se gestiona de forma automatizada mediante dos variables estructurales en el backend. Este disenyo evita bloquear pantallas de forma antipática para el jugador: el propio ritmo de juego actua como regulador natural.
+ 
+
+
+=== 2.1  El embudo de la Energia Nexo ===
+
+Parametros tecnicos de la Energia Nexo
+Capacidad maxima de la cuenta: 100 puntos de Energia Nexo (inmutable).
+Tasa de regeneracion pasiva: 1 punto cada 12 minutos = 5 puntos por hora.
+Recarga completa de 0 a 100: requiere exactamente 20 horas de tiempo real.
+Coste por Arcade: 5 Energia Nexo por partida.
+Coste por Coliseo estandar o Torre: 10 Energia Nexo por combate o ticket.
+ 
+Al estar todas las actividades generadoras de EV ligadas a un coste de Energia Nexo, el tiempo actua como el regulador automatico de la base de datos. Un jugador hardcore que optimice sus sesiones en un ciclo completo de 24 horas jamas podra generar mas de 5,000 a 6,000 EV al dia mediante juego activo. Este es el Soft Cap natural del sistema.
+ 
+
+
+=== 2.2  Blindaje del Cuidado Diario (colecciones grandes) ===
+
+El juego fomenta que los jugadores expandan su inventario y almacenen grandes cantidades de Genos esperando ser sacrificados en el Reactor. Sin una limitacion especifica, un jugador con 20 o 30 Genos podria usar su coleccion como una granja pasiva de clics automaticos, rompiendo la economia.
+ 
+Regla del Cap Diario de Cuidado (Account-wide EV Cap): Una cuenta solo puede extraer un maximo de 150 EV al dia mediante las interacciones del Centro de Cuidado (Alimentacion, Higiene, Caricias). Esto equivale exactamente al pago de cuidar a 3 Genos Activos (50 EV por criatura).
+ 
+Logica del Baul de Reserva: Los Genos almacenados en las ranuras de reserva reducen sus necesidades fisicas 5 veces mas despacio. El jugador puede interactuar con ellos para cuidar su higiene y alimentarlos (requisito para que esten sanos al fusionarse en el Reactor), pero una vez que el contador global de la cuenta llega a 150 EV diarios, el sistema actualiza sus estadisticas de salud pero devuelve 0 EV, mostrando el aviso en pantalla: +0 EV (Limite diario alcanzado).
+ 
+ 
+
+
+=== Seccion 3 — Catalogo tecnico de minijuegos (Arcade) ===
+
+ 
+El Arcade es el entorno libre de riesgo competitivo donde el jugador convierte su Energia Nexo y su habilidad manual en EV. Es la fuente de ingreso mas accesible del juego y la principal puerta de entrada para jugadores F2P. Todas las modalidades estan calibradas para que una partida exitosa rinda una media estandar de aproximadamente 150 EV a cambio de 5 puntos de Energia Nexo.
+ 
+Parametros globales del Arcade
+Coste de entrada: 5 Energia Nexo por partida (cualquier modalidad).
+Duracion media por partida: 30 a 45 segundos de juego activo.
+Recompensa media calibrada: ~150 EV por partida exitosa.
+Paridad energetica: 2 partidas de Arcade = 1 combate en el Coliseo (en energia y recompensa).
+ 
+
+
+=== 3.1  Lluvia de Manzanas ===
+
+•      Mecanica: Manzanas y amenazas caen verticalmente desde la parte superior de la pantalla. El jugador desplaza a su Geno lateralmente para atraparlas y esquivar las bombas.
+•      Sistema de 3 vidas: el jugador comienza con 3 puntos de vida. Pierde una vida si una manzana toca el suelo sin ser atrapada, o si recoge una Bomba de forma accidental. La partida termina al llegar a 0 vidas.
+ 
+
+
+=== Curva de velocidad exponencial ===
+
+•      Segundos 0 a 30: ritmo asequible y constante. El jugador aprende el patron.
+•      Segundo 30: la velocidad de caida de todos los objetos aumenta un 50% de forma brusca.
+•      Segundo 45: la velocidad aumenta otro 100% adicional, haciendo fisicamente imposible prolongar la partida de forma indefinida.
+•      Este sistema garantiza que incluso el jugador experto no pueda farmear EV infinitamente en una sola partida.
+ 
+
+
+=== Sistema de recompensas ===
+
+•      Monedas de EV flotantes: caen aleatoriamente durante la partida. Valor: +5 EV (moneda pequena) y +10 EV (moneda grande).
+•      Conversion de Alimento (sumidero circular): el juego cuenta las manzanas biologicas atrapadas. Por cada 5 manzanas normales recolectadas, se inyecta automaticamente 1 Manzana de Alimento en el inventario global de la mochila del jugador (ratio 5:1).
+ 
+
+
+=== Rendimiento esperado ===
+
+•      Jugador promedio: dura hasta el segundo 30-35 y extrae entre 120 y 150 EV por partida.
+•      Jugador experto: estira sus reflejos hasta el segundo 50 y puede extraer hasta 250 EV por partida.
+ 
+
+
+=== 3.2  Flappy Geno ===
+
+•      Mecanica: control de salto de un boton para hacer levitar al Geno a traves de los huecos vacios de tuberias en movimiento horizontal constante.
+•      La EV esta fisicamente suspendida en el centro de los huecos de los tubos, obligando al jugador a arriesgar su posicion para recogerla.
+ 
+
+
+=== Algoritmo de recompensas en cascada ===
+
+El valor del EV se incrementa con la distancia recorrida para premiar la supervivencia extrema:
+ 
+Rango de tuberias
+Dificultad
+Descripcion
+EV por tubo superado
+Tubos 1 a 10
+Baja
+Ritmo introductorio, huecos amplios, velocidad constante.
+10 EV / tubo
+Tubos 11 a 20
+Media
+Los huecos se estrechan. La velocidad horizontal aumenta.
+20 EV / tubo
+Tubos 21 en adelante
+Hardcore
+Los tubos ejecutan movimientos verticales oscilatorios aleatorios.
+50 EV / tubo
+ 
+El punto de muerte estadistica de la comunidad se situa entre el tubo 10 y el 13, garantizando que el coste de 5 de Energia Nexo entregue aproximadamente las 150 EV presupuestadas. Un jugador experto que llegue al tubo 20 obtiene hasta 300 EV, recompensando la habilidad sin romper el equilibrio.
+ 
+
+
+=== 3.3  Juego de Memoria ===
+
+•      Mecanica: tablero cerrado de 16 cartas (matriz de 4x4) con 8 pares de elementos geneticos tematizados. Las cartas se muestran boca abajo y el jugador las voltea de dos en dos buscando las coincidencias exactas.
+•      El minijuego incluye un cronometro de 45 segundos en retroceso visible para el jugador.
+ 
+
+
+=== Algoritmo de recompensas por eficiencia mental ===
+
+•      Premio base por victoria: si el jugador descubre los 8 pares antes de que el reloj llegue a cero, recibe 100 EV fijos como pago base.
+•      Bono de velocidad excedente: cada segundo restante en el cronometro en el momento exacto de completar el tablero se liquida a +5 EV por segundo.
+ 
+Ejemplo de calculo: jugador completa la matriz con 10 segundos restantes:
+ 
+Calculo del bono de velocidad
+Premio base:          100 EV
+Bono de velocidad:    10 segundos x 5 EV = 50 EV
+Total de la partida:  150 EV  (media esperada con rendimiento estandar)
+ 
+•      Consolacion por derrota (anti-frustracion): si el tiempo expira antes de completar el tablero, el backend otorga 10 EV por cada par correcto que haya alcanzado a descubrirse. El jugador nunca se queda con las manos vacias.
+ 
+ 
+
+
+=== Seccion 4 — Combate estandar del Coliseo (vs. IA) ===
+
+ 
+El Coliseo es el entorno de simulacion tactica donde el jugador pone a prueba las configuraciones IFTTT de sus criaturas en duelos directos contra la inteligencia artificial del servidor. Para mantener la paridad exacta con el Arcade, este modo duplica el coste de entrada en Energia Nexo y, por ende, duplica el retorno financiero base.
+ 
+Costes de entrada al Coliseo
+Energia Nexo de la cuenta: 10 puntos por combate (el doble que el Arcade).
+Resistencia biologica del Geno participante: 20 puntos por combate.
+La resistencia del Geno es independiente de la Energia Nexo de la cuenta.
+ 
+
+
+=== 4.1  Modalidad 1 vs 1 (Duelo singular) ===
+
+•      Victoria: 300 EV. Paridad milimetrica con el Arcade: equivale a jugar dos partidas perfectas de Arcade pero en un formato de combate mas agil y directo.
+•      Derrota: 50 EV. Consolacion minima que cubre el esfuerzo del tiempo invertido. Este subsidio bloquea el abuso de bots que busquen rendirse en bucle para farmear EV de forma pasiva, ya que el retorno es demasiado bajo para justificar el gasto de energia.
+ 
+
+
+=== 4.2  Modalidad 3 vs 3 (Combate por equipos) ===
+
+La complejidad de gestionar tres scripts de condiciones IFTTT y la mayor duracion del combate no multiplica el premio por tres para evitar la hiperinflacion del sistema. Se aplica un multiplicador de complejidad moderada de x1.5 sobre el pozo base del 1v1:
+ 
+Modalidad
+Formula
+Victoria
+Derrota
+1 vs 1 (Duelo singular)
+Base
+300 EV
+50 EV
+3 vs 3 (Combate por equipos)
+Base x 1.5
+450 EV
+75 EV
+ 
+ 
+
+
+=== Seccion 5 — Torre de Mutacion (Supervivencia lineal unica) ===
+
+ 
+La Torre de Mutacion funciona bajo una estructura roguelike de escalada infinita por pisos donde la salud residual y el dano acumulado de los Genos se arrastran de forma persistente entre rondas. Es el modo de juego mas exigente del PvE y el que ofrece las mayores recompensas individuales por piso.
+ 
+
+
+=== 5.1  El ticket de entrada y la logica de sesion ===
+
+•      El jugador paga 10 de Energia Nexo una unica vez para adquirir un Ticket de Tanda.
+•      Mientras su Geno gane el combate y conserve puntos de vida, el jugador permanece dentro de la Torre de forma gratuita, avanzando pisos de forma consecutiva sin coste adicional.
+•      En el momento en que el jugador decide salir voluntariamente o su criatura es derrotada, la tanda se cierra por completo. Para reingresar en el futuro, se debe pagar un nuevo ticket de 10 de Energia Nexo.
+ 
+
+
+=== 5.2  La regla de oro economica: bloqueo de pisos superados ===
+
+Para evitar que jugadores avanzados usen Genos de rarezas altas para farmear EV masiva y facilmente en los pisos iniciales, se implementa un bloqueo permanente:
+ 
+Bloqueo de pisos en Supabase
+Cada piso completado con exito se registra en la variable max_floor de la tabla de perfiles.
+El EV de un piso especifico solo puede reclamarse una unica vez en toda la vida de la cuenta.
+Este bloqueo es irreversible e inmutable. No existe mecanismo de reset para un piso ya superado.
+ 
+
+
+=== 5.3  Retirada voluntaria vs. muerte en combate ===
+
+Al terminar cada piso, el sistema muestra la salud actual del Geno y el peligro del siguiente nivel, forzando al jugador a tomar una decision financiera consciente:
+ 
+•      Retirada voluntaria (asegurar botin): el jugador pulsa el boton de salida. El backend entrega el 100% de toda la EV acumulada durante los pisos de esa tanda.
+•      Muerte en combate (pena por codicia): si el jugador arriesga al Geno y este es derrotado, la tanda colapsa. El sistema aplica una penalizacion: solo se rescata el 50% del EV acumulado en esa carrera. El otro 50% se destruye.
+•      Accesorios cosmeticos: los accesorios fisicos obtenidos de los jefes (Bosses) quedan asegurados siempre. No pueden perderse ni por muerte ni por retirada.
+ 
+
+
+=== 5.4  Sistema de Checkpoints y sectores de control ===
+
+Para evitar la frustracion de repetir contenido trivial y eliminar el riesgo de soft-lock (bloqueo absoluto sin salida), la Torre implementa Checkpoints cada 10 pisos vinculados al rango genetico de los enemigos:
+ 
+Ejemplo de funcionamiento del Checkpoint
+Situacion: el jugador tiene su record en el Piso 17 y muere en un intento posterior.
+Sin Checkpoint: el jugador tendria que empezar desde el Piso 1 (pisos ya bloqueados = 0 EV disponible).
+Con Checkpoint: al comprar su siguiente ticket, el sistema lee que el ultimo Checkpoint desbloqueado
+fue el Piso 10, y le permite reanudar directamente desde el Piso 11. Esto le da pisos seguros
+(11, 12, 13) para farmear algo de EV limpio antes de volver a enfrentarse a su muro personal.
+ 
+
+
+=== 5.5  Tabla completa de premios por piso ===
+
+Cada fila representa un bloque de pisos con sus enemigos correspondientes, el EV reclamable una unica vez, y los eventos especiales:
+ 
+Sector
+Pisos
+Enemigo IA (calidad)
+EV neto unico
+Evento especial
+Fase Comun Inicial
+1-9
+Comun (Rango D a A con taras)
+100 EV / piso
+—
+Jefe del Nexo
+10
+Comun (Rango A+ / Miniboss)
+400 EV
+Drop accesorio procedural
+Fase Comun Avanzada
+11-19
+Comun (Rango B a S Perfecto)
+200 EV / piso
+—
+Gran Guardian
+20
+Comun (Rango S / Boss de Bloque)
+800 EV
+Drop accesorio procedural
+Fase Comun Critica
+21-25
+Comun (Rango S Combinados)
+300 EV / piso
+—
+Fase Rara de Ascension
+26-29
+Raro (Rango D a C / Salto de Stats)
+500 EV / piso
+—
+Jefe Raro
+30
+Raro (Rango B / Miniboss de Bloque)
+900 EV
+Drop accesorio procedural + Checkpoint 3
+Los pisos 26-29 presentan un salto de dificultad notable (enemigos Raros) que justifica el aumento de 300 a 500 EV por piso. El jugador que llegue al Piso 30 habra demostrado tener un Geno de calidad competitiva y recibe 900 EV + el Checkpoint 3 como recompensa al nivel del esfuerzo.
+ 
+ 
+
+
+=== Seccion 6 — Sistemas de retencion y progresion pasiva ===
+
+ 
+Para afianzar la retencion a corto, mediano y largo plazo, se implementan cinco capas de incentivos economicos fijos que recompensan la constancia y dan utilidad a la totalidad de la coleccion de Genos del jugador.
+ 
+
+
+=== 6.1  Ciclo de Racha de Login (7 dias) ===
+
+Recompensa la conexion diaria consecutiva. Si el jugador no inicia sesion en un intervalo de 24 horas, el backend resetea el progreso de forma obligatoria al Dia 1. El reinicio crea urgencia de retorno sin castigar con perdida de activos al jugador que vuelve.
+ 
+Dia del ciclo
+Recompensa en EV
+Bonus adicional
+Razon de diseno
+Dia 1
+100 EV
+—
+Barrera de entrada baja. Facil de completar.
+Dia 2
+150 EV
+—
+Escalado gradual que recompensa la vuelta al dia siguiente.
+Dia 3
+200 EV
+1 Racion de Comida Basica
+Primer bonus fisico que refuerza el loop de cuidado.
+Dia 4
+250 EV
+—
+Mitad del ciclo: el jugador ya esta comprometido.
+Dia 5
+300 EV
+—
+La recompensa crece de forma apreciable. Tension positiva.
+Dia 6
+400 EV
+1 Ducha de Plasma
+Segundo bonus fisico. Un dia mas y llega el gran premio.
+Dia 7 (Hito semanal)
+1,000 EV
+1 Caja de Escaner de ADN Basico
+Pago maximo. Recompensa el compromiso semanal completo.
+ 
+
+
+=== 6.2  Pase de Batalla mensual (Puntos de Mutacion) ===
+
+El Pase de Batalla es un contrato de recompensas mensual de 50 niveles basado en la acumulacion de Puntos de Pase (PP). Los PP se obtienen exclusivamente a traves del panel de misiones diarias y semanales, garantizando que el avance en el Pase sea siempre un reflejo del juego activo y no de una billetera.
+ 
+
+
+=== Ruta gratuita (disponible para todos los jugadores) ===
+
+•      Ofrece recompensas intercaladas cada 2 niveles, enfocadas en el mantenimiento diario y la progresion organica.
+•      Tipos de recompensa: paquetes de 200 EV, consumibles de higiene (duchas, banos de plasma), raciones de alimento basico.
+•      Nivel 25 (hito estrategico): el jugador recibe gratuitamente 1 unidad del Estabilizador Atomico. Esto es un regalo deliberado para que pruebe su efecto antes de una fusion de alto riesgo, rompiendo la barrera psicologica de compra.
+ 
+
+
+=== Ruta premium (desbloqueable con $POL) ===
+
+•      Desbloquea la fila inferior del contrato de recompensas del Pase.
+•      Introduce inyecciones masivas de 1,000 EV por nivel de Pase completado.
+•      Acceso a planos de accesorios esteticos de edicion limitada (exclusivos del mes en curso).
+•      Skins exclusivas para personalizar el entorno visual del Laboratorio del jugador.
+ 
+
+
+=== Obtencion de Puntos de Pase (PP) ===
+
+Fuente de PP
+PP obtenidos
+Frecuencia
+Cada mision diaria completada
+10 PP
+3 misiones disponibles al dia
+Cofre de bonificacion diario (3/3 misiones)
+PP incluidos en cofre
+1 vez al dia
+Cada mision semanal completada
+50 PP
+3 misiones disponibles a la semana
+ 
+
+
+=== 6.3  Panel de misiones diarias y semanales ===
+
+El panel de misiones obliga al jugador a diversificar su actividad paseandose por todas las mecanicas del cliente, evitando que se especialice en una sola fuente de EV y abandone el resto del contenido.
+ 
+
+
+=== Misiones diarias (reseteo automatico cada 24 horas) ===
+
+Cada mision individual completada otorga 100 EV + 10 Puntos de Pase (PP). Al completar las 3 actividades del dia, el sistema libera automaticamente un Cofre de Bonificacion Diario con 300 EV adicionales.
+ 
+Mision diaria
+Descripcion
+Recompensa individual
+El Buen Criador
+Satisfacer las necesidades de higiene o alimentacion de 3 Genos en el menu de Cuidado.
+100 EV + 10 PP
+Rey del Arcade
+Completar con exito 3 partidas en cualquiera de los minijuegos activos del Arcade.
+100 EV + 10 PP
+Sangre en la Arena
+Cerrar con victoria 2 combates contra la IA en el Coliseo Estandar.
+100 EV + 10 PP
+ 
+Completar las 3 misiones diarias suma 300 EV + 300 EV del cofre = 600 EV fijos garantizados al dia para cualquier jugador activo, independientemente de su habilidad o progresion.
+ 
+
+
+=== Misiones semanales (reseteo automatizado cada lunes) ===
+
+Retos de mayor complejidad y exigencia tactica. Cada mision semanal completa entrega 500 EV + 50 PP.
+ 
+Mision semanal
+Descripcion
+Recompensa
+Escalador Tactico
+Superar 5 pisos nuevos no bloqueados en la Torre de Mutacion.
+500 EV + 50 PP
+Maestro Genetico
+Ejecutar de forma valida 1 proceso de fusion en el Reactor (quemar 5 criaturas).
+500 EV + 50 PP
+Inversionista del Laboratorio de Implantes
+Intercambiar un minimo de 2,000 EV dentro del Laboratorio de Implantes o en el Bazar.
+500 EV + 50 PP
+ 
+
+
+=== 6.4  Expediciones pasivas (Utilidad del Baul) ===
+
+Disenadas especificamente para dar una salida de juego valiosa a las criaturas debiles que estan almacenadas en el baul esperando ser acumuladas para fusiones. Permiten al jugador sentir que toda su coleccion, incluyendo los Genos mas debiles, esta trabajando para el.
+ 
+•      El jugador envia Genos de su reserva a misiones de exploracion en el mapa exterior. Hay tres ventanas de tiempo real seleccionables: 4 horas, 8 horas o 12 horas.
+•      Mientras el Geno esta en expedicion, queda totalmente congelado en la base de datos. No puede seleccionarse para combatir, cuidarse, ni usarse como sacrificio en el Reactor.
+•      Retorno al regresar: el Geno consume automaticamente el 50% de su barra de Resistencia, pero entrega al usuario un botin fijo de 300 EV + probabilidad procedural de rescatar items consumibles raros para la mochila.
+ 
+
+
+=== 6.5  Sistema de logros unicos de cuenta (Achievements) ===
+
+Hitos inmutables ligados al progreso historico del perfil que se completan una sola vez en la vida util del jugador. Actuan como el combustible financiero definitivo para apoyar al usuario en las transiciones criticas de su experiencia (del Early Game al Mid Game y al Late Game):
+ 
+Nombre del logro
+Condicion de desbloqueo
+Recompensa
+Despertar Biologico
+Conseguir dar a luz al primer Geno de rareza Rara en el Reactor.
+5,000 EV
+Combustion Masiva
+Quemar un acumulado historico de 50 Genos en sacrificios de fusion.
+5,000 EV
+Veterano del Nexo
+Registrar el codigo del Piso 25 de la Torre en el perfil de la cuenta.
+5,000 EV + Titulo Honorífico para el Avatar
+Los logros se activan una sola vez. Ademas de su valor en EV, sirven como marcadores de progresion que el jugador puede mostrar en su perfil y que actuan como indicadores sociales de experiencia dentro de la comunidad.
+ 
+ 
+
+
+=== Seccion 7 — Logistica del almacen, crianza y componentes ===
+
+ 
+Antes de poder fusionar Genos en el Reactor, el jugador debe producirlos y almacenarlos. Esta seccion describe los costes en EV y $POL que regulan la velocidad de reproduccion del servidor, crean tension estrategica de progresion y garantizan que la crianza requiera inversion activa en lugar de ser un proceso pasivo.
+ 
+
+
+=== 7.1  Adquisicion de especimenes base ===
+
+ 
+
+
+=== Compra directa en la tienda ===
+
+•      Un Bio-Nucleo Comun (Nivel 1) cuesta 3,000 EV en la tienda del juego.
+•      Conseguir los 5 especimenes necesarios para una primera fusion comprando todos en tienda cuesta 15,000 EV en total.
+ 
+
+
+=== Crianza (Breeding) ===
+
+•      Requisito minimo: dos Genos padres con al menos Nivel 10.
+•      Limite de vida por Geno: 7 crias en total durante toda su existencia (contador permanente).
+•      El coste de cada cria se calcula sumando el contador de hijos de ambos padres de forma exponencial, encareciendo el uso repetido de la misma pareja.
+ 
+Tabla de costes de crianza para una pareja con contador 0/7 (ambos padres virgenes):
+ 
+Numero de cria
+Coste en EV
+Coste acumulado con la pareja
+1a cria
+1,000 EV
+1,000 EV
+2a cria
+1,500 EV
+2,500 EV
+3a cria
+2,500 EV
+5,000 EV
+4a cria
+4,500 EV
+9,500 EV
+5a cria
+7,000 EV
+16,500 EV
+Criar 5 hijos con la misma pareja cuesta 16,500 EV, ligeramente mas caro que comprar 5 Bio-Nucleos en tienda (15,000 EV). Esto incentiva al jugador a mantener multiples parejas activas y usar solo los slots baratos de cada una (crias 1 y 2), manteniendo el engagement con el PvE de forma continua.
+ 
+
+
+=== 7.2  Las incubadoras (freno temporal de produccion) ===
+
+Todo Bio-Nucleo comprado en tienda o huevo producido por crianza requiere una incubadora para eclosionar. Las incubadoras se adquieren en el Bazar y existen dos variantes que cubren perfiles de jugador distintos:
+ 
+Tipo de incubadora
+Coste
+Tiempo de eclosion
+Perfil de jugador objetivo
+Incubadora Basica
+1,000 EV
+4 horas (tiempo real)
+F2P / Web2 (espera natural del loop)
+Incubadora de Plasma
+0.20 $POL
+15 minutos o instantanea
+Web3 / Pay-to-Fast (acelera sin ventaja)
+La Incubadora de Plasma aplica el modelo Pay-to-Fast: no otorga ventajas de estadisticas sobre el Geno resultante. Solo acelera el tiempo de espera. Es un micropago accesible (0.20 $POL) que respeta la salud competitiva del juego y la regla de los $10 maximos de barrera economica.
+ 
+
+
+=== 7.3  Ranuras del almacen (sistema de expansion progresiva) ===
+
+El jugador inicia con 6 ranuras de almacen gratuitas. Estas 6 ranuras son suficientes para ejecutar la primera fusion sin necesidad de comprar ninguna ranura adicional: 5 Genos de sacrificio + 1 Geno activo del equipo.
+ 
+El desbloqueo de ranuras adicionales es una decision libre y progresiva que el jugador tomara de forma natural cuando decida conservar mas Genos en paralelo, despues de su primera fusion y una vez que entienda su propia estrategia. No hay ninguna obligacion de comprar ranuras el primer dia.
+ 
+Escala de costes de expansion del almacen:
+ 
+Ranura
+Coste en EV
+Coste en $POL
+Nota
+Ranura 7
+1,500 EV
+—
+Primera expansion. Muy accesible.
+Ranura 8
+3,000 EV
+—
+Equivale a un Bio-Nucleo extra.
+Ranura 9
+6,000 EV
+0.50 $POL
+Opcion hibrida: EV o micropago.
+Ranura 10
+12,000 EV
+1.00 $POL
+El gasto en EV ya es significativo.
+Ranura 11 en adelante
+15,000 EV (escala)
+2.00 $POL (fijo)
+A partir de aqui $POL es mas eficiente.
+ 
+ 
+
+
+=== Seccion 8 — El Reactor Genetico y el item de estabilizacion ===
+
+ 
+El Reactor es el gran destructor de cartas del juego y el destino final del ciclo PvE. Procesa fusiones consumiendo 5 Genos de la misma rareza mas una tasa de activacion fija en EV. Sus cuatro posibles resultados estan disenados para que ninguno sea una perdida total: incluso el peor escenario (Colapso) incluye un seguro que permite al jugador relanzar el ciclo rapidamente.
+ 
+
+
+=== 8.1  Matriz de probabilidades base por nivel de fusion ===
+
+ 
+
+
+=== Fusion Nivel 1: Comun a Raro (Tasa de activacion: 5,000 EV) ===
+
+Resultado
+Probabilidad
+Descripcion breve
+Exito Normal
+35%
+El jugador obtiene un Geno Raro a Nivel 1 limpio.
+Mutacion Estancada
+35%
+Geno Comun+ con is_plus=true. +15% stats base y gen dominante.
+Colapso
+27%
+Fallo. Reembolso automatico de 8,000 EV como seguro.
+Exito Critico
+3%
+Salto directo a Epico (rareza +2). El mejor resultado posible.
+ 
+
+
+=== Fusion Nivel 2: Raro a Epico (Tasa de activacion: 15,000 EV) ===
+
+Resultado
+Probabilidad
+Descripcion breve
+Exito Normal
+25%
+El jugador obtiene un Geno Epico a Nivel 1 limpio.
+Mutacion Estancada
+35%
+Geno Raro+ con is_plus=true. Campeon de torneos de su categoria.
+Colapso
+39.5%
+Fallo. Reembolso automatico de 25,000 EV como seguro.
+Exito Critico
+0.5%
+Salto directo a Legendario. Rareza maxima del juego.
+ 
+
+
+=== Fusion Nivel 3: Epico a Legendario (Tasa de activacion: 30,000 EV) ===
+
+Resultado
+Probabilidad
+Descripcion breve
+Exito Normal
+5%
+El jugador obtiene un Geno Legendario a Nivel 1 limpio.
+Mutacion Estancada
+40%
+Geno Epico+ con is_plus=true. Estadisticas cercanas al Legendario.
+Colapso
+54.9%
+Fallo. Reembolso automatico de 60,000 EV como seguro.
+Exito Critico
+0.1%
+Rareza desconocida / Geno unico. Evento extremadamente raro.
+La curva de dificultad entre niveles es intencional: las fusiones de Nivel 2 y 3 son retos de alto riesgo reservados para jugadores muy comprometidos o con respaldo economico en $POL. El Colapso supera el 50% en la Fusion de Nivel 3, convirtiendo el Estabilizador Atomico en un accesorio practicamente obligatorio para los jugadores serios.
+ 
+
+
+=== 8.2  El Estabilizador Atomico (item premium) ===
+
+Consumible acoplable al Reactor que mitiga el riesgo de Colapso sin eliminar la tension intrinseca del sistema de probabilidades.
+ 
+Especificaciones del Estabilizador Atomico
+Efecto: anade +5% de probabilidad de exito directo a la fusion activa.
+Mecanismo exacto: el +5% se resta EXCLUSIVAMENTE de la tasa de Colapso (fallo destructivo).
+No modifica las probabilidades de Mutacion Estancada ni de Exito Critico.
+Precio en tienda premium: 1.00 $POL por unidad.
+Distribucion gratuita: 1 unidad en el Nivel 25 de la ruta gratuita del Pase de Batalla.
+ 
+Comparativa de probabilidades con y sin Estabilizador Atomico para Fusion Nivel 1:
+ 
+Resultado
+Sin estabilizador
+Con estabilizador
+Variacion
+Exito Normal
+35%
+40%
++5%
+Mutacion Estancada
+35%
+35%
+Sin cambio
+Colapso
+27%
+22%
+-5%
+Exito Critico
+3%
+3%
+Sin cambio
+ 
+
+
+=== 8.3  Logica completa de los 4 resultados en backend (Supabase) ===
+
+Cuando el servidor ejecuta la fusion y el generador de numeros aleatorios del servidor determina el destino, Supabase procesa las siguientes acciones en cascada:
+ 
+Resultado
+Prob.
+Qué recibe el jugador
+Acciones en backend (Supabase)
+Exito Normal
+35%
+Geno de rareza superior (Nivel 1 limpio)
+Elimina los 5 Genos sacrificados. Genera nuevo Geno de rareza+1.
+Mutacion Estancada
+35%
+Geno de la misma rareza de entrada con flag is_plus=true. +15% stats base ocultas y gen dominante activo.
+Elimina los 5 Genos. Entrega especimen de misma rareza con is_plus=true a Nivel 1.
+Colapso
+27%
+Reembolso inmediato en EV segun tabla de seguros. Los 5 Genos son destruidos.
+Elimina los 5 Genos. Inyecta EV de seguro directamente en el saldo de la cuenta.
+Exito Critico
+3%
+Salto de doble rareza (Comun directo a Epico). Material viral para redes sociales.
+Elimina los 5 Genos. Genera Geno con rareza +2 sobre la de entrada a Nivel 1.
+ 
+Tabla de seguros de reembolso por Colapso:
+ 
+Nivel de fusion
+EV reembolsado al instante
+Justificacion del valor
+Nivel 1 (Comun a Raro)
+8,000 EV
+Cubre exactamente el coste de una nueva tanda de crianza + incubadoras. Permite reintentar en 48h.
+Nivel 2 (Raro a Epico)
+25,000 EV
+Cubre los materiales de una segunda tanda completa de crianza avanzada.
+Nivel 3 (Epico a Legendario)
+60,000 EV
+Reduce el impacto de semanas de inversion perdida. Acorta el tiempo de recuperacion significativamente.
+El reembolso por Colapso no es una limosna: es el mecanismo que convierte el peor resultado del juego en un retraso de 48 horas en lugar de un abandono permanente del jugador. Su calibracion es critica para la retencion a largo plazo.
+ 
+ 
+
+
+=== Seccion 9 — Ecosistema Web3: Licencia de Comercio y Capsulas de EV ===
+
+ 
+Esta seccion cubre la capa Web3 de la economia de Proyecto Genos: el puente controlado que permite a los jugadores F2P convertir su EV farmeable en $POL real a traves del Marketplace de la Plaza de Comercio, sin que la moneda interna pierda su naturaleza cerrada ni genere riesgos legales o economicos para el proyecto.
+ 
+
+
+=== 9.1  Fundamento legal y economico del sistema ===
+
+Por que este sistema es seguro y legal
+La EV no tiene pool de liquidez en ningun DEX externo (Uniswap, QuickSwap, etc.).
+La EV no puede transferirse fuera del ecosistema del juego ni convertirse directamente en dinero fiat.
+Su precio en $POL lo determina exclusivamente la ley de oferta y demanda dentro del Marketplace interno.
+Este modelo es identico al sistema WoW Token de Blizzard y al Grand Exchange de RuneScape, vigentes
+durante mas de 10 anos sin conflictos legales. La EV es una mecanica de juego P2P, no un activo financiero.
+IMPORTANTE: nunca describir publica ni internamente como 'inversion' ni prometer rendimientos.
+ 
+
+
+=== 9.2  La Licencia de Comercio Web3 ===
+
+La Licencia de Comercio es el requisito obligatorio para poder interactuar con el Marketplace Web3 y activar la wallet de Privy del jugador. Su diseno cumple dos funciones simultaneas:
+ 
+•      Funcion 1: filtro de intencion. Solo los jugadores que realmente quieren comerciar en Web3 la adquieren. Los jugadores pasivos o casuales no la necesitan y no interactuan con el mercado.
+•      Funcion 2: proteccion de costes de infraestructura. Cada activacion de wallet de Privy tiene un coste operativo para el servidor. La Licencia garantiza que ese coste solo se incurra para usuarios comprometidos que van a generar transacciones reales y, por lo tanto, comisiones del 3.5% para el proyecto.
+ 
+Especificaciones de la Licencia de Comercio
+Requisito de desbloqueo: alcanzar el Nivel 5 del Laboratorio (aproximadamente 7 a 10 dias de juego organico).
+Coste en EV: 3,000 EV (identico al precio de un Bio-Nucleo Comun en tienda).
+Razon del precio: el jugador que quiere comerciar debe demostrar el mismo nivel de compromiso
+que alguien que va a criar su primer Geno. No es un muro frustrante, es un filtro de intencion.
+Efecto al adquirirla: el juego activa la API de Privy y el jugador puede configurar su wallet.
+Es un pago unico y permanente. No hay cuotas de renovacion.
+ 
+
+
+=== 9.3  La encapsulacion de EV: mecanica y flujo completo ===
+
+La encapsulacion es el proceso por el que un jugador convierte EV digital (saldo interno) en un item fisico transaccionable en el Marketplace Web3. Este proceso incluye un impuesto del 10% que actua como el principal sumidero deflacionario del sistema.
+ 
+
+
+=== Regla del impuesto de encapsulacion ===
+
+•      Para encapsular y vender 1,000 EV, el jugador debe pagar 1,100 EV de su saldo.
+•      Los 100 EV de diferencia son destruidos permanentemente en el backend (quemados), reduciendo la masa monetaria total del servidor.
+•      Este impuesto del 10% es automatico, irrevocable y no negociable.
+ 
+
+
+=== Lotes fijos de capsulas en el Marketplace ===
+
+Para evitar la fragmentacion de la base de datos y facilitar la compra rapida por parte de los jugadores Web3, solo se permiten lotes fijos estandarizados (4 tamanos de capsula):
+
+| Tipo de capsula | EV que recibe el comprador | EV que paga el vendedor F2P | EV quemados (10% de impuesto) |
+| :--- | :--- | :--- | :--- |
+| Capsula de Esencia Comun | 5.000 EV | 5.500 EV | 500 EV destruidos |
+| Capsula de Esencia Mayor | 10.000 EV | 11.000 EV | 1.000 EV destruidos |
+| Capsula de Esencia Grande | 25.000 EV | 27.500 EV | 2.500 EV destruidos |
+| Capsula de Esencia Gigante | 50.000 EV | 55.000 EV | 5.000 EV destruidos |
+
+=== El item fisico: Geno_Essence_Capsule ===
+
+•      Cuando el jugador paga los 5,500 EV (para la capsula comun), el backend descuenta ese saldo de su wallet interna y le entrega en su inventario un item semi-fungible: la Capsula de 5,000 EV.
+•      Este item fisico es el que se publica en el Marketplace por el precio en $POL que el vendedor elija.
+•      Cuando el comprador Web3 adquiere la capsula, el item es destruido y las 5,000 EV son inyectadas directamente en su saldo digital interno.
+ 
+
+
+=== 9.4  El modelo de ingresos del Marketplace ===
+
+Flujo de ingresos del 3.5% para el proyecto
+Sobre cada venta de capsula en el Marketplace, el smart contract de GenosPlazaComercio retiene
+automaticamente un 3.5% del $POL de la transaccion como comision para el proyecto.
+Este 3.5% se aplica sobre el valor total en $POL de la venta, no sobre el EV.
+El 3.5% es la principal fuente de ingresos operativos recurrentes del juego una vez en produccion.
+CRITICO: esta logica debe vivir en el smart contract on-chain, no solo en el backend Firebase/Supabase.
+Si la validacion de la Licencia y el cobro del 3.5% solo existen en el backend, pueden ser eludidos.
+ 
+Controles anti-abuso integrados en el sistema:
+ 
+Control
+Mecanismo
+Problema que previene
+Barrera del Lab Nivel 5
+Solo jugadores con Lab Nv.5 (7-10 dias de juego) pueden activar la Licencia.
+Impide que bots creen cuentas y vendan EV desde el primer dia.
+Impuesto del 10% por encapsulacion
+Por cada 5,000 EV vendidos se queman 500 EV del vendedor.
+Desincentiva la creacion masiva de capsulas y controla la inflacion.
+Lotes fijos estandarizados
+No se permiten cantidades arbitrarias. Solo 5,000 y 10,000 EV.
+Evita el spam de micro-ventas que saturan la base de datos.
+Licencia de Comercio: 3,000 EV
+Filtro economico accesible pero no trivial para un jugador nuevo.
+Separa a los comerciantes activos de los jugadores casuales.
+ 
+
+
+=== 9.5  Ciclo economico completo del Marketplace ===
+
+El siguiente flujo describe el ciclo completo desde que el jugador F2P genera EV hasta que el jugador Web3 la consume:
+ 
+Flujo completo: F2P a Web3 a consumo
+PASO 1 — JUGADOR F2P: juega PvE durante 7-10 dias, llega a Lab Nv.5, acumula EV.
+PASO 2 — LICENCIA: paga 3,000 EV, activa su wallet Privy, accede al Marketplace.
+PASO 3 — ENCAPSULACION: paga 5,500 EV, recibe una Capsula de 5,000 EV en su inventario.
+    Los 500 EV de impuesto son destruidos permanentemente (deflacion).
+PASO 4 — VENTA: publica la Capsula en el Marketplace por el precio en $POL que elija.
+PASO 5 — COMISION: al venderse, el smart contract retiene 3.5% del $POL para el proyecto.
+PASO 6 — JUGADOR WEB3: recibe la Capsula, la abre, 5,000 EV se inyectan en su saldo.
+PASO 7 — CONSUMO: el jugador Web3 gasta las 5,000 EV en el Reactor Nv.2, el Laboratorio de Implantes, o fusiones.
+    El EV vuelve a circular y eventualmente es destruido por nuevos sumideros.
+ 
+ 
+
+
+=== Seccion 10 — Auditoria del ciclo de vida del jugador F2P ===
+
+ 
+Esta seccion demuestra con matematica concreta que el bucle economico es justo, fluido y no frustrante para un jugador completamente gratuito. Analiza los primeros 12 dias de juego sin gastar ningun $POL.
+ 
+Supuestos base de la auditoria
+Generacion diaria: 4,000 EV por sesion completa (media documentada en la Seccion 11).
+El jugador inicia con 6 ranuras de almacen gratuitas y 1 Geno de partida.
+Cero gastos en $POL. Todo se paga en EV.
+Los caminos de gasto son libres: no existe orden obligatorio. Cada jugador adapta su estrategia.
+La auditoria asume el camino de fusion mas rapido posible para demostrar el caso favorable.
+ 
+
+
+=== 10.1  Resumen del ciclo en tabla ===
+
+Fase
+Dias
+EV generado
+Gasto principal
+EV final
+Inicio y exploracion
+1-3
+12,000 EV
+Variable segun estrategia elegida por el jugador
+~8,000-12,000 EV
+Crianza de los 5 Genos
+4-7
++16,000 EV
+Tasas crianza ~7,000 + incubadoras 5,000
+~1,500-4,000 EV
+Primera fusion
+8-10
++12,000 EV
+Tasa Reactor Nv.1: 5,000 EV
+~8,500 EV
+Reintento si Colapso
+11-12
++4,000 EV/dia
+Crianza 7,000 + incubadoras 5,000 + Reactor 5,000
+~3,500 EV
+ 
+
+
+=== 10.2  Desglose por fases ===
+
+ 
+
+
+=== Fase 1: Inicio y exploracion (Dias 1 a 3) ===
+
+•      El jugador explora la Energia Nexo en el Arcade y el Coliseo IA, completa misiones diarias, y aprende el loop basico del juego.
+•      Balance acumulado al final del Dia 3: aproximadamente 12,000 EV.
+•      Decisiones opcionales en esta fase: comprar ranuras adicionales, ensenar ataques en el Laboratorio de Implantes, adquirir Bio-Nucleos en tienda. Ninguna es obligatoria para llegar a la primera fusion con las 6 ranuras base.
+•      Los 6 slots gratuitos cubren exactamente lo necesario: 5 Genos de sacrificio + 1 Geno activo.
+ 
+
+
+=== Fase 2: Crianza (Dias 4 a 7) ===
+
+•      Los primeros Genos alcanzan Nivel 10 de forma natural combatiendo. El jugador comienza a cruzarlos para producir los 5 Genos de sacrificio.
+•      Estrategia optima: usar solo las crias 1 y 2 de cada pareja (las mas baratas) rotando multiples parejas en lugar de agotar una sola.
+•      Las incubadoras de 4 horas crean el primer momento de expectacion genuina del ciclo: el jugador ve sus temporizadores activos.
+ 
+
+
+=== Fase 3: Primera fusion (Dias 8 a 10) ===
+
+•      Los 5 Genos Comunes eclosionan. El jugador farmea 3 dias adicionales y llega al Reactor con suficiente EV para la tasa de 5,000 EV y conservar un colchon de seguridad.
+ 
+Analisis de los 4 posibles resultados el Dia 10:
+ 
+Exito Normal o Critico (38% de probabilidad)
+Obtiene un Geno Raro o Epico en 10 dias de juego F2P puro.
+Con las 8,500 EV restantes puede entrenar a su nuevo campeon en el Laboratorio de Implantes al dia siguiente.
+Retencion esperada: muy alta. El jugador tiene exactamente lo que vino a buscar.
+ 
+Mutacion Estancada (35% de probabilidad)
+Recibe un Geno Comun+ con +15% de estadisticas base ocultas y un gen dominante.
+No es una derrota: es un especimen de edicion especial, mas fuerte que cualquier Comun normal.
+Es competitivo en torneos de su categoria y un excelente padre de crianza.
+El jugador lo equipa, avanza en la Torre y espera el siguiente torneo de Comunes para competir por $POL.
+Retencion esperada: alta.
+ 
+Colapso (27% de probabilidad - el peor escenario)
+Los 5 Genos son destruidos. Hay un impacto emocional inmediato.
+El Reactor reembolsa 8,000 EV al instante como seguro automatico.
+Las EV guardadas (~8,500) + el seguro = 16,500 EV liquidas disponibles de inmediato.
+El ciclo de reintento completo (crianza + incubadoras + tasa Reactor) cuesta ~17,000 EV.
+Resultado: el jugador puede reintentar la fusion en solo 48 horas, no en otros 10 dias.
+ 
+
+
+=== Fase 4: Segunda oportunidad (Dias 11 y 12, solo si hubo Colapso) ===
+
+•      Dia 11: el jugador se despierta con 16,500 EV. Farmea su sesion habitual: 20,500 EV disponibles.
+•      Paga una nueva tanda de crianza (~7,000 EV) y 5 incubadoras (5,000 EV). Le quedan ~8,500 EV.
+•      CLAVE: las ranuras de almacen ya estan compradas. No hay ningun coste adicional de infraestructura.
+•      Dia 12: los huevos eclosionan en 4 horas. El jugador farmea (4,000 EV) y ejecuta su segundo intento de fusion 48 horas despues del primero.
+El segundo intento ocurre 48 horas despues del primer fallo, no 10 dias. Este es el argumento matematico mas solido contra el abandono del jugador F2P tras un Colapso.
+ 
+
+
+=== 10.3  Los tres arquetipos de jugador F2P ===
+
+El diseno soporta multiples rutas estrategicas sin que sea necesario codificar caminos separados. Tres arquetipos emergen de forma natural con la misma arquitectura economica:
+ 
+Arquetipo
+Estrategia
+Primer fusion
+Ventaja principal
+El fusionador rapido
+Sacrifica todo incluyendo su campeon inicial. Maximiza la velocidad al Reactor.
+Dia 8-10
+Llega al Raro mas rapido. Alto riesgo.
+El conservador
+Preserva su mejor Geno. Cria con los demas. Fusiona en paralelo.
+Dia 12-15
+Siempre tiene un campeon activo. Progresion mas lenta pero mas estable.
+El explorador de Torre
+Prioriza la Torre para acumular mas EV antes de tocar el Reactor.
+Dia 15-20
+Llega con mas colchon economico. Menor riesgo de abandono por Colapso.
+Los tres arquetipos son viables y rentables para el proyecto. No es necesario favorecer ninguno: la libertad de eleccion es uno de los argumentos mas fuertes del diseno para la solicitud de grants y para la comunidad.
+ 
+ 
+
+
+=== Seccion 11 — Resumen macro para desarrolladores (balance de flujo) ===
+
+ 
+Esta seccion proporciona las metricas exactas de control del sistema economico para el equipo tecnico que programe Supabase, los scripts de recompensa del backend y los smart contracts de la Plaza de Comercio.
+ 
+
+
+=== 11.1  Desglose del ingreso diario medio ===
+
+Al integrar todas las fuentes de recompensa, la economia de un jugador comun que consuma su energia diaria de forma equilibrada y recolecte sus bonos de retencion se comporta bajo las siguientes metricas exactas:
+ 
+Fuente de EV
+EV diarios
+Tipo
+Notas
+Cap diario de Cuidado (3 Genos activos)
+150 EV
+Pasivo/fijo
+Tope absoluto por cuenta. No escalable con mas Genos.
+Misiones diarias (3 de 3)
+300 EV
+Activo/fijo
+100 EV x 3 misiones completadas.
+Cofre de bonificacion diario
+300 EV
+Activo/fijo
+Se libera al completar las 3 misiones del dia.
+Racha de login (media semanal)
+~200 EV
+Pasivo/variable
+Media del ciclo de 7 dias dividida entre 7.
+Subtotal pasivo y de baja exigencia
+~950 EV
+SUBTOTAL
+EV garantizados por actividad minima diaria.
+Juego activo (100 Energia Nexo, ruta mixta)
+~3,000 EV
+Activo/variable
+Arcade + Coliseo + Torre en combinacion optima.
+TOTAL MEDIO DIARIO
+~4,000 EV
+TOTAL
+Jugador activo que consume toda su energia.
+ 
+
+
+=== 11.2  Tiempo para alcanzar los sumideros principales ===
+
+Referencia practica para calibrar la velocidad de progresion y detectar desbalances:
+ 
+Objetivo (sink)
+Coste en EV
+Dias de juego activo necesarios
+Nota estrategica
+Aprender Ataque Basico (Laboratorio de Implantes)
+1,000 EV
+0.25 dias
+Accesible el primer dia de juego.
+Aprender Ataque Especial Slot 2 (Laboratorio de Implantes)
+4,000 EV
+1 dia
+Meta del primer o segundo dia.
+Aprender Ataque Definitivo (Laboratorio de Implantes)
+10,000 EV
+2.5 dias
+Meta perfecta calibrada para retener sin inflar.
+Escaner de ADN Basico
+1,500 EV
+~0.4 dias
+Herramienta de diagnostico accesible.
+Escaner de ADN Completo
+5,000 EV
+1.25 dias
+Inversion significativa pero justificada.
+Incubadora Basica x5 (tanda de fusion)
+5,000 EV
+1.25 dias
+Coste de eclosionar los 5 Genos de sacrificio.
+Tasa Reactor Nivel 1
+5,000 EV
+1.25 dias
+Solo la tasa; no incluye la crianza.
+Licencia de Comercio Web3
+3,000 EV
+0.75 dias
+Requiere Lab Nv.5 antes del pago.
+Tasa Reactor Nivel 2
+15,000 EV
+3.75 dias
+Exige una base economica solida.
+Tasa Reactor Nivel 3
+30,000 EV
+7.5 dias
+Inversion de alto riesgo. Estabilizador recomendado.
+ 
+
+
+=== 11.3  Verificacion del RORS (Ratio de Retorno de Sumideros) ===
+
+El RORS de 0.81 indica que por cada 4,000 EV generados en un dia de juego activo, el conjunto de sumideros diseados absorbe en promedio 3,240 EV, dejando 760 EV de acumulacion neta en la cuenta del jugador. Esta acumulacion gradual:
+ 
+•      Genera la sensacion de progreso y ahorro que motiva las grandes inversiones (Reactor Nivel 2 o 3).
+•      No produce hiperinflacion porque los sumideros de alto valor (Laboratorio de Implantes Definitivo, Reactor Nivel 3, expansion de almacen) absorben periodicamente los balances acumulados.
+•      Se equilibra naturalmente sin necesidad de intervenciones manuales del equipo de desarrollo.
+ 
+ 
+Proyecto Genos  —  Documento consolidado V1.4  —  Confidencial
+
+---
+
+## 11. Especificaciones Técnicas Detalladas: Coliseo, Arena del Nexo y Torneos Temáticos
+*Este capítulo detalla de forma exhaustiva las reglas del sistema PvP, el Pase de Arena, los Torneos y la Gobernanza.*
+
+PROYECTO GENOS
+Documento de Especificaciones Técnicas y Económicas
+Coliseo  ·  Arena del Nexo  ·  Sistema de Torneos Temáticos
+Versión 1.0 Consolidada  |  Documento Confidencial  |  Uso Interno
+ 
+ 
+
+# Resumen del documento
+
+ 
+¿Qué contiene este documento?
+Este documento consolida dos fuentes previas en una única referencia técnica:
+  · Doc A — Reestructuración de Arquitectura: Coliseo, Arena del Nexo y Monedas
+  · Doc B — Especificaciones Técnicas: Sistema de Torneos Temáticos (Fase 7)
+ 
+Cubre: separación radical PvE/PvP, modos del Coliseo, ligas de la Arena del Nexo,
+sistema de Pase de Arena diario, algoritmo de matchmaking híbrido (en vivo + IFTTT),
+ciclo de gobernanza semanal con votación, catálogo completo de 6 torneos maestros,
+cola unificada con cascada FIFO, ingeniería económica de payouts en $POL,
+protocolo de desconexión asíncrona, e inscripción anticipada con recompensa en EV.
+ 
+Regla de desarrollo: nunca modificar los 11 estados de combate, las fórmulas de daño,
+los multiplicadores elementales (×1.35 / ×0.75) ni el STAB (×1.20) sin aprobación explícita.
+ 
+
+ 
+
+# Sección 1 — Reglas de desarrollo (conservación de código)
+
+ 
+Directiva estricta aplicable a todos los gestores involucrados en este módulo: TournamentManager.js, ColiseumLogic.js, CloudManager.js y contratos asociados.
+ 
+•      Modificaciones quirúrgicas: Solo se añaden o eliminan las líneas estrictamente necesarias para implementar nuevas mecánicas. No se reescriben módulos completos.
+•      Última versión funcional: Cualquier modificación o entrega de código completo usa obligatoriamente el último script funcional como base, nunca una versión anterior.
+•      Prohibición de cambios extremos sin aprobación: Quedan bloqueados sin discusión previa explícita los cambios a los 11 estados de combate, las fórmulas de daño validadas, los multiplicadores elementales (×1.35 ataque con ventaja / ×0.75 ataque con desventaja) y el STAB (×1.20 por ataque del tipo propio del Geno).
+
+# Sección 2 — Separación radical de entornos: PvE vs. PvP
+
+ 
+El menú del Coliseo se divide de forma tajante en dos pestañas independientes con sus propias reglas de acceso, costes y recompensas. Esta separación es irrevocable: ningún modo cruza sus reglas con el otro.
+ 
+Característica
+Ala de Investigación (PvE)
+Arena del Nexo (PvP)
+Acceso
+100% gratuito. No consume $POL.
+Requiere compra de Pase de Arena en $POL.
+Rival
+Inteligencia Artificial del servidor.
+Jugador humano en vivo o fantasma IFTTT asíncrono.
+Recompensas
+Esencia Vital (EV) + Puntos de Experiencia (EXP).
+Pool de $POL neto + Puntos de Rango (PR).
+Riesgo financiero
+Ninguno.
+El $POL apostado puede no recuperarse según el resultado.
+Propósito
+Entrenamiento, prueba de configuraciones, farmeo de EV.
+Competencia real, escalada en el leaderboard, ganancias en cripto.
+ 
+
+ 
+
+# Sección 3 — Ala de Investigación (modos PvE)
+
+ 
+Entorno de riesgo cero diseñado para que el jugador entrene, pruebe configuraciones IFTTT de forma segura y recolecte recursos básicos off-chain.
+ 
+
+# 3.1  Combate Estándar contra la IA
+
+•      Coste de entrada: Completamente gratuito. No consume $POL ni Manzanas de la mochila.
+•      Funcionamiento: Un botón directo empareja al jugador de forma instantánea contra un rival controlado por la IA del servidor de manera aleatoria.
+•      Recompensas: Esencia Vital (EV) y Puntos de Experiencia (EXP) para subir el nivel del Geno.
+ 
+
+# 3.2  Torre de Mutación (Modo Supervivencia)
+
+Modo de escalada infinita por pisos. El sistema registra el piso máximo alcanzado (max_floor) en la tabla de perfiles de Supabase. El EV de cada piso solo puede reclamarse una vez.
+ 
+
+# Escalado genético de la IA (anti-techo técnico)
+
+Los rivales de la IA progresan imitando la escala biológica de crianza del juego para evitar estadísticas artificiales injustas:
+ 
+Rango de pisos
+Rareza del rival IA
+Progresión de rangos
+Mecánica especial
+Pisos 1–25
+Común
+Rango D → C → B → A → S perfecto
+Escalado gradual dentro de la rareza Común.
+Piso 26 (salto)
+Rara (Rango D)
+Raro D supera estadísticas al Común S
+El cambio de rareza fuerza al jugador a evolucionar su estrategia.
+Pisos siguientes
+Rara → Épica → Legendaria → Mítica
+D → S en cada bloque de rareza
+La curva se repite ascendente por rareza.
+ 
+Si un jugador llega a la Torre con un Geno Mítico sin haber subido los pisos anteriores, el juego lo eleva automáticamente al primer piso que represente un reto real para sus estadísticas, entregando todas las recompensas de los pisos anteriores de forma automática. Esto impide el abuso de reinicio en pisos fáciles con Genos de rareza alta.
+ 
+
+# Mecánica de retirada vs. muerte
+
+Retirada Voluntaria
+Muerte en Combate
+Retirada Voluntaria
+Muerte en Combate
+El jugador pulsa el botón de salida.
+El Geno es derrotado por la IA.
+Recibe el 100% del EV acumulado en la tanda.
+Recibe el 100% del EV acumulado en la tanda.
+Los accesorios cosméticos obtenidos se guardan.
+Los accesorios cosméticos se guardan siempre.
+ 
+Los Checkpoints cada 10 pisos evitan repetir contenido trivial. Si el jugador muere en el Piso 17, su próximo ticket le permite reanudar desde el Piso 11, consiguiendo pisos seguros para farmear EV antes de volver a enfrentarse al muro de su récord.
+
+# Sección 4 — Arena del Nexo (modo PvP híbrido competitivo)
+
+ 
+Núcleo de la economía Web3 asíncrona del juego. Funciona bajo un modelo híbrido en tiempo real y diferido controlado por Supabase. Toda la lógica económica de la Arena opera fuera de los torneos de fin de semana, que tienen su propio módulo (Sección 6 en adelante).
+
+# 4.1  Segmentación estricta por ligas ligadas al Geno
+
+Las ligas están ligadas obligatoriamente a la rareza o nivel del Geno activo equipado en ese instante, no al nivel global de la cuenta del jugador. Esto garantiza el ratio de emparejamiento seguro 85/15 del Parche de Balance de Matchmaking V13.9.
+ 
+Liga
+Requisito de acceso
+Perfil de jugador
+Liga Bronce
+Acceso libre. Genos de rareza Común.
+Cuentas nuevas y jugadores casual.
+Liga Plata
+Geno equipado con Nivel 20 o superior en estadísticas.
+Jugadores intermedios con Genos nivelados.
+Liga Oro
+Geno de rareza Rara o superior equipado e inscrito.
+Jugadores avanzados con crianza optimizada.
+Liga Diamante
+Exclusiva para Genos de rareza Épica o Legendaria.
+Élite competitiva. Mayores stakes en $POL.
+ 
+Regla anti-exploit: si un jugador en lo más alto de la Liga Diamante desequipa su Geno Legendario y equipa un Común de Nivel 1, el sistema de Supabase lo desplaza automáticamente a la Liga Bronce. Empieza desde cero en el ranking de esa liga, impidiendo el aplastamiento de jugadores novatos por parte de usuarios avanzados.
+ 
+
+# 4.2  Separación absoluta de Puntos de Rango (PR)
+
+Los PR del leaderboard no son globales. Cada perfil mantiene en la base de datos columnas numéricas separadas para cada liga:
+ 
+Campo en Supabase
+Liga
+Descripción
+pr_bronce
+Liga Bronce
+Puntos acumulados exclusivamente en combates de la Liga Bronce.
+pr_plata
+Liga Plata
+Puntos acumulados exclusivamente en la Liga Plata.
+pr_oro
+Liga Oro
+Puntos acumulados exclusivamente en la Liga Oro.
+pr_diamante
+Liga Diamante
+Puntos acumulados exclusivamente en la Liga Diamante.
+ 
+
+ 
+
+# Sección 5 — Economía de fichas: el Pase de Arena y premios diarios
+
+ 
+La Arena del Nexo no cobra por combates individuales (modelo todo-o-nada destructivo para el jugador casual). En su lugar usa un sistema de Pases de Arena de mitigación de riesgo por ronda de 5 combates.
+ 
+
+# 5.1  Mecánica del Pase de Arena (ronda de 5 combates)
+
+•      Compra del pase: El jugador realiza una única compra consciente de un Pase de Arena válido para su categoría de liga. Ejemplo base: 0.50 $POL en Liga Plata.
+•      Crédito cerrado: La compra otorga exactamente 5 combates. Se genera un estado persistente en la base de datos: arena_ticket_active = true, battles_played = 0.
+•      El Geno no pelea de forma autónoma: El ticket queda congelado esperando la interacción directa del usuario. El jugador debe pulsar físicamente el botón BUSCAR OPONENTE para disputar cada combate.
+•      Estado persistente entre sesiones: Si el jugador cierra la app tras jugar 2 combates, el estado se congela en 2/5. El contrato inteligente no liquida ni paga nada hasta que se complete formalmente el combate número 5.
+ 
+
+# 5.2  Distribución atómica de la entrada en el contrato inteligente
+
+En el momento exacto en que el jugador compra el pase de 0.50 $POL, el contrato inteligente de Polygon divide los fondos de forma automática e irreversible:
+ 
+Destino
+Porcentaje
+Importe (base 0.50 $POL)
+Propósito
+Safe de Tesorería (desarrollador)
+10%
+0.05 $POL
+Infraestructura, servidores, gas del Paymaster para Session Keys.
+Bote Acumulado de Temporada
+10%
+0.05 $POL
+Distribuido al final del mes entre los 10 mejores del leaderboard de la liga.
+Pool de Premios Inmediatos Global
+80%
+0.40 $POL
+Bolsa de liquidez unificada para financiar los payouts inmediatos de todas las rondas activas.
+ 
+
+# 5.3  Tabla actuarial de liquidación inmediata
+
+Al terminar el quinto combate de la ronda, el gestor lee el balance de victorias/derrotas del ticket y ejecuta el pago correspondiente desde el pool global de premios:
+ 
+Récord final de la ronda
+Pago en $POL
+Recompensa en EV
+Items adicionales
+5V / 0D  (perfecto)
+1.50 $POL
+0.50 EV (simbólico)
+Desbloqueo de ítems raros.
+4V / 1D
+0.80 $POL
+1.00 EV
+Desbloqueo de implantes comunes.
+3V / 2D  (break-even)
+0.50 $POL
+2.50 EV
+Ninguno.
+2V / 3D  (amortiguación)
+0.20 $POL
+5.00 EV (consolación)
+Ninguno.
+1V / 4D
+0.00 $POL
+2.00 EV
+Ninguno.
+0V / 5D
+0.00 $POL
+0.50 EV
+Ninguno.
+ 
+Mecanismo de seguridad actuarial: los premios de los jugadores con 4-5 victorias se financian con las pérdidas de quienes obtienen 0-2 victorias. Si la comunidad supera la tasa de éxito estándar del 50% de forma inusual, el contrato toma fondos del colchón del Bote Acumulado de Temporada para garantizar que el juego nunca entre en déficit. El fantasma IFTTT solo es un modelo de combate: no reclama dinero del pool.
+ 
+
+ 
+
+# Sección 6 — Algoritmo de matchmaking híbrido y sistema de dados asíncrono
+
+ 
+Cuando el jugador pulsa BUSCAR OPONENTE en la Arena del Nexo, el backend ejecuta un escaneo de dos etapas para emparejar la partida con cero esperas garantizadas.
+ 
+
+# 6.1  Etapa 1 — Filtro de tiempo real (modo manual en vivo)
+
+•      Duración del escaneo: El sistema analiza durante 10 segundos exactos los canales Realtime Broadcast de Supabase en busca de otro jugador online de la misma liga buscando partida en ese mismo instante.
+•      Si encuentra rival: Se abre un canal interactivo bidireccional punto a punto. Ambos jugadores controlan sus acciones de forma manual turno por turno.
+•      Incentivo en vivo: Una victoria en modo tiempo real otorga un +15% de Puntos de Rango (PR) adicionales de bonificación sobre los PR estándar de esa victoria.
+ 
+
+# 6.2  Etapa 2 — Respaldo asíncrono (el fantasma IFTTT)
+
+Si el temporizador de 10 segundos expira sin encontrar rival online, el sistema activa el modo asíncrono para garantizar cero esperas:
+ 
+•      Selección del fantasma: El algoritmo busca en Supabase el registro de un jugador offline de la misma liga y extrae sus estadísticas y su script defensivo IFTTT preprogramado.
+•      Ejecución del combate: El jugador activo controla sus turnos manualmente. El rival offline combate de forma pasiva mediante su script IFTTT.
+•      Impacto para el jugador desconectado: El combate ocurre exclusivamente en el servidor del jugador activo. El usuario offline NO consume sus tickets ni altera su ronda de 5 combates. Su saldo de $POL jamás se altera de forma pasiva. Si su script gana la defensa, suma PR gratis; si pierde, se le restan PR.
+ 
+
+# 6.3  Sistema de dados genéticos (asimetría orgánica)
+
+Para contrarrestar la ventaja cognitiva del jugador humano frente a un script IFTTT estático, el motor no selecciona un rival exactamente simétrico. En su lugar, ejecuta dos dados probabilísticos:
+ 
+Dado de Nivel
+Dado de Calidad Genética
+Dado de Nivel del Rival
+Dado de Calidad Genética (Purity/IVs)
+Resultado posible A: mismo nivel que el jugador activo.
+Resultado posible A: misma calidad genética.
+Resultado posible B: +1 nivel por encima.
+Resultado posible B: +1 rango de calidad (ej. B → A).
+Resultado posible C: +2 niveles por encima.
+Resultado posible C: +2 rangos de calidad (ej. B → S).
+ 
+Filtro de Inmunidad de Tipo (Exclusión Elemental): la consulta SQL/RPC de Supabase prohíbe de forma estricta seleccionar fantasmas cuyo elemento principal tenga desventaja elemental directa frente al Geno del jugador activo. El fantasma solo puede ser seleccionado si el emparejamiento elemental es neutral o ventajoso para él. Esto neutraliza los counters automáticos malintencionados.
+ 
+
+ 
+
+# Sección 7 — Ciclo de gobernanza semanal (Lunes a Jueves)
+
+ 
+El modificador del torneo de fin de semana se determina mediante un sistema de votación descentralizado off-chain gestionado por Supabase. La comunidad elige el torneo, lo que mantiene el juego en constante evolución táctica y genera expectación semana a semana.
+ 
+
+# 7.1  Flujo semanal paso a paso
+
+ 
+Día
+Evento
+Acción técnica del sistema
+Lunes
+Selección aleatoria
+Cron Job ejecuta función que selecciona al azar 3 opciones del catálogo cerrado de 6 torneos maestros.
+Lunes – Jueves
+Ventana de votación
+Los jugadores elegibles votan por su torneo preferido del fin de semana.
+Jueves noche
+Cierre de urnas
+El sistema cierra las urnas, hace el recuento en la tabla tournament_votes y actualiza current_weekend_tournament.
+Viernes
+Ventana de preparación
+24h para adaptar builds, comprar ataques en el Laboratorio y reconfigurar scripts IFTTT.
+Fin de semana
+Ventanas Sit &amp; Go
+Se abre la cola unificada de 1:30 hora y 30 minutos para el torneo ganador de la votación.
+ 
+
+# 7.2  Muro de seguridad del voto (anti-bots)
+
+No todos los perfiles pueden votar. El sistema valida en la tabla profiles de Supabase que el usuario cumpla ambas condiciones:
+ 
+•      Condición 1: Nivel 5 de Laboratorio (Lab_level &gt;= 5 en Supabase). Requiere aproximadamente 7-10 días de juego activo real.
+•      Condición 2: Licencia de Comercio Web3 adquirida (has_commerce_license = true). Coste: 3,000 EV en el Bazar Nivel 5.
+ 
+Este doble filtro neutraliza matemáticamente los ataques de granjas de bots e impide que cuentas falsas o recién creadas manipulen el meta del juego. Solo los jugadores comprometidos con el juego durante al menos una semana pueden influir en el torneo del fin de semana.
+ 
+
+ 
+
+# Sección 8 — Catálogo cerrado de los 6 torneos maestros
+
+ 
+El bombo de votación semanal se compone exclusivamente de estos 6 formatos, optimizados para maximizar la masa crítica de participantes. Las rarezas Épica, Legendaria y Mítica están excluidas de la rotación semanal; su terreno es los Eventos de Gala trimestrales.
+ 
+
+# Torneo 1 — Solo Comunes
+
+Parámetro
+Detalle
+Restricción de acceso
+Solo Genos de rareza Común. Cualquier nivel.
+Filtro de rareza en brackets
+No aplica. Comunes compiten contra Comunes directamente.
+Mecánica especial
+Ninguna. Formato estándar.
+Perfil que favorece
+Jugadores F2P con mucho tiempo de farmeo y optimización de Genos básicos.
+ 
+
+# Torneo 2 — Copa Raro
+
+Parámetro
+Detalle
+Restricción de acceso
+Solo Genos de rareza Rara.
+Filtro de rareza en brackets
+No aplica. Raros compiten contra Raros directamente.
+Mecánica especial
+Ninguna. Destaca la herencia avanzada y los alelos idénticos.
+Perfil que favorece
+Jugadores intermedios con inversión en crianza optimizada.
+ 
+
+# Torneo 3 — Modo Berserker
+
+Parámetro
+Detalle
+Restricción de acceso
+Cualquier rareza.
+Filtro de rareza en brackets
+APLICADO. Brackets segregados estrictamente por rareza (Comunes vs Comunes, Raros vs Raros).
+Mecánica especial
+El stat de Defensa (DEF) se reduce a cero globalmente en el motor de combate para todos los combatientes. Los combates duran 3-5 turnos. Puro daño por turnos.
+Perfil que favorece
+Jugadores agresivos con builds de máximo ATK. La defensa no importa; solo el primer golpe.
+ 
+
+# Torneo 4 — Sin Genes
+
+Parámetro
+Detalle
+Restricción de acceso
+Cualquier rareza.
+Filtro de rareza en brackets
+APLICADO. Brackets segregados por rareza para equilibrar stats base.
+Mecánica especial
+Toda la cadena de genes ocultos y pasivas biológicas del ADN queda desactivada. Solo importan los 5 stats base numéricos, el nivel y la sinergia del catálogo de ataques.
+Perfil que favorece
+Jugadores con alto conocimiento táctico del sistema de ataques. Habilidad pura sin ventaja genética.
+ 
+
+# Torneo 5 — Liga Elemental Pura
+
+Parámetro
+Detalle
+Restricción de acceso
+Solo Genos del elemento activado ese fin de semana + sus elementos adyacentes de ventaja/desventaja directa.
+Filtro de rareza en brackets
+APLICADO. Cuadros de 16 divididos por rareza para evitar que diferencias de poder numérico pisen las estrategias de contrarresto elemental.
+Mecánica especial
+El servidor activa un elemento específico del ciclo circular (ej. Radiactivo). Solo los Genos de ese tipo o sus adyacentes pueden inscribirse.
+Perfil que favorece
+Jugadores con colecciones diversas y conocimiento del sistema elemental circular del juego.
+ 
+
+# Torneo 6 — El Espejo
+
+Parámetro
+Detalle
+Restricción de acceso
+Cualquier jugador de cualquier nivel e inventario.
+Filtro de rareza en brackets
+No aplica. Todos compiten en los mismos brackets.
+Mecánica especial
+El sistema clona un Geno exactamente idéntico (mismo nivel, stats y rareza) para todos los participantes del bracket. La victoria depende 100% de la selección de movimientos para los Slots 2, 3 y 4 (Ataque Especial, Soporte y Definitivo).
+Perfil que favorece
+El ecualizador absoluto. Un jugador nuevo con buena táctica puede vencer a una ballena. El conocimiento del juego importa más que el inventario.
+ 
+Épicos, Legendarios y Míticos están excluidos de la rotación semanal de torneos. Su terreno exclusivo son los Eventos de Gala de Fin de Temporada (Torneo del Fundador y similares), organizados de forma síncrona cada 3 meses como campañas de marketing masivas para elevar el valor del marketplace P2P.
+ 
+
+ 
+
+# Sección 9 — Sistema de inscripción anticipada con recompensa en EV
+
+ 
+La inscripción anticipada es un sistema paralelo a las ventanas Sit &amp; Go del fin de semana. Permite a los jugadores comprometerse con un torneo antes de que comience, generando datos de participación valiosos para el servidor y ofreciendo un incentivo económico a quienes planifican con antelación.
+ 
+
+# 9.1  Propósito y valor para el servidor
+
+•      Base de datos de participación: El servidor conoce con antelación cuántos jugadores hay inscritos para cada tipo de torneo y en qué tier de precio de entrada están posicionados. Esto permite ajustar el pozo de premios, verificar si el torneo tiene quórum suficiente para lanzarse y segmentar comunicaciones.
+•      Actividad durante la semana: La ventana de inscripción abierta desde el lunes genera engagement con el juego durante los días laborables, no solo el fin de semana.
+•      Métricas de diseño: Los datos de inscripción por torneo y tier informan las decisiones de qué torneos incluir en la rotación semanal y qué niveles de precio tienen mayor demanda real.
+ 
+
+# 9.2  Ventana de inscripción
+
+•      Apertura: La inscripción anticipada se abre el mismo lunes en que se anuncia el torneo ganador de la votación.
+•      Cierre: La inscripción se cierra en el momento exacto en que comienza la primera ventana Sit &amp; Go del fin de semana.
+•      Inscripción durante el torneo: Durante el tiempo que dure la ventana activa del torneo, los jugadores que aún no se hayan inscrito pueden seguir haciéndolo, pero no recibirán la recompensa anticipada.
+ 
+
+# 9.3  Regla de no cancelación
+
+Una vez que el jugador completa la inscripción anticipada, el compromiso es irrevocable. No existe opción de cancelación bajo ninguna circunstancia.
+ 
+¿Por qué no permitir cancelación?
+El sistema IFTTT hace innecesaria cualquier cancelación: si el jugador no puede conectarse
+el día del torneo, su Geno combatirá de forma autónoma con la configuración IFTTT activa.
+ 
+Esto significa que técnicamente no existe el concepto de &apos;no-show&apos;: siempre hay un
+combatiente activo en el torneo independientemente de si el jugador está conectado o no.
+ 
+La no cancelación garantiza que todos los datos de inscripción que maneja el servidor
+correspondan a participantes reales que sí van a competir, sin huecos vacíos ni emparejamientos rotos.
+ 
+
+# 9.4  Congelación del IFTTT al inicio del torneo
+
+•      Libre hasta el inicio: El jugador puede modificar su configuración IFTTT libremente en cualquier momento desde que se inscribe hasta el instante exacto en que el torneo comienza.
+•      Congelación automática: En el momento en que el torneo arranca, la configuración IFTTT de todos los participantes se congela de forma simultánea. No se permiten modificaciones mientras el torneo esté activo.
+•      Descongelación: La configuración IFTTT vuelve a ser editable en cuanto el torneo finaliza o el Geno es eliminado de la competición.
+•      Configuración por defecto: Si un jugador inscrito no tiene ninguna configuración IFTTT personalizada en el momento del inicio, el sistema aplica automáticamente la configuración por defecto del servidor. El Geno no queda paralizado.
+ 
+La Sala de Pruebas es la herramienta clave de preparación: el jugador sabe que tiene hasta el inicio del torneo para afinar y verificar que su combinación IFTTT funciona correctamente contra distintos tipos de rivales. El límite de tiempo crea urgencia de uso de la Sala de Pruebas durante la semana previa.
+ 
+
+# 9.5  Privacidad de rivales
+
+Los emparejamientos del torneo se revelan únicamente en el momento en que éste comienza. Durante toda la semana de inscripción anticipada y preparación, ningún jugador sabe contra quién va a competir.
+ 
+•      Consecuencia táctica: La única forma de prepararse es construir una configuración IFTTT robusta y versátil, no una diseñada para contraatacar a un rival específico conocido. Esto eleva el nivel estratégico general y elimina el metagaming de counter personalizado.
+•      Consecuencia competitiva: Inscribirse antes no da ventaja de información sobre los rivales. La ventaja de la inscripción anticipada es exclusivamente económica (la recompensa en EV), no táctica.
+ 
+
+# 9.6  Recompensa por inscripción anticipada
+
+•      Cuándo se entrega: La recompensa en EV se entrega automáticamente después de que el torneo finaliza, independientemente del resultado del jugador en la competición.
+•      Condición única: Haberse inscrito durante la ventana anticipada (antes del inicio del torneo). Los jugadores que se inscriban durante la ventana activa del torneo NO reciben esta recompensa.
+•      Valor de la recompensa: A definir en el balance final. Debe ser suficientemente atractivo para incentivar la inscripción anticipada pero no tan alto como para convertirse en una fuente primaria de farmeo de EV.
+ 
+Campos necesarios en Supabase para esta mecánica
+tournament_registrations: tabla con player_id, tournament_id, tier ($POL), registered_at, is_early (boolean).
+is_early = true si registered_at &lt; tournament_start_time.
+early_ev_reward_paid: boolean, se actualiza a true cuando se entrega la recompensa post-torneo.
+ifttt_snapshot: snapshot de la configuración IFTTT del jugador en el momento de la congelación.
+ 
+
+ 
+
+# Sección 10 — Cola unificada de riesgo y cascada dinámica FIFO
+
+ 
+Para que los jugadores veteranos puedan competir por bolsas altas sin fragmentar las salas de espera, el sistema implementa un Matchmaking Unificado de Riesgo Flexible controlado por capas de precio con descenso automático garantizado.
+ 
+
+# 10.1   Los 4 niveles de entrada disponibles
+
+El sistema en TournamentManager.js implementa un Matchmaking Unificado de Riesgo Flexible controlado por 4 capas de precio:
+
+| Nivel | Coste de entrada | Perfil objetivo | Premios en $POL |
+| :--- | :---: | :--- | :--- |
+| Practicante | 0.15 $POL | Jugadores principiantes y de prueba. Suelo del sistema con bots de relleno garantizados. | 🥇 1º: 1.20 $POL, 🥈 2º: 0.66 $POL, 🥉 3º: 0.30 $POL |
+| Casual | 0.50 $POL | Jugadores F2P o de bajo riesgo. Nivel de volumen masivo. | 🥇 1º: 4.00 $POL, 🥈 2º: 2.20 $POL, 🥉 3º: 1.00 $POL |
+| Competitivo | 2.00 $POL | Jugadores regulares con experiencia en torneos. | 🥇 1º: 16.00 $POL, 🥈 2º: 8.80 $POL, 🥉 3º: 4.00 $POL |
+| Élite | 5.00 $POL | Ballenas y jugadores veteranos buscando bolsas de premios altas. | 🥇 1º: 40.00 $POL, 🥈 2º: 22.00 $POL, 🥉 3º: 10.00 $POL |
+
+# 10.2  Algoritmo del flujo de cascada en servidor
+
+•      Paso 1 — Inscripción intencional: El jugador selecciona su Geno elegible y elige el monto que está dispuesto a arriesgar (ej. 5.00 $POL). El contrato retiene los fondos y lo añade a la Cola Élite.
+•      Paso 2 — Temporizador de corte (6 minutos): El backend abre un cuadro de espera de duración estricta de 6 minutos para reunir 16 jugadores reales al mismo nivel de entrada.
+•      Paso 3a — Si se llena (16/16): Se cierra el bracket y arranca el torneo de inmediato.
+•      Paso 3b — Si el tiempo expira sin llenarse: El sistema Verifica cuantos hay, si son 15 jugadores, el sistema añade 1 Geno IA, este se financia con el 10% de la comisión que se queda el juego por cada torneo de 16, si son menos de 15 activa el protocolo de Descenso FIFO (First In, First Out). Los jugadores se desplazan en bloque al siguiente nivel de entrada inferior.
+•      Garantía de cierre: El nivel Practicante (0.15 $POL) es el suelo del sistema. Por ser el nivel de volumen masivo, el cuadro de 16 se cerrará de forma garantizada.
+•      Opcion adicional: Se le permitirá activar una opción a los jugadores donde autorizan a comenzar torneos de 8 jugadores si hay menos de 15 jugadores en sala de espera, si algún jugador tampoco queda en el grupo de 8 seguira bajando de al nivel de entrada inferior. Esta opción le aparece al momento en el que se va activar el FIFO.
+ 
+
+# 10.3  Gestión de fondos en el descenso FIFO
+
+•      Patrón de Retiro (Pull-over-Push): Al ejecutar el descenso, el contrato inteligente prohíbe realizar transferencias salientes automáticas a la wallet on-chain del usuario para evitar gasto innecesario de gas.
+•      Crédito interno: El contrato calcula la diferencia exacta (ej. 5.00 - 2.00 = 3.00 $POL) y la acredita instantáneamente en la variable interna saldosPendientes del perfil del usuario.
+•      Visibilidad en UI: El saldo queda reflejado en el Baúl del jugador como crédito interno libre de gas, disponible para reinvertir en otra inscripción de la ventana horaria o retirar físicamente hacia su wallet Privy bajo demanda.
+ 
+
+# 10.4  Pop-up de transparencia UX al ejecutar el descenso
+
+Mensaje que el cliente muestra obligatoriamente al jugador cuando se ejecuta un descenso FIFO
+¡Ajuste de categoría para inicio rápido!
+ 
+El temporizador de la cola Élite (5.00 $POL) ha expirado sin encontrar los 16 rivales
+requeridos para cerrar el cuadro. Para que no tengas que seguir esperando, el Laboratorio
+te ha trasladado automáticamente al próximo torneo de la categoría Competitiva (2.00 $POL),
+donde la batalla comienza ya.
+ 
+¡Tus fondos están seguros! Los 3.00 $POL de diferencia han sido devueltos instantáneamente
+a tus saldosPendientes en el Baúl. Puedes usarlos para reinscribirte en esta misma ventana
+o retirarlos cuando desees.
+ 
+
+ 
+
+# Sección 11 — Blindaje de equidad matemática y ajuste de llaves
+
+ 
+Al manejar dinero real ($POL), el balance se convierte en un elemento crítico de seguridad. Se aplican tres protocolos de equidad estrictos.
+ 
+
+# 11.1  Desactivación del Jefe de Liga (0% asimetría en torneos)
+
+•      La regla del 15% de probabilidad de cruzarse con una rareza superior queda completamente eliminada de los torneos de fin de semana.
+•      Ningún jugador que arriesgue capital real será emparejado en desventaja de estadísticas contra una escala biológica superior.
+•      Un Geno Común solo compite contra Genos Comunes en todos los torneos con filtro de rareza activo.
+ 
+
+# 11.2  Protocolo de contracción de bracket a 8 participantes
+
+•      8 a 14 inscritos: El servidor Avisa a los jugadores para reducir el bracket de 16 a 8 participantes (Cuartos, Semifinal y Final). Si los jugadores aceptan el torneo arranca de inmediato respetando las entradas proporcionales.
+•      Menos de 7 inscritos: Si no pueden bajar de categoría, el juego dará tiempo de gracia para conseguir al jugador faltante al finalizar ese tiempo el torneo de esa categoría se cancela off-chain. El 100% de las entradas se devuelve al pool saldosPendientes de los usuarios con el coste de gas de una sola firma de administración.
+ 
+
+# 11.3  Protocolo de inyección de NPC (bracket semicompleto)
+
+Si al expirar el matchmaking un torneo de 16 participantes registra exactamente 15 jugadores humanos reales, el juego inyecta un agente virtual (NPC) como competidor número 16:
+ 
+•      Subvención del pozo: El pool de premios se mantiene calculado sobre un torneo completo de 8 participantes. La entrada ficticia del NPC se subsidia a través de la retención del organizador (10%) cobrada a los 7 participantes humanos.
+•      Ejecución del NPC: El NPC ejecuta de forma pasiva su script IFTTT en el servidor consumiendo cero firmas de gas.
+•      Rescate de liquidez si el NPC llega al podio: Si el NPC finaliza en 1º, 2º o 3º lugar, el contrato inteligente desvía de forma atómica el premio en $POL de vuelta a la Safe de Tesorería multi-firma del equipo, usándose como colchón del Paymaster.
+ 
+
+ 
+
+# Sección 12 — Ingeniería económica: matemática del payout en $POL
+
+ 
+Cada bracket de 16 jugadores (o 8 en contracción) constituye un circuito financiero cerrado e independiente en la blockchain de Polygon. No se crea dinero de la nada, garantizando liquidez inmediata y evitando inflación.
+ 
+
+# 12.1   Distribución de fondos de un bracket estándar (Ejemplo conceptual base 1.00 $POL)
+
+Ejemplo base con entrada de 1.00 $POL y 16 jugadores:
+
+| Concepto | Cálculo | Importe |
+| :--- | :--- | :--- |
+| Recaudación bruta de la llave | 16 jugadores × 1.00 $POL | 16.00 $POL |
+| Retención de la casa (10%) | 16.00 × 10% | 1.60 $POL → Safe de Tesorería multi-firma (2 de 3 llaves físicas de hardware) |
+| Bolsa neta para el podio (90%) | 16.00 × 90% | 14.40 $POL → repartidos entre 1º, 2º y 3º puesto |
+
+# 12.2   Distribución del podio en los 4 Tiers Reales
+
+A continuación se detalla la matemática de liquidación on-chain exacta del contrato para cada uno de los 4 tiers de entrada reales del juego:
+
+### 1. Copa Practicante (0.15 $POL)
+* Recaudación Bruta (16 jugadores): **2.40 $POL**
+* Retención de la Casa (10%): **0.24 $POL**
+* Bolsa Neta Podio (90%): **2.16 $POL**
+  * 🥇 **1º Lugar (Campeón - 55.55%):** **1.20 $POL** (x8 de entrada)
+  * 🥈 **2º Lugar (Subcampeón - 30.55%):** **0.66 $POL**
+  * 🥉 **3º Lugar (Consolación - fijo x2.0):** **0.30 $POL**
+  * *Comprobación:* 1.20 + 0.66 + 0.30 + 0.24 = 2.40 $POL (100.0%)
+
+### 2. Copa Casual (0.50 $POL)
+* Recaudación Bruta (16 jugadores): **8.00 $POL**
+* Retención de la Casa (10%): **0.80 $POL**
+* Bolsa Neta Podio (90%): **7.20 $POL**
+  * 🥇 **1º Lugar (Campeón - 55.55%):** **4.00 $POL** (x8 de entrada)
+  * 🥈 **2º Lugar (Subcampeón - 30.55%):** **2.20 $POL**
+  * 🥉 **3º Lugar (Consolación - fijo x2.0):** **1.00 $POL**
+  * *Comprobación:* 4.00 + 2.20 + 1.00 + 0.80 = 8.00 $POL (100.0%)
+
+### 3. Copa Competitiva (2.00 $POL)
+* Recaudación Bruta (16 jugadores): **32.00 $POL**
+* Retención de la Casa (10%): **3.20 $POL**
+* Bolsa Neta Podio (90%): **28.80 $POL**
+  * 🥇 **1º Lugar (Campeón - 55.55%):** **16.00 $POL** (x8 de entrada)
+  * 🥈 **2º Lugar (Subcampeón - 30.55%):** **8.80 $POL**
+  * 🥉 **3º Lugar (Consolación - fijo x2.0):** **4.00 $POL**
+  * *Comprobación:* 16.00 + 8.80 + 4.00 + 3.20 = 32.00 $POL (100.0%)
+
+### 4. Copa Élite (5.00 $POL)
+* Recaudación Bruta (16 jugadores): **80.00 $POL**
+* Retención de la Casa (10%): **8.00 $POL**
+* Bolsa Neta Podio (90%): **72.00 $POL**
+  * 🥇 **1º Lugar (Campeón - 55.55%):** **40.00 $POL** (x8 de entrada)
+  * 🥈 **2º Lugar (Subcampeón - 30.55%):** **22.00 $POL**
+  * 🥉 **3º Lugar (Consolación - fijo x2.0):** **10.00 $POL**
+  * *Comprobación:* 40.00 + 22.00 + 10.00 + 8.00 = 80.00 $POL (100.0%)
+
+# 12.3  Mitigación del riesgo financiero: consolación en EV para eliminados
+
+Para eliminar la frustración de los jugadores que quedan fuera del dinero, el backend de Supabase entrega recursos de progreso off-chain según la ronda alcanzada:
+ 
+Fase de eliminación
+Recompensa en EV
+Bonus adicional
+Eliminados en Octavos de Final (Ronda 1)
+15.00 EV
+Energía para ir directo al Laboratorio a modificar estrategia.
+Eliminados en Cuartos de Final (Ronda 2)
+8.00 EV
+—
+4º Puesto (pierde la final de consolación por el 3er puesto)
+4.00 EV
+Plano procedural para un Accesorio Cosmético de la Torre.
+ 
+
+ 
+
+# Sección 13 — Protocolo de desconexión asíncrona durante torneos
+
+ 
+Los torneos de fin de semana son eventos en vivo con horarios específicos. Para evitar que una caída de red o abandono congele el torneo de forma indefinida para el rival, el sistema activa el piloto automático IFTTT.
+ 
+
+# 13.1  Activación del piloto automático
+
+•      Detección de inactividad: Si el temporizador de turno (30 segundos de decisión por turno) expira dos veces consecutivas sin recibir respuesta del cliente del Jugador A, el backend de Supabase cambia el estado del jugador a offline.
+•      Lectura del script IFTTT: El motor de combate central (ColiseumLogic.js) lee de forma pasiva e instantánea el script de condiciones IFTTT que el Jugador A tenía configurado en su perfil al inicio del torneo (snapshot congelado).
+•      Continuidad del bracket: El combate continúa ejecutándose en milisegundos en el servidor. El Jugador B (que sigue online) continúa jugando de forma manual en vivo contra la mente automatizada del rival, asegurando que el bracket no sufra retrasos y finalice dentro de los tiempos de la ventana horaria.
+ 
+
+# 13.2  Relación con la inscripción anticipada
+
+La mecánica de desconexión asíncrona y la inscripción anticipada son piezas complementarias del mismo diseño filosófico: el Geno siempre combate, independientemente de la presencia del jugador.
+ 
+Escenario
+Qué ocurre
+Impacto económico para el jugador
+Jugador inscrito anticipadamente que no se conecta el día del torneo
+Su Geno combate con la configuración IFTTT congelada al inicio.
+Ningún perjuicio. Si gana, recibe los premios. Si pierde, recibe la consolación en EV.
+Jugador conectado que pierde internet durante el torneo
+El sistema detecta 2 timeouts consecutivos y activa el piloto IFTTT.
+Ningún perjuicio. El torneo continúa con su configuración guardada.
+Jugador sin configuración IFTTT personalizada al inicio
+El sistema aplica la configuración por defecto del servidor.
+El Geno combate con comportamiento básico estándar.
+ 
+Esta arquitectura convierte la inscripción al torneo en un compromiso del Geno, no del jugador. La comunicación en el juego puede reforzarlo: &apos;Una vez inscrito, tu Geno combatirá con tu estrategia IFTTT aunque no estés conectado. Asegúrate de que tu configuración esté lista antes del inicio.&apos;
+ 
+ 
+Proyecto Genos  —  Especificaciones Técnicas Coliseo y Torneos V1.0 Consolidada  —  Confidencial
+Todas las mecánicas, probabilidades y valores numéricos son definitivos hasta nueva versión firmada.
+
+---
+
+## 12. Registro Histórico de Ajustes de Base de Datos y Bugs de Producción
+*Esta sección detalla las intervenciones críticas y correcciones aplicadas al servidor y base de datos Supabase.*
+
+# 📝 Registro de Mejoras y Ajustes del Servidor — Proyecto Genos
+
+Este documento sirve como bitácora de todas las modificaciones y restauraciones realizadas que no están descritas en el Documento Maestro ni registradas directamente en los comentarios del código de producción, para mantener un registro histórico y evitar que se olviden.
+
+---
+
+## 🛠️ Modificaciones de Base de Datos y Servidor (Supabase)
+
+### 1. Creación de Columnas Dedicadas en Tabla `jugadores` (06/06/2026)
+* **Descripción**: Se agregaron tres columnas dedicadas a la tabla `jugadores` en la base de datos de producción para alinearse con las consultas y guardados del cliente, evitando errores de solicitud errónea (`HTTP 400 Bad Request`).
+* **Acción SQL DDL**:
+  ```sql
+  ALTER TABLE jugadores 
+  ADD COLUMN IF NOT EXISTS lab_level integer DEFAULT 1,
+  ADD COLUMN IF NOT EXISTS lab_xp integer DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS comercio_desbloqueado boolean DEFAULT false;
+  ```
+* **Migración de Datos (Backfill)**: Se ejecutó un query de actualización masiva para rellenar estas nuevas columnas con los datos históricos existentes dentro del campo JSONB `datos_juego` de todos los usuarios:
+  ```sql
+  UPDATE jugadores
+  SET 
+    lab_level = COALESCE((datos_juego->>'labLevel')::integer, 1),
+    lab_xp = COALESCE((datos_juego->>'labXP')::integer, 0),
+    comercio_desbloqueado = COALESCE((datos_juego->>'comercioDesbloqueado')::boolean, false);
+  ```
+
+### 2. Restauración Manual del Progreso del Administrador (06/06/2026)
+* **Cuenta afectada**: `saletti001@gmail.com` (UUID: `9814f37b-df28-458e-8fa0-73a09aa8100b`).
+* **Problema**: El progreso se corrompió al inicializarse un estado por defecto de Nivel 1 en el cliente por caché vacía, y luego la amistad de los Genos se redujo a 0 debido al bug del decaimiento offline.
+* **Solución**: Se ejecutó una consulta SQL para fusionar (merge) el objeto `datos_juego` actual del jugador con los datos correctos de la copia de seguridad no corrompida del Paso 10611 (eliminando los SVGs dinámicos para optimizar espacio).
+* **Valores restaurados**:
+  * Nivel de Laboratorio: **2** (con 219 XP).
+  * Monedero: **103.51 $POL** y **0.79 de Bóveda**.
+  * Mascota Activa: **Neo-Prime** (ID: 000005, Amistad: **4.80**).
+  * Puntos de Amistad originales de Genos: BIO-742 (**6.43**), Mutcore (**6.44**), Neo-Prime (**4.80**), Nexomorph (**3.86**).
+
+---
+
+## ⚙️ Correcciones y Ajustes de Integración (Frontend)
+
+### 1. Fix del Decaimiento de Amistad Offline (`EnergyManager.js`)
+* **Descripción**: Se añadió inmunidad al decaimiento de amistad durante la desconexión del jugador.
+* **Implementación**:
+  * Se modificó la firma de `NexoEnergyManager.recuperar(segundosTranscurridos, isOffline)` para incluir el parámetro booleano `isOffline`.
+  * La lógica que descuenta amistad por descuido/negligencia se protegió dentro de un bloque `if (!isOffline)`.
+  * El método `aplicarRecuperacionPasiva` invoca `this.recuperar(segundosTranscurridos, true)`. Esto preserva las amistades mientras el usuario está desconectado y solo aplica el decaimiento por tiempo de juego activo en los ticks normales.
+
+### 2. Corrección del Reloj de Red Nexo y CORS (`CloudManager.js`)
+* **Descripción**: Se eliminaron los errores en la consola del navegador (`401 Unauthorized` / `405 Method Not Allowed`) provocados por la consulta del desfase horario con el servidor de Supabase.
+* **Implementación**:
+  * Se modificó `window.obtenerHoraServidor` para realizar una solicitud de tipo `GET` (en lugar de `HEAD`) apuntando a la ruta pública de salud del servicio de autenticación: `supabaseUrl + '/auth/v1/health'`.
+  * Se inyectó la cabecera `apikey: supabaseKey` para pasar de forma segura a través de la pasarela de enlace API (Kong Gateway).
+  * Esto permite obtener el encabezado `Date` del servidor de forma limpia, cumpliendo con la política de CORS y sin arrojar logs de error en rojo.
+
+## 13. Veredicto y Siguientes Pasos — Roadmap de Implementaciones Pendientes y Siguientes Pasos — Actualizado Junio 2026
+
+Proyecto Genos V12 es el documento mas completo del proyecto. El balance V13.9 resuelve la dependencia del RNG elemental. Los 3 Definitivos por elemento crean mind games reales. Los Torneos Tematicos hacen que el esfuerzo de criar y mejorar Genos tenga recompensa competitiva directa.
 
 ESTADO ACTUAL (Junio 2026): El motor del juego está completo y funcional. Las Fases 1-3 están 100% implementadas. La Fase 4 (ADN), la Fase 5 (Coliseo), la Fase 6 (Web3) y la Fase 7 (Torneos) tienen sus motores y flujos principales funcionando off-chain y parcialmente on-chain (integración de MetaMask en la testnet Polygon Amoy para la Plaza de Comercio P2P y Torneos). La brecha crítica actual es el despliegue del Libro de Linaje en blockchain y contratos inteligentes on-chain para becas.
 
@@ -2880,7 +4801,6 @@ PRIORIDAD BAJA: Gen 0.5 — mecanica de Genos de evento esteriles.
 
 
 
-Proyecto Genos V11 — Documento Maestro Definitivo · Actualizado Junio 2026
+Proyecto Genos V12 — Documento Maestro Definitivo · Actualizado Junio 2026
 Codigo fuente: https://github.com/Saletti001/Mascotas
 Estado: Motor de juego completo. Blockchain layer pendiente.
-

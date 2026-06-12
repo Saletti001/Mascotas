@@ -218,6 +218,57 @@ window.migrarHPGenosExistentes = function() {
 };
 
 // =========================================
+// NAVEGACIÓN GLOBAL DE LA APLICACIÓN
+// =========================================
+window.currentSlide = "room-area";
+
+window.navegarA = function(idPantalla) {
+    let actualTarget = idPantalla;
+    let slidePos = null;
+
+    if (idPantalla === "room-area") {
+        actualTarget = "main-slider-screen";
+        slidePos = "0%";
+        window.currentSlide = "room-area";
+    } else if (idPantalla === "bathroom-screen") {
+        actualTarget = "main-slider-screen";
+        slidePos = "-50%";
+        window.currentSlide = "bathroom-screen";
+    }
+
+    document.querySelectorAll('.app-screen').forEach(s => s.classList.add("hidden"));
+    
+    const destino = document.getElementById(actualTarget);
+    if(destino) destino.classList.remove("hidden");
+
+    if (slidePos !== null) {
+        const slider = document.getElementById("desktop-slider");
+        if (slider) slider.style.transform = `translateX(${slidePos})`;
+        
+        if (window.currentSlide === "bathroom-screen") {
+            if (typeof window.actualizarGenoBaño === 'function') {
+                window.actualizarGenoBaño();
+            }
+        } else {
+            if (typeof window.actualizarSuciedadVisual === 'function') {
+                window.actualizarSuciedadVisual();
+            }
+        }
+    }
+    
+    const drawerMenu = document.getElementById("drawer-menu");
+    if(drawerMenu) drawerMenu.classList.add("hidden"); 
+    
+    const panelStats = document.getElementById("geno-stats-panel");
+    if(panelStats) panelStats.classList.add("hidden");
+    
+    const fabMenu = document.getElementById("fab-menu");
+    if(fabMenu) {
+        fabMenu.classList.toggle("hidden", window.currentSlide !== "room-area" || actualTarget !== "main-slider-screen");
+    }
+};
+
+// =========================================
 // EVENTOS DE INTERFAZ DOM Y UI
 // =========================================
 document.addEventListener("DOMContentLoaded", () => {
@@ -252,54 +303,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if(fabMenu) fabMenu.addEventListener("click", () => drawerMenu.classList.remove("hidden"));
     if(closeDrawer) closeDrawer.addEventListener("click", () => drawerMenu.classList.add("hidden"));
 
-    window.currentSlide = "room-area";
-
-    window.navegarA = function(idPantalla) {
-        let actualTarget = idPantalla;
-        let slidePos = null;
-
-        if (idPantalla === "room-area") {
-            actualTarget = "main-slider-screen";
-            slidePos = "0%";
-            window.currentSlide = "room-area";
-        } else if (idPantalla === "bathroom-screen") {
-            actualTarget = "main-slider-screen";
-            slidePos = "-50%";
-            window.currentSlide = "bathroom-screen";
-        }
-
-        document.querySelectorAll('.app-screen').forEach(s => s.classList.add("hidden"));
-        
-        const destino = document.getElementById(actualTarget);
-        if(destino) destino.classList.remove("hidden");
-
-        if (slidePos !== null) {
-            const slider = document.getElementById("desktop-slider");
-            if (slider) slider.style.transform = `translateX(${slidePos})`;
-            
-            if (window.currentSlide === "bathroom-screen") {
-                if (typeof window.actualizarGenoBaño === 'function') {
-                    window.actualizarGenoBaño();
-                }
-            } else {
-                if (typeof window.actualizarSuciedadVisual === 'function') {
-                    window.actualizarSuciedadVisual();
-                }
-            }
-        }
-        
-        if(drawerMenu) drawerMenu.classList.add("hidden"); 
-        
-        const panelStats = document.getElementById("geno-stats-panel");
-        if(panelStats) panelStats.classList.add("hidden");
-        
-        if(fabMenu) {
-            fabMenu.classList.toggle("hidden", window.currentSlide !== "room-area" || actualTarget !== "main-slider-screen");
-        }
-    };
-
     document.querySelectorAll(".btn-go-home").forEach(btn => {
-        btn.addEventListener("click", () => window.navegarA("room-area"));
+        if (!btn.hasAttribute("onclick")) {
+            btn.addEventListener("click", () => window.navegarA("room-area"));
+        }
     });
 
     const botonesNexo = {
@@ -734,8 +741,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else {
                     alert("Opción no válida. Debes escribir 'EV' o 'POL'.");
                 }
-            }
-        };pandir tu inventario. ¡Consigue más jugando o recargando!");
             }
         };
         gridSwap.appendChild(buyCard);

@@ -187,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     }
-
+    window.ColiseumManager.initColiseumCustomSelects = initColiseumCustomSelects;
     initColiseumCustomSelects();
 
     window.iniciarColiseo = function() {
@@ -1674,6 +1674,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
             `;
             listContainer.appendChild(teamCard);
+            
+            // Re-inicializar selectores customizados para el simulador de clon y desafío táctico
+            if (typeof window.ColiseumManager.initColiseumCustomSelects === 'function') {
+                window.ColiseumManager.initColiseumCustomSelects();
+            }
         } else {
             // 1. BAÚL BALANCE (Free-gas internal account)
             const pendingBalance = window.TournamentManager ? (window.TournamentManager.saldosPendientes || 0.0) : 0.0;
