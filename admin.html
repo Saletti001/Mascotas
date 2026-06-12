@@ -766,6 +766,21 @@
             width: 200px;
         }
 
+        .custom-select-wrapper.open {
+            z-index: 101 !important;
+        }
+
+        .glass-panel.has-open-select {
+            overflow: visible !important;
+            z-index: 100 !important;
+        }
+
+        /* Fallback for glass panels with open selects */
+        .glass-panel:has(.custom-select-wrapper.open) {
+            overflow: visible !important;
+            z-index: 100 !important;
+        }
+
         .custom-select-trigger {
             background: rgba(0, 0, 0, 0.5);
             border: 1px solid var(--neon-purple);
@@ -1049,7 +1064,6 @@
             <button id="tab-support" class="tab-btn" onclick="switchTab('support')">Gestión de Cuentas</button>
             <button id="tab-shop-config" class="tab-btn" onclick="switchTab('shop-config')">Configuración de Tiendas</button>
             <button id="tab-nexus-config" class="tab-btn" onclick="switchTab('nexus-config')">Mecánicas del Nexo</button>
-            <button id="tab-logs" class="tab-btn" onclick="switchTab('logs')">Historial de Logs</button>
         </div>
 
         <!-- Metrics View Container -->
@@ -1169,6 +1183,48 @@
                     <div class="chart-container">
                         <canvas id="rarityDistributionChart"></canvas>
                     </div>
+                </div>
+            </div>
+            
+            <!-- Logs Table Panel (Moved to the bottom of Metrics) -->
+            <div class="glass-panel logs-panel" style="position: relative; z-index: 1; margin-top: 30px;">
+                <div class="logs-panel-header">
+                    <div class="logs-panel-title">Historial Reciente de Logs Económicos</div>
+                    <div class="logs-controls">
+                        <input type="text" id="logs-search-input" class="logs-search" placeholder="Filtrar por correo o fuente...">
+                        
+                        <div class="custom-select-wrapper" id="logs-filter-wrapper" data-selected-value="all">
+                            <div class="custom-select-trigger" id="logs-filter-trigger">Todas las Acciones</div>
+                            <div class="custom-select-options">
+                                <div class="custom-option selected" data-value="all">Todas las Acciones</div>
+                                <div class="custom-option" data-value="reward">Emisiones (Rewards)</div>
+                                <div class="custom-option" data-value="sink">Quemas (Sinks)</div>
+                                <div class="custom-option" data-value="pol_sale">Ventas POL (Mercado)</div>
+                                <div class="custom-option" data-value="pol_spent">Inscripción Torneo</div>
+                                <div class="custom-option" data-value="pol_reward">Premios Torneo</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>ID Log</th>
+                                <th>Usuario</th>
+                                <th>Acción</th>
+                                <th>Monto</th>
+                                <th>Módulo / Origen</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-table-body">
+                            <tr>
+                                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">Cargando registros del sistema...</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -1427,6 +1483,24 @@
                             <button id="btn-add-login-reward-trigger" class="btn-logout" style="height: 35px; width: auto; padding: 0 15px; font-size: 10px; font-weight: bold; font-family: var(--font-cyber); letter-spacing: 0.5px; border-color: var(--neon-green); color: var(--neon-green);">+ AÑADIR</button>
                         </div>
                     </div>
+
+                    <!-- Gameplay Rewards Section -->
+                    <div style="background: rgba(0,0,0,0.15); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.03); margin-top: 10px;">
+                        <span style="color: var(--neon-green); font-weight: bold; font-size: 11px; display: block; margin-bottom: 8px;">RECOMPENSAS DE GAMEPLAY:</span>
+                        <div class="custom-select-wrapper green" id="select-gameplay-reward-wrapper" data-selected-value="" style="width: 100%; margin-bottom: 12px;">
+                            <input type="hidden" id="select-gameplay-reward" value="">
+                            <div class="custom-select-trigger" id="select-gameplay-reward-trigger">Seleccionar...</div>
+                            <div class="custom-select-options"></div>
+                        </div>
+                        
+                        <div id="gameplay-reward-details" style="display: flex; gap: 10px; align-items: flex-end;">
+                            <div style="flex: 1;">
+                                <label style="color: var(--text-muted); font-size: 9px; font-family: var(--font-mono);">VALOR DE RECOMPENSA</label>
+                                <input type="number" id="input-gameplay-reward-value" class="logs-search" style="width: 100%; margin-top: 5px; height: 35px;" step="any">
+                            </div>
+                            <button id="btn-add-gameplay-reward-trigger" class="btn-logout" style="height: 35px; width: auto; padding: 0 15px; font-size: 10px; font-weight: bold; font-family: var(--font-cyber); letter-spacing: 0.5px; border-color: var(--neon-green); color: var(--neon-green);">+ AÑADIR</button>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Card 3: Inscripción y Premios de Torneos (Ancho Completo) -->
@@ -1631,50 +1705,7 @@
             </div>
         </div>
 
-        <!-- Logs View Container -->
-        <div id="logs-view" class="tab-view-content hidden">
-            <!-- Logs Table Panel -->
-            <div class="glass-panel logs-panel" style="position: relative; z-index: 1;">
-                <div class="logs-panel-header">
-                    <div class="logs-panel-title">Historial Reciente de Logs Económicos</div>
-                    <div class="logs-controls">
-                        <input type="text" id="logs-search-input" class="logs-search" placeholder="Filtrar por correo o fuente...">
-                        
-                        <div class="custom-select-wrapper" id="logs-filter-wrapper" data-selected-value="all">
-                            <div class="custom-select-trigger" id="logs-filter-trigger">Todas las Acciones</div>
-                            <div class="custom-select-options">
-                                <div class="custom-option selected" data-value="all">Todas las Acciones</div>
-                                <div class="custom-option" data-value="reward">Emisiones (Rewards)</div>
-                                <div class="custom-option" data-value="sink">Quemas (Sinks)</div>
-                                <div class="custom-option" data-value="pol_sale">Ventas POL (Mercado)</div>
-                                <div class="custom-option" data-value="pol_spent">Inscripción Torneo</div>
-                                <div class="custom-option" data-value="pol_reward">Premios Torneo</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="table-container">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>ID Log</th>
-                                <th>Usuario</th>
-                                <th>Acción</th>
-                                <th>Monto</th>
-                                <th>Módulo / Origen</th>
-                            </tr>
-                        </thead>
-                        <tbody id="logs-table-body">
-                            <tr>
-                                <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 30px;">Cargando registros del sistema...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+        <!-- Logs View Container Removed (Moved to Metrics View) -->
     </div>
 
     <!-- Add Item Modal -->
@@ -2008,9 +2039,22 @@
                 newTrigger.addEventListener('click', (e) => {
                     e.stopPropagation();
                     document.querySelectorAll('.custom-select-wrapper').forEach(other => {
-                        if (other !== wrapper) other.classList.remove('open');
+                        if (other !== wrapper) {
+                            other.classList.remove('open');
+                            const parentPanel = other.closest('.glass-panel');
+                            if (parentPanel) parentPanel.classList.remove('has-open-select');
+                        }
                     });
+                    
                     wrapper.classList.toggle('open');
+                    const parentPanel = wrapper.closest('.glass-panel');
+                    if (parentPanel) {
+                        if (wrapper.classList.contains('open')) {
+                            parentPanel.classList.add('has-open-select');
+                        } else {
+                            parentPanel.classList.remove('has-open-select');
+                        }
+                    }
                 });
                 
                 options.forEach(opt => {
@@ -2023,6 +2067,8 @@
                         newOpt.classList.add('selected');
                         newTrigger.innerText = newOpt.innerText;
                         wrapper.classList.remove('open');
+                        const parentPanel = wrapper.closest('.glass-panel');
+                        if (parentPanel) parentPanel.classList.remove('has-open-select');
                         
                         const value = newOpt.getAttribute('data-value');
                         wrapper.setAttribute('data-selected-value', value);
@@ -2053,6 +2099,8 @@
                 document.addEventListener('click', () => {
                     document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
                         wrapper.classList.remove('open');
+                        const parentPanel = wrapper.closest('.glass-panel');
+                        if (parentPanel) parentPanel.classList.remove('has-open-select');
                     });
                 });
                 window.customSelectGlobalListenerAdded = true;
