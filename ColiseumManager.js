@@ -1148,7 +1148,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (!window.miInventario) window.miInventario = { vitalEssence: 0, items: [] };
                 window.miInventario.vitalEssence = (window.miInventario.vitalEssence || 0) + 75;
                 ColiseumUI.agregarLog(`<span style="color:#ff8a80; font-weight:bold;">✨ ¡Consolación 3v3: +75 EV!</span>`);
-            }
             } else if (ColiseumLogic.modoCombate === 'pvp') {
                 window.arenaBattlesPlayed++;
                 window.arenaLosses++;
