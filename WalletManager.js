@@ -288,6 +288,9 @@ window.WalletManager = {
                 }
             };
         }
+        if (typeof window.sincronizarHUDPerfilSuperior === 'function') {
+            window.sincronizarHUDPerfilSuperior();
+        }
     }
 };
 

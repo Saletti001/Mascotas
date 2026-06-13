@@ -40,111 +40,140 @@
         <div id="main-slider-screen" class="app-screen">
             <div id="desktop-slider">
                 <div id="room-area">
-            <div id="top-hud">
-                <div style="display: flex; flex-direction: column; background-color: #1a1a2e; border: 2px solid #2a2a4a; border-radius: 18px; padding: 10px 16px; width: 100%; box-sizing: border-box; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); gap: 8px;">
-                    <!-- Fila de Recursos: EV y POL -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-                        <div id="btn-abrir-empaquetador" style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 2px 8px; border-radius: 8px; transition: 0.2s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
-                            <span id="hud-ev-icon-container" style="display: inline-block; width: 1.4em; height: 1.4em; display: flex; align-items: center;"></span>
-                            <span id="vital-essence-amount" style="color: white; font-weight: bold; font-family: sans-serif; font-size: 13.5px; letter-spacing: 0.5px;">0</span>
-                        </div>
-
-                        <div style="width: 2px; height: 18px; background-color: rgba(255, 255, 255, 0.1); border-radius: 2px;"></div>
-
-                        <div style="display: flex; align-items: center; gap: 6px;">
-                            <span style="display: flex; align-items: center;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#8A2BE2" stroke="#8A2BE2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon></svg>
-                            </span> 
-                            <span id="pol-amount" style="color: #e9d5ff; font-weight: bold; font-family: sans-serif; font-size: 13.5px;">0.0 POL | 🦊 Vincular</span>
-                        </div>
-                    </div>
-
-                    <!-- Divisor sutil -->
-                    <div style="width: 100%; height: 1px; background-color: rgba(255, 255, 255, 0.08);"></div>
-
-                    <!-- Barra de Energía Nexo Flanqueada por Calendario y Buzón -->
-                    <div style="display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box;">
-                        <!-- Botón Calendario (Izquierda) -->
-                        <button id="btn-daily-login" style="background: rgba(0, 229, 255, 0.1); border: 1.5px solid rgba(0, 229, 255, 0.3); border-radius: 8px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #00e5ff; transition: 0.2s; flex-shrink: 0;" onmouseover="this.style.background='rgba(0, 229, 255, 0.25)'; this.style.borderColor='#00e5ff';" onmouseout="this.style.background='rgba(0, 229, 255, 0.1)'; this.style.borderColor='rgba(0, 229, 255, 0.3)';" title="Recompensas Diarias">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                <line x1="3" y1="10" x2="21" y2="10"></line>
-                            </svg>
-                        </button>
-
-                        <!-- Barra de Energía Nexo (Centro) -->
-                        <div id="hud-energy-container" style="display: flex; flex-direction: column; flex: 1; box-sizing: border-box; cursor: pointer;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                                <span style="color: #00e5ff; font-family: monospace; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 4px;">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="#00e5ff" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                                    Energía Nexo
-                                </span>
-                                <span id="hud-energy-text" style="color: #fff; font-family: monospace; font-size: 10px; font-weight: bold;">100 / 100</span>
+                    <!-- Double-Decker HUD Premium (Unificado, Flotante y Cohesivo) -->
+                    <div id="top-hud" style="position: absolute; top: 15px; left: 15px; right: 15px; z-index: 50; display: flex; flex-direction: column; background: linear-gradient(180deg, rgba(20, 20, 35, 0.95) 0%, rgba(13, 13, 24, 0.98) 100%); border: 2px solid #2a2a4a; border-radius: 18px; padding: 12px 16px; box-sizing: border-box; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); gap: 8px;">
+                        <!-- Fila 1: Perfil (Izquierda) y Estadísticas/Nivel/Energía (Derecha) -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 8px;">
+                            <!-- Lado Izquierdo: Avatar + Nombre/ID (Espacio amplio) -->
+                            <div style="display: flex; align-items: center; gap: 8px; flex-grow: 1; min-width: 0;">
+                                <div id="player-avatar-box" style="width: 38px; height: 38px; background: rgba(0,0,0,0.45); border: 2px solid #00e5ff; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 0 8px rgba(0, 229, 255, 0.2); transition: all 0.2s;" onmouseover="this.style.boxShadow='0 0 10px #00e5ff'; this.style.borderColor='#8A2BE2';" onmouseout="this.style.boxShadow='0 0 8px rgba(0, 229, 255, 0.2)'; this.style.borderColor='#00e5ff';" onclick="window.abrirSelectorAvatar()">
+                                    <!-- Se inyecta dinámicamente -->
+                                </div>
+                                <div style="display: flex; flex-direction: column; justify-content: center; min-width: 0;">
+                                    <span id="player-username" style="color: #ffffff; font-weight: 800; font-size: 12.5px; font-family: 'Orbitron', sans-serif; letter-spacing: 0.5px; text-shadow: 0 0 8px rgba(255,255,255,0.2); cursor: pointer; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" onclick="window.cambiarNombreJugador()">Jugador Local</span>
+                                    <span id="player-account-id" style="color: #94a3b8; font-size: 8.5px; font-family: monospace; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">ID: Modo Offline</span>
+                                </div>
                             </div>
-                            <div style="width: 100%; height: 6px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(77, 208, 225, 0.3); border-radius: 3px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);">
-                                <div id="hud-energy-fill" style="width: 100%; height: 100%; background: linear-gradient(90deg, #00d2ff, #4dd0e1); box-shadow: 0 0 8px rgba(77,208,225,0.7); transition: width 0.3s ease;"></div>
+
+                            <!-- Lado Derecho: Energía, Nivel y Buzón agrupados -->
+                            <div style="display: flex; align-items: center; gap: 6px; flex-shrink: 0;">
+                                <!-- Energía NEXO -->
+                                <div id="hud-energy-container" style="display: flex; align-items: center; justify-content: center; background: rgba(0, 229, 255, 0.05); border: 1.5px solid rgba(0, 229, 255, 0.25); border-radius: 8px; padding: 4px 6px; cursor: pointer; transition: all 0.2s; min-width: 80px; max-width: 86px; height: 36px; box-sizing: border-box;" onmouseover="this.style.background='rgba(0, 229, 255, 0.15)'; this.style.borderColor='#00e5ff'; this.style.boxShadow='0 0 8px rgba(0, 229, 255, 0.3)';" onmouseout="this.style.background='rgba(0, 229, 255, 0.05)'; this.style.borderColor='rgba(0, 229, 255, 0.25)'; this.style.boxShadow='none';" title="Energía Nexo">
+                                    <div style="position: relative; width: 100%; height: 20px; background: rgba(0, 0, 0, 0.45); border-radius: 5px; overflow: hidden; border: 1px solid rgba(0, 229, 255, 0.15); flex-shrink: 0;">
+                                        <div id="hud-energy-fill" style="width: 100%; height: 100%; background: linear-gradient(90deg, #00d2ff, #4dd0e1); box-shadow: 0 0 6px rgba(77,208,225,0.7); transition: width 0.3s ease;"></div>
+                                        <span id="hud-energy-text" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; color: #ffffff; font-family: monospace; font-size: 9px; font-weight: 900; text-shadow: 1px 1px 1px rgba(0,0,0,0.9), -1px -1px 1px rgba(0,0,0,0.9), 1px -1px 1px rgba(0,0,0,0.9), -1px 1px 1px rgba(0,0,0,0.9); line-height: 1; pointer-events: none; letter-spacing: -0.1px;">100 / 100</span>
+                                    </div>
+                                </div>
+
+                                <!-- Nivel del Laboratorio -->
+                                <div id="btn-lab-level-badge" style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(105, 240, 174, 0.05); border: 1.5px solid rgba(105, 240, 174, 0.25); border-radius: 8px; padding: 4px 10px; min-width: 56px; height: 36px; box-sizing: border-box; cursor: pointer; transition: all 0.2s; flex-shrink: 0;" onmouseover="this.style.background='rgba(105, 240, 174, 0.15)'; this.style.borderColor='#69f0ae'; this.style.boxShadow='0 0 8px rgba(105, 240, 174, 0.3)';" onmouseout="this.style.background='rgba(105, 240, 174, 0.05)'; this.style.borderColor='rgba(105, 240, 174, 0.25)'; this.style.boxShadow='none';" onclick="window.mostrarXPDetalle()" title="Nivel del Laboratorio">
+                                    <span style="color: #94a3b8; font-size: 7.5px; font-family: 'Orbitron', sans-serif; letter-spacing: 1.5px; font-weight: bold; line-height: 1; margin-bottom: 2px;">LAB</span>
+                                    <span id="hud-lab-level-text" style="color: #69f0ae; font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: 900; line-height: 1; text-shadow: 0 0 6px rgba(105, 240, 174, 0.5);">Nv. 1</span>
+                                </div>
+
+                                <!-- Botón Correo/Noticias -->
+                                <button id="btn-news-mailbox" style="background: rgba(138, 43, 226, 0.08); border: 1.5px solid rgba(138, 43, 226, 0.25); border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #a855f7; transition: 0.2s; position: relative; flex-shrink: 0; box-sizing: border-box;" onmouseover="this.style.background='rgba(138, 43, 226, 0.25)'; this.style.borderColor='#8A2BE2';" onmouseout="this.style.background='rgba(138, 43, 226, 0.08)'; this.style.borderColor='rgba(138, 43, 226, 0.25)';" title="Noticias y Buzón">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                        <polyline points="22,6 12,13 2,6"></polyline>
+                                    </svg>
+                                    <!-- Badge de no leído -->
+                                    <div id="news-unread-badge" class="hidden" style="position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: #ff007f; border-radius: 50%; box-shadow: 0 0 5px #ff007f;"></div>
+                                </button>
                             </div>
                         </div>
 
-                        <!-- Botón Correo/Noticias (Derecha) -->
-                        <button id="btn-news-mailbox" style="background: rgba(138, 43, 226, 0.1); border: 1.5px solid rgba(138, 43, 226, 0.3); border-radius: 8px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #a855f7; transition: 0.2s; position: relative; flex-shrink: 0;" onmouseover="this.style.background='rgba(138, 43, 226, 0.25)'; this.style.borderColor='#8A2BE2';" onmouseout="this.style.background='rgba(138, 43, 226, 0.1)'; this.style.borderColor='rgba(138, 43, 226, 0.3)';" title="Noticias y Buzón">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                                <polyline points="22,6 12,13 2,6"></polyline>
-                            </svg>
-                            <!-- Badge de no leído -->
-                            <div id="news-unread-badge" class="hidden" style="position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: #ff007f; border-radius: 50%; box-shadow: 0 0 5px #ff007f;"></div>
-                        </button>
-                    </div>
 
-                    <!-- Divisor sutil -->
-                    <div style="width: 100%; height: 1px; background-color: rgba(255, 255, 255, 0.08);"></div>
+                        <!-- Divisor sutil 1 -->
+                        <div style="width: 100%; height: 1px; background-color: rgba(255, 255, 255, 0.06);"></div>
 
-                    <!-- Nivel del Laboratorio (Paso 1 de Fase 1) -->
-                    <div id="hud-lab-container" style="display: flex; flex-direction: column; width: 100%; box-sizing: border-box;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                            <span style="color: #69f0ae; font-family: monospace; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 4px;">
-                                <span style="font-size: 11px;">🧪</span>
-                                Nivel Laboratorio
-                            </span>
-                            <span id="hud-lab-level-text" style="color: #69f0ae; font-family: monospace; font-size: 10px; font-weight: bold;">Nv. 1</span>
-                            <span id="hud-lab-xp-text" style="color: #fff; font-family: monospace; font-size: 10px; font-weight: bold;">0 / 100</span>
+                        <!-- Fila 2: Recursos (EV y POL) - Fila completa -->
+                        <div style="display: flex; align-items: center; background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 6px 12px; box-sizing: border-box; width: 100%; justify-content: space-around; min-height: 36px;">
+                            <!-- EV -->
+                            <div id="btn-abrir-empaquetador" style="display: flex; align-items: center; gap: 6px; cursor: pointer; padding: 2px 6px; border-radius: 6px; transition: 0.2s;" onmouseover="this.style.backgroundColor='rgba(255,255,255,0.1)'" onmouseout="this.style.backgroundColor='transparent'">
+                                <span id="hud-ev-icon-container" style="display: inline-block; width: 1.3em; height: 1.3em; display: flex; align-items: center;"></span>
+                                <span id="vital-essence-amount" style="color: white; font-weight: bold; font-family: sans-serif; font-size: 13px; letter-spacing: 0.5px;">0</span>
+                            </div>
+
+                            <!-- Separador vertical -->
+                            <div style="width: 1px; height: 16px; background-color: rgba(255, 255, 255, 0.1);"></div>
+
+                            <!-- POL -->
+                            <div style="display: flex; align-items: center; gap: 6px;">
+                                <span style="display: flex; align-items: center;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="#8A2BE2" stroke="#8A2BE2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon></svg>
+                                </span> 
+                                <span id="pol-amount" style="color: #e9d5ff; font-weight: bold; font-family: sans-serif; font-size: 13px; white-space: nowrap;">0.0 POL | 🦊 Vincular</span>
+                            </div>
                         </div>
-                        <div style="width: 100%; height: 6px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(105, 240, 174, 0.3); border-radius: 3px; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);">
-                            <div id="hud-lab-xp-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, #69f0ae, #b9f6ca); box-shadow: 0 0 8px rgba(105,240,174,0.7); transition: width 0.3s ease;"></div>
+
+                        <!-- Divisor sutil 2 -->
+                        <div style="width: 100%; height: 1px; background-color: rgba(255, 255, 255, 0.06);"></div>
+
+                        <!-- Fila 3: Botones de Acción (Stats, Genos, Slots) -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; gap: 8px;">
+                            <!-- Stats -->
+                            <button id="btn-show-stats" class="action-btn" style="flex: 1; height: 34px; background: rgba(0, 229, 255, 0.05); border: 1.5px solid rgba(0, 229, 255, 0.25); border-radius: 8px; color: #00e5ff; font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: all 0.2s; box-sizing: border-box;" onmouseover="this.style.background='rgba(0, 229, 255, 0.15)'; this.style.borderColor='#00e5ff';" onmouseout="this.style.background='rgba(0, 229, 255, 0.05)'; this.style.borderColor='rgba(0, 229, 255, 0.25)';" title="Estadísticas de la Cuenta">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                                <span>Stats</span>
+                            </button>
+
+                            <!-- Genos -->
+                            <button id="btn-show-genos" class="action-btn" style="flex: 1; height: 34px; background: rgba(138, 43, 226, 0.05); border: 1.5px solid rgba(138, 43, 226, 0.25); border-radius: 8px; color: #a855f7; font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: all 0.2s; box-sizing: border-box;" onmouseover="this.style.background='rgba(138, 43, 226, 0.15)'; this.style.borderColor='#8A2BE2';" onmouseout="this.style.background='rgba(138, 43, 226, 0.05)'; this.style.borderColor='rgba(138, 43, 226, 0.25)';" title="Mis Criaturas Genos">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="3.5" fill="currentColor"></circle>
+                                    <path d="M 12 2 C 17.5 2, 22 6.5, 22 12 C 22 17.5, 17.5 22, 12 22"></path> <path d="M 12 2 C 6.5 2, 2 6.5, 2 12"></path> <path d="M 12 22 C 6.5 22, 2 17.5, 2 12"></path> <line x1="2" y1="12" x2="6.5" y2="12"></line>
+                                    <line x1="17.5" y1="12" x2="22" y2="12"></line>
+                                    <line x1="12" y1="2" x2="12" y2="6.5"></line>
+                                    <line x1="12" y1="18.5" x2="12" y2="22"></line>
+                                </svg>
+                                <span>Genos</span>
+                            </button>
+
+                            <!-- Slots -->
+                            <button id="backpack-icon" class="action-btn" style="flex: 1; height: 34px; background: rgba(255, 204, 0, 0.05); border: 1.5px solid rgba(255, 204, 0, 0.25); border-radius: 8px; color: #ffcc00; font-family: 'Orbitron', sans-serif; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: all 0.2s; box-sizing: border-box;" onmouseover="this.style.background='rgba(255, 204, 0, 0.15)'; this.style.borderColor='#ffcc00';" onmouseout="this.style.background='rgba(255, 204, 0, 0.05)'; this.style.borderColor='rgba(255, 204, 0, 0.25)';" title="Inventario y Capacidad">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+                                <span id="slot-counter" style="font-family: monospace; font-size: 9.5px; font-weight: bold; line-height: 1; text-align: left; color: #ffcc00; display: block;">0/10<br>SLOTS</span>
+                            </button>
                         </div>
                     </div>
-                </div>
 
-                <div class="hud-action-row">
-                    <div class="action-btn-container">
-                        <button id="btn-show-stats" class="action-btn" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4dd0e1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
-                            Stats
-                        </button>
+                    <!-- Panel Desplegable Lateral Izquierdo (Cyber-Drawer) -->
+                    <div id="side-drawer" style="position: absolute; left: -145px; top: 240px; z-index: 45; display: flex; flex-direction: column; gap: 8px; background: linear-gradient(90deg, rgba(20, 20, 35, 0.82) 0%, rgba(13, 13, 24, 0.82) 100%); border: 2px solid #2a2a4a; border-left: none; border-radius: 0 12px 12px 0; padding: 12px 10px; box-sizing: border-box; box-shadow: 4px 4px 16px rgba(0, 0, 0, 0.6); transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); width: 145px; align-items: flex-start;">
+                        
+                        <!-- Tirador/Pestaña en el borde derecho -->
+                        <div id="side-drawer-handle" style="position: absolute; left: 143px; top: 50%; transform: translateY(-50%); background: rgba(13, 13, 24, 0.98); border: 2px solid #2a2a4a; border-left: none; border-radius: 0 8px 8px 0; width: 18px; height: 38px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: #00e5ff; box-shadow: 4px 0 10px rgba(0, 0, 0, 0.4); transition: all 0.2s;" onmouseover="this.style.color='#ffffff'; this.style.textShadow='0 0 5px #ffffff';" onmouseout="this.style.color='#00e5ff'; this.style.textShadow='none';" onclick="window.toggleSideDrawer()" title="Menú Lateral">
+                            <svg id="drawer-handle-arrow" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.3s;"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </div>
+
+                        <!-- Sección de título -->
+                        <span style="color: #94a3b8; font-size: 8px; font-family: 'Orbitron', sans-serif; letter-spacing: 1.5px; font-weight: bold; margin-bottom: 4px; text-transform: uppercase; padding-left: 2px;">SECCIONES</span>
+
+                         <!-- Botón Misión Diaria -->
+                         <button id="btn-daily-missions" style="background: rgba(255, 152, 0, 0.12); border: 1.5px solid rgba(255, 152, 0, 0.45); border-radius: 8px; width: 100%; height: 36px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; padding: 0 10px; cursor: pointer; color: #ff9800; transition: 0.2s; box-sizing: border-box; font-family: 'Orbitron', sans-serif; font-size: 9.5px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;" onmouseover="this.style.background='rgba(255, 152, 0, 0.25)'; this.style.borderColor='#ff9800';" onmouseout="this.style.background='rgba(255, 152, 0, 0.12)'; this.style.borderColor='rgba(255, 152, 0, 0.45)';" onclick="alert('🎯 MISIONES DIARIAS\n───────────────────────────────\n¡Secuencia de entrenamiento en desarrollo! Próximamente podrás completar misiones para obtener recompensas extra.')" title="Misiones Diarias">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                             <span style="white-space: nowrap;">Misiones</span>
+                         </button>
+ 
+                         <!-- Botón Pase de Batalla -->
+                         <button id="btn-battle-pass" style="background: rgba(105, 240, 174, 0.12); border: 1.5px solid rgba(105, 240, 174, 0.45); border-radius: 8px; width: 100%; height: 36px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; padding: 0 10px; cursor: pointer; color: #69f0ae; transition: 0.2s; box-sizing: border-box; font-family: 'Orbitron', sans-serif; font-size: 9.5px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;" onmouseover="this.style.background='rgba(105, 240, 174, 0.25)'; this.style.borderColor='#69f0ae';" onmouseout="this.style.background='rgba(105, 240, 174, 0.12)'; this.style.borderColor='rgba(105, 240, 174, 0.45)';" onclick="alert('🏆 PASE DE BATALLA\n───────────────────────────────\n¡El Pase de Batalla Nexo está en preparación! Consigue Esencia Vital, cosméticos exclusivos y POL en la próxima temporada.')" title="Pase de Batalla">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                             <span style="white-space: nowrap;">Pase Nexo</span>
+                         </button>
+ 
+                         <!-- Botón Calendario -->
+                         <button id="btn-daily-login" style="background: rgba(0, 229, 255, 0.12); border: 1.5px solid rgba(0, 229, 255, 0.45); border-radius: 8px; width: 100%; height: 36px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; padding: 0 10px; cursor: pointer; color: #00e5ff; transition: 0.2s; box-sizing: border-box; font-family: 'Orbitron', sans-serif; font-size: 9.5px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;" onmouseover="this.style.background='rgba(0, 229, 255, 0.25)'; this.style.borderColor='#00e5ff';" onmouseout="this.style.background='rgba(0, 229, 255, 0.12)'; this.style.borderColor='rgba(0, 229, 255, 0.45)';" title="Recompensas Diarias">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;">
+                                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                 <line x1="16" y1="2" x2="16" y2="6"></line>
+                                 <line x1="8" y1="2" x2="8" y2="6"></line>
+                                 <line x1="3" y1="10" x2="21" y2="10"></line>
+                             </svg>
+                             <span style="white-space: nowrap;">Calendario</span>
+                         </button>
                     </div>
-                    <div class="action-btn-container">
-                        <button id="btn-show-genos" class="action-btn" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8A2BE2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="3.5" fill="currentColor"></circle>
-                                <path d="M 12 2 C 17.5 2, 22 6.5, 22 12 C 22 17.5, 17.5 22, 12 22"></path> <path d="M 12 2 C 6.5 2, 2 6.5, 2 12"></path> <path d="M 12 22 C 6.5 22, 2 17.5, 2 12"></path> <line x1="2" y1="12" x2="6.5" y2="12"></line>
-                                <line x1="17.5" y1="12" x2="22" y2="12"></line>
-                                <line x1="12" y1="2" x2="12" y2="6.5"></line>
-                                <line x1="12" y1="18.5" x2="12" y2="22"></line>
-                            </svg>
-                            Genos
-                        </button>
-                    </div>
-                    <div id="inventory-ui" class="action-btn-container">
-                        <button id="backpack-icon" class="action-btn" style="display: flex; align-items: center; justify-content: center; gap: 6px;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffcc00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
-                            <span id="slot-counter">0/10<br>CAP</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
+
+            <!-- (Botones Stats, Genos y Slots trasladados al HUD superior) -->
 
             <!-- HUD de Necesidades (Pou-Tamagotchi) - Oculto de la interfaz principal -->
             <div id="needs-hud" class="hidden" style="display: none !important; position: absolute; top: 175px; right: 15px; z-index: 45; width: 140px; background: rgba(26, 26, 46, 0.9); border: 2px solid #2a2a4a; border-radius: 14px; padding: 8px 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); backdrop-filter: blur(5px); flex-direction: column; gap: 6px; font-family: monospace; font-size: 10px; color: #fff; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
@@ -1825,8 +1854,168 @@
         </div>
     </div>
 
+    <!-- Modal de Selección de Avatar (Premium Cyberpunk) -->
+    <div id="avatar-selector-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+        <div class="modal-content" style="background: linear-gradient(180deg, #101524 0%, #080b12 100%); border: 2px solid #8A2BE2; box-shadow: 0 0 25px rgba(138, 43, 226, 0.4), inset 0 0 15px rgba(138, 43, 226, 0.1); width: 85%; max-width: 320px; border-radius: 16px; padding: 20px; box-sizing: border-box; position: relative; color: white; font-family: sans-serif;">
+            <button id="close-avatar-selector" style="position: absolute; top: 12px; right: 12px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 5px; z-index: 10;" onclick="document.getElementById('avatar-selector-modal').classList.add('hidden')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            <h3 style="color: #80deea; text-transform: uppercase; margin: 0 0 15px 0; font-size: 14px; letter-spacing: 1.5px; text-align: center; font-weight: bold;">Selecciona tu Avatar</h3>
+            <div id="avatar-options-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 5px;">
+                <!-- Inyectado dinámicamente -->
+            </div>
+        </div>
+    </div>
+
     <script>
         // Custom window.alert override is now handled centrally by EmojiReplacer.js
+
+        // Avatares predefinidos
+        window.AVATAR_SVGS = [
+            `<svg viewBox="0 0 100 100" width="32" height="32"><polygon points="30,10 70,10 90,30 90,70 70,90 30,90 10,70 10,30" fill="#121822" stroke="#00e5ff" stroke-width="6" stroke-linejoin="round"/><rect x="35" y="35" width="30" height="30" fill="none" stroke="#00e5ff" stroke-width="6" rx="4"/><circle cx="50" cy="50" r="6" fill="#00e5ff"/><path d="M50 10 L50 35 M50 90 L50 65 M10 50 L35 50 M90 50 L65 50" stroke="#00e5ff" stroke-width="6"/></svg>`, // Cibernético (Default)
+            `<svg viewBox="0 0 100 100" width="32" height="32"><path d="M15 20 L50 5 L85 20 L85 50 C85 75 65 90 50 95 C35 90 15 75 15 50 Z" fill="#121822" stroke="#69f0ae" stroke-width="6" stroke-linejoin="round"/><path d="M50 25 C65 35 65 50 50 65 C35 50 35 35 50 25 Z" fill="#69f0ae"/><path d="M50 65 L50 82" stroke="#69f0ae" stroke-width="6" stroke-linecap="round"/><path d="M50 52 C65 47 72 52 72 62 C65 65 55 60 50 52 Z" fill="#69f0ae"/><path d="M50 52 C35 47 28 52 28 62 C35 65 45 60 50 52 Z" fill="#69f0ae"/></svg>`, // Biomutante
+            `<svg viewBox="0 0 100 100" width="32" height="32"><polygon points="50,5 95,50 50,95 5,50" fill="#121822" stroke="#ff5252" stroke-width="6" stroke-linejoin="round"/><circle cx="50" cy="50" r="14" fill="#ff5252"/><circle cx="50" cy="50" r="5" fill="#121822"/><path d="M50 22 L50 36 M50 78 L50 64 M22 50 L36 50 M78 50 L64 50" stroke="#ff5252" stroke-width="6" stroke-linecap="round"/><circle cx="50" cy="22" r="4" fill="#ff5252"/><circle cx="50" cy="78" r="4" fill="#ff5252"/><circle cx="22" cy="50" r="4" fill="#ff5252"/><circle cx="78" cy="50" r="4" fill="#ff5252"/></svg>`, // Viral
+            `<svg viewBox="0 0 100 100" width="32" height="32"><circle cx="50" cy="50" r="42" fill="#121822" stroke="#ffd700" stroke-width="6"/><circle cx="50" cy="50" r="9" fill="#ffd700"/><path d="M50 35 A15 15 0 0 0 35 50 L12 50 A38 38 0 0 1 50 12 Z" fill="#ffd700"/><path d="M50 35 A15 15 0 0 1 65 50 L88 50 A38 38 0 0 0 50 12 Z" fill="#ffd700" transform="rotate(120 50 50)"/><path d="M50 35 A15 15 0 0 1 65 50 L88 50 A38 38 0 0 0 50 12 Z" fill="#ffd700" transform="rotate(240 50 50)"/></svg>`, // Radiactivo
+            `<svg viewBox="0 0 100 100" width="32" height="32"><polygon points="12,18 88,18 50,90" fill="#121822" stroke="#d500f9" stroke-width="6" stroke-linejoin="round"/><rect x="35" y="32" width="30" height="25" rx="10" fill="#d500f9"/><rect x="42" y="47" width="16" height="20" rx="3" fill="#d500f9"/><circle cx="43" cy="42" r="4" fill="#121822"/><circle cx="57" cy="42" r="4" fill="#121822"/><path d="M46 59 L46 67 M50 59 L50 67 M54 59 L54 67" stroke="#121822" stroke-width="2"/></svg>`, // Tóxico
+            `<svg viewBox="0 0 100 100" width="32" height="32"><path d="M50 5 L90 28 L90 72 L50 95 L10 72 L10 28 Z" fill="#121822" stroke="#ff9100" stroke-width="6" stroke-linejoin="round"/><path d="M50 18 L75 32 L75 68 L50 82 L25 68 L25 32 Z" fill="#ff9100"/><path d="M50 18 L50 50 L25 32 M50 50 L75 68 M50 50 L50 82" stroke="#121822" stroke-width="5"/><circle cx="50" cy="50" r="10" fill="#ffc477"/><circle cx="50" cy="50" r="4" fill="#121822"/></svg>` // Sintético
+        ];
+
+
+        window.abrirSelectorAvatar = function() {
+            const modal = document.getElementById("avatar-selector-modal");
+            const grid = document.getElementById("avatar-options-grid");
+            if (!modal || !grid) return;
+
+            grid.innerHTML = "";
+            window.AVATAR_SVGS.forEach((svg, index) => {
+                const opt = document.createElement("div");
+                opt.style = "width: 65px; height: 65px; background: rgba(255,255,255,0.03); border: 2px solid rgba(255,255,255,0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; box-sizing: border-box;";
+                opt.onmouseover = () => { opt.style.borderColor = "#8A2BE2"; opt.style.background = "rgba(138,43,226,0.15)"; };
+                opt.onmouseout = () => { opt.style.borderColor = "rgba(255,255,255,0.1)"; opt.style.background = "rgba(255,255,255,0.03)"; };
+                opt.onclick = () => window.seleccionarAvatar(index);
+                opt.innerHTML = svg;
+                grid.appendChild(opt);
+            });
+
+            modal.classList.remove("hidden");
+        };
+
+        window.seleccionarAvatar = function(index) {
+            localStorage.setItem("player_avatar_idx", index);
+            const box = document.getElementById("player-avatar-box");
+            if (box) box.innerHTML = window.AVATAR_SVGS[index];
+            document.getElementById("avatar-selector-modal").classList.add("hidden");
+        };
+
+        window.mostrarXPDetalle = function() {
+            const xpNeeded = window.obtenerXPRequeridaLaboratorio(window.labLevel);
+            alert(`🧪 PROGRESO CIENTÍFICO (LABORATORIO)\n───────────────────────────────\nNivel del Laboratorio: Nv. ${window.labLevel}\nExperiencia actual: ${Math.floor(window.labXP)} / ${xpNeeded} XP`);
+        };
+
+        window.toggleSideDrawer = function() {
+            const drawer = document.getElementById("side-drawer");
+            const arrow = document.getElementById("drawer-handle-arrow");
+            if (drawer) {
+                const isOpen = drawer.style.left === "0px";
+                if (isOpen) {
+                    drawer.style.left = "-145px";
+                    if (arrow) arrow.style.transform = "rotate(0deg)";
+                } else {
+                    drawer.style.left = "0px";
+                    if (arrow) arrow.style.transform = "rotate(180deg)";
+                }
+                if (window.Sonidos) window.Sonidos.play("click");
+            }
+        };
+
+        // Helper para generar ID único de jugador (PG-XXXXXX)
+        window.generarPlayerUniqueID = function() {
+            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            let code = '';
+            for (let i = 0; i < 6; i++) {
+                code += chars[Math.floor(Math.random() * chars.length)];
+            }
+            return `PG-${code}`;
+        };
+
+        // Helper para generar nombre genérico (PlayerXXXX)
+        window.generarPlayerGenericName = function() {
+            const chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+            let code = '';
+            for (let i = 0; i < 4; i++) {
+                code += chars[Math.floor(Math.random() * chars.length)];
+            }
+            return `Player${code}`;
+        };
+
+        // Cambiar nombre de jugador (Máximo 10 caracteres)
+        window.cambiarNombreJugador = function() {
+            const actual = window.playerName || "Jugador Local";
+            const nuevo = prompt("Introduce tu nuevo nombre de jugador (letras y números, 3 a 10 caracteres):", actual);
+            if (nuevo === null) return; // Cancelado
+
+            const limpio = nuevo.trim();
+            if (limpio.length < 3 || limpio.length > 10) {
+                alert("⚠️ El nombre debe tener entre 3 y 10 caracteres.");
+                return;
+            }
+            const regex = /^[a-zA-Z0-9]+$/;
+            if (!regex.test(limpio)) {
+                alert("⚠️ El nombre solo puede contener letras y números (sin espacios ni caracteres especiales).");
+                return;
+            }
+
+            window.playerName = limpio;
+            localStorage.setItem("player_name", limpio);
+            
+            // Sincronizar en pantalla
+            window.sincronizarHUDPerfilSuperior();
+            
+            // Guardar progreso en local y nube
+            if (typeof window.guardarProgreso === 'function') {
+                window.guardarProgreso();
+            }
+            alert(`✨ Tu nombre de jugador ha sido actualizado a: ${limpio}`);
+        };
+
+        // Sincronizar HUD superior de perfil
+        window.sincronizarHUDPerfilSuperior = function() {
+            const usernameEl = document.getElementById("player-username");
+            const accountIdEl = document.getElementById("player-account-id");
+            const avatarBox = document.getElementById("player-avatar-box");
+
+            // Sincronizar Avatar
+            const savedAvatarIdx = parseInt(localStorage.getItem("player_avatar_idx") || "0");
+            if (avatarBox) avatarBox.innerHTML = window.AVATAR_SVGS[savedAvatarIdx];
+
+            // Inicializar Player ID si no existe
+            if (!window.playerUniqueID) {
+                window.playerUniqueID = localStorage.getItem("player_unique_id");
+                if (!window.playerUniqueID) {
+                    window.playerUniqueID = window.generarPlayerUniqueID();
+                    localStorage.setItem("player_unique_id", window.playerUniqueID);
+                }
+            }
+
+            // Inicializar Player Name si no existe
+            if (!window.playerName) {
+                window.playerName = localStorage.getItem("player_name");
+                if (!window.playerName) {
+                    window.playerName = window.generarPlayerGenericName();
+                    localStorage.setItem("player_name", window.playerName);
+                }
+            }
+
+            // Sincronizar nombre en pantalla
+            if (usernameEl) {
+                usernameEl.innerText = window.playerName;
+            }
+
+            // Sincronizar ID de cuenta
+            if (accountIdEl) {
+                accountIdEl.innerText = "ID: " + window.playerUniqueID;
+            }
+        };
 
         document.addEventListener("DOMContentLoaded", () => {
             const inyectarIconos = () => {
@@ -1844,6 +2033,9 @@
             
             const observer = new MutationObserver(inyectarIconos);
             observer.observe(document.body, { childList: true, subtree: true });
+
+            // Inicializar HUD de perfil
+            window.sincronizarHUDPerfilSuperior();
         });
     </script>
 </body>

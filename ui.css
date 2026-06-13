@@ -3,13 +3,25 @@
 /* ========================================= */
 
 #top-hud {
-    position: absolute; top: 15px; left: 15px; right: 15px; z-index: 50;
+    position: absolute; top: 68px; bottom: auto; left: 15px; right: 15px; z-index: 50;
     display: flex; flex-direction: column; gap: 10px;
 }
 
 /* Espacio reducido (gap: 6px) para que quepan 3 botones */
-.hud-top-row, .hud-action-row {
+.hud-top-row {
     display: flex; justify-content: space-between; gap: 6px; padding: 0 5px;
+}
+
+#room-area .hud-action-row {
+    position: absolute;
+    bottom: 90px;
+    left: 15px;
+    right: 15px;
+    z-index: 50;
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 0;
 }
 
 .currency-badge {

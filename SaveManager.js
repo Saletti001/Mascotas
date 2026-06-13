@@ -76,6 +76,14 @@ window.cargarProgreso = function() {
             }
         }
         if (data.maxGenoSlots) window.maxGenoSlots = data.maxGenoSlots;
+        if (data.playerName) {
+            window.playerName = data.playerName;
+            localStorage.setItem("player_name", data.playerName);
+        }
+        if (data.playerUniqueID) {
+            window.playerUniqueID = data.playerUniqueID;
+            localStorage.setItem("player_unique_id", data.playerUniqueID);
+        }
 
         // ✨ AUTO-REPARADOR DE GENOS
         if (window.miMascota && window.miMascota.id !== "temp") {
@@ -192,6 +200,8 @@ window.guardarLocalSilencioso = function() {
     if (!yaExiste) window.misGenos.push(window.miMascota);
 
     const dataToSave = {
+        playerName: window.playerName || null,
+        playerUniqueID: window.playerUniqueID || null,
         misGenos: window.misGenos,
         miMascota: window.miMascota,
         maxGenoSlots: window.maxGenoSlots || 6,

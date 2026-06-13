@@ -285,6 +285,8 @@ window.respaldarEnNube = async function() {
     if (!window.miUsuarioCloud) return;
 
     const datosJuego = {
+        playerName: window.playerName || null,
+        playerUniqueID: window.playerUniqueID || null,
         mascotaActiva: window.miMascota || null,
         inventario: window.miInventario ? {
             slots: window.miInventario.slots,
@@ -430,6 +432,14 @@ async function cargarDatosDeLaNube() {
 
     if (data && data.datos_juego) {
         const dj = data.datos_juego;
+        if (dj.playerName) {
+            window.playerName = dj.playerName;
+            localStorage.setItem("player_name", dj.playerName);
+        }
+        if (dj.playerUniqueID) {
+            window.playerUniqueID = dj.playerUniqueID;
+            localStorage.setItem("player_unique_id", dj.playerUniqueID);
+        }
         // Si no tiene mascota activa y no hay partida guardada localmente
         if ((!dj.mascotaActiva || dj.mascotaActiva.id === "temp") && !localStorage.getItem("proyecto_genos_save_v1")) {
             if (typeof window.iniciarSecuenciaBienvenida === 'function') {
