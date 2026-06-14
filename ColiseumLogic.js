@@ -1308,7 +1308,7 @@ window.ColiseumLogic = {
         };
 
         let pAtks = window.miMascota && window.miMascota.ataques ? window.miMascota.ataques : {};
-        let pElement = this.player ? this.player.element : "Normal";
+        pElement = this.player ? this.player.element : "Normal";
         // En PvE estándar/3v3 no se fuerza contra-elemento del jugador para mantenerlo equilibrado, solo en PvP o Jefes
         let elementoCounter = (esPvP || esJefeDeLiga || esValvulaSeguridad) ? (counterDelJugador[pElement] || eElemento) : eElemento;
 

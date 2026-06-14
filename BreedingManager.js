@@ -693,6 +693,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     generation: genHijo, breedCount: 0, level: 1, xp: 0, xpNeeded: 100,
                     rarity: rarezaHijo, 
                     genes: genesHijo, stats: statsHijo,
+                    baseStats: { ...statsHijo },
                     hidden_genes: hiddenGenesHeredados, 
                     scanned: false,
                     body_shape: genesHijo.cuerpo.dom, eye_type: genesHijo.ojos.dom, mouth_type: genesHijo.boca.dom,

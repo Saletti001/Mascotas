@@ -296,6 +296,7 @@ window.ShopManager = {
                 }
                 
                 window.miInventario.vitalEssence -= item.price;
+                if (window.MissionsManager) window.MissionsManager.trackSpend(item.price);
                 if (typeof window.registrarLogEconomia === "function") {
                     window.registrarLogEconomia('sink', item.price, 'bazar');
                 }
@@ -321,6 +322,7 @@ window.ShopManager = {
                 }
 
                 window.miInventario.vitalEssence -= item.price;
+                if (window.MissionsManager) window.MissionsManager.trackSpend(item.price);
                 if (typeof window.registrarLogEconomia === "function") {
                     window.registrarLogEconomia('sink', item.price, 'bazar');
                 }
@@ -365,6 +367,7 @@ window.ShopManager = {
                     xpNeeded: 100,
                     breedCount: 0,
                     stats: statsBase, 
+                    baseStats: { ...statsBase },
                     hidden_genes: window.generarGenesV9 ? window.generarGenesV9(rarezaInicial) : {A:null,B:null,C:null}, 
                     scanned: false,
                     genes: {
@@ -412,6 +415,7 @@ window.ShopManager = {
             let agregadoExitosamente = window.miInventario.addItem(itemParaInventario);
             if (agregadoExitosamente) {
                 window.miInventario.vitalEssence -= item.price;
+                if (window.MissionsManager) window.MissionsManager.trackSpend(item.price);
                 if (typeof window.registrarLogEconomia === "function") {
                     window.registrarLogEconomia('sink', item.price, 'bazar');
                 }
@@ -425,6 +429,7 @@ window.ShopManager = {
                 const xpNecesaria = window.obtenerXPRequeridaLaboratorio(window.labLevel);
                 const xpBoost = Math.ceil(xpNecesaria * item.levelsGranted) - window.labXP;
                 window.miInventario.vitalEssence -= item.price;
+                if (window.MissionsManager) window.MissionsManager.trackSpend(item.price);
                 if (typeof window.registrarLogEconomia === "function") {
                     window.registrarLogEconomia('sink', item.price, 'bazar');
                 }

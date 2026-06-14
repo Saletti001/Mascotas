@@ -208,22 +208,36 @@ class InventoryManager {
     }
 
     setupEvents() {
-        document.getElementById("inventory-ui").addEventListener("click", () => {
-            this.renderGrid(); 
-            document.getElementById("inventory-modal").classList.remove("hidden"); 
-        });
-        document.getElementById("close-inventory").addEventListener("click", () => {
-            document.getElementById("inventory-modal").classList.add("hidden"); 
-            this.selectedIndex = null;
-            const actionsPanel = document.getElementById("item-actions");
-            if(actionsPanel) actionsPanel.classList.add("hidden");
-        });
-        document.getElementById("btn-release-one").addEventListener("click", () => {
-            if (this.selectedIndex !== null) this.removeItem(this.selectedIndex, 1);
-        });
-        document.getElementById("btn-release-all").addEventListener("click", () => {
-            if (this.selectedIndex !== null) this.removeItem(this.selectedIndex, this.slots[this.selectedIndex].count);
-        });
+        const inventoryBtn = document.getElementById("backpack-icon") || document.getElementById("inventory-ui");
+        if (inventoryBtn) {
+            inventoryBtn.addEventListener("click", () => {
+                this.renderGrid(); 
+                const modal = document.getElementById("inventory-modal");
+                if (modal) modal.classList.remove("hidden"); 
+            });
+        }
+        const closeBtn = document.getElementById("close-inventory");
+        if (closeBtn) {
+            closeBtn.addEventListener("click", () => {
+                const modal = document.getElementById("inventory-modal");
+                if (modal) modal.classList.add("hidden"); 
+                this.selectedIndex = null;
+                const actionsPanel = document.getElementById("item-actions");
+                if (actionsPanel) actionsPanel.classList.add("hidden");
+            });
+        }
+        const releaseOneBtn = document.getElementById("btn-release-one");
+        if (releaseOneBtn) {
+            releaseOneBtn.addEventListener("click", () => {
+                if (this.selectedIndex !== null) this.removeItem(this.selectedIndex, 1);
+            });
+        }
+        const releaseAllBtn = document.getElementById("btn-release-all");
+        if (releaseAllBtn) {
+            releaseAllBtn.addEventListener("click", () => {
+                if (this.selectedIndex !== null) this.removeItem(this.selectedIndex, this.slots[this.selectedIndex].count);
+            });
+        }
         const btnUse = document.getElementById("btn-use-item");
         if (btnUse) {
             btnUse.addEventListener("click", () => {

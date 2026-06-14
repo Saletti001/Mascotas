@@ -82,6 +82,9 @@ window.completarMinijuegoArcade = function(nombreMiniguego) {
     if (window.ganarXPLaboratorio) {
         window.ganarXPLaboratorio(xpRandom, `Minijuego Arcade: ${nombreMiniguego}`);
     }
+    if (window.MissionsManager) {
+        window.MissionsManager.trackArcade();
+    }
     return xpRandom;
 };
 

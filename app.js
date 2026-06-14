@@ -79,8 +79,22 @@ window.calcularCalidad = function(stats, rareza, nivel) {
     const totalMin = limites.hp[0] + limites.atk[0] + limites.def[0] + limites.spd[0] + limites.luk[0];
     const totalMax = limites.hp[1] + limites.atk[1] + limites.def[1] + limites.spd[1] + limites.luk[1];
     
-    const statsUsar = stats.baseStats ? stats.baseStats : stats;
-    const currentTotal = (statsUsar.hp || 0) + (statsUsar.atk || 0) + (statsUsar.def || 0) + (statsUsar.spd || 0) + (statsUsar.luk || 0);
+    let statsUsar = stats;
+    let bonoUmbral = 0;
+    
+    if (stats) {
+        if (stats.stats && (stats.baseStats || stats.stats)) {
+            // Es un objeto Geno completo
+            statsUsar = stats.baseStats || stats.stats;
+            if (stats.umbralAplicado) bonoUmbral = 25;
+        } else {
+            // Es un objeto de estadísticas (stats o baseStats)
+            if (stats.baseStats) statsUsar = stats.baseStats;
+            if (stats.umbralAplicado) bonoUmbral = 25;
+        }
+    }
+    
+    const currentTotal = (statsUsar.hp || 0) + (statsUsar.atk || 0) + (statsUsar.def || 0) + (statsUsar.spd || 0) + (statsUsar.luk || 0) - bonoUmbral;
     
     let porcentaje = ((currentTotal - totalMin) / (totalMax - totalMin)) * 100;
     
@@ -347,6 +361,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
                 const multiplicador = typeof window.getMultiplicadorXP === 'function' ? window.getMultiplicadorXP(window.miMascota) : 1.0;
                 if(window.ganarXP) window.ganarXP(Math.floor(15 * multiplicador));
+                if(window.MissionsManager) window.MissionsManager.trackCare();
             } else {
                 alert("No tienes manzanas en tu mochila.");
             }
@@ -563,7 +578,7 @@ document.addEventListener("DOMContentLoaded", () => {
             let qualityPct = 0;
             let qualityColor = "#d9534f";
             if (window.calcularCalidad && geno.stats) {
-                const qStats = window.calcularCalidad(geno.stats, geno.rarity || "Común", geno.level || 1);
+                const qStats = window.calcularCalidad(geno, geno.rarity || "Común", geno.level || 1);
                 qualityRank = qStats.rango || "D";
                 qualityPct = qStats.calidadPorcentaje || 0;
                 if (window.obtenerColorRango) {
@@ -1626,6 +1641,7 @@ function iniciarSecuenciaBienvenida() {
                             } else {
                                 alert(`[BAÑO] ¡Has bañado por completo a ${window.miMascota.name}! Higiene al 100%. (Amistad por limpieza ya obtenida hoy)`);
                             }
+                            if(window.MissionsManager) window.MissionsManager.trackCare();
 
                             if (typeof window.verificarCuidadoDiarioXP === 'function') {
                                 window.verificarCuidadoDiarioXP(window.miMascota);
@@ -1715,6 +1731,8 @@ function iniciarSecuenciaBienvenida() {
                             window.misGenos[idx].registroAmistadDiaria = window.miMascota.registroAmistadDiaria;
                         }
                     }
+
+                    if (window.MissionsManager) window.MissionsManager.trackCare();
 
                     if (typeof window.verificarCuidadoDiarioXP === 'function') {
                         window.verificarCuidadoDiarioXP(window.miMascota);

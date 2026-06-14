@@ -150,13 +150,13 @@
                         <span style="color: #94a3b8; font-size: 8px; font-family: 'Orbitron', sans-serif; letter-spacing: 1.5px; font-weight: bold; margin-bottom: 4px; text-transform: uppercase; padding-left: 2px;">SECCIONES</span>
 
                          <!-- Botón Misión Diaria -->
-                         <button id="btn-daily-missions" style="background: rgba(255, 152, 0, 0.12); border: 1.5px solid rgba(255, 152, 0, 0.45); border-radius: 8px; width: 100%; height: 36px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; padding: 0 10px; cursor: pointer; color: #ff9800; transition: 0.2s; box-sizing: border-box; font-family: 'Orbitron', sans-serif; font-size: 9.5px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;" onmouseover="this.style.background='rgba(255, 152, 0, 0.25)'; this.style.borderColor='#ff9800';" onmouseout="this.style.background='rgba(255, 152, 0, 0.12)'; this.style.borderColor='rgba(255, 152, 0, 0.45)';" onclick="alert('[MISIONES] MISIONES DIARIAS\n───────────────────────────────\n¡Secuencia de entrenamiento en desarrollo! Próximamente podrás completar misiones para obtener recompensas extra.')" title="Misiones Diarias">
+                         <button id="btn-daily-missions" style="background: rgba(255, 152, 0, 0.12); border: 1.5px solid rgba(255, 152, 0, 0.45); border-radius: 8px; width: 100%; height: 36px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; padding: 0 10px; cursor: pointer; color: #ff9800; transition: 0.2s; box-sizing: border-box; font-family: 'Orbitron', sans-serif; font-size: 9.5px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;" onmouseover="this.style.background='rgba(255, 152, 0, 0.25)'; this.style.borderColor='#ff9800';" onmouseout="this.style.background='rgba(255, 152, 0, 0.12)'; this.style.borderColor='rgba(255, 152, 0, 0.45)';" onclick="window.MissionsManager.openModal()" title="Misiones Diarias">
                              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
                              <span style="white-space: nowrap;">Misiones</span>
                          </button>
  
                          <!-- Botón Pase de Batalla -->
-                         <button id="btn-battle-pass" style="background: rgba(105, 240, 174, 0.12); border: 1.5px solid rgba(105, 240, 174, 0.45); border-radius: 8px; width: 100%; height: 36px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; padding: 0 10px; cursor: pointer; color: #69f0ae; transition: 0.2s; box-sizing: border-box; font-family: 'Orbitron', sans-serif; font-size: 9.5px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;" onmouseover="this.style.background='rgba(105, 240, 174, 0.25)'; this.style.borderColor='#69f0ae';" onmouseout="this.style.background='rgba(105, 240, 174, 0.12)'; this.style.borderColor='rgba(105, 240, 174, 0.45)';" onclick="alert('[PREMIUM] PASE DE BATALLA\n───────────────────────────────\n¡El Pase de Batalla Nexo está en preparación! Consigue Esencia Vital, cosméticos exclusivos y POL en la próxima temporada.')" title="Pase de Batalla">
+                         <button id="btn-battle-pass" style="background: rgba(105, 240, 174, 0.12); border: 1.5px solid rgba(105, 240, 174, 0.45); border-radius: 8px; width: 100%; height: 36px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; padding: 0 10px; cursor: pointer; color: #69f0ae; transition: 0.2s; box-sizing: border-box; font-family: 'Orbitron', sans-serif; font-size: 9.5px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;" onmouseover="this.style.background='rgba(105, 240, 174, 0.25)'; this.style.borderColor='#69f0ae';" onmouseout="this.style.background='rgba(105, 240, 174, 0.12)'; this.style.borderColor='rgba(105, 240, 174, 0.45)';" onclick="window.BattlePassManager.openModal()" title="Pase de Batalla">
                              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                              <span style="white-space: nowrap;">Pase Nexo</span>
                          </button>
@@ -1843,6 +1843,9 @@
     <script src="SanctuaryManager.js"></script>
     <script src="RPGManager.js"></script>
     <script src="LabManager.js"></script>
+    <script src="AchievementsManager.js"></script>
+    <script src="MissionsManager.js"></script>
+    <script src="BattlePassManager.js"></script>
     <script src="app.js"></script>
     <script src="ImplantsUI.js"></script>
     <script src="ImplantsManager.js"></script>

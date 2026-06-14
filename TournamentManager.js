@@ -2073,19 +2073,11 @@ window.TournamentManager = {
 
             /* Scroll bar para lista temática */
             #tourney-tematicos-list::-webkit-scrollbar {
-                width: 6px;
-                display: block !important;
+                display: none !important;
             }
-            #tourney-tematicos-list::-webkit-scrollbar-track {
-                background: rgba(0,0,0,0.2);
-                border-radius: 3px;
-            }
-            #tourney-tematicos-list::-webkit-scrollbar-thumb {
-                background: #384a5e;
-                border-radius: 3px;
-            }
-            #tourney-tematicos-list::-webkit-scrollbar-thumb:hover {
-                background: #546e7a;
+            #tourney-tematicos-list {
+                scrollbar-width: none !important;
+                -ms-overflow-style: none !important;
             }
 
             .tourney-grid {

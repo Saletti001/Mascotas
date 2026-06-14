@@ -4,6 +4,15 @@
 
 .hidden { display: none !important; }
 
+/* Ocultar barras de scroll en todo el juego */
+::-webkit-scrollbar {
+    display: none !important;
+}
+* {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
 body {
     margin: 0; padding: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

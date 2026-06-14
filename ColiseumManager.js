@@ -919,6 +919,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 window.towerSessionEvAccumulated = (window.towerSessionEvAccumulated || 0) + evReward;
                 window.maxFloor = Math.max(window.maxFloor, floor);
+                if (window.AchievementsManager) {
+                    window.AchievementsManager.verificarAlturaTorre(window.maxFloor);
+                }
+                if (isFirstTimeUnlock && window.MissionsManager) {
+                    window.MissionsManager.trackTorre();
+                }
                 
                 ColiseumUI.agregarLog(`<span style="color:#69f0ae; font-weight:bold;">🗼 PISO ${floor} SUPERADO.</span>`);
                 if (evReward > 0) {
@@ -1083,6 +1089,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (!window.miInventario) window.miInventario = { vitalEssence: 0, items: [] };
                     window.miInventario.vitalEssence = (window.miInventario.vitalEssence || 0) + 300;
                     ColiseumUI.agregarLog(`<span style="color:#69f0ae; font-weight:bold;">✨ ¡Recompensa de Combate 1v1: +300 EV!</span>`);
+                    if (window.MissionsManager) {
+                        window.MissionsManager.trackArena();
+                    }
                 }
 
                 if (window.miMascota) {
@@ -2203,6 +2212,9 @@ document.addEventListener("DOMContentLoaded", () => {
             
             window.currentTowerFloor = startingFloor;
             window.maxFloor = Math.max(window.maxFloor, startingFloor - 1);
+            if (window.AchievementsManager) {
+                window.AchievementsManager.verificarAlturaTorre(window.maxFloor);
+            }
             window.towerClaimedFloorThisWeek = Math.max(window.towerClaimedFloorThisWeek, startingFloor - 1);
             
             if (totalEVGranted > 0) {

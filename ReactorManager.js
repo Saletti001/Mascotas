@@ -527,6 +527,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 const idsABorrar = window.genosEnReactor.map(g => g.id);
                 window.misGenos = window.misGenos.filter(g => !idsABorrar.includes(g.id));
+                if (window.AchievementsManager) {
+                    window.AchievementsManager.registrarConsumoGenos(idsABorrar.length);
+                }
+                if (window.MissionsManager) {
+                    window.MissionsManager.trackFusion();
+                }
                 
                 btnFuse.disabled = true;
                 btnFuse.innerText = "SINTETIZANDO ADN...";
@@ -667,6 +673,9 @@ document.addEventListener("DOMContentLoaded", () => {
                             }
                         };
                         window.misGenos.push(mutante);
+                        if (window.AchievementsManager) {
+                            window.AchievementsManager.registrarNacimientoRarity(mutante.rarity);
+                        }
                     };
 
                     if (tirada < limiteCritico) {

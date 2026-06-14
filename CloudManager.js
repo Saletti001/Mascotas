@@ -300,6 +300,8 @@ window.respaldarEnNube = async function() {
         rationAutoActiveUntil: window.rationAutoActiveUntil !== undefined ? window.rationAutoActiveUntil : 0,
         dailyLogin: window.dailyLoginData || null,
         newsMailbox: window.newsMailboxData || null,
+        missions: window.MissionsManager ? window.MissionsManager.getSaveData() : null,
+        battlePass: window.BattlePassManager ? window.BattlePassManager.getSaveData() : null,
         tournamentSaldosPendientes: window.TournamentManager ? window.TournamentManager.saldosPendientes : 0.0,
         tournamentActive: window.TournamentManager ? window.TournamentManager.activeTournament : null,
         becasPlaza: window.becasPlaza || [],
@@ -511,6 +513,12 @@ async function cargarDatosDeLaNube() {
         if (dj.rationAutoActiveUntil !== undefined) window.rationAutoActiveUntil = dj.rationAutoActiveUntil;
         if (dj.dailyLogin !== undefined) window.dailyLoginData = dj.dailyLogin;
         if (dj.newsMailbox !== undefined) window.newsMailboxData = dj.newsMailbox;
+        if (dj.missions !== undefined && window.MissionsManager) {
+            window.MissionsManager.loadSaveData(dj.missions);
+        }
+        if (dj.battlePass !== undefined && window.BattlePassManager) {
+            window.BattlePassManager.loadSaveData(dj.battlePass);
+        }
         if (window.TournamentManager) {
             window.TournamentManager.saldosPendientes = data.saldo_pendiente_pol !== undefined && data.saldo_pendiente_pol !== null ? parseFloat(data.saldo_pendiente_pol) : (dj.tournamentSaldosPendientes || 0.0);
         }

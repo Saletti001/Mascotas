@@ -140,7 +140,13 @@ document.addEventListener("DOMContentLoaded", () => {
         const qualityBadge = document.getElementById("geno-quality-badge");
         if (qualityBadge) {
             let rango = "D"; let pct = 0; let color = "#aaa";
-            if (g.stats.rango && g.stats.calidadPorcentaje !== undefined) {
+            if (window.calcularCalidad) {
+                const qStats = window.calcularCalidad(g, g.rarity || "Común", g.level || 1);
+                rango = qStats.rango;
+                pct = qStats.calidadPorcentaje;
+                g.stats.rango = rango;
+                g.stats.calidadPorcentaje = pct;
+            } else if (g.stats.rango && g.stats.calidadPorcentaje !== undefined) {
                 rango = g.stats.rango; pct = g.stats.calidadPorcentaje;
             } else {
                 const limites = (window.TABLA_IVS && window.TABLA_IVS[g.rarity]) ? window.TABLA_IVS[g.rarity] : { hp: [35, 55], atk: [10, 22], def: [5, 15], spd: [8, 25], luk: [5, 15] }; 

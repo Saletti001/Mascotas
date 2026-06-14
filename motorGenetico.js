@@ -78,7 +78,7 @@ window.generarStatsPorRareza = function(rareza) {
         luk: window.aleatorioEnRango(limites.luk[0], limites.luk[1])
     };
 
-    return window.calcularCalidad(stats, rareza, 1);
+    return stats;
 };
 
 
@@ -93,13 +93,24 @@ window.calcularCalidad = function(stats, rareza, nivel = 1) {
     let tMin = limites.hp[0] + limites.atk[0] + limites.def[0] + limites.spd[0] + limites.luk[0];
     let tMax = limites.hp[1] + limites.atk[1] + limites.def[1] + limites.spd[1] + limites.luk[1];
 
-    let ptInvertidos = (nivel > 1) ? (nivel - 1) * 3 : 0;
+    let statsUsar = stats;
+    let bonoUmbral = 0;
     
-    // Fallback de seguridad por si lee un Geno muy viejo sin Defensa
-    let defActual = stats.def !== undefined ? stats.def : 0;
-    let tObt = (stats.hp + stats.atk + defActual + stats.spd + stats.luk) - ptInvertidos;
+    if (stats) {
+        if (stats.stats && (stats.baseStats || stats.stats)) {
+            // Es un objeto Geno completo
+            statsUsar = stats.baseStats || stats.stats;
+            if (stats.umbralAplicado) bonoUmbral = 25;
+        } else {
+            // Es un objeto de estadísticas (stats o baseStats)
+            if (stats.baseStats) statsUsar = stats.baseStats;
+            if (stats.umbralAplicado) bonoUmbral = 25;
+        }
+    }
+    
+    let currentTotal = (statsUsar.hp || 0) + (statsUsar.atk || 0) + (statsUsar.def || 0) + (statsUsar.spd || 0) + (statsUsar.luk || 0) - bonoUmbral;
 
-    let pct = Math.round(((tObt - tMin) / (tMax - tMin)) * 100);
+    let pct = Math.round(((currentTotal - tMin) / (tMax - tMin)) * 100);
     if (pct > 100) pct = 100;
     if (pct < 0) pct = 0;
 
@@ -109,9 +120,10 @@ window.calcularCalidad = function(stats, rareza, nivel = 1) {
     else if (pct >= 50) rango = "B";
     else if (pct >= 25) rango = "C";
 
-    stats.calidadPorcentaje = pct;
-    stats.rango = rango;
-    return stats;
+    return {
+        rango: rango,
+        calidadPorcentaje: pct
+    };
 };
 
 // Devuelve el color hexadecimal exacto para la Tarjeta de Identificación

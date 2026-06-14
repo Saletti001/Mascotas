@@ -92,6 +92,20 @@ window.cargarProgreso = function() {
             if (!yaExiste) window.misGenos.push(window.miMascota);
         }
 
+        if (window.misGenos) {
+            window.misGenos.forEach(g => {
+                if (g && g.stats && !g.baseStats) {
+                    g.baseStats = {
+                        hp: g.stats.hp,
+                        atk: g.stats.atk,
+                        def: g.stats.def !== undefined ? g.stats.def : 10,
+                        spd: g.stats.spd,
+                        luk: g.stats.luk
+                    };
+                }
+            });
+        }
+
         if (!window.miInventario) window.miInventario = {};
         if (data.inventarioItems) window.miInventario.items = data.inventarioItems;
         if (data.esencia !== undefined) window.miInventario.vitalEssence = data.esencia;
@@ -172,6 +186,27 @@ window.cargarProgreso = function() {
                     window.miInventario.updateUI();
                     window.miInventario.renderGrid();
                 }
+
+                // Cargar logros
+                if (data.achievements !== undefined && window.AchievementsManager) {
+                    window.AchievementsManager.loadSaveData(data.achievements);
+                } else if (window.AchievementsManager) {
+                    window.AchievementsManager.init();
+                }
+
+                // Cargar misiones
+                if (data.missions !== undefined && window.MissionsManager) {
+                    window.MissionsManager.loadSaveData(data.missions);
+                } else if (window.MissionsManager) {
+                    window.MissionsManager.init();
+                }
+
+                // Cargar pase de batalla
+                if (data.battlePass !== undefined && window.BattlePassManager) {
+                    window.BattlePassManager.loadSaveData(data.battlePass);
+                } else if (window.BattlePassManager) {
+                    window.BattlePassManager.init();
+                }
             }, 150); 
         });
         
@@ -232,6 +267,9 @@ window.guardarLocalSilencioso = function() {
         dailyCareHarvest: window.dailyCareHarvest || { date: "", harvested: 0 },
         towerSessionActive: window.towerSessionActive !== undefined ? window.towerSessionActive : false,
         towerSessionEvAccumulated: window.towerSessionEvAccumulated !== undefined ? window.towerSessionEvAccumulated : 0,
+        achievements: window.AchievementsManager ? window.AchievementsManager.getSaveData() : null,
+        missions: window.MissionsManager ? window.MissionsManager.getSaveData() : null,
+        battlePass: window.BattlePassManager ? window.BattlePassManager.getSaveData() : null,
         lastActiveTime: typeof window.obtenerTiempoSeguro === 'function' ? window.obtenerTiempoSeguro() : Date.now()
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(dataToSave));

@@ -233,6 +233,21 @@ window.ProfileManager = {
             `;
         }
 
+        let honorificTitleHtml = "";
+        if (window.AchievementsManager && window.AchievementsManager.data.nexoVeterano.claimed) {
+            honorificTitleHtml = `
+                <span style="color:#ffd700; display:flex; align-items:center; gap:3px; background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); border-radius: 4px; padding: 1px 4.5px;" title="Título Honorífico">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    Veterano del Nexo
+                </span>
+            `;
+        }
+
+        let achievementsCardHtml = "";
+        if (window.AchievementsManager) {
+            achievementsCardHtml = window.AchievementsManager.renderTarjetaLogros();
+        }
+
         area.innerHTML = `
             <div style="display: flex; flex-direction: column; gap: 15px; color: #fff;">
                 
@@ -273,6 +288,7 @@ window.ProfileManager = {
                                     <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ff5252" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6"/><path d="m16 16 4 4"/><path d="m19 21 2-2"/></svg>
                                     ${tituloCombate}
                                 </span>
+                                ${honorificTitleHtml}
                                 <span id="btn-toggle-ranks-info" style="cursor: pointer; display: flex; align-items: center; justify-content: center; width: 14px; height: 14px; background: rgba(255,255,255,0.08); border-radius: 50%; transition: background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'" title="Explicación de Rangos">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#80deea" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
                                         <circle cx="12" cy="12" r="10"/>
@@ -515,6 +531,9 @@ window.ProfileManager = {
                     </div>
                 </div>
 
+                <!-- TARJETA 6: LOGROS DE LA CUENTA -->
+                ${achievementsCardHtml}
+
             </div>
         `;
 
@@ -676,5 +695,17 @@ window.ProfileManager = {
                 }
             };
         }
+
+        // Lógica del botón de reclamar logros
+        const claimBtns = area.querySelectorAll(".btn-achievement-claim");
+        claimBtns.forEach(btn => {
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                const achievementId = btn.getAttribute("data-id");
+                if (window.AchievementsManager) {
+                    window.AchievementsManager.reclamarRecompensa(achievementId);
+                }
+            };
+        });
     }
 };
