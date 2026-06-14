@@ -241,50 +241,50 @@ window.MissionsManager = {
                         -ms-overflow-style: none !important;
                     }
                 </style>
-                <div style="background:linear-gradient(135deg, rgba(16, 20, 36, 0.95), rgba(8, 10, 18, 0.98)); border:2px solid rgba(0, 229, 255, 0.35); border-radius:16px; width:90%; max-width:350px; max-height:90%; display:flex; flex-direction:column; box-sizing:border-box; padding:20px; color:white; box-shadow:0 0 30px rgba(0,229,255,0.15), inset 0 0 15px rgba(0, 0, 0, 0.6); position:relative;">
+                <div style="background:#1e2235; border:2.5px solid #00e5ff; border-radius:20px; width:92%; max-width:360px; height:82%; display:flex; flex-direction:column; box-sizing:border-box; padding:18px; color:#ffffff; box-shadow:0 8px 32px rgba(0, 229, 255, 0.15); position:relative;">
                     
                     <!-- Header -->
-                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:12px; margin-bottom:15px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1.5px solid rgba(255,255,255,0.1); padding-bottom:10px; margin-bottom:12px; flex-shrink:0;">
                         <div style="display:flex; align-items:center; gap:8px;">
-                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#ff9800" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 4px rgba(255,152,0,0.4));">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 3px rgba(0,229,255,0.4));">
                                 <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
                             </svg>
-                            <h2 style="margin:0; font-size:16px; font-family:'Orbitron', sans-serif; letter-spacing:1px; color:#ff9800; font-weight:900;">TERMINAL DE MISIONES</h2>
+                            <h2 style="margin:0; font-size:14px; font-family:'Orbitron', sans-serif; letter-spacing:1px; color:#00e5ff; font-weight:900; text-shadow:0 0 8px rgba(0,229,255,0.5);">TERMINAL DE MISIONES</h2>
                         </div>
-                        <button onclick="window.MissionsManager.closeModal()" style="background:transparent; border:none; color:#888; font-size:16px; font-weight:bold; cursor:pointer; transition:0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#888'">✕</button>
+                        <button onclick="window.MissionsManager.closeModal()" style="background:transparent; border:none; color:#00e5ff; font-size:16px; font-weight:bold; cursor:pointer; transition:0.2s;" onmouseover="this.style.color='#0091ea'" onmouseout="this.style.color='#00e5ff'">✕</button>
                     </div>
 
                     <!-- Tabs -->
-                    <div style="display:flex; background:rgba(0,0,0,0.3); border-radius:8px; padding:3px; gap:4px; margin-bottom:15px; border:1px solid rgba(255,255,255,0.05);">
-                        <button id="btn-tab-daily-missions" onclick="window.MissionsManager.setTab('daily')" style="flex:1; background:rgba(255, 152, 0, 0.15); border:1px solid rgba(255, 152, 0, 0.3); border-radius:6px; color:#ff9800; padding:8px 0; font-weight:bold; font-size:11px; cursor:pointer; font-family:'Orbitron', sans-serif; transition:0.2s; letter-spacing:0.5px; text-transform:uppercase;">Diarias</button>
-                        <button id="btn-tab-weekly-missions" onclick="window.MissionsManager.setTab('weekly')" style="flex:1; background:transparent; border:1px solid transparent; border-radius:6px; color:#aaa; padding:8px 0; font-weight:bold; font-size:11px; cursor:pointer; font-family:'Orbitron', sans-serif; transition:0.2s; letter-spacing:0.5px; text-transform:uppercase;">Semanales</button>
+                    <div style="display:flex; background:#151824; border-radius:8px; padding:3px; gap:4px; margin-bottom:12px; border:1px solid rgba(255,255,255,0.1); flex-shrink:0;">
+                        <button id="btn-tab-daily-missions" onclick="window.MissionsManager.setTab('daily')" style="flex:1; background:#ff9800; border:1px solid #e65100; border-radius:6px; color:#ffffff; padding:6px 0; font-weight:bold; font-size:11px; cursor:pointer; font-family:'Orbitron', sans-serif; transition:0.2s; letter-spacing:0.5px; text-transform:uppercase; box-shadow: 0 0 6px rgba(255,152,0,0.35);">Diarias</button>
+                        <button id="btn-tab-weekly-missions" onclick="window.MissionsManager.setTab('weekly')" style="flex:1; background:transparent; border:1px solid transparent; border-radius:6px; color:#7a8a9e; padding:6px 0; font-weight:bold; font-size:11px; cursor:pointer; font-family:'Orbitron', sans-serif; transition:0.2s; letter-spacing:0.5px; text-transform:uppercase;">Semanales</button>
                     </div>
 
                     <!-- Reset Countdown -->
-                    <div style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:8px; padding:6px 12px; text-align:center; font-size:10px; color:#888; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;">
-                        <span style="text-transform:uppercase; font-size:9px; letter-spacing:0.5px;">ESTADO DE LA RED</span>
-                        <span id="missions-reset-timer" style="font-weight:bold; color:#00e5ff; font-family:'Orbitron', sans-serif; letter-spacing:0.5px;">Reseteo en --:--:--</span>
+                    <div style="background:#252a45; border:1px solid rgba(0, 229, 255, 0.25); border-radius:8px; padding:6px 12px; text-align:center; font-size:10px; color:#b0c4de; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+                        <span style="text-transform:uppercase; font-size:9px; letter-spacing:0.5px; font-weight:600;">ESTADO DE LA RED</span>
+                        <span id="missions-reset-timer" style="font-weight:bold; color:#00e5ff; font-family:'Orbitron', sans-serif; letter-spacing:0.5px; text-shadow: 0 0 4px rgba(0,229,255,0.4);">Reseteo en --:--:--</span>
                     </div>
 
                     <!-- Missions List -->
-                    <div id="missions-list-container" style="flex:1; min-height:100px; max-height:240px; overflow-y:auto; padding-right:4px; margin-bottom:15px; display:flex; flex-direction:column; gap:10px;">
+                    <div id="missions-list-container" style="flex:1; overflow-y:auto; padding-right:4px; margin-bottom:10px; display:flex; flex-direction:column; gap:10px;">
                         <!-- dynamic items -->
                     </div>
 
                     <!-- Daily Bonus Box (Only for daily tab) -->
-                    <div id="missions-daily-bonus-container" style="background:rgba(0, 229, 255, 0.05); border:1.5px dashed rgba(0, 229, 255, 0.3); border-radius:12px; padding:12px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 0 10px rgba(0,229,255,0.02); flex-shrink:0;">
+                    <div id="missions-daily-bonus-container" style="background:rgba(0, 229, 255, 0.05); border:1.5px dashed #00e5ff; border-radius:12px; padding:10px 12px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 4px 10px rgba(0, 229, 255, 0.1); flex-shrink:0;">
                         <div style="display:flex; align-items:center; gap:10px;">
-                            <div style="width:32px; height:32px; background:rgba(0, 229, 255, 0.1); border-radius:8px; display:flex; align-items:center; justify-content:center; color:#00e5ff;">
+                            <div style="width:32px; height:32px; background:rgba(0, 229, 255, 0.15); border-radius:8px; display:flex; align-items:center; justify-content:center; color:#00e5ff; box-shadow: 0 0 6px rgba(0,229,255,0.25);">
                                 <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M12 2v9M7 5l5 6 5-6"/></svg>
                             </div>
                             <div>
-                                <h4 style="margin:0; font-size:11px; font-weight:bold; color:#00e5ff; font-family:'Orbitron', sans-serif; letter-spacing:0.5px;">COFRE DE BONO DIARIO</h4>
-                                <p style="margin:2px 0 0 0; font-size:9px; color:#aaa;">Completa 3/3 diarias para desbloquear.</p>
+                                <h4 style="margin:0; font-size:10.5px; font-weight:bold; color:#00e5ff; font-family:'Orbitron', sans-serif; letter-spacing:0.5px; text-shadow:0 0 4px rgba(0,229,255,0.35);">COFRE DE BONO DIARIO</h4>
+                                <p style="margin:2px 0 0 0; font-size:8.5px; color:#b0c4de; font-weight:500;">Completa 3/3 diarias para desbloquear.</p>
                             </div>
                         </div>
-                        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
-                            <span style="font-size:11px; font-weight:bold; color:#ffd700; font-family:'Orbitron', sans-serif;">+300 EV</span>
-                            <button id="btn-claim-daily-bonus" onclick="window.MissionsManager.claimBonusChest()" style="background:#334; color:#888; border:1px solid #445; border-radius:6px; padding:5px 10px; font-size:9px; font-weight:bold; cursor:not-allowed; transition:0.2s; font-family:'Orbitron', sans-serif;" disabled>BLOQUEADO</button>
+                        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:4px;">
+                            <span style="font-size:11px; font-weight:bold; color:#00e676; font-family:'Orbitron', sans-serif; text-shadow:0 0 4px rgba(0,230,118,0.35);">+300 EV</span>
+                            <button id="btn-claim-daily-bonus" onclick="window.MissionsManager.claimBonusChest()" style="background:#252a45; color:#7a8a9e; border:1px solid #32395c; border-radius:6px; padding:4px 8px; font-size:8.5px; font-weight:bold; cursor:not-allowed; transition:0.2s; font-family:'Orbitron', sans-serif;" disabled>BLOQUEADO</button>
                         </div>
                     </div>
 
@@ -337,21 +337,25 @@ window.MissionsManager = {
         const btnWeekly = document.getElementById("btn-tab-weekly-missions");
 
         if (tab === "daily") {
-            btnDaily.style.background = "rgba(255, 152, 0, 0.15)";
-            btnDaily.style.border = "1px solid rgba(255, 152, 0, 0.3)";
-            btnDaily.style.color = "#ff9800";
+            btnDaily.style.background = "#ff9800";
+            btnDaily.style.border = "1px solid #e65100";
+            btnDaily.style.color = "#ffffff";
+            btnDaily.style.boxShadow = "0 0 8px rgba(255,152,0,0.45)";
 
             btnWeekly.style.background = "transparent";
             btnWeekly.style.border = "1px solid transparent";
-            btnWeekly.style.color = "#aaa";
+            btnWeekly.style.color = "#7a8a9e";
+            btnWeekly.style.boxShadow = "none";
         } else {
-            btnWeekly.style.background = "rgba(0, 229, 255, 0.15)";
-            btnWeekly.style.border = "1px solid rgba(0, 229, 255, 0.3)";
-            btnWeekly.style.color = "#00e5ff";
+            btnWeekly.style.background = "#00b0ff";
+            btnWeekly.style.border = "1px solid #0091ea";
+            btnWeekly.style.color = "#ffffff";
+            btnWeekly.style.boxShadow = "0 0 8px rgba(0,176,255,0.45)";
 
             btnDaily.style.background = "transparent";
             btnDaily.style.border = "1px solid transparent";
-            btnDaily.style.color = "#aaa";
+            btnDaily.style.color = "#7a8a9e";
+            btnDaily.style.boxShadow = "none";
         }
 
         this.renderMissions();
@@ -380,7 +384,7 @@ window.MissionsManager = {
             const ss = String(segs).padStart(2, '0');
 
             timerEl.innerText = `RESET EN ${hh}:${mm}:${ss}`;
-            timerEl.style.color = "#ff9800";
+            timerEl.style.color = "#ff9100";
         } else {
             const lunesProximo = new Date();
             const day = lunesProximo.getDay();
@@ -410,7 +414,7 @@ window.MissionsManager = {
         const progressArr = isWeekly ? this.weeklyProgress : this.dailyProgress;
         const claimedArr = isWeekly ? this.weeklyClaimed : this.dailyClaimed;
 
-        const mainColor = isWeekly ? "#00e5ff" : "#ff9800";
+        const mainColor = isWeekly ? "#00b0ff" : "#ff9100";
 
         config.forEach((m, idx) => {
             const prog = progressArr[idx];
@@ -419,41 +423,44 @@ window.MissionsManager = {
             const isClaimed = claimedArr[idx];
 
             let buttonHtml = "";
-            let cardBg = "rgba(255, 255, 255, 0.02)";
-            let borderStyle = "1px solid rgba(255, 255, 255, 0.06)";
-            let shadow = "none";
+            let cardBg = "#252a45";
+            let borderStyle = isWeekly ? "1.5px solid rgba(0, 176, 255, 0.45)" : "1.5px solid rgba(255, 145, 0, 0.45)";
+            let shadow = isWeekly ? "0 4px 12px rgba(0,0,0,0.15), 0 0 5px rgba(0, 176, 255, 0.15)" : "0 4px 12px rgba(0,0,0,0.15), 0 0 5px rgba(255, 145, 0, 0.15)";
 
             if (isClaimed) {
-                cardBg = "rgba(76, 175, 80, 0.04)";
-                borderStyle = "1px solid rgba(76, 175, 80, 0.25)";
+                cardBg = "rgba(0, 230, 118, 0.05)";
+                borderStyle = "1.5px solid #00e676";
                 buttonHtml = `
-                    <button style="background:rgba(76, 175, 80, 0.1); border:1px solid rgba(76, 175, 80, 0.3); color:#4caf50; border-radius:6px; padding:6px 12px; font-size:10px; font-weight:bold; font-family:'Orbitron', sans-serif; cursor:not-allowed;" disabled>RECLAMADO</button>
+                    <button style="background:rgba(0, 230, 118, 0.15); border:1.5px solid #00e676; color:#00e676; border-radius:6px; padding:6px 12px; font-size:10px; font-weight:bold; font-family:'Orbitron', sans-serif; cursor:not-allowed;" disabled>RECLAMADO</button>
                 `;
             } else if (isCompleted) {
-                cardBg = `rgba(${isWeekly ? '0, 229, 255' : '255, 152, 0'}, 0.08)`;
-                borderStyle = `1px solid ${mainColor}`;
-                shadow = `0 0 10px rgba(${isWeekly ? '0, 229, 255' : '255, 152, 0'}, 0.15)`;
+                cardBg = "#252a45";
+                borderStyle = `1.5px solid ${mainColor}`;
+                shadow = `0 0 10px ${mainColor}33`;
                 buttonHtml = `
-                    <button onclick="window.MissionsManager.claimMission(${idx}, ${isWeekly})" style="background:${mainColor}; border:none; color:#101424; border-radius:6px; padding:6px 12px; font-size:10px; font-weight:bold; font-family:'Orbitron', sans-serif; cursor:pointer; box-shadow:0 0 10px ${mainColor}44; transition:0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='none'">RECLAMAR</button>
+                    <button onclick="window.MissionsManager.claimMission(${idx}, ${isWeekly})" style="background:${mainColor}; border:none; color:#ffffff; border-radius:6px; padding:6px 12px; font-size:10px; font-weight:bold; font-family:'Orbitron', sans-serif; cursor:pointer; box-shadow:0 0 8px ${mainColor}55; transition:0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='none'">RECLAMAR</button>
                 `;
             } else {
+                const btnBorderColor = isWeekly ? "rgba(0, 176, 255, 0.45)" : "rgba(255, 145, 0, 0.45)";
                 buttonHtml = `
-                    <button style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#666; border-radius:6px; padding:6px 12px; font-size:10px; font-weight:bold; font-family:'Orbitron', sans-serif; cursor:not-allowed;" disabled>${prog}/${m.goal}</button>
+                    <button style="background:#1e2235; border:1.5px solid ${btnBorderColor}; color:#7a8a9e; border-radius:6px; padding:6px 12px; font-size:10px; font-weight:bold; font-family:'Orbitron', sans-serif; cursor:not-allowed;" disabled>${prog}/${m.goal}</button>
                 `;
             }
 
             const itemCard = document.createElement("div");
             itemCard.style = `background:${cardBg}; border:${borderStyle}; box-shadow:${shadow}; border-radius:10px; padding:12px; display:flex; flex-direction:column; gap:8px; box-sizing:border-box;`;
             
+            const titleColor = isClaimed ? '#00e676' : (isWeekly ? '#00b0ff' : '#ff9100');
+
             itemCard.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px;">
                     <div style="display:flex; align-items:center; gap:8px; flex:1;">
-                        <div style="color:${isClaimed ? '#4caf50' : mainColor}; width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                        <div style="color:${isClaimed ? '#00e676' : mainColor}; width:24px; height:24px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                             ${m.svg}
                         </div>
                         <div>
-                            <h3 style="margin:0; font-size:11px; font-weight:bold; color:${isClaimed ? '#4caf50' : '#fff'}; font-family:'Orbitron', sans-serif; letter-spacing:0.5px;">${m.title}</h3>
-                            <p style="margin:2px 0 0 0; font-size:9.5px; color:#aaa; line-height:1.3;">${m.desc}</p>
+                            <h3 style="margin:0; font-size:11px; font-weight:bold; color:${titleColor}; font-family:'Orbitron', sans-serif; letter-spacing:0.5px;">${m.title}</h3>
+                            <p style="margin:2px 0 0 0; font-size:9.5px; color:#b0c4de; line-height:1.3; font-weight:500;">${m.desc}</p>
                         </div>
                     </div>
                 </div>
@@ -462,13 +469,13 @@ window.MissionsManager = {
                 <div style="display:flex; align-items:center; justify-content:space-between; gap:15px; margin-top:4px;">
                     <div style="flex:1; display:flex; flex-direction:column; gap:4px;">
                         <!-- Bar background -->
-                        <div style="background:rgba(255,255,255,0.06); height:6px; border-radius:3px; overflow:hidden; border:1px solid rgba(255,255,255,0.02);">
-                            <div style="background:${isClaimed ? '#4caf50' : mainColor}; width:${pct}%; height:100%; border-radius:3px; box-shadow:0 0 5px ${isClaimed ? '#4caf50' : mainColor}; transition:width 0.3s ease;"></div>
+                        <div style="background:rgba(0,0,0,0.3); height:6px; border-radius:3px; overflow:hidden; border:1px solid rgba(255,255,255,0.05);">
+                            <div style="background:${isClaimed ? '#00e676' : mainColor}; width:${pct}%; height:100%; border-radius:3px; transition:width 0.3s ease;"></div>
                         </div>
                         <!-- Rewards Text -->
                         <div style="display:flex; gap:10px; font-size:9px; font-weight:bold; font-family:'Orbitron', sans-serif;">
-                            <span style="color:#ffd700;">+${m.rewardEV} EV</span>
-                            <span style="color:#e040fb;">+${m.rewardPP} PP</span>
+                            <span style="color:#ff9100; text-shadow:0 0 3px rgba(255,145,0,0.35);">+${m.rewardEV} EV</span>
+                            <span style="color:#e040fb; text-shadow:0 0 3px rgba(224,64,251,0.35);">+${m.rewardPP} PP</span>
                         </div>
                     </div>
                     ${buttonHtml}
@@ -486,38 +493,39 @@ window.MissionsManager = {
             const btnBonus = document.getElementById("btn-claim-daily-bonus");
             
             if (this.dailyBonusClaimed) {
-                bonusContainer.style.background = "rgba(76, 175, 80, 0.04)";
-                bonusContainer.style.borderColor = "rgba(76, 175, 80, 0.25)";
+                bonusContainer.style.background = "rgba(0, 230, 118, 0.05)";
+                bonusContainer.style.borderColor = "#00e676";
+                bonusContainer.style.boxShadow = "none";
                 if (btnBonus) {
                     btnBonus.innerText = "RECLAMADO";
-                    btnBonus.style.background = "rgba(76, 175, 80, 0.1)";
-                    btnBonus.style.border = "1px solid rgba(76, 175, 80, 0.3)";
-                    btnBonus.style.color = "#4caf50";
+                    btnBonus.style.background = "rgba(0, 230, 118, 0.15)";
+                    btnBonus.style.border = "1.5px solid #00e676";
+                    btnBonus.style.color = "#00e676";
                     btnBonus.style.cursor = "not-allowed";
                     btnBonus.disabled = true;
                 }
             } else if (completadas >= 3) {
                 bonusContainer.style.background = "rgba(0, 229, 255, 0.08)";
                 bonusContainer.style.borderColor = "#00e5ff";
-                bonusContainer.style.boxShadow = "0 0 10px rgba(0, 229, 255, 0.15)";
+                bonusContainer.style.boxShadow = "0 0 10px rgba(0,229,255,0.2)";
                 if (btnBonus) {
                     btnBonus.innerText = "RECLAMAR";
-                    btnBonus.style.background = "#00e5ff";
+                    btnBonus.style.background = "#ff9100";
                     btnBonus.style.border = "none";
-                    btnBonus.style.color = "#101424";
+                    btnBonus.style.color = "#ffffff";
                     btnBonus.style.cursor = "pointer";
-                    btnBonus.style.boxShadow = "0 0 10px rgba(0, 229, 255, 0.3)";
+                    btnBonus.style.boxShadow = "0 0 8px rgba(255,145,0,0.4)";
                     btnBonus.disabled = false;
                 }
             } else {
                 bonusContainer.style.background = "rgba(0, 229, 255, 0.03)";
-                bonusContainer.style.borderColor = "rgba(0, 229, 255, 0.15)";
+                bonusContainer.style.borderColor = "rgba(0, 229, 255, 0.25)";
                 bonusContainer.style.boxShadow = "none";
                 if (btnBonus) {
                     btnBonus.innerText = `BLOQUEADO (${completadas}/3)`;
-                    btnBonus.style.background = "#222533";
-                    btnBonus.style.border = "1px solid rgba(255,255,255,0.06)";
-                    btnBonus.style.color = "#666";
+                    btnBonus.style.background = "#252a45";
+                    btnBonus.style.border = "1.5px solid #32395c";
+                    btnBonus.style.color = "#7a8a9e";
                     btnBonus.style.cursor = "not-allowed";
                     btnBonus.disabled = true;
                 }

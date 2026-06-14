@@ -117,15 +117,15 @@ window.BattlePassManager = {
 
     // Configurar el mapa de recompensas (niveles 1 a 50)
     cargarConfiguracionRecompensas: function() {
-        const svgApple = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M12 2C11.5 2 11 2.5 11 3s.5 1 1 1c2.5 0 4 2 4 4s.5 1 1 1 1-.5 1-1-2.5-6-6-6Z" fill="#FFA726"/><path d="M12 6c-3 0-6 2.5-6 6s3 7.5 6 7.5 6-3.5 6-7.5-3-6-6-6Z" fill="#EF5350"/></svg>`;
-        const svgShower = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none"><rect x="3" y="10" width="18" height="11" rx="3" stroke="#00E5FF" stroke-width="2"/><circle cx="7" cy="13" r="1.5" fill="#00E5FF"/><circle cx="12" cy="15" r="2" fill="#00E5FF"/><path d="M12 2v8" stroke="#00E5FF" stroke-width="2"/></svg>`;
-        const svgEssence = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M12 1L14.5 8.5L22 11L14.5 13.5L12 21L9.5 13.5L2 11L9.5 8.5L12 1Z" fill="#FFD700"/></svg>`;
+        const svgApple = `<svg viewBox="0 0 24 24" width="34" height="34" fill="none"><path d="M12 2C11.5 2 11 2.5 11 3s.5 1 1 1c2.5 0 4 2 4 4s.5 1 1 1 1-.5 1-1-2.5-6-6-6Z" fill="#FFA726"/><path d="M12 6c-3 0-6 2.5-6 6s3 7.5 6 7.5 6-3.5 6-7.5-3-6-6-6Z" fill="#EF5350"/></svg>`;
+        const svgShower = `<svg viewBox="0 0 24 24" width="34" height="34" fill="none"><rect x="3" y="10" width="18" height="11" rx="3" stroke="#00E5FF" stroke-width="2"/><circle cx="7" cy="13" r="1.5" fill="#00E5FF"/><circle cx="12" cy="15" r="2" fill="#00E5FF"/><path d="M12 2v8" stroke="#00E5FF" stroke-width="2"/></svg>`;
+        const svgEssence = `<svg viewBox="0 0 24 24" width="34" height="34" fill="none"><path d="M12 1L14.5 8.5L22 11L14.5 13.5L12 21L9.5 13.5L2 11L9.5 8.5L12 1Z" fill="#FFD700"/></svg>`;
         
         // Estabilizador Atómico SVG
-        const svgStabilizer = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#e040fb" stroke-width="2"><circle cx="12" cy="12" r="9" stroke-dasharray="4 2"/><circle cx="12" cy="12" r="3" fill="#e040fb"/><path d="M12 2v6M12 16v6M2 12h6M16 12h6" stroke-linecap="round"/></svg>`;
+        const svgStabilizer = `<svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#e040fb" stroke-width="2"><circle cx="12" cy="12" r="9" stroke-dasharray="4 2"/><circle cx="12" cy="12" r="3" fill="#e040fb"/><path d="M12 2v6M12 16v6M2 12h6M16 12h6" stroke-linecap="round"/></svg>`;
         
         // Cosméticos Planos SVG
-        const svgBlueprint = `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#ffd54f" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9M15 21V9"/></svg>`;
+        const svgBlueprint = `<svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#ffd54f" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9M15 21V9"/></svg>`;
 
         // Rellenar Ruta Gratis
         for (let l = 1; l <= 50; l++) {
@@ -224,7 +224,7 @@ window.BattlePassManager = {
                     id: "skin_lab_cyberpunk",
                     name: "Lab Cyberpunk",
                     desc: "Skin para personalizar visualmente tu Laboratorio.",
-                    svg: `<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="#e040fb" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18" opacity="0.4"/></svg>`,
+                    svg: `<svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#e040fb" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M15 3v18M3 9h18M3 15h18" opacity="0.4"/></svg>`,
                     type: "skin_lab",
                     count: 1
                 };
@@ -241,12 +241,11 @@ window.BattlePassManager = {
         }
     },
 
-    // Inyectar HTML del modal
     inyectarModal: function() {
         if (document.getElementById("battle-pass-modal")) return;
 
         const html = `
-            <div id="battle-pass-modal" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(6, 8, 16, 0.65); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); z-index:4000; justify-content:center; align-items:center; font-family:'Outfit', sans-serif;">
+            <div id="battle-pass-modal" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(6, 8, 16, 0.7); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px); z-index:4000; justify-content:center; align-items:center; font-family:'Outfit', sans-serif;">
                 <style>
                     #bp-levels-grid::-webkit-scrollbar {
                         display: none !important;
@@ -255,45 +254,70 @@ window.BattlePassManager = {
                         scrollbar-width: none !important;
                         -ms-overflow-style: none !important;
                     }
+                    @keyframes bp-pulse-glow {
+                        0% { box-shadow: 0 0 6px #00e5ff; }
+                        50% { box-shadow: 0 0 20px #00e5ff, 0 0 6px #00e5ff; }
+                        100% { box-shadow: 0 0 6px #00e5ff; }
+                    }
+                    .bp-glow-free {
+                        animation: bp-pulse-glow 1.5s infinite ease-in-out;
+                        border-color: #00e5ff !important;
+                    }
+                    @keyframes bp-pulse-glow-premium {
+                        0% { box-shadow: 0 0 6px #e040fb; }
+                        50% { box-shadow: 0 0 20px #e040fb, 0 0 6px #e040fb; }
+                        100% { box-shadow: 0 0 6px #e040fb; }
+                    }
+                    .bp-glow-premium {
+                        animation: bp-pulse-glow-premium 1.5s infinite ease-in-out;
+                        border-color: #e040fb !important;
+                    }
                 </style>
-                <div style="background:linear-gradient(135deg, rgba(22, 14, 36, 0.95), rgba(10, 6, 18, 0.98)); border:2px solid rgba(224, 64, 251, 0.35); border-radius:16px; width:90%; max-width:350px; max-height:90%; display:flex; flex-direction:column; box-sizing:border-box; padding:20px; color:white; box-shadow:0 0 30px rgba(224,64,251,0.15), inset 0 0 15px rgba(0, 0, 0, 0.6); position:relative;">
+                <div style="background:#1e2235; border:2.5px solid #00e5ff; border-radius:20px; width:92%; max-width:360px; height:85%; display:flex; flex-direction:column; box-sizing:border-box; padding:18px 18px 0 18px; color:#ffffff; box-shadow:0 8px 32px rgba(0, 229, 255, 0.15); position:relative; overflow:hidden;">
                     
-                    <!-- Header -->
-                    <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:12px; margin-bottom:15px; flex-shrink:0;">
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#e040fb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 4px rgba(224,64,251,0.4));">
-                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                            </svg>
-                            <h2 style="margin:0; font-size:16px; font-family:'Orbitron', sans-serif; letter-spacing:1px; color:#e040fb; font-weight:900;">PASE NEXO TEMPORADA</h2>
+                    <!-- Header Banner -->
+                    <div style="background: #151824; margin: -18px -18px 10px -18px; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2.5px solid #aa00ff; position: relative; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+                        <div style="display: flex; flex-direction: column; gap: 2px;">
+                            <h2 style="margin: 0; font-size: 16px; font-family: 'Orbitron', sans-serif; font-weight: 900; color: #00e5ff; text-shadow: 0 0 8px rgba(0,229,255,0.6); letter-spacing: 1px;">PASE NEXO</h2>
+                            <span style="font-size: 8px; color: #e040fb; font-weight: bold; font-family: 'Orbitron', sans-serif; letter-spacing: 0.5px; text-shadow: 0 0 4px rgba(224,64,251,0.4);">TEMPORADA ACTIVA</span>
                         </div>
-                        <button onclick="window.BattlePassManager.closeModal()" style="background:transparent; border:none; color:#888; font-size:16px; font-weight:bold; cursor:pointer; transition:0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#888'">✕</button>
+                        <button onclick="window.BattlePassManager.closeModal()" style="background: rgba(255,255,255,0.1); border: none; color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">✕</button>
                     </div>
 
                     <!-- Progress and PP Info -->
-                    <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.05); border-radius:12px; padding:15px; margin-bottom:15px; flex-shrink:0;">
-                        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:8px;">
-                            <span id="bp-level-title" style="font-family:'Orbitron', sans-serif; font-size:14px; font-weight:bold; color:#e040fb;">Nivel --</span>
-                            <span id="bp-pp-tracker" style="font-family:'Orbitron', sans-serif; font-size:11px; color:#aaa;">-- / 30 PP</span>
+                    <div style="background: #252a45; border: 1.5px solid #00e5ff; border-radius: 12px; padding: 8px 12px; margin-bottom: 10px; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px;">
+                        <!-- Level badge -->
+                        <div id="bp-level-badge" style="width: 28px; height: 28px; background: #aa00ff; border: 2px solid #00e5ff; border-radius: 50%; color: #fff; font-weight: 900; font-size: 11px; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron', sans-serif; box-shadow: 0 0 8px rgba(0,229,255,0.4); flex-shrink: 0;">
+                            --
                         </div>
-                        <!-- Progress bar -->
-                        <div style="background:rgba(255,255,255,0.06); height:8px; border-radius:4px; overflow:hidden; border:1px solid rgba(255,255,255,0.02); margin-bottom:4px;">
-                            <div id="bp-progress-fill" style="background:#e040fb; width:0%; height:100%; border-radius:4px; box-shadow:0 0 8px #e040fb; transition:width 0.3s ease;"></div>
+                        <div style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+                            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                                <span style="font-family: 'Orbitron', sans-serif; font-size: 9px; font-weight: bold; color: #b0c4de;">PROGRESO</span>
+                                <span id="bp-pp-tracker" style="font-family: 'Orbitron', sans-serif; font-size: 9px; color: #00e5ff; font-weight: bold;">-- / 30 PP</span>
+                            </div>
+                            <!-- Progress bar -->
+                            <div style="background: rgba(0,0,0,0.3); height: 8px; border-radius: 4px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); position: relative;">
+                                <div id="bp-progress-fill" style="background: linear-gradient(90deg, #aa00ff, #00e5ff); width: 0%; height: 100%; border-radius: 4px; transition: width 0.3s ease;"></div>
+                            </div>
                         </div>
-                        <div style="font-size:9px; color:#666; text-transform:uppercase; text-align:right;">30 Puntos de Pase para el siguiente nivel</div>
                     </div>
 
-                    <!-- Upgrade to Premium Banner -->
-                    <div id="bp-premium-banner" style="background:linear-gradient(90deg, rgba(224, 64, 251, 0.12), rgba(123, 31, 162, 0.15)); border:1px solid rgba(224, 64, 251, 0.4); border-radius:12px; padding:12px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 0 15px rgba(224, 64, 251, 0.05); flex-shrink:0;">
-                        <div>
-                            <h4 style="margin:0; font-size:11px; font-weight:bold; color:#e040fb; font-family:'Orbitron', sans-serif; letter-spacing:0.5px;">HABILITAR RUTA PREMIUM</h4>
-                            <p style="margin:3px 0 0 0; font-size:9px; color:#ccc; line-height:1.2;">+1,000 EV extra por nivel, cosméticos y auras exclusivas.</p>
-                        </div>
-                        <button id="btn-buy-bp-premium" onclick="window.BattlePassManager.buyPremium()" style="background:#e040fb; color:#101424; border:none; border-radius:6px; padding:6px 12px; font-size:10px; font-weight:bold; cursor:pointer; font-family:'Orbitron', sans-serif; transition:0.2s; box-shadow:0 0 10px rgba(224,64,251,0.4);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='none'">0.1 POL</button>
+                    <!-- Sticky Columns Headers -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 6px; margin-bottom: 6px; flex-shrink: 0; gap: 10px;">
+                        <div style="flex: 1; background: rgba(0, 229, 255, 0.1); color: #00e5ff; padding: 4px 8px; border-radius: 6px; font-weight: 900; font-size: 10px; font-family: 'Orbitron', sans-serif; text-transform: uppercase; text-align: center; border: 1px solid #00e5ff; box-shadow: 0 0 6px rgba(0,229,255,0.2);">GRATIS</div>
+                        <!-- spacing spacer for level badge -->
+                        <div style="width: 30px;"></div>
+                        <div style="flex: 1; background: rgba(224, 64, 251, 0.1); color: #e040fb; padding: 4px 8px; border-radius: 6px; font-weight: 900; font-size: 10px; font-family: 'Orbitron', sans-serif; text-transform: uppercase; text-align: center; border: 1px solid #e040fb; box-shadow: 0 0 6px rgba(224,64,251,0.2);">AVANZADO</div>
                     </div>
 
                     <!-- Levels List Grid Container -->
-                    <div id="bp-levels-grid" style="flex:1; min-height:100px; max-height:240px; overflow-y:auto; padding-right:6px; margin-bottom:10px; display:flex; flex-direction:column; gap:10px;">
+                    <div id="bp-levels-grid" style="flex: 1; overflow-y: auto; margin-bottom: 5px; display: flex; flex-direction: column; gap: 0; background: linear-gradient(to right, #252836 0%, #252836 50%, #2c253d 50%, #2c253d 100%); border-radius: 10px; border: 1.5px solid #32395c; position: relative;">
                         <!-- dynamic rows -->
+                    </div>
+
+                    <!-- Bottom Footer -->
+                    <div id="bp-footer" style="background: #151824; border-top: 2.5px solid #aa00ff; border-bottom-left-radius: 17px; border-bottom-right-radius: 17px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; margin: 5px -18px 0 -18px; box-shadow: 0 -4px 15px rgba(0,0,0,0.3);">
+                        <!-- will be populated dynamically -->
                     </div>
 
                 </div>
@@ -329,16 +353,15 @@ window.BattlePassManager = {
     },
 
     renderBattlePass: function() {
-        const lvlTitle = document.getElementById("bp-level-title");
+        const lvlBadge = document.getElementById("bp-level-badge");
         const ppTracker = document.getElementById("bp-pp-tracker");
         const progressFill = document.getElementById("bp-progress-fill");
-        const premiumBanner = document.getElementById("bp-premium-banner");
         const grid = document.getElementById("bp-levels-grid");
 
-        if (!lvlTitle || !ppTracker || !progressFill || !grid) return;
+        if (!ppTracker || !progressFill || !grid) return;
 
         // 1. Cabecera y Progresión
-        lvlTitle.innerText = `Nivel ${this.level}`;
+        if (lvlBadge) lvlBadge.innerText = this.level;
         const currentPPInLevel = this.pp - ((this.level - 1) * 30);
         
         if (this.level >= 50) {
@@ -349,24 +372,9 @@ window.BattlePassManager = {
             progressFill.style.width = `${(currentPPInLevel / 30) * 100}%`;
         }
 
-        // 2. Banner Premium
-        if (this.premiumUnlocked) {
-            premiumBanner.style.background = "linear-gradient(90deg, rgba(76, 175, 80, 0.1), rgba(76, 175, 80, 0.15))";
-            premiumBanner.style.borderColor = "rgba(76, 175, 80, 0.4)";
-            premiumBanner.innerHTML = `
-                <div>
-                    <h4 style="margin:0; font-size:11px; font-weight:bold; color:#4caf50; font-family:'Orbitron', sans-serif; letter-spacing:0.5px;">✓ MÓDULO PREMIUM ACTIVO</h4>
-                    <p style="margin:2px 0 0 0; font-size:9px; color:#aaa;">Todas las recompensas de la fila inferior están desbloqueadas.</p>
-                </div>
-                <div style="font-size:10px; font-weight:bold; color:#4caf50; font-family:'Orbitron', sans-serif; letter-spacing:0.5px; border:1px solid rgba(76,175,80,0.5); padding:4px 8px; border-radius:4px; background:rgba(76,175,80,0.1);">ACTIVO</div>
-            `;
-        }
-
-        // 3. Grid de Niveles
+        // 2. Grid de Niveles
         grid.innerHTML = "";
 
-        // Mostrar del nivel actual y superiores/inferiores ordenados descendentemente (para mayor visibilidad)
-        // o ascendentemente (de 1 a 50). Ascendente de 1 a 50 con autoscroll al nivel actual es la mejor experiencia.
         for (let l = 1; l <= 50; l++) {
             const hasFree = !!this.freeRewards[l];
             const hasPremium = !!this.premiumRewards[l];
@@ -379,120 +387,173 @@ window.BattlePassManager = {
 
             const isLvlUnlocked = (this.level >= l);
 
+            // Fila contenedora para el nivel
             const row = document.createElement("div");
-            row.style = "background:rgba(255, 255, 255, 0.02); border:1px solid rgba(255,255,255,0.05); border-radius:10px; display:flex; gap:10px; padding:10px; align-items:center; box-sizing:border-box; position:relative;";
+            row.style = "display: flex; align-items: center; justify-content: space-between; position: relative; width: 100%; box-sizing: border-box; min-height: 90px; border-bottom: 1px solid rgba(0, 0, 0, 0.04);";
 
-            if (isLvlUnlocked) {
-                row.style.borderColor = "rgba(224, 64, 251, 0.18)";
-            }
-
-            // Nivel insignia a la izquierda
-            let badgeBg = "rgba(255,255,255,0.04)";
-            let badgeBorder = "1px solid rgba(255,255,255,0.1)";
-            let badgeColor = "#aaa";
-
-            if (isLvlUnlocked) {
-                badgeBg = "rgba(224, 64, 251, 0.15)";
-                badgeBorder = "1px solid #e040fb";
-                badgeColor = "#e040fb";
-            }
-
-            const badgeHtml = `
-                <div style="width:38px; height:38px; background:${badgeBg}; border:${badgeBorder}; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; flex-shrink:0; box-shadow:0 0 6px rgba(224, 64, 251, ${isLvlUnlocked ? '0.1' : '0'});">
-                    <span style="font-size:7px; color:#666; font-weight:bold; text-transform:uppercase;">Nivel</span>
-                    <span style="font-family:'Orbitron', sans-serif; font-size:14px; font-weight:900; color:${badgeColor}; line-height:1.1;">${l}</span>
-                </div>
-            `;
-
-            // Fila gratis (arriba) y premium (abajo) en el centro
-            let freeBlockHtml = `<div style="flex:1; display:flex; justify-content:center; align-items:center; color:#666; font-size:9px;">VACÍO</div>`;
-            if (hasFree) {
-                let freeBtnHtml = "";
-                let freeColor = "#fff";
+            // Columna 1: Gratis Box
+            let freeBoxHtml = "";
+            if (!hasFree) {
+                freeBoxHtml = `
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 10px 10px 15px; box-sizing: border-box; gap: 4px;">
+                        <div style="width:60px; height:60px; background:rgba(0,0,0,0.25); border:1.5px dashed rgba(255,255,255,0.15); border-radius:12px; display:flex; align-items:center; justify-content:center;">
+                            <span style="font-size:12px; color:rgba(255,255,255,0.3); font-family:'Orbitron',sans-serif;">-</span>
+                        </div>
+                        <span style="font-size: 8px; color: #b0c4de; font-weight: bold; text-align: center; max-width: 70px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.7;">Sin Recom.</span>
+                    </div>
+                `;
+            } else {
+                let cardStyle = "";
+                let glowClass = "";
+                let overlayHtml = "";
+                let clickAction = "";
+                let iconFilter = "";
 
                 if (freeClaimed) {
-                    freeBtnHtml = `<span style="font-size:9px; color:#4caf50; font-weight:bold; font-family:'Orbitron', sans-serif;">RECLAMADO</span>`;
-                    freeColor = "#888";
+                    cardStyle = "background:rgba(255,255,255,0.05); border:1.5px solid rgba(255,255,255,0.4); opacity:0.7;";
+                    iconFilter = "filter: grayscale(80%) drop-shadow(0 2px 3px rgba(0,0,0,0.2));";
+                    overlayHtml = `
+                        <div style="position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; background: #00e676; border-radius: 50%; border: 1.5px solid #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 6px rgba(0, 230, 118, 0.45);">
+                            <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#fff" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                    `;
                 } else if (isLvlUnlocked) {
-                    freeBtnHtml = `<button onclick="window.BattlePassManager.claimFree(${l})" style="background:#00e5ff; color:#101424; border:none; border-radius:4px; padding:3px 6px; font-size:8px; font-weight:bold; cursor:pointer; font-family:'Orbitron', sans-serif;">RECLAMAR</button>`;
+                    cardStyle = "background: radial-gradient(circle, rgba(0, 229, 255, 0.25) 0%, rgba(30, 34, 53, 0) 75%), #1e2235; border:2.5px solid #00e5ff; cursor:pointer; box-shadow: 0 0 10px rgba(0, 229, 255, 0.45);";
+                    iconFilter = "filter: drop-shadow(0 0 8px rgba(0, 229, 255, 0.85));";
+                    glowClass = "bp-glow-free";
+                    clickAction = `onclick="window.BattlePassManager.claimFree(${l})"`;
                 } else {
-                    freeBtnHtml = `<span style="font-size:8px; color:#555; font-family:'Orbitron', sans-serif;">BLOQUEADO</span>`;
+                    cardStyle = "background: radial-gradient(circle, rgba(0, 229, 255, 0.12) 0%, rgba(30, 34, 53, 0) 75%), #1e2235; border: 1.5px solid rgba(0, 229, 255, 0.7); box-shadow: 0 0 6px rgba(0, 229, 255, 0.25), inset 0 0 4px rgba(0, 229, 255, 0.15);";
+                    iconFilter = "opacity: 0.6; filter: drop-shadow(0 0 4px rgba(0, 229, 255, 0.45));";
+                    overlayHtml = `
+                        <div style="position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; background: #252836; border-radius: 50%; border: 1.5px solid #00e5ff; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 6px rgba(0, 229, 255, 0.65);">
+                            <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="#00e5ff" stroke-width="3.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </div>
+                    `;
                 }
 
-                freeBlockHtml = `
-                    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%;">
-                        <div style="display:flex; align-items:center; gap:6px;">
-                            <div style="width:20px; height:20px; display:flex; align-items:center; justify-content:center;">${freeReward.svg}</div>
-                            <span style="font-size:10px; color:${freeColor}; font-weight:bold; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${freeReward.name}">${freeReward.name}</span>
+                freeBoxHtml = `
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 10px 10px 15px; box-sizing: border-box; gap: 4px;">
+                        <div class="${glowClass}" ${clickAction} style="width: 60px; height: 60px; border-radius: 12px; position: relative; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 6px rgba(0,0,0,0.2); ${cardStyle}">
+                            <div style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; ${iconFilter}">${freeReward.svg}</div>
+                            ${overlayHtml}
                         </div>
-                        ${freeBtnHtml}
+                        <span style="font-size: 8px; color: #ffffff; text-shadow: 0 0 4px rgba(0,0,0,0.6); font-weight: bold; text-align: center; max-width: 70px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${freeReward.name}">
+                            ${freeReward.name}
+                        </span>
                     </div>
                 `;
             }
 
-            let premiumBlockHtml = "";
-            let premiumBtnHtml = "";
-            let premiumColor = "#fff";
-
-            if (premiumClaimed) {
-                premiumBtnHtml = `<span style="font-size:9px; color:#4caf50; font-weight:bold; font-family:'Orbitron', sans-serif;">RECLAMADO</span>`;
-                premiumColor = "#888";
-            } else if (!this.premiumUnlocked) {
-                premiumBtnHtml = `<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#e040fb" stroke-width="2.5" style="filter:drop-shadow(0 0 3px rgba(224,64,251,0.5));" title="Recompensa Premium Bloqueada"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`;
-                premiumColor = "#f8bbd0"; // Bright readable pink
-            } else if (isLvlUnlocked) {
-                premiumBtnHtml = `<button onclick="window.BattlePassManager.claimPremium(${l})" style="background:#e040fb; color:#101424; border:none; border-radius:4px; padding:3px 6px; font-size:8px; font-weight:bold; cursor:pointer; font-family:'Orbitron', sans-serif;">RECLAMAR</button>`;
-                premiumColor = "#fff";
+            // Columna 2: Premium Box
+            let premiumBoxHtml = "";
+            if (!hasPremium) {
+                premiumBoxHtml = `
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 15px 10px 10px; box-sizing: border-box; gap: 4px;">
+                        <div style="width:60px; height:60px; background:rgba(0,0,0,0.25); border:1.5px dashed rgba(255,255,255,0.15); border-radius:12px; display:flex; align-items:center; justify-content:center;">
+                            <span style="font-size:12px; color:rgba(255,255,255,0.3); font-family:'Orbitron',sans-serif;">-</span>
+                        </div>
+                        <span style="font-size: 8px; color: #b0c4de; font-weight: bold; text-align: center; max-width: 70px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; opacity: 0.7;">Sin Recom.</span>
+                    </div>
+                `;
             } else {
-                premiumBtnHtml = `<span style="font-size:8px; color:#555; font-family:'Orbitron', sans-serif;">BLOQUEADO</span>`;
-                premiumColor = "#aaa";
+                let cardStyle = "";
+                let glowClass = "";
+                let overlayHtml = "";
+                let clickAction = "";
+                let iconFilter = "";
+
+                if (premiumClaimed) {
+                    cardStyle = "background:rgba(255,255,255,0.05); border:1.5px solid rgba(255,255,255,0.4); opacity:0.7;";
+                    iconFilter = "filter: grayscale(80%) drop-shadow(0 2px 3px rgba(0,0,0,0.2));";
+                    overlayHtml = `
+                        <div style="position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; background: #00e676; border-radius: 50%; border: 1.5px solid #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 6px rgba(0, 230, 118, 0.45);">
+                            <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="#fff" stroke-width="4"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                    `;
+                } else if (!this.premiumUnlocked) {
+                    cardStyle = "background: radial-gradient(circle, rgba(224, 64, 251, 0.12) 0%, rgba(30, 34, 53, 0) 75%), #1e2235; border: 1.5px solid rgba(224, 64, 251, 0.75); cursor:pointer; box-shadow: 0 0 6px rgba(224, 64, 251, 0.3), inset 0 0 4px rgba(224, 64, 251, 0.15);";
+                    iconFilter = "opacity: 0.6; filter: drop-shadow(0 0 4px rgba(224, 64, 251, 0.45));";
+                    clickAction = `onclick="window.BattlePassManager.buyPremium()"`;
+                    overlayHtml = `
+                        <div style="position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; background: #252836; border-radius: 50%; border: 1.5px solid #e040fb; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 6px rgba(224, 64, 251, 0.65);">
+                            <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="#e040fb" stroke-width="3.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </div>
+                    `;
+                } else if (isLvlUnlocked) {
+                    cardStyle = "background: radial-gradient(circle, rgba(224, 64, 251, 0.25) 0%, rgba(30, 34, 53, 0) 75%), #1e2235; border:2.5px solid #e040fb; cursor:pointer; box-shadow: 0 0 10px rgba(224, 64, 251, 0.45);";
+                    iconFilter = "filter: drop-shadow(0 0 8px rgba(224, 64, 251, 0.85));";
+                    glowClass = "bp-glow-premium";
+                    clickAction = `onclick="window.BattlePassManager.claimPremium(${l})"`;
+                } else {
+                    cardStyle = "background: radial-gradient(circle, rgba(224, 64, 251, 0.12) 0%, rgba(30, 34, 53, 0) 75%), #1e2235; border: 1.5px solid rgba(224, 64, 251, 0.7); box-shadow: 0 0 6px rgba(224, 64, 251, 0.25), inset 0 0 4px rgba(224, 64, 251, 0.15);";
+                    iconFilter = "opacity: 0.6; filter: drop-shadow(0 0 4px rgba(224, 64, 251, 0.45));";
+                    overlayHtml = `
+                        <div style="position: absolute; top: -6px; right: -6px; width: 18px; height: 18px; background: #252836; border-radius: 50%; border: 1.5px solid #e040fb; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 6px rgba(224, 64, 251, 0.65);">
+                            <svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="#e040fb" stroke-width="3.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </div>
+                    `;
+                }
+
+                premiumBoxHtml = `
+                    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 15px 10px 10px; box-sizing: border-box; gap: 4px;">
+                        <div class="${glowClass}" ${clickAction} style="width: 60px; height: 60px; border-radius: 12px; position: relative; display: flex; align-items: center; justify-content: center; box-shadow: 0 3px 6px rgba(0,0,0,0.2); ${cardStyle}">
+                            <div style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; ${iconFilter}">${premiumReward.svg}</div>
+                            ${overlayHtml}
+                        </div>
+                        <span style="font-size: 8px; color: #ffffff; text-shadow: 0 0 4px rgba(0,0,0,0.6); font-weight: bold; text-align: center; max-width: 70px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${premiumReward.name}">
+                            ${premiumReward.name}
+                        </span>
+                    </div>
+                `;
             }
 
-            premiumBlockHtml = `
-                <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%;">
-                    <div style="display:flex; align-items:center; gap:6px;">
-                        <div style="width:20px; height:20px; display:flex; align-items:center; justify-content:center; opacity:1;">${premiumReward.svg}</div>
-                        <span style="font-size:10px; color:${premiumColor}; font-weight:bold; max-width:80px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${premiumReward.name}">${premiumReward.name}</span>
-                    </div>
-                    ${premiumBtnHtml}
-                </div>
-            `;
-
-            row.appendChild(badgeHtml);
-            
-            // Contenedor central de dos filas (Gratuito arriba, Premium abajo)
-            const rewardsColumn = document.createElement("div");
-            rewardsColumn.style = "flex:1; display:flex; flex-direction:column; gap:6px; border-left:1px solid rgba(255,255,255,0.04); padding-left:10px;";
-            
-            rewardsColumn.innerHTML = `
-                <!-- Fila Gratis -->
-                <div style="display:flex; align-items:center; justify-content:space-between;">
-                    <span style="font-size:7px; color:#00e5ff; font-weight:bold; text-transform:uppercase; font-family:'Orbitron', sans-serif; letter-spacing:0.5px; width:45px;">Gratis</span>
-                    <div style="flex:1; display:flex; align-items:center; justify-content:flex-end;">
-                        ${freeBlockHtml}
-                    </div>
-                </div>
-                
-                <!-- Divisor -->
-                <div style="height:1px; background:rgba(255,255,255,0.03); width:100%;"></div>
-
-                <!-- Fila Premium -->
-                <div style="display:flex; align-items:center; justify-content:space-between;">
-                    <span style="font-size:7px; color:#e040fb; font-weight:bold; text-transform:uppercase; font-family:'Orbitron', sans-serif; letter-spacing:0.5px; width:45px;">Premium</span>
-                    <div style="flex:1; display:flex; align-items:center; justify-content:flex-end;">
-                        ${premiumBlockHtml}
+            // Central level divider
+            const centerHtml = `
+                <div style="width: 30px; align-self: stretch; display: flex; justify-content: center; align-items: center; position: relative;">
+                    <!-- vertical line segment -->
+                    <div style="position: absolute; top: 0; bottom: 0; width: 6px; background: linear-gradient(180deg, #aa00ff, #00e5ff); z-index: 1; box-shadow: 0 0 6px rgba(0, 229, 255, 0.35);"></div>
+                    <!-- level badge hexagon -->
+                    <div style="z-index: 2; width: 22px; height: 22px; background: #aa00ff; border: 2px solid #00e5ff; color: #ffffff; font-weight: 900; font-size: 9px; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron', sans-serif; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); box-shadow: 0 0 8px rgba(0,229,255,0.4);">
+                        ${l}
                     </div>
                 </div>
             `;
 
-            row.appendChild(rewardsColumn);
+            row.innerHTML = `
+                ${freeBoxHtml}
+                ${centerHtml}
+                ${premiumBoxHtml}
+            `;
             grid.appendChild(row);
         }
 
-        // Auto Scroll hasta el nivel del jugador (para que el nivel desbloqueado actual esté a la vista)
+        // 3. Actualizar el Footer
+        const footer = document.getElementById("bp-footer");
+        if (footer) {
+            const commonBtnStyle = "height: 36px; padding: 0 16px; border-radius: 6px; font-size: 11px; font-family: 'Orbitron', sans-serif; font-weight: 900; line-height: 1; display: inline-flex; align-items: center; justify-content: center; border: 1.5px solid rgba(255, 255, 255, 0.25); box-sizing: border-box; width: 46%; text-transform: uppercase; text-align: center; box-shadow: 0 3px 6px rgba(0,0,0,0.15); transition: transform 0.2s;";
+
+            let buyBtnHtml = "";
+            if (this.premiumUnlocked) {
+                buyBtnHtml = `
+                    <div style="${commonBtnStyle} background: #aa00ff; color: #fff; cursor: default; box-shadow: 0 0 10px rgba(170, 0, 255, 0.3);">PREMIUM ACTIVO</div>
+                `;
+            } else {
+                buyBtnHtml = `
+                    <button onclick="window.BattlePassManager.buyPremium()" style="${commonBtnStyle} background: #e040fb; color: #fff; cursor: pointer; box-shadow: 0 0 10px rgba(224, 64, 251, 0.3);" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">COMPRAR PREMIUM</button>
+                `;
+            }
+
+            footer.innerHTML = `
+                <button onclick="window.BattlePassManager.claimAll()" style="${commonBtnStyle} background: #00e676; color: #fff; cursor: pointer; box-shadow: 0 0 10px rgba(0, 230, 118, 0.3);" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='none'">RECLAMAR TODO</button>
+                ${buyBtnHtml}
+            `;
+        }
+
+        // Auto Scroll hasta el nivel del jugador
         setTimeout(() => {
             const unlockedRows = grid.children;
-            const targetIndex = Math.max(0, this.level - 2); // centrar un poco el nivel actual
+            const targetIndex = Math.max(0, this.level - 2);
             if (unlockedRows[targetIndex]) {
                 grid.scrollTop = unlockedRows[targetIndex].offsetTop - 20;
             }
@@ -534,8 +595,7 @@ window.BattlePassManager = {
         };
 
         if (typeof window.miInventario.addItem === "function") {
-            const exito = window.miInventario.addItem(itemObj);
-            return exito;
+            return window.miInventario.addItem(itemObj);
         } else {
             if (!window.miInventario.items) window.miInventario.items = [];
             window.miInventario.items.push(itemObj);
@@ -550,7 +610,6 @@ window.BattlePassManager = {
         const reward = this.freeRewards[lvl];
         if (!reward) return;
 
-        // Entregar premio
         const exito = this.entregarPremioBP(reward);
         if (exito) {
             this.claimedFree.push(lvl);
@@ -573,7 +632,6 @@ window.BattlePassManager = {
         const reward = this.premiumRewards[lvl];
         if (!reward) return;
 
-        // Entregar premio
         const exito = this.entregarPremioBP(reward);
         if (exito) {
             this.claimedPremium.push(lvl);
@@ -585,6 +643,41 @@ window.BattlePassManager = {
                 window.guardarProgreso();
             }
             this.renderBattlePass();
+        }
+    },
+
+    claimAll: function() {
+        let claimedAny = false;
+        let itemsClaimed = [];
+
+        for (let l = 1; l <= this.level; l++) {
+            // Reclamar gratis
+            if (this.freeRewards[l] && !this.claimedFree.includes(l)) {
+                if (this.entregarPremioBP(this.freeRewards[l])) {
+                    this.claimedFree.push(l);
+                    itemsClaimed.push(`${this.freeRewards[l].name} (Gratis Nivel ${l})`);
+                    claimedAny = true;
+                }
+            }
+            // Reclamar premium
+            if (this.premiumUnlocked && this.premiumRewards[l] && !this.claimedPremium.includes(l)) {
+                if (this.entregarPremioBP(this.premiumRewards[l])) {
+                    this.claimedPremium.push(l);
+                    itemsClaimed.push(`${this.premiumRewards[l].name} (Premium Nivel ${l})`);
+                    claimedAny = true;
+                }
+            }
+        }
+
+        if (claimedAny) {
+            if (window.Sonidos) window.Sonidos.play("heal");
+            alert(`✨ ¡RECLAMO MASIVO COMPLETADO! ✨\nHas recibido:\n- ${itemsClaimed.join("\n- ")}`);
+            if (typeof window.guardarProgreso === 'function') {
+                window.guardarProgreso();
+            }
+            this.renderBattlePass();
+        } else {
+            alert("No tienes recompensas pendientes por reclamar en tus niveles actuales.");
         }
     }
 };
