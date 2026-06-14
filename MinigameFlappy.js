@@ -1,4 +1,4 @@
-// MinigameFlappy.js - Juego estilo Flappy Bird utilizando el Geno principal en vista de perfil
+// MinigameFlappy.js - Juego estilo Flappy Bird utilizando el Geno principal en vista de perfil con SVGs vectoriales
 class MinigameFlappy {
     constructor() {
         window.minigameFlappy = this;
@@ -50,7 +50,6 @@ class MinigameFlappy {
         });
         
         if (this.btnQuit) {
-            // El botón de salir lo maneja el ArcadeManager, pero por si acaso interceptamos
             this.btnQuit.addEventListener("click", () => {
                 if (this.isPlaying && window.miArcade && window.miArcade.gameScreen.classList.contains("hidden") === false) {
                     this.endGame(true);
@@ -67,11 +66,11 @@ class MinigameFlappy {
         this.arcadeMenu.classList.add("hidden");
         this.screen.classList.remove("hidden");
         
-        // 🔥 Ocultar controles táctiles que bloquean los clics
+        // Ocultar controles táctiles que bloquean los clics
         const touchControls = document.getElementById("touch-controls");
         if (touchControls) touchControls.style.display = "none";
 
-        // 🔥 Aplicar fondo dinámico azul
+        // Aplicar fondo dinámico azul
         this.playArea.className = "";
         this.playArea.classList.add("game-flappy-bg");
 
@@ -124,7 +123,8 @@ class MinigameFlappy {
             scanned: false
         };
         
-        this.playerElement.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(cleanAdn) : "🐦";
+        const droneFallbackSvg = `<svg viewBox="0 0 24 24" width="50" height="50" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block; margin:auto; filter: drop-shadow(0 0 4px rgba(255,215,0,0.5));"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M12 22V12 M12 12L5 8 M12 12l7-4 M12 12v-6"/></svg>`;
+        this.playerElement.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(cleanAdn) : droneFallbackSvg;
         this.playArea.appendChild(this.playerElement);
 
         // Iniciar loop físico y spawn de tubos
@@ -136,9 +136,9 @@ class MinigameFlappy {
     }
 
     updateUI() {
-        const evStr = this.evGanada > 0 ? ` | ⚡ +${this.evGanada} EV` : "";
+        const evStr = this.evGanada > 0 ? ` | +${this.evGanada} EV` : "";
         this.scoreDisplay.innerText = `Puntos: ${this.score}${evStr}`;
-        this.timerDisplay.innerText = `⏱️ Supervivencia`;
+        this.timerDisplay.innerText = `Supervivencia`;
     }
 
     flap() {
@@ -303,7 +303,7 @@ class MinigameFlappy {
         clearInterval(this.gameLoopInterval);
         clearInterval(this.spawnInterval);
         
-        // 🔥 Limpiar clase de fondo de playArea
+        // Limpiar clase de fondo de playArea
         this.playArea.className = "";
 
         // Remover tubos del DOM
@@ -327,7 +327,7 @@ class MinigameFlappy {
                 window.miInventario.addItem({
                     id: "apple_01",
                     name: "Manzana",
-                    icon: "🍎",
+                    icon: `<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="#ff007f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 2px rgba(255,0,127,0.5));"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6c0-2 1-3 1-3 M9.5 8C8.5 7 8 5.5 8 5.5"/></svg>`,
                     type: "consumible",
                     maxStack: 20,
                     count: reward 
@@ -369,20 +369,20 @@ class MinigameFlappy {
                 if (window.guardarJuego) window.guardarJuego();
                 else if (window.guardarProgreso) window.guardarProgreso();
 
-                let msg = `¡Colisión detectada!\nConseguiste: ${this.score} puntos.\nRatio 5:1 = Ganas ${reward} 🍎.`;
-                if (this.evGanada > 0) msg += `\n⚡ +${this.evGanada} EV obtenidas!`;
-                if (xpObtenida > 0) msg += `\n🧪 +${xpObtenida} XP de Laboratorio!`;
+                let msg = `¡Colisión detectada!\nConseguiste: ${this.score} puntos.\nRatio 5:1 = Ganas ${reward} Manzanas.`;
+                if (this.evGanada > 0) msg += `\n+${this.evGanada} EV obtenidas!`;
+                if (xpObtenida > 0) msg += `\n+${xpObtenida} XP de Laboratorio!`;
                 if (gananciaExplicita > 0) msg += `\n¡Diversión +20% y Amistad +${gananciaExplicita}!`;
                 else                       msg += `\n¡Diversión +20%! (Amistad por Arcade ya obtenida hoy)`;
                 alert(msg);
             } else {
-                let msg = `¡Colisión detectada!\nConseguiste: ${this.score} puntos.\nRatio 5:1 = Ganas ${reward} 🍎.`;
-                if (this.evGanada > 0) msg += `\n⚡ +${this.evGanada} EV obtenidas!`;
-                if (xpObtenida > 0) msg += `\n🧪 +${xpObtenida} XP de Laboratorio!`;
+                let msg = `¡Colisión detectada!\nConseguiste: ${this.score} puntos.\nRatio 5:1 = Ganas ${reward} Manzanas.`;
+                if (this.evGanada > 0) msg += `\n+${this.evGanada} EV obtenidas!`;
+                if (xpObtenida > 0) msg += `\n+${xpObtenida} XP de Laboratorio!`;
                 alert(msg);
             }
         }
-
+        
         this.screen.classList.add("hidden");
         this.arcadeMenu.classList.remove("hidden");
     }

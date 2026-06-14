@@ -77,6 +77,23 @@ window.LoginUI = {
         }
     },
     
+    mostrar: function() {
+        const pantalla = document.getElementById("pantalla-login");
+        if(pantalla) {
+            pantalla.style.display = "flex";
+            const inputEmail = document.getElementById("login-email");
+            const inputPass = document.getElementById("login-pass");
+            if (inputEmail) inputEmail.value = "";
+            if (inputPass) inputPass.value = "";
+            const msg = document.getElementById("login-msg");
+            if (msg) msg.innerText = "";
+            const btnIniciar = document.getElementById("btn-iniciar");
+            if (btnIniciar) btnIniciar.innerText = "CONECTAR";
+        } else {
+            this.inyectar();
+        }
+    },
+
     ocultar: function() {
         const pantalla = document.getElementById("pantalla-login");
         if(pantalla) pantalla.style.display = "none";

@@ -23,7 +23,11 @@ window.ShopManager = {
         "exp_30": `<svg viewBox="0 0 100 100" width="1em" height="1em"><rect x="15" y="25" width="70" height="65" rx="12" fill="#D500F9"/><path d="M30 25 L30 10 A20 20 0 0 1 70 10 L70 25" fill="none" stroke="#D500F9" stroke-width="10"/><rect x="22" y="45" width="56" height="30" rx="8" fill="#AA00FF"/><circle cx="38" cy="60" r="6" fill="#EA80FC"/><circle cx="62" cy="60" r="6" fill="#EA80FC"/><path d="M15 35 L85 35" stroke="#AA00FF" stroke-width="5"/></svg>`,
         "exp_40": `<svg viewBox="0 0 100 100" width="1em" height="1em"><rect x="10" y="20" width="80" height="70" rx="6" fill="#FFD700"/><rect x="18" y="28" width="64" height="54" rx="4" fill="#F57F17"/><circle cx="50" cy="55" r="16" fill="#FFF59D"/><circle cx="50" cy="55" r="6" fill="#F57F17"/><line x1="50" y1="39" x2="50" y2="45" stroke="#F57F17" stroke-width="4"/><line x1="30" y1="20" x2="30" y2="28" stroke="#F57F17" stroke-width="4"/><line x1="70" y1="20" x2="70" y2="28" stroke="#F57F17" stroke-width="4"/></svg>`,
         "catalizador_xp": `<svg viewBox="0 0 100 100" width="1em" height="1em"><defs><radialGradient id="cgGlow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fff176"/><stop offset="100%" stop-color="#f9a825"/></radialGradient></defs><circle cx="50" cy="50" r="38" fill="#1a1a2e" stroke="#f9a825" stroke-width="4"/><circle cx="50" cy="50" r="24" fill="url(#cgGlow)" opacity="0.9"/><path d="M50 18 L56 38 L76 38 L60 50 L66 70 L50 58 L34 70 L40 50 L24 38 L44 38 Z" fill="#fff" opacity="0.95"/><circle cx="50" cy="50" r="38" fill="none" stroke="#ffe082" stroke-width="2" stroke-dasharray="8 4"/></svg>`,
-        "acelerador_elite": `<svg viewBox="0 0 100 100" width="1em" height="1em"><defs><linearGradient id="eliteGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e040fb"/><stop offset="100%" stop-color="#00e5ff"/></linearGradient></defs><polygon points="50,8 93,32 93,68 50,92 7,68 7,32" fill="#0d1b2a" stroke="url(#eliteGrad)" stroke-width="5"/><path d="M50 22 L57 42 L78 42 L62 55 L68 75 L50 62 L32 75 L38 55 L22 42 L43 42 Z" fill="url(#eliteGrad)" opacity="0.95"/><circle cx="50" cy="50" r="6" fill="#fff"/><circle cx="50" cy="22" r="4" fill="#e040fb"/><circle cx="50" cy="78" r="4" fill="#00e5ff"/><circle cx="22" cy="42" r="4" fill="#e040fb"/><circle cx="78" cy="42" r="4" fill="#00e5ff"/><circle cx="22" cy="60" r="4" fill="#00e5ff"/><circle cx="78" cy="60" r="4" fill="#e040fb"/></svg>`
+        "acelerador_elite": `<svg viewBox="0 0 100 100" width="1em" height="1em"><defs><linearGradient id="eliteGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#e040fb"/><stop offset="100%" stop-color="#00e5ff"/></linearGradient></defs><polygon points="50,8 93,32 93,68 50,92 7,68 7,32" fill="#0d1b2a" stroke="url(#eliteGrad)" stroke-width="5"/><path d="M50 22 L57 42 L78 42 L62 55 L68 75 L50 62 L32 75 L38 55 L22 42 L43 42 Z" fill="url(#eliteGrad)" opacity="0.95"/><circle cx="50" cy="50" r="6" fill="#fff"/><circle cx="50" cy="22" r="4" fill="#e040fb"/><circle cx="50" cy="78" r="4" fill="#00e5ff"/><circle cx="22" cy="42" r="4" fill="#e040fb"/><circle cx="78" cy="42" r="4" fill="#00e5ff"/><circle cx="22" cy="60" r="4" fill="#00e5ff"/><circle cx="78" cy="60" r="4" fill="#e040fb"/></svg>`,
+        "ration_auto": `<svg viewBox="0 0 100 100" width="1em" height="1em"><rect x="15" y="20" width="70" height="60" rx="8" fill="none" stroke="#ff8a80" stroke-width="6"/><line x1="15" y1="50" x2="85" y2="50" stroke="#ff8a80" stroke-width="4"/><line x1="50" y1="50" x2="50" y2="80" stroke="#ff8a80" stroke-width="4"/><rect x="25" y="30" width="15" height="12" rx="2" fill="#ff8a80"/><circle cx="68" cy="36" r="6" fill="#ff8a80"/><circle cx="58" cy="36" r="4" fill="#ff5722"/></svg>`,
+        "plasma_shower": `<svg viewBox="0 0 100 100" width="1em" height="1em"><rect x="20" y="30" width="60" height="40" rx="10" fill="none" stroke="#80deea" stroke-width="6"/><circle cx="35" cy="20" r="8" fill="none" stroke="#80deea" stroke-width="3"/><circle cx="65" cy="15" r="6" fill="none" stroke="#80deea" stroke-width="2"/><circle cx="75" cy="35" r="10" fill="none" stroke="#80deea" stroke-width="3"/><circle cx="25" cy="75" r="7" fill="none" stroke="#80deea" stroke-width="3"/></svg>`,
+        "nexo_charge": `<svg viewBox="0 0 100 100" width="1em" height="1em"><polygon points="55,10 25,55 50,55 45,90 75,45 50,45" fill="none" stroke="#ffeb3b" stroke-width="6" stroke-linejoin="round"/></svg>`,
+        "comercio_licencia": `<svg viewBox="0 0 100 100" width="1em" height="1em"><path d="M25 15 L75 15 A10 10 0 0 1 85 25 L85 75 A10 10 0 0 1 75 85 L25 85 A10 10 0 0 1 15 75 L15 25 A10 10 0 0 1 25 15 Z" fill="none" stroke="#e0b0ff" stroke-width="6"/><line x1="30" y1="35" x2="70" y2="35" stroke="#e0b0ff" stroke-width="4"/><line x1="30" y1="50" x2="70" y2="50" stroke="#e0b0ff" stroke-width="4"/><line x1="30" y1="65" x2="55" y2="65" stroke="#e0b0ff" stroke-width="4"/></svg>`
     },
 
     init: function() {
@@ -196,8 +200,8 @@ window.ShopManager = {
         }
         const formattedPrice = typeof window.formatFullNumber === 'function' ? window.formatFullNumber(item.price) : item.price.toFixed(2);
         let precioTag = tipoMoneda === "EV" 
-            ? `<div style="font-weight: 900; color: ${colorLuz}; margin: 10px 0 15px 0; font-size: 15px; text-shadow: 0 0 8px ${colorLuz}80;">✨ ${formattedPrice} EV</div>` 
-            : `<div style="font-weight: 900; color: ${colorLuz}; margin: 10px 0 15px 0; font-size: 15px; text-shadow: 0 0 8px ${colorLuz}80;">🔷 ${item.price.toFixed(2)} POL${usdVal}</div>`;
+            ? `<div style="font-weight: 900; color: ${colorLuz}; margin: 10px 0 15px 0; font-size: 15px; text-shadow: 0 0 8px ${colorLuz}80;"><svg viewBox="0 0 24 24" width="14" height="14" fill="#ffea3b" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M12 2l2.5 5.5L20 10l-5.5 2.5L12 18l-2.5-5.5L4 10l5.5-2.5z"/></svg> ${formattedPrice} EV</div>` 
+            : `<div style="font-weight: 900; color: ${colorLuz}; margin: 10px 0 15px 0; font-size: 15px; text-shadow: 0 0 8px ${colorLuz}80;"><svg viewBox="0 0 24 24" width="14" height="14" fill="#00e5ff" style="display:inline-block; vertical-align:middle; margin-right:4px;"><polygon points="12,2 22,12 12,22 2,12"/></svg> ${item.price.toFixed(2)} POL${usdVal}</div>`;
         div.innerHTML = `
             <div style="font-size: 3.5rem; margin-bottom: 10px; filter: drop-shadow(0px 8px 10px rgba(0,0,0,0.8)); pointer-events: none;">${item.icon}</div>
             <h4 style="margin: 5px 0 8px 0; font-size: 14px; color: #ffffff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); pointer-events: none;">${item.name}</h4>
@@ -257,8 +261,8 @@ window.ShopManager = {
         }
         const formattedPriceDetail = typeof window.formatFullNumber === 'function' ? window.formatFullNumber(item.price) : item.price.toFixed(2);
         priceEl.innerHTML = item.currency === "EV" 
-            ? `<span style="color: ${colorLuz}; text-shadow: 0 0 8px ${colorLuz}80;">✨ ${formattedPriceDetail} EV</span>` 
-            : `<span style="color: ${colorLuz}; text-shadow: 0 0 8px ${colorLuz}80;">🔷 ${item.price.toFixed(2)} POL${usdValDetail}</span>`;
+            ? `<span style="color: ${colorLuz}; text-shadow: 0 0 8px ${colorLuz}80;"><svg viewBox="0 0 24 24" width="14" height="14" fill="#ffea3b" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M12 2l2.5 5.5L20 10l-5.5 2.5L12 18l-2.5-5.5L4 10l5.5-2.5z"/></svg> ${formattedPriceDetail} EV</span>` 
+            : `<span style="color: ${colorLuz}; text-shadow: 0 0 8px ${colorLuz}80;"><svg viewBox="0 0 24 24" width="14" height="14" fill="#00e5ff" style="display:inline-block; vertical-align:middle; margin-right:4px;"><polygon points="12,2 22,12 12,22 2,12"/></svg> ${item.price.toFixed(2)} POL${usdValDetail}</span>`;
         modal.style.display = "flex";
 
         const btnClose = document.getElementById("close-shop-detail");
@@ -277,17 +281,17 @@ window.ShopManager = {
         if (item.currency === "EV") {
             if (window.miInventario.vitalEssence < item.price) {
                 const neededPrice = typeof window.formatFullNumber === 'function' ? window.formatFullNumber(item.price) : item.price.toFixed(2);
-                alert(`❌ No tienes suficiente Esencia Vital. Necesitas ${neededPrice} ✨`);
+                alert(`[ERROR] No tienes suficiente Esencia Vital. Necesitas ${neededPrice}`);
                 return;
             }
             
             if (item.id === "comercio_licencia") {
                 if (window.labLevel < 5) {
-                    alert("❌ Bloqueado: Tu Nivel de Laboratorio debe ser 5 o superior.");
+                    alert("[BLOQUEADO] Tu Nivel de Laboratorio debe ser 5 o superior.");
                     return;
                 }
                 if (window.comercioDesbloqueado) {
-                    alert("✉️ Ya has adquirido esta Licencia de Comercio.");
+                    alert("[INFO] Ya has adquirido esta Licencia de Comercio.");
                     return;
                 }
                 
@@ -301,7 +305,7 @@ window.ShopManager = {
                 // Re-renderizar el Bazar para actualizar visualmente la tarjeta de la licencia
                 this.renderBazar();
                 
-                alert("🎉 ¡Licencia de Comercio adquirida con éxito!\nHas desbloqueado el acceso completo a la Red de Comercio.");
+                alert("[ÉXITO] ¡Licencia de Comercio adquirida con éxito!\nHas desbloqueado el acceso completo a la Red de Comercio.");
                 
                 if (window.guardarJuego) window.guardarJuego();
                 else if (window.guardarProgreso) window.guardarProgreso();
@@ -312,7 +316,7 @@ window.ShopManager = {
                 const maxSlots = window.miInventario.maxSlots || 10;
                 const slotsCount = window.miInventario.slots ? window.miInventario.slots.length : 0;
                 if (slotsCount >= maxSlots + 2) {
-                    alert("🎒 ¡Almacén y Espacios de Emergencia LLENOS!\nLibera espacio para recibir este Bio-Núcleo.");
+                    alert("[ALMACÉN LLENO] ¡Almacén y Espacios de Emergencia LLENOS!\nLibera espacio para recibir este Bio-Núcleo.");
                     return;
                 }
 
@@ -324,7 +328,7 @@ window.ShopManager = {
                 const coloresBase = ["#ff6b6b", "#4dd0e1", "#fdfd96", "#b19cd9", "#77DD77", "#ff9800", "#ffb347", "#a8e6cf"];
                 const elementosBase = ["Biomutante", "Viral", "Cibernético", "Radiactivo", "Tóxico", "Sintético"];
                 
-                // ✨ FIX CLONES: Lee los nombres correctos de caras.js
+                // FIX CLONES: Lee los nombres correctos de caras.js
                 const obtenerClaveAleatoria = (dic) => {
                     if (!dic || Object.keys(dic).length === 0) return "estandar";
                     const keys = Object.keys(dic);
@@ -380,7 +384,7 @@ window.ShopManager = {
                 if(!window.misGenos) window.misGenos = []; 
                 window.misGenos.push(huevo);
 
-                const svgCapsula = typeof generarSvgGeno === 'function' ? generarSvgGeno({ isEgg: true, color: colorRandom }) : '🧬';
+                const svgCapsula = typeof generarSvgGeno === 'function' ? generarSvgGeno({ isEgg: true, color: colorRandom }) : '<svg viewBox="0 0 24 24" width="80" height="80" fill="none" stroke="#4dd0e1" stroke-width="2" stroke-linecap="round"><path d="M4.5 10.5c3-6 12-6 15 0m-15 3c3 6 12 6 15 0"/><path d="M6 8v8m4-9v10m4-10v10m4-9v8"/></svg>';
                 window.miInventario.addItem({
                     id: "bionucleo_" + huevo.id,
                     name: "Bio-Núcleo #" + huevo.id,
@@ -391,7 +395,7 @@ window.ShopManager = {
                     desc: "Material genético puro de tienda. Requiere incubación."
                 }, 1);
                 window.miInventario.updateUI();
-                alert("✅ ¡Has comprado un Bio-Núcleo Básico!\nRevisa tu Cámara de Bio-Núcleos en el Centro de Crianza para incubarlo.");
+                alert("[ÉXITO] ¡Has comprado un Bio-Núcleo Básico!\nRevisa tu Cámara de Bio-Núcleos en el Centro de Crianza para incubarlo.");
                 if(window.guardarJuego) window.guardarJuego();
                 return; 
             }
@@ -412,7 +416,7 @@ window.ShopManager = {
                     window.registrarLogEconomia('sink', item.price, 'bazar');
                 }
                 window.miInventario.updateUI();
-                alert(`✅ Has comprado: ${item.name}`);
+                alert(`[COMPRA] Has comprado: ${item.name}`);
                 if(window.guardarJuego) window.guardarJuego();
             }
 
@@ -433,7 +437,7 @@ window.ShopManager = {
         } else if (item.currency === "POL") {
             if (!window.miWallet) window.miWallet = { pol: 0 };
             if (window.miWallet.pol < item.price) {
-                alert(`❌ No tienes suficiente $POL. Necesitas ${item.price.toFixed(2)} 🔷`);
+                alert(`[ERROR] No tienes suficiente POL. Necesitas ${item.price.toFixed(2)}`);
                 return;
             }
 
@@ -458,7 +462,7 @@ window.ShopManager = {
 
             if (item.type === "expansion") {
                 if (window.miInventario.maxSlots >= item.value) {
-                    alert("⚠️ Ya tienes una mochila de este tamaño o superior.");
+                    alert("[AVISO] Ya tienes una mochila de este tamaño o superior.");
                     return;
                 }
                 
@@ -468,7 +472,7 @@ window.ShopManager = {
                 else document.getElementById("pol-amount").innerText = `${window.miWallet.pol.toFixed(1)} POL`;
                 window.miInventario.updateUI();
                 
-                alert(`🎒 ¡Mochila expandida permanentemente a ${item.value} ranuras!`);
+                alert(`[MOCHILA] ¡Mochila expandida permanentemente a ${item.value} ranuras!`);
                 this.renderPremium(); 
                 if(window.guardarJuego) window.guardarJuego();
             } else {
@@ -484,7 +488,7 @@ window.ShopManager = {
                         if(polText) polText.innerText = `${window.miWallet.pol.toFixed(1)} POL`;
                     }
                     window.miInventario.updateUI();
-                    alert(`✅ Has comprado: ${item.name}`);
+                    alert(`[COMPRA] Has comprado: ${item.name}`);
                     if(window.guardarJuego) window.guardarJuego();
                 }
             }
@@ -506,14 +510,14 @@ window.ShopManager = {
         const items = [
             { id: "bio_nucleo_basico", name: "Bio-Núcleo Básico", icon: iconoBioNucleo, type: "egg", price: 3000, currency: "EV", desc: "Espécimen base (Común) inyectado aleatoriamente. Ideal para iniciar nuevas líneas de sangre." },
             { id: "incubator_01", name: "Incubadora Térmica", icon: this.iconosSVG["incubator_01"], type: "consumable", price: 0.20, currency: "POL", desc: "Batería térmica de alta capacidad. Proporciona la energía necesaria para incubar un Bio-Núcleo." },
-            { id: "ration_auto", name: "Ración Automática", icon: "🍱", type: "consumable", price: 200.00, currency: "EV", desc: "Alimenta automáticamente a todos tus Genos en reserva por 24 horas." },
-            { id: "plasma_shower", name: "Ducha de Plasma", icon: "🧼", type: "consumable", price: 100.00, currency: "EV", desc: "Limpia a todo tu inventario de mascotas a 100% de Higiene." },
+            { id: "ration_auto", name: "Ración Automática", icon: this.iconosSVG["ration_auto"], type: "consumable", price: 200.00, currency: "EV", desc: "Alimenta automáticamente a todos tus Genos en reserva por 24 horas." },
+            { id: "plasma_shower", name: "Ducha de Plasma", icon: this.iconosSVG["plasma_shower"], type: "consumable", price: 100.00, currency: "EV", desc: "Limpia a todo tu inventario de mascotas a 100% de Higiene." },
             { id: "escaner_basico", name: "Escáner Básico", icon: this.iconosSVG["escaner_basico"], type: "basic", price: 1500.00, currency: "EV", desc: "Revela slots activos del Geno." },
             { id: "escaner_completo", name: "Escáner Completo", icon: this.iconosSVG["escaner_completo"], type: "basic", price: 5000.00, currency: "EV", desc: "Revela la genética exacta S-D." },
             { id: "antidoto_uni", name: "Antídoto Universal", icon: this.iconosSVG["antidoto_uni"], type: "consumable", price: 10.00, currency: "EV", desc: "Limpia cualquier estado alterado." },
-            { id: "nexo_charge", name: "Recarga Nexo", icon: "⚡", type: "consumable", price: 2000.00, currency: "EV", desc: "Célula de energía Nexo ultraconcentrada. Restaura el 100% de la barra de Energía Nexo de forma inmediata." },
+            { id: "nexo_charge", name: "Recarga Nexo", icon: this.iconosSVG["nexo_charge"], type: "consumable", price: 2000.00, currency: "EV", desc: "Célula de energía Nexo ultraconcentrada. Restaura el 100% de la barra de Energía Nexo de forma inmediata." },
             { id: "catalizador_xp", name: "Catalizador Científico", icon: this.iconosSVG["catalizador_xp"], type: "lab_xp_boost", levelsGranted: 1, price: 5000.00, currency: "EV", desc: "Inyección de conocimiento puro. Otorga exactamente la XP necesaria para subir 1 nivel completo de Laboratorio al instante." },
-            { id: "comercio_licencia", name: "Permiso de Comercio", icon: "📜", type: "consumable", price: 3000.00, currency: "EV", desc: "Permiso de Acceso a la Red de Comercio de la Tienda Nexo. Permite depositar, retirar y vender Genos. (Requiere Laboratorio Nv. 5)" }
+            { id: "comercio_licencia", name: "Permiso de Comercio", icon: this.iconosSVG["comercio_licencia"], type: "consumable", price: 3000.00, currency: "EV", desc: "Permiso de Acceso a la Red de Comercio de la Tienda Nexo. Permite depositar, retirar y vender Genos. (Requiere Laboratorio Nv. 5)" }
         ];
 
         // Sobrescribir con precios dinámicos de Supabase si están disponibles
@@ -575,7 +579,7 @@ window.ShopManager = {
 
         let dojoItems = [];
         for (const [elemento, ramas] of Object.entries(window.AttackCatalog.ataquesPorElemento)) {
-            const icono = this.iconosSVG[elemento] || "💿";
+            const icono = this.iconosSVG[elemento] || '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#00e5ff" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>';
             
             const agregarRama = (rama, subType, defaultPrice) => {
                 let price = defaultPrice;

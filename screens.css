@@ -392,11 +392,15 @@
     position: absolute;
     pointer-events: none;
     z-index: 10000;
-    width: 64px;
-    height: 64px;
+    width: 52px;
+    height: 52px;
     transform: translate(-50%, -50%);
     transition: none !important;
     filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+}
+#tool-cursor-follower svg {
+    width: 100% !important;
+    height: 100% !important;
 }
 
 /* ========================================= */

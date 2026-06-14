@@ -74,7 +74,7 @@ window.ImplantsManager = {
         if (slot4 && window.miMascota.level >= 25) {
             slot4.innerText = def ? def.nombre.toUpperCase() : "VACÍO";
             
-            // ✨ FIX V22.2: Forzar la iluminación visual del botón Definitivo
+            // FIX V22.2: Forzar la iluminación visual del botón Definitivo
             let btnWrapper = slot4.parentElement;
             btnWrapper.style.opacity = "1";
             btnWrapper.style.cursor = "pointer";
@@ -108,7 +108,7 @@ window.ImplantsManager = {
         this.renderIftttRules();
     },
 
-    // ✨ FIX V22: Busca qué hay equipado para devolverlo a la mochila
+    // FIX V22: Busca qué hay equipado para devolverlo a la mochila
     getItemToUnequip: function(slot, isCosmetic) {
         if (!window.miMascota) return null;
         if (isCosmetic) {
@@ -118,7 +118,7 @@ window.ImplantsManager = {
                 let item = window.miMascota.cosmeticos && window.miMascota.cosmeticos[slot];
                 if (!item) {
                     // Si se equipó antes del update, lo reconstruimos para que no se pierda
-                    item = { id: "cos_" + slot + "_" + Date.now(), name: currentVal.replace(/_/g, ' ').toUpperCase(), icon: "📦", type: "Cosmético", subType: slot, maxStack: 1, evCost: 0, id_cosmetico: currentVal };
+                    item = { id: "cos_" + slot + "_" + Date.now(), name: currentVal.replace(/_/g, ' ').toUpperCase(), icon: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#ffe082" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>', type: "Cosmético", subType: slot, maxStack: 1, evCost: 0, id_cosmetico: currentVal };
                 }
                 return item;
             }
@@ -127,7 +127,7 @@ window.ImplantsManager = {
                 const atk = window.miMascota.ataques[slot];
                 let item = atk.itemData;
                 if (!item) {
-                    item = { id: atk.id + "_" + Date.now(), name: atk.nombre, icon: "💿", type: "MT", subType: slot === 'atk_4' ? "Definitivo" : (slot === 'atk_2' ? 'Técnica' : 'Soporte'), element: atk.element, maxStack: 1, id_ataque: atk.id, power: atk.power, evCost: 0 };
+                    item = { id: atk.id + "_" + Date.now(), name: atk.nombre, icon: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#00e5ff" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>', type: "MT", subType: slot === 'atk_4' ? "Definitivo" : (slot === 'atk_2' ? 'Técnica' : 'Soporte'), element: atk.element, maxStack: 1, id_ataque: atk.id, power: atk.power, evCost: 0 };
                 }
                 return item;
             }
@@ -135,7 +135,7 @@ window.ImplantsManager = {
         return null;
     },
 
-    // ✨ V23: Desequipar un ítem de forma manual (Botón rojo)
+    // V23: Desequipar un ítem de forma manual (Botón rojo)
     // Para Genos alquilados: si el ítem pertenecía al dueño → va a ownerItems (custodia).
     //                        si el ítem fue puesto por el becado → vuelve a su mochila.
     unequipCurrent: function(slot, isCosmetic, _internallyCalled) {
@@ -199,12 +199,12 @@ window.ImplantsManager = {
         
         const isCosmetic = ['head', 'back', 'skin', 'aura'].includes(slot);
 
-        // ✨ FIX V22: Detectar si ya hay algo equipado para mostrar botón de "DESEQUIPAR"
+        // FIX V22: Detectar si ya hay algo equipado para mostrar botón de "DESEQUIPAR"
         const itemEquipado = this.getItemToUnequip(slot, isCosmetic);
         if (itemEquipado && slot !== 'atk_1') {
             const unequipBtn = document.createElement("div");
             unequipBtn.style = "background: rgba(217, 83, 79, 0.2); padding: 10px; margin-bottom: 15px; border-radius: 6px; border: 1px solid #d9534f; cursor: pointer; text-align: center; color: #ff6b6b; font-weight: bold; font-size: 12px; transition: 0.2s;";
-            unequipBtn.innerText = "❌ DESEQUIPAR ACTUAL";
+            unequipBtn.innerText = "DESEQUIPAR ACTUAL";
             unequipBtn.onmouseover = () => unequipBtn.style.background = "rgba(217, 83, 79, 0.4)";
             unequipBtn.onmouseout = () => unequipBtn.style.background = "rgba(217, 83, 79, 0.2)";
             unequipBtn.onclick = () => this.unequipCurrent(slot, isCosmetic);
@@ -242,7 +242,7 @@ window.ImplantsManager = {
             itemDiv.innerHTML = `
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 6px;">
                     <strong style="color:#fff; font-size:12px;">${item.name || 'Desconocido'}</strong>
-                    <span style="color:#ffd700; font-size:11px; font-weight:bold;">${costo > 0 ? costo + ' ✨ EV' : 'GRATIS'}</span>
+                    <span style="color:#ffd700; font-size:11px; font-weight:bold;">${costo > 0 ? costo + ' EV' : 'GRATIS'}</span>
                 </div>
                 <div style="display:flex; gap: 5px; margin-bottom: 6px;">
                     ${item.element ? `<span style="background:rgba(0,172,193,0.2); color:#80deea; padding:2px 6px; border-radius:4px; font-size:9px; text-transform:uppercase; border: 1px solid rgba(0,172,193,0.5);">${item.element}</span>` : ''}
@@ -307,7 +307,7 @@ window.ImplantsManager = {
         return base;
     },
 
-    // ✨ V23: Instala la MT y gestiona la custodia correctamente según si es beca o no
+    // V23: Instala la MT y gestiona la custodia correctamente según si es beca o no
     installModule: function(item, indexItem, isCosmetic) {
         if (!window.miInventario || !window.miMascota) return;
 
@@ -441,11 +441,11 @@ window.ImplantsManager = {
                     </div>
 
                     <div style="display: flex; flex-direction: column; gap: 4px;">
-                        <button onclick="ImplantsManager.moveRule(${index}, -1)" style="background: transparent; border: none; color: #4dd0e1; cursor: pointer; padding: 2px; font-size: 12px; line-height: 1; transition: transform 0.1s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">🔼</button>
-                        <button onclick="ImplantsManager.moveRule(${index}, 1)" style="background: transparent; border: none; color: #4dd0e1; cursor: pointer; padding: 2px; font-size: 12px; line-height: 1; transition: transform 0.1s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">🔽</button>
+                        <button onclick="ImplantsManager.moveRule(${index}, -1)" style="background: transparent; border: none; color: #4dd0e1; cursor: pointer; padding: 2px; font-size: 12px; line-height: 1; transition: transform 0.1s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">▲</button>
+                        <button onclick="ImplantsManager.moveRule(${index}, 1)" style="background: transparent; border: none; color: #4dd0e1; cursor: pointer; padding: 2px; font-size: 12px; line-height: 1; transition: transform 0.1s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">▼</button>
                     </div>
                     
-                    <button onclick="ImplantsManager.deleteRule(${index})" style="background: transparent; border: none; color: #ff6b6b; cursor: pointer; padding: 6px; font-size: 14px; font-weight: bold; margin-left: 2px; transition: transform 0.1s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">❌</button>
+                    <button onclick="ImplantsManager.deleteRule(${index})" style="background: transparent; border: none; color: #ff6b6b; cursor: pointer; padding: 6px; font-size: 14px; font-weight: bold; margin-left: 2px; transition: transform 0.1s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">X</button>
                 </div>
                 `;
             });

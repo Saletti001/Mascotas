@@ -70,8 +70,9 @@ window.WalletManager = {
                     <p style="font-size: 11px; color: #aaa; margin-bottom: 20px;">
                         ¿Aún no tienes una? ¡No hay problema! Sigue jugando gratis, acumula POL y vincúlala cuando estés listo.
                     </p>
-                    <button id="btn-conectar-metamask" style="background: #f6851b; color: white; border: none; padding: 10px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%; margin-bottom: 10px; font-size: 14px;">
-                        🦊 CONECTAR METAMASK
+                    <button id="btn-conectar-metamask" style="background: #f6851b; color: white; border: none; padding: 10px; font-weight: bold; border-radius: 5px; cursor: pointer; width: 100%; margin-bottom: 10px; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"/><line x1="12" y1="10" x2="12" y2="14"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                        CONECTAR METAMASK
                     </button>
                     <button onclick="document.getElementById('wallet-modal').style.display='none'" style="background: transparent; color: #888; border: 1px solid #888; padding: 8px; border-radius: 5px; cursor: pointer; width: 100%; font-size: 13px;">
                         Quizás más tarde
@@ -155,9 +156,9 @@ window.WalletManager = {
         if (!modal || !copywriting || !gate || !btnActivate) return;
         
         const variantes = [
-            "🔒 Nota de seguridad: Tu dirección de comercio en la red Polygon se generará de forma automática y totalmente segura solo cuando decidas iniciar el proceso de depósito.",
-            "🛡️ Para mantener la seguridad de tu Laboratorio, la firma digital de tu Wallet solo se vinculará a tu cuenta al detectar una orden de depósito confirmada.",
-            "💡 Puedes seguir explorando la Plaza de Comercio de forma libre. El enlace con la red de transacciones se activará únicamente al preparar los fondos de tu primer intercambio."
+            "[SEGURIDAD] Nota de seguridad: Tu dirección de comercio en la red Polygon se generará de forma automática y totalmente segura solo cuando decidas iniciar el proceso de depósito.",
+            "[BÓVEDA] Para mantener la seguridad de tu Laboratorio, la firma digital de tu Wallet solo se vinculará a tu cuenta al detectar una orden de depósito confirmada.",
+            "[INFO] Puedes seguir explorando la Plaza de Comercio de forma libre. El enlace con la red de transacciones se activará únicamente al preparar los fondos de tu primer intercambio."
         ];
         
         const randomIndex = Math.floor(Math.random() * variantes.length);
@@ -235,14 +236,14 @@ window.WalletManager = {
                 window.actualizarVistaBaul();
             }
             
-            let alertMsg = `🎉 ¡Billetera Privy sincronizada con éxito!\nDirección: ${generatedAddress}`;
+            let alertMsg = `[ÉXITO] Billetera Privy sincronizada con éxito!\nDirección: ${generatedAddress}`;
             if (balanceClaimed) {
-                alertMsg += `\n🎁 Se han depositado +10.0 POL de cortesía para pruebas.`;
+                alertMsg += `\n[CORTESÍA] Se han depositado +10.0 POL de cortesía para pruebas.`;
             }
             alert(alertMsg);
             
             if (motivo === "deposit" || motivo === "withdraw") {
-                alert("✨ Ahora puedes depositar o retirar fondos desde el panel de Wallet.");
+                alert("[INFO] Ahora puedes depositar o retirar fondos desde el panel de Wallet.");
             }
         }, 2000);
     },
@@ -264,10 +265,13 @@ window.WalletManager = {
         let polNum = window.miWallet && window.miWallet.pol !== undefined ? window.miWallet.pol : 0.0;
         const saldo = polNum >= 1000 ? Math.floor(polNum) : polNum.toFixed(1);
 
+        const checkSvg = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#69f0ae" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; filter: drop-shadow(0 0 2px rgba(105,240,174,0.5)); margin-right:4px;"><polyline points="20 6 9 17 4 12"/></svg>`;
+        const walletSvg = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#ff9800" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; filter: drop-shadow(0 0 2px rgba(255,152,0,0.5)); margin-right:4px;"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"/><line x1="12" y1="10" x2="12" y2="14"/><line x1="2" y1="10" x2="22" y2="10"/></svg>`;
+
         if (window.miWallet && window.miWallet.address) {
             const address = window.miWallet.address;
             const shortAddress = address.substring(0, 3) + ".." + address.substring(address.length - 2);
-            polText.innerText = `${saldo} POL | ✅ ${shortAddress}`;
+            polText.innerHTML = `${saldo} POL | ${checkSvg}${shortAddress}`;
             
             polText.onclick = () => {
                 if(confirm("Tu billetera actual es " + address + ".\n¿Deseas desvincularla?")) {
@@ -279,7 +283,7 @@ window.WalletManager = {
                 }
             };
         } else {
-            polText.innerText = `${saldo} POL | 🦊 Vincular`;
+            polText.innerHTML = `${saldo} POL | 🦊 Vincular`;
             polText.onclick = () => {
                 if (polNum <= 0) {
                     window.WalletManager.mostrarModalSaldoCero("vincular");

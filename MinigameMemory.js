@@ -1,4 +1,4 @@
-// MinigameMemory.js - Minijuego de memoria de cartas ADN (Tablero 4x4, cartas cuadradas y volteado robusto)
+// MinigameMemory.js - Minijuego de memoria de cartas ADN (Tablero 4x4, cartas cuadradas y volteado robusto) con SVGs Vectoriales
 class MinigameMemory {
     constructor() {
         window.minigameMemory = this;
@@ -13,8 +13,8 @@ class MinigameMemory {
         this.timeLeft = 30;
         this.timerInterval = null;
         
-        // Emojis/Símbolos de genes (8 símbolos únicos para un tablero de 16 cartas)
-        this.symbols = ["🧬", "🧪", "🔬", "🦠", "⚙️", "☢️", "💊", "🔋"];
+        // Claves de los símbolos científicos (sin emojis)
+        this.symbols = ["dna", "flask", "microscope", "virus", "gear", "radioactive", "pill", "battery"];
         this.cards = [];
         this.flippedCards = [];
         this.matchesFound = 0;
@@ -36,6 +36,21 @@ class MinigameMemory {
         this.startGame();
     }
 
+    // Retorna el SVG vectorial neón premium correspondiente a cada clave científica
+    getSymbolSvg(symbol) {
+        const mapping = {
+            dna: `<svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" style="display:block; margin:auto; filter: drop-shadow(0 0 4px rgba(0,229,255,0.6));"><path d="M4.5 10.5c3-6 12-6 15 0m-15 3c3 6 12 6 15 0"/><path d="M6 8v8m4-9v10m4-10v10m4-9v8"/></svg>`,
+            flask: `<svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#69f0ae" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:block; margin:auto; filter: drop-shadow(0 0 4px rgba(105,240,174,0.6));"><path d="M9 3h6M10 3v15a2 2 0 0 0 4 0V3M8 6h8"/></svg>`,
+            microscope: `<svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#ffd700" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:block; margin:auto; filter: drop-shadow(0 0 4px rgba(255,215,0,0.6));"><path d="M6 21h12M12 21V16M8 16h8M14 4h2v3h-2z M10 4v8M10 12l4 2v2M7 10h3"/></svg>`,
+            virus: `<svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#ff007f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:block; margin:auto; filter: drop-shadow(0 0 4px rgba(255,0,127,0.6));"><circle cx="12" cy="12" r="5"/><path d="M12 2v5M12 17v5M2 12h5M17 12h5M4.93 4.93l3.54 3.54M15.53 15.53l3.54 3.54M4.93 19.07l3.54-3.54M15.53 8.47l3.54-3.54"/></svg>`,
+            gear: `<svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#b388ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:block; margin:auto; filter: drop-shadow(0 0 4px rgba(179,136,255,0.6));"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
+            radioactive: `<svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#ffb300" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:block; margin:auto; filter: drop-shadow(0 0 4px rgba(255,179,0,0.6));"><circle cx="12" cy="12" r="10"/><path d="M12 12V6M12 12l5.2 3M12 12l-5.2 3M12 12a2 2 0 1 1 0-.01"/></svg>`,
+            pill: `<svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#e040fb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:block; margin:auto; filter: drop-shadow(0 0 4px rgba(224,64,251,0.6));"><rect x="5" y="5" width="14" height="14" rx="7" transform="rotate(45 12 12)"/><line x1="8.5" y1="8.5" x2="15.5" y2="15.5"/></svg>`,
+            battery: `<svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#00e676" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:block; margin:auto; filter: drop-shadow(0 0 4px rgba(0,230,118,0.6));"><rect x="2" y="7" width="16" height="10" rx="2"/><line x1="22" y1="11" x2="22" y2="13"/><line x1="6" y1="10" x2="6" y2="14"/><line x1="10" y1="10" x2="10" y2="14"/><line x1="14" y1="10" x2="14" y2="14"/></svg>`
+        };
+        return mapping[symbol] || '';
+    }
+
     startGame() {
         this.arcadeMenu.classList.add("hidden");
         this.screen.classList.remove("hidden");
@@ -51,11 +66,11 @@ class MinigameMemory {
         const falling = document.getElementById("falling-object");
         if (falling) falling.style.display = "none";
 
-        // 🔥 Ocultar controles táctiles que bloqueaban los clics en memoria
+        // Ocultar controles táctiles que bloqueaban los clics en memoria
         const touchControls = document.getElementById("touch-controls");
         if (touchControls) touchControls.style.display = "none";
 
-        // 🔥 Aplicar fondo dinámico cyberpunk violeta
+        // Aplicar fondo dinámico cyberpunk violeta
         this.playArea.className = "";
         this.playArea.classList.add("game-memory-bg");
 
@@ -81,7 +96,7 @@ class MinigameMemory {
 
     updateUI() {
         this.scoreDisplay.innerText = `Parejas: ${this.matchesFound} / 8`;
-        this.timerDisplay.innerText = `⏱️ ${this.timeLeft}s`;
+        this.timerDisplay.innerText = `TIEMPO: ${this.timeLeft}s`;
     }
 
     buildGrid() {
@@ -99,10 +114,10 @@ class MinigameMemory {
         grid.style.gridTemplateRows = "repeat(4, 1fr)";
         grid.style.gap = "10px";
         grid.style.width = "90%";
-        grid.style.maxWidth = "330px"; // 🔥 Un poco más grande para ocupar mejor el espacio
-        grid.style.aspectRatio = "1 / 1"; // 🔥 Fuerza a que la cuadrícula completa sea un cuadrado perfecto!
+        grid.style.maxWidth = "330px";
+        grid.style.aspectRatio = "1 / 1";
         
-        // 🔥 Centrar el tablero vertical y horizontalmente en el playArea para no dejar espacio vacío raro abajo
+        // Centrar el tablero vertical y horizontalmente en el playArea
         grid.style.position = "absolute";
         grid.style.top = "50%";
         grid.style.left = "50%";
@@ -129,21 +144,19 @@ class MinigameMemory {
             card.style.transition = "all 0.2s ease";
             card.style.position = "relative";
 
-            // Elemento de frente (El emoji real)
+            // Elemento de frente (El SVG del símbolo)
             const frontEl = document.createElement("span");
             frontEl.className = "card-front-symbol";
-            frontEl.innerText = symbol;
+            frontEl.innerHTML = this.getSymbolSvg(symbol);
             frontEl.style.display = "none"; // Oculto boca abajo
-            frontEl.style.fontSize = "28px";
             frontEl.style.transition = "transform 0.2s ease";
             card.appendChild(frontEl);
 
-            // Elemento de reverso (Icono ADN)
+            // Elemento de reverso (Icono ADN SVG)
             const backEl = document.createElement("span");
             backEl.className = "card-back-symbol";
-            backEl.innerText = "🧬";
+            backEl.innerHTML = this.getSymbolSvg("dna");
             backEl.style.color = "#8A2BE2";
-            backEl.style.fontSize = "20px";
             backEl.style.display = "block"; // Visible boca abajo
             card.appendChild(backEl);
 
@@ -167,7 +180,7 @@ class MinigameMemory {
         card.style.border = "2px solid #00e5ff"; // Borde cian neon al voltear
         card.style.boxShadow = "0 0 15px rgba(0,229,255,0.4)";
         
-        frontEl.style.display = "block"; // Mostrar emoji de frente
+        frontEl.style.display = "block"; // Mostrar frente
         backEl.style.display = "none"; // Ocultar reverso
 
         if (window.Sonidos) {
@@ -192,8 +205,6 @@ class MinigameMemory {
             
             first.card.style.border = "2px solid #4CAF50"; // Borde verde
             second.card.style.border = "2px solid #4CAF50";
-            first.frontEl.style.textShadow = "0 0 10px #4CAF50";
-            second.frontEl.style.textShadow = "0 0 10px #4CAF50";
             first.card.style.boxShadow = "0 0 15px rgba(76,175,80,0.5)";
             second.card.style.boxShadow = "0 0 15px rgba(76,175,80,0.5)";
 
@@ -237,7 +248,7 @@ class MinigameMemory {
         this.isPlaying = false;
         clearInterval(this.timerInterval);
 
-        // 🔥 Limpiar clase de fondo de playArea
+        // Limpiar clase de fondo de playArea
         this.playArea.className = "";
 
         // Limpiar grid
@@ -263,7 +274,7 @@ class MinigameMemory {
                     window.miInventario.addItem({
                         id: "apple_01",
                         name: "Manzana",
-                        icon: "🍎",
+                        icon: `<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="#ff007f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 2px rgba(255,0,127,0.5));"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6c0-2 1-3 1-3 M9.5 8C8.5 7 8 5.5 8 5.5"/></svg>`,
                         type: "consumible",
                         maxStack: 20,
                         count: rewardApples 
@@ -306,14 +317,14 @@ class MinigameMemory {
                     if (window.guardarJuego) window.guardarJuego();
                     else if (window.guardarProgreso) window.guardarProgreso();
 
-                    let msg = `¡EXCELENTE TRABAJO!\nCompletaste la secuencia en ${35 - this.timeLeft}s.\nGanas: ${rewardApples} 🍎.\n⚡ +${evGanada} EV cargada al balance!`;
-                    if (xpObtenida > 0) msg += `\n🧪 +${xpObtenida} XP de Laboratorio!`;
+                    let msg = `¡EXCELENTE TRABAJO!\nCompletaste la secuencia en ${35 - this.timeLeft}s.\nGanas: ${rewardApples} Manzanas.\n+${evGanada} EV cargada al balance!`;
+                    if (xpObtenida > 0) msg += `\n+${xpObtenida} XP de Laboratorio!`;
                     if (gananciaExplicita > 0) msg += `\n¡Diversión +20% y Amistad +${gananciaExplicita}!`;
                     else                       msg += `\n¡Diversión +20%! (Amistad por Arcade ya obtenida hoy)`;
                     alert(msg);
                 } else {
-                    let msg = `¡EXCELENTE TRABAJO!\nCompletaste la secuencia en ${35 - this.timeLeft}s.\nGanas: ${rewardApples} 🍎.\n⚡ +${evGanada} EV cargada al balance!`;
-                    if (xpObtenida > 0) msg += `\n🧪 +${xpObtenida} XP de Laboratorio!`;
+                    let msg = `¡EXCELENTE TRABAJO!\nCompletaste la secuencia en ${35 - this.timeLeft}s.\nGanas: ${rewardApples} Manzanas.\n+${evGanada} EV cargada al balance!`;
+                    if (xpObtenida > 0) msg += `\n+${xpObtenida} XP de Laboratorio!`;
                     alert(msg);
                 }
             } else {

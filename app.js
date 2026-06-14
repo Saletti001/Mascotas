@@ -21,7 +21,6 @@ window.obtenerHashVisualGeno = function(geno) {
         geno.wing_type,
         geno.skin_type,
         geno.aura_type,
-        geno.higiene,
         dirtSpotsStr,
         soapySpotsStr
     ].join("_");
@@ -45,7 +44,7 @@ window.getIconoElemento = function(elementoStr) {
 };
 
 // =========================================
-// ✨ TABLA DE IVs V14.0 
+// TABLA DE IVs V14.0 
 // =========================================
 window.TABLA_IVS = {
     "Común": { hp: [70, 110], atk: [10, 22], def: [5, 15], spd: [8, 25], luk: [5, 15] },
@@ -55,7 +54,7 @@ window.TABLA_IVS = {
     "Mítico": { hp: [240, 320], atk: [60, 100], def: [40, 70], spd: [50, 110], luk: [45, 70] }
 };
 
-// ✨ FIX GACHA: CURVA DE CAMPANA
+// FIX GACHA: CURVA DE CAMPANA
 window.generarStatsPorRareza = function(rareza) {
     const limites = window.TABLA_IVS[rareza] || window.TABLA_IVS["Común"];
     
@@ -73,7 +72,7 @@ window.generarStatsPorRareza = function(rareza) {
     };
 };
 
-// ✨ PARCHE GLOBAL: ACTUALIZACIÓN DE LA CALCULADORA DE CALIDAD
+// PARCHE GLOBAL: ACTUALIZACIÓN DE LA CALCULADORA DE CALIDAD
 window.calcularCalidad = function(stats, rareza, nivel) {
     const limites = window.TABLA_IVS[rareza || "Común"] || window.TABLA_IVS["Común"];
     
@@ -315,7 +314,8 @@ document.addEventListener("DOMContentLoaded", () => {
         'btn-breeding': 'breeding-screen',
         'btn-arcade': 'arcade-menu',
         'btn-coliseum': 'coliseum-lobby-screen',
-        'btn-market': 'market-screen'
+        'btn-market': 'market-screen',
+        'btn-profile': 'profile-screen'
     };
 
     for (const [btnId, pantallaId] of Object.entries(botonesNexo)) {
@@ -328,6 +328,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if(btnId === 'btn-breeding' && window.iniciarSelectorCrianza) window.iniciarSelectorCrianza();
                 if(btnId === 'btn-market' && window.iniciarMercado) window.iniciarMercado();
                 if(btnId === 'btn-coliseum' && window.iniciarLobbyColiseo) window.iniciarLobbyColiseo();
+                if(btnId === 'btn-profile' && window.ProfileManager) window.ProfileManager.init();
             };
         }
     }
@@ -477,7 +478,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if(!window.miWallet) window.miWallet = { pol: 10.0 };
         const regaloDado = localStorage.getItem("regaloInicialDado");
         if (!regaloDado && window.miInventario) {
-            window.miInventario.addItem({ id: "dna_scanner", name: "Escáner ADN", icon: "🧬", type: "consumible", maxStack: 20 }, 5);
+            window.miInventario.addItem({ id: "dna_scanner", name: "Escáner ADN", icon: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#00e5ff" stroke-width="2" stroke-linecap="round"><path d="M4.5 10.5c3-6 12-6 15 0m-15 3c3 6 12 6 15 0"/><path d="M6 8v8m4-9v10m4-10v10m4-9v8"/></svg>', type: "consumible", maxStack: 20 }, 5);
             localStorage.setItem("regaloInicialDado", "true");
         }
     }, 500);
@@ -587,7 +588,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Obtener icono del elemento
             const elementIcon = (window.ShopManager && window.ShopManager.iconosSVG && window.ShopManager.iconosSVG[elemName]) 
                 ? window.ShopManager.iconosSVG[elemName].replace('width="1em"', 'width="100%"').replace('height="1em"', 'height="100%"') 
-                : '🧬';
+                : '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="#00e5ff" stroke-width="2" stroke-linecap="round"><path d="M4.5 10.5c3-6 12-6 15 0m-15 3c3 6 12 6 15 0"/><path d="M6 8v8m4-9v10m4-10v10m4-9v8"/></svg>';
 
             card.innerHTML = `
                 <!-- Fila Superior de Info -->
@@ -612,7 +613,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <span style="color: #aaa; font-size: 9px; margin-top: 2px; flex-shrink: 0;">Res: ${resVal}/100</span>
             `;
             
-            // ✨ FIX MAESTRO FINAL: Se elimina por completo el .replace() destructivo
+            // FIX MAESTRO FINAL: Se elimina por completo el .replace() destructivo
             // Dejamos que el motor gráfico inyecte el SVG puro en el pedestal, tal y como lo hace el F5
             card.onclick = () => {
                 if (resVal === 0) {
@@ -646,7 +647,7 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let i = 0; i < slotsLibres; i++) {
             const emptyCard = document.createElement("div");
             emptyCard.style = "background: rgba(26, 42, 54, 0.5); border: 1px dashed #4dd0e1; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.5; height: 165px; box-sizing: border-box;";
-            emptyCard.innerHTML = `<div style="width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; font-size: 32px; color: #4dd0e1; flex: 1;">🧬</div><span style="color: #4dd0e1; font-weight: bold; font-size: 11px; margin-top: 5px; text-align: center; flex-shrink: 0;">Vacío</span>`;
+            emptyCard.innerHTML = `<div style="width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; color: #4dd0e1; flex: 1;"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#4dd0e1" stroke-width="2" stroke-linecap="round"><path d="M4.5 10.5c3-6 12-6 15 0m-15 3c3 6 12 6 15 0"/><path d="M6 8v8m4-9v10m4-10v10m4-9v8"/></svg></div><span style="color: #4dd0e1; font-weight: bold; font-size: 11px; margin-top: 5px; text-align: center; flex-shrink: 0;">Vacío</span>`;
             gridSwap.appendChild(emptyCard);
         }
 
@@ -694,7 +695,7 @@ document.addEventListener("DOMContentLoaded", () => {
         buyCard.style = "background: rgba(138, 43, 226, 0.1); border: 1px solid #8A2BE2; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s;";
         buyCard.onmouseover = () => buyCard.style.boxShadow = "0 0 15px rgba(138, 43, 226, 0.4)";
         buyCard.onmouseout = () => buyCard.style.boxShadow = "none";
-        buyCard.innerHTML = `<div style="width: 100px; height: 100px; display: flex; justify-content: center; align-items: center; font-size: 32px; color: #e0b0ff;">➕</div><span style="color: white; font-weight: bold; font-size: 12px; margin-top: 5px; text-align: center;">Comprar Slot #${siguienteSlot}</span><span style="color: #e0b0ff; font-weight: bold; font-size: 11px; margin-top: 5px; text-align: center;">${costoDesc}</span>`;
+        buyCard.innerHTML = `<div style="width: 100px; height: 100px; display: flex; justify-content: center; align-items: center; color: #e0b0ff;"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#e0b0ff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span style="color: white; font-weight: bold; font-size: 12px; margin-top: 5px; text-align: center;">Comprar Slot #${siguienteSlot}</span><span style="color: #e0b0ff; font-weight: bold; font-size: 11px; margin-top: 5px; text-align: center;">${costoDesc}</span>`;
 
         buyCard.onclick = () => {
             const finalizarCompraSlot = () => {
@@ -836,7 +837,7 @@ function iniciarSecuenciaBienvenida() {
     modalOverlay.id = "dna-startup-modal";
     modalOverlay.style = "position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(10, 20, 30, 0.98); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: white; font-family: sans-serif;";
 
-    const svgBioNucleo = typeof generarSvgGeno === 'function' ? generarSvgGeno({ isEgg: true, color: miPrimerGeno.color, id: "genesis" }) : '🧬';
+    const svgBioNucleo = typeof generarSvgGeno === 'function' ? generarSvgGeno({ isEgg: true, color: miPrimerGeno.color, id: "genesis" }) : '<svg viewBox="0 0 24 24" width="80" height="80" fill="none" stroke="#4dd0e1" stroke-width="2" stroke-linecap="round"><path d="M4.5 10.5c3-6 12-6 15 0m-15 3c3 6 12 6 15 0"/><path d="M6 8v8m4-9v10m4-10v10m4-9v8"/></svg>';
 
     modalOverlay.innerHTML = `
         <div id="dna-capsule" style="width: 180px; height: 180px; cursor: pointer; transition: 0.3s; user-select: none;">${svgBioNucleo}</div>
@@ -886,7 +887,7 @@ function iniciarSecuenciaBienvenida() {
             pedestal.style.display = "block";
             const svgPedestal = typeof generarSvgGeno === 'function' ? generarSvgGeno(miPrimerGeno) : '';
             
-            // ✨ FIX MAESTRO FINAL
+            // FIX MAESTRO FINAL
             pedestal.innerHTML = `<div class="geno-idle" style="position: absolute; top: 35%; left: 50%; transform: translate(-50%, -50%); display: flex; justify-content: center; align-items: center; color: ${miPrimerGeno.color};">${svgPedestal}</div>`;
         }
         
@@ -1063,7 +1064,7 @@ function iniciarSecuenciaBienvenida() {
                 coin = document.createElement("div");
                 coin.id = "floating-ev-coin";
                 coin.className = "floating-ev-coin";
-                coin.innerText = "✨";
+                coin.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" fill="#ffea3b" style="filter: drop-shadow(0 0 3px rgba(255,234,59,0.8));"><path d="M12 2l2.5 5.5L20 10l-5.5 2.5L12 18l-2.5-5.5L4 10l5.5-2.5z M19 14l1.25 2.75L23 18l-2.75 1.25L19 22l-1.25-2.75L15 18l2.75-1.25z"/></svg>`;
                 
                 coin.style.top = "20%";
                 coin.style.right = "10%";
@@ -1097,9 +1098,9 @@ function iniciarSecuenciaBienvenida() {
                     }
 
                     if (recolectadoEfectivo > 0) {
-                        alert(`✨ ¡Has cosechado ${recolectadoEfectivo.toFixed(2)} EV de tu Geno! (Cosechado hoy: ${window.dailyCareHarvest.harvested.toFixed(2)}/${harvestLimit} EV)`);
+                        alert(`[COSECHA] ¡Has cosechado ${recolectadoEfectivo.toFixed(2)} EV de tu Geno! (Cosechado hoy: ${window.dailyCareHarvest.harvested.toFixed(2)}/${harvestLimit} EV)`);
                     } else {
-                        alert(`✨ +0 EV (Límite diario de ${harvestLimit} EV alcanzado)`);
+                        alert(`[LÍMITE] +0 EV (Límite diario de ${harvestLimit} EV alcanzado)`);
                     }
 
                     window.miMascota.evAcumulada = 0;
@@ -1168,7 +1169,7 @@ function iniciarSecuenciaBienvenida() {
                             <div class="geno-idle" style="color: ${window.miMascota.color}; top: 50%; left: 50%; display: flex; justify-content: center; align-items: center;" data-visual-hash="${currentHash}">
                                 ${nuevoSvg}
                             </div>
-                            <div id="geno-resting-aura-bathroom" class="geno-resting-aura" style="display:none; position:absolute; bottom: 0; left:50%; transform:translateX(-50%); width:130px; height:140px; z-index:5; pointer-events:none; overflow:visible;"></div>
+                            <div id="geno-resting-aura-bathroom" class="geno-resting-aura" style="display:none; position:absolute; bottom: 0; left:50%; transform:translateX(-50%); width:130px; height:140px; z-index:16; pointer-events:none; overflow:visible;"></div>
                         </div>
                     `;
                 }
@@ -1238,7 +1239,7 @@ function iniciarSecuenciaBienvenida() {
             btn.style.borderColor   = "#4CAF50";
             btn.style.color         = "#a5d6a7";
             btn.style.opacity       = "1";
-            label.innerText = msRestante > 0 ? `✓ ${h > 0 ? h + 'h ' : ''}${m}m` : "✓ Completo";
+            label.innerText = msRestante > 0 ? `OK ${h > 0 ? h + 'h ' : ''}${m}m` : "Completo";
             return;
         }
 
@@ -1574,7 +1575,7 @@ function iniciarSecuenciaBienvenida() {
                         const cleanedCount = originalLength - window.miMascota.dirtSpots.length;
                         if (cleanedCount > 0) {
                             cleanedAny = true;
-                            // Incrementar higiene (capado al 99% hasta terminar el enjuague de 8s)
+                            // Incrementar higiene (capado al 99% hasta terminar el enjuague de 5s)
                             window.miMascota.higiene = Math.min(99, (window.miMascota.higiene || 0) + (cleanedCount * 25));
                             
                             if (window.misGenos) {
@@ -1590,10 +1591,11 @@ function iniciarSecuenciaBienvenida() {
                     // Actualizar el título de la herramienta en tiempo real
                     const labelTools = document.querySelector("#care-clean-tools span");
                     if (window.miMascota.dirtSpots && window.miMascota.dirtSpots.length === 0) {
-                        if ((window.tiempoLavadoDucha || 0) < 8000) {
+                        if ((window.tiempoLavadoDucha || 0) < 5000) {
                             if (labelTools) {
-                                const segsRestantes = Math.max(0, Math.ceil((8000 - window.tiempoLavadoDucha) / 1000));
-                                labelTools.innerText = `🧼 ¡Casi listo! Enjuaga por ${segsRestantes}s más...`;
+                                const segsRestantes = Math.max(0, Math.ceil((5000 - window.tiempoLavadoDucha) / 1000));
+                                const showerSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px; filter: drop-shadow(0 0 2px rgba(0, 229, 255, 0.5));"><path d="M4 4h7a4 4 0 0 1 4 4v12a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V8a4 4 0 0 1-4-4Z"/><path d="M15 12h5m-5 4h3"/><circle cx="21" cy="12" r="0.5" fill="#00e5ff"/><circle cx="19" cy="16" r="0.5" fill="#00e5ff"/></svg>`;
+                                labelTools.innerHTML = `${showerSvg} ¡CASI LISTO! ENJUAGA POR ${segsRestantes}s MÁS...`;
                             }
                         } else if (!window.notificacionBanoMostrada) {
                             window.notificacionBanoMostrada = true;
@@ -1620,9 +1622,9 @@ function iniciarSecuenciaBienvenida() {
                                         window.misGenos[idx].registroAmistadDiaria = window.miMascota.registroAmistadDiaria;
                                     }
                                 }
-                                alert(`🧼 ¡Has bañado por completo a ${window.miMascota.name}! Higiene al 100% y ¡Amistad +${gananciaExplicita}!`);
+                                alert(`[BAÑO] ¡Has bañado por completo a ${window.miMascota.name}! Higiene al 100% y ¡Amistad +${gananciaExplicita}!`);
                             } else {
-                                alert(`🧼 ¡Has bañado por completo a ${window.miMascota.name}! Higiene al 100%. (Amistad por limpieza ya obtenida hoy)`);
+                                alert(`[BAÑO] ¡Has bañado por completo a ${window.miMascota.name}! Higiene al 100%. (Amistad por limpieza ya obtenida hoy)`);
                             }
 
                             if (typeof window.verificarCuidadoDiarioXP === 'function') {

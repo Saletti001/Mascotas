@@ -58,7 +58,7 @@ class ArcadeManager {
         if(!this.infoModal) return;
         
         // Llenar datos
-        this.infoIcon.innerText = game.icon;
+        this.infoIcon.innerHTML = game.icon;
         this.infoTitle.innerText = game.title;
         this.infoDesc.innerText = game.desc;
         

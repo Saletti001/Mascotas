@@ -2020,6 +2020,24 @@ Combates (Coliseo/Torre): Ganar un combate asíncrono o una etapa en la Torre de
 
 Cuidado Diario Pasivo: Realizar con éxito las tres interacciones diarias de necesidades (Limpieza mediante ducha de plasma, Alimentación con ración automática y Caricias) aporta  de Laboratorio de forma global por cada Geno atendido, limitado a una vez al día por criatura para evitar el spam.
 
+2.5 Rango Científico y Rango de Combate (Títulos de Criador)
+
+Para incentivar la progresión off-chain y PvP del jugador, se implementan títulos cosméticos dinámicos en la ficha de identidad del Perfil de Usuario:
+
+* **Rango Científico (Experiencia en Laboratorio):** Calculado a partir de la variable `lab_level` del perfil del jugador:
+  * Nivel 1 a 4: `Auxiliar de Laboratorio`
+  * Nivel 5 a 9: `Técnico de Campo`
+  * Nivel 10 a 19: `Investigador Élite`
+  * Nivel 20 a 29: `Biólogo Avanzado`
+  * Nivel 30 o más: `Científico Supremo`
+
+* **Rango de Combate (Habilidad en la Torre):** Calculado a partir de la variable `max_floor` alcanzada en la Torre de Mutación PvE:
+  * Piso menor a 10: `Aspirante de la Arena` (rango por defecto)
+  * Piso 10 a 19: `Luchador de la Arena`
+  * Piso 20 a 39: `Gladiador de la Torre`
+  * Piso 40 a 59: `Defensor del Nexo`
+  * Piso 60 o más: `Conquistador del Caos`
+
 ### 6.3 Componente 2: Interfaz Espejo (Mock UI) y Carga Perezosa
 
 Con el fin de evitar que un jugador curioso que simplemente quiere explorar las opciones de la "Plaza de Comercio" o el "Baúl" inicialice el SDK de Privy y active el contador de MAU, el juego implementa una Interfaz Espejo (Mock UI) desarrollada con componentes nativos de HTML/JS/CSS.

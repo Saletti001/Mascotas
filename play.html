@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Proyecto Genos</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2300e5ff%22 stroke-width=%222.5%22><path d=%22M4.5 10.5c3-6 12-6 15 0m-15 3c3 6 12 6 15 0%22/><path d=%22M6 8v8m4-9v10m4-10v10m4-9v8%22/></svg>">
     <link rel="stylesheet" href="base.css">
     <link rel="stylesheet" href="ui.css">
     <link rel="stylesheet" href="screens.css">
@@ -103,7 +103,7 @@
                                 <span style="display: flex; align-items: center;">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="#8A2BE2" stroke="#8A2BE2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"></polygon></svg>
                                 </span> 
-                                <span id="pol-amount" style="color: #e9d5ff; font-weight: bold; font-family: sans-serif; font-size: 13px; white-space: nowrap;">0.0 POL | 🦊 Vincular</span>
+                                <span id="pol-amount" style="color: #e9d5ff; font-weight: bold; font-family: sans-serif; font-size: 13px; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px;">0.0 POL | 🦊 Vincular</span>
                             </div>
                         </div>
 
@@ -150,13 +150,13 @@
                         <span style="color: #94a3b8; font-size: 8px; font-family: 'Orbitron', sans-serif; letter-spacing: 1.5px; font-weight: bold; margin-bottom: 4px; text-transform: uppercase; padding-left: 2px;">SECCIONES</span>
 
                          <!-- Botón Misión Diaria -->
-                         <button id="btn-daily-missions" style="background: rgba(255, 152, 0, 0.12); border: 1.5px solid rgba(255, 152, 0, 0.45); border-radius: 8px; width: 100%; height: 36px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; padding: 0 10px; cursor: pointer; color: #ff9800; transition: 0.2s; box-sizing: border-box; font-family: 'Orbitron', sans-serif; font-size: 9.5px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;" onmouseover="this.style.background='rgba(255, 152, 0, 0.25)'; this.style.borderColor='#ff9800';" onmouseout="this.style.background='rgba(255, 152, 0, 0.12)'; this.style.borderColor='rgba(255, 152, 0, 0.45)';" onclick="alert('🎯 MISIONES DIARIAS\n───────────────────────────────\n¡Secuencia de entrenamiento en desarrollo! Próximamente podrás completar misiones para obtener recompensas extra.')" title="Misiones Diarias">
+                         <button id="btn-daily-missions" style="background: rgba(255, 152, 0, 0.12); border: 1.5px solid rgba(255, 152, 0, 0.45); border-radius: 8px; width: 100%; height: 36px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; padding: 0 10px; cursor: pointer; color: #ff9800; transition: 0.2s; box-sizing: border-box; font-family: 'Orbitron', sans-serif; font-size: 9.5px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;" onmouseover="this.style.background='rgba(255, 152, 0, 0.25)'; this.style.borderColor='#ff9800';" onmouseout="this.style.background='rgba(255, 152, 0, 0.12)'; this.style.borderColor='rgba(255, 152, 0, 0.45)';" onclick="alert('[MISIONES] MISIONES DIARIAS\n───────────────────────────────\n¡Secuencia de entrenamiento en desarrollo! Próximamente podrás completar misiones para obtener recompensas extra.')" title="Misiones Diarias">
                              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
                              <span style="white-space: nowrap;">Misiones</span>
                          </button>
  
                          <!-- Botón Pase de Batalla -->
-                         <button id="btn-battle-pass" style="background: rgba(105, 240, 174, 0.12); border: 1.5px solid rgba(105, 240, 174, 0.45); border-radius: 8px; width: 100%; height: 36px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; padding: 0 10px; cursor: pointer; color: #69f0ae; transition: 0.2s; box-sizing: border-box; font-family: 'Orbitron', sans-serif; font-size: 9.5px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;" onmouseover="this.style.background='rgba(105, 240, 174, 0.25)'; this.style.borderColor='#69f0ae';" onmouseout="this.style.background='rgba(105, 240, 174, 0.12)'; this.style.borderColor='rgba(105, 240, 174, 0.45)';" onclick="alert('🏆 PASE DE BATALLA\n───────────────────────────────\n¡El Pase de Batalla Nexo está en preparación! Consigue Esencia Vital, cosméticos exclusivos y POL en la próxima temporada.')" title="Pase de Batalla">
+                         <button id="btn-battle-pass" style="background: rgba(105, 240, 174, 0.12); border: 1.5px solid rgba(105, 240, 174, 0.45); border-radius: 8px; width: 100%; height: 36px; display: flex; align-items: center; justify-content: flex-start; gap: 8px; padding: 0 10px; cursor: pointer; color: #69f0ae; transition: 0.2s; box-sizing: border-box; font-family: 'Orbitron', sans-serif; font-size: 9.5px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;" onmouseover="this.style.background='rgba(105, 240, 174, 0.25)'; this.style.borderColor='#69f0ae';" onmouseout="this.style.background='rgba(105, 240, 174, 0.12)'; this.style.borderColor='rgba(105, 240, 174, 0.45)';" onclick="alert('[PREMIUM] PASE DE BATALLA\n───────────────────────────────\n¡El Pase de Batalla Nexo está en preparación! Consigue Esencia Vital, cosméticos exclusivos y POL en la próxima temporada.')" title="Pase de Batalla">
                              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                              <span style="white-space: nowrap;">Pase Nexo</span>
                          </button>
@@ -371,7 +371,7 @@
                         <span id="stat-hp-added" style="color: #4CAF50; font-size: 11px; font-weight: bold; text-align: right;"></span>
                         <span id="stat-hp-total" style="color: #ffcc00; font-weight: bold; font-size: 15px; text-align: right;"></span>
                         <div style="display: flex; justify-content: flex-end;">
-                            <button class="btn-add-stat hidden" data-stat="hp" style="background: #4dd0e1; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; color: #000; box-shadow: 0 0 5px #4dd0e1; display: flex; justify-content: center; align-items: center;">➕</button>
+                            <button class="btn-add-stat hidden" data-stat="hp" style="background: #4dd0e1; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; color: #000; box-shadow: 0 0 5px #4dd0e1; display: flex; justify-content: center; align-items: center; font-size: 14px;">+</button>
                         </div>
                     </div>
                     
@@ -381,7 +381,7 @@
                         <span id="stat-atk-added" style="color: #4CAF50; font-size: 11px; font-weight: bold; text-align: right;"></span>
                         <span id="stat-atk-total" style="color: #ffcc00; font-weight: bold; font-size: 15px; text-align: right;"></span>
                         <div style="display: flex; justify-content: flex-end;">
-                            <button class="btn-add-stat hidden" data-stat="atk" style="background: #4dd0e1; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; color: #000; box-shadow: 0 0 5px #4dd0e1; display: flex; justify-content: center; align-items: center;">➕</button>
+                            <button class="btn-add-stat hidden" data-stat="atk" style="background: #4dd0e1; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; color: #000; box-shadow: 0 0 5px #4dd0e1; display: flex; justify-content: center; align-items: center; font-size: 14px;">+</button>
                         </div>
                     </div>
                     
@@ -391,7 +391,7 @@
                         <span id="stat-def-added" style="color: #4CAF50; font-size: 11px; font-weight: bold; text-align: right;"></span>
                         <span id="stat-def-total" style="color: #ffcc00; font-weight: bold; font-size: 15px; text-align: right;"></span>
                         <div style="display: flex; justify-content: flex-end;">
-                            <button class="btn-add-stat hidden" data-stat="def" style="background: #4dd0e1; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; color: #000; box-shadow: 0 0 5px #4dd0e1; display: flex; justify-content: center; align-items: center;">➕</button>
+                            <button class="btn-add-stat hidden" data-stat="def" style="background: #4dd0e1; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; color: #000; box-shadow: 0 0 5px #4dd0e1; display: flex; justify-content: center; align-items: center; font-size: 14px;">+</button>
                         </div>
                     </div>
 
@@ -401,7 +401,7 @@
                         <span id="stat-spd-added" style="color: #4CAF50; font-size: 11px; font-weight: bold; text-align: right;"></span>
                         <span id="stat-spd-total" style="color: #ffcc00; font-weight: bold; font-size: 15px; text-align: right;"></span>
                         <div style="display: flex; justify-content: flex-end;">
-                            <button class="btn-add-stat hidden" data-stat="spd" style="background: #4dd0e1; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; color: #000; box-shadow: 0 0 5px #4dd0e1; display: flex; justify-content: center; align-items: center;">➕</button>
+                            <button class="btn-add-stat hidden" data-stat="spd" style="background: #4dd0e1; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; color: #000; box-shadow: 0 0 5px #4dd0e1; display: flex; justify-content: center; align-items: center; font-size: 14px;">+</button>
                         </div>
                     </div>
                     
@@ -411,12 +411,15 @@
                         <span id="stat-luk-added" style="color: #4CAF50; font-size: 11px; font-weight: bold; text-align: right;"></span>
                         <span id="stat-luk-total" style="color: #ffcc00; font-weight: bold; font-size: 15px; text-align: right;"></span>
                         <div style="display: flex; justify-content: flex-end;">
-                            <button class="btn-add-stat hidden" data-stat="luk" style="background: #4dd0e1; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; color: #000; box-shadow: 0 0 5px #4dd0e1; display: flex; justify-content: center; align-items: center;">➕</button>
+                            <button class="btn-add-stat hidden" data-stat="luk" style="background: #4dd0e1; border: none; border-radius: 50%; width: 22px; height: 22px; cursor: pointer; font-weight: bold; color: #000; box-shadow: 0 0 5px #4dd0e1; display: flex; justify-content: center; align-items: center; font-size: 14px;">+</button>
                         </div>
                     </div>
 
                     <hr class="stats-divider" style="border: none; border-top: 1px solid #333; margin: 15px 0;">
-                    <button id="btn-use-scanner" class="btn-scanner" style="width: 100%; background: linear-gradient(90deg, #8A2BE2, #00d2ff); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase;">Usar Escáner 🧬</button>
+                    <button id="btn-use-scanner" class="btn-scanner" style="width: 100%; background: linear-gradient(90deg, #8A2BE2, #00d2ff); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <span>Usar Escáner</span>
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="vertical-align: middle;"><path d="M4.5 10.5c3-6 12-6 15 0m-15 3c3 6 12 6 15 0"/><path d="M6 8v8m4-9v10m4-10v10m4-9v8"/></svg>
+                    </button>
                     
                     <div id="genetic-structure-container"></div>
                 </div>
@@ -628,7 +631,10 @@
                 <div id="item-actions" class="hidden">
                     <div id="selected-item-info">Seleccionado: --</div>
                     <div class="action-buttons" style="display: flex; gap: 8px; width: 100%; box-sizing: border-box;">
-                        <button id="btn-use-item" style="flex: 1.5; background: linear-gradient(90deg, #4CAF50, #8bc34a); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Usar 🍱</button>
+                        <button id="btn-use-item" style="flex: 1.5; background: linear-gradient(90deg, #4CAF50, #8bc34a); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 12px; transition: opacity 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">
+                            <span>Usar</span>
+                            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/><line x1="15" y1="9" x2="15" y2="3"/></svg>
+                        </button>
                         <button id="btn-release-one" class="release-btn" style="flex: 1; padding: 10px; font-size: 12px; margin: 0;">Destruir 1</button>
                         <button id="btn-release-all" class="release-btn danger" style="flex: 1; padding: 10px; font-size: 12px; margin: 0;">Vaciar</button>
                     </div>
@@ -639,7 +645,7 @@
         <div id="arcade-info-modal" class="hidden" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 26, 46, 0.85); z-index: 3000; display: flex; justify-content: center; align-items: center; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);">
             <div class="modal-content" style="background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); border: 2px solid #4dd0e1; box-shadow: 0 10px 30px rgba(77, 208, 225, 0.3); width: 80%; max-width: 300px; border-radius: 12px; padding: 25px 20px; box-sizing: border-box; position: relative; text-align: center;">
                 <button id="close-arcade-info" style="position: absolute; top: 10px; right: 15px; background: transparent; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #ff4b4b; padding: 0;"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-                <div id="arcade-info-icon" style="font-size: 45px; margin-bottom: 10px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));">🍎</div>
+                <div id="arcade-info-icon" style="width: 48px; height: 48px; margin: 0 auto 10px auto; display: flex; align-items: center; justify-content: center;"></div>
                 <h3 id="arcade-info-title" style="color: #4dd0e1; text-transform: uppercase; margin: 0 0 15px 0; font-size: 16px; letter-spacing: 1px;">Título</h3>
                 <div style="background: rgba(0,0,0,0.4); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.05);">
                     <p id="arcade-info-desc" style="color: #cbd5e1; font-size: 13px; line-height: 1.5; margin: 0;">Descripción del juego.</p>
@@ -696,7 +702,7 @@
                     </div>
                     
                     <div style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px;">
-                        <span style="color: #ab47bc; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ab47bc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="5"></circle><circle cx="17" cy="17" r="3"></circle><circle cx="12" cy="7" r="4"></circle></svg> Higiene:</span> Se vacía en 24h. Genera manchas de suciedad. Limpialas en el Centro de Cuidado usando el jabón y enjuagando con la ducha (baño completo de 8 segundos).
+                        <span style="color: #ab47bc; font-weight: bold; display: inline-flex; align-items: center; gap: 5px;"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ab47bc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="5"></circle><circle cx="17" cy="17" r="3"></circle><circle cx="12" cy="7" r="4"></circle></svg> Higiene:</span> Se vacía en 24h. Genera manchas de suciedad. Limpialas en el Centro de Cuidado usando el jabón y enjuagando con la ducha (baño completo de 5 segundos).
                     </div>
                     
                     <div style="border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 6px;">
@@ -883,7 +889,7 @@
                 <div style="border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 10px; display: flex; flex-direction: column; gap: 6px;">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <span style="font-size: 10px; color: #aaa; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Tácticas IFTTT de Defensa:</span>
-                        <button onclick="window.ColiseumManager.irAlLaboratorioImplantes()" style="background: transparent; border: 1px solid #10b981; border-radius: 4px; color: #10b981; padding: 2px 6px; font-size: 9px; cursor: pointer; font-weight: bold;">Editar Tácticas 🛠️</button>
+                        <button onclick="window.ColiseumManager.irAlLaboratorioImplantes()" style="background: transparent; border: 1px solid #10b981; border-radius: 4px; color: #10b981; padding: 2px 6px; font-size: 9px; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 4px;"><span>Editar Tácticas</span><svg viewBox="0 0 24 24" width="9" height="9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></button>
                     </div>
                     <div id="defense-ifttt-rules-list" style="max-height: 18vh; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 6px; border: 1px solid rgba(255,255,255,0.05); min-height: 60px; scrollbar-width: none; -ms-overflow-style: none;">
                         <!-- Inyectado dinámicamente -->
@@ -961,7 +967,7 @@
                     <div class="help-section-title"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ff9800" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Tabla de Ventajas</div>
                     Los ataques elementales tienen una ventaja cíclica (+35% daño causado, -25% daño recibido):
                     <div style="color: #00e5ff; font-weight: bold; margin: 4px 0; padding-left: 6px; border-left: 2px solid #00e5ff; font-size: 10px; line-height: 1.3;">
-                        Biomutante ➔ Sintético ➔ Tóxico ➔ Radiactivo ➔ Cibernético ➔ Viral ➔ Biomutante
+                        Biomutante → Sintético → Tóxico → Radiactivo → Cibernético → Viral → Biomutante
                     </div>
                     
                     <div class="help-section-title"><svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#ff9800" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> Tácticas IFTTT</div>
@@ -992,14 +998,14 @@
         </div>
 
         <div id="minigame-screen" class="app-screen hidden">
-            <div id="game-header"><button class="back-btn small" id="btn-quit-minigame">Salir</button><div id="minigame-timer">⏱️ 30s</div><div id="minigame-score">Manzanas: 0</div></div>
-            <div id="play-area"><div id="falling-object">🍎</div> <div id="player-basket">🧺</div></div>
+            <div id="game-header"><button class="back-btn small" id="btn-quit-minigame">Salir</button><div id="minigame-timer">Tiempo: 30s</div><div id="minigame-score">Manzanas: 0</div></div>
+            <div id="play-area"><div id="falling-object" style="width:30px; height:30px; display:none;"></div> <div id="player-basket" style="width:50px; height:50px; display:none;"></div></div>
             <div id="touch-controls"><div id="touch-left"></div><div id="touch-right"></div></div>
         </div>
 
         <div id="sanctuary-screen" class="app-screen hidden">
             <h2 class="screen-title" style="color: #4CAF50;">Santuario Genético</h2>
-            <p style="text-align: center; color: #666; font-size: 14px; padding: 0 20px; margin-bottom: 5px;">Libera Genos en la naturaleza para obtener ✨ EV.</p>
+            <p style="text-align: center; color: #666; font-size: 14px; padding: 0 20px; margin-bottom: 5px;">Libera Genos en la naturaleza para obtener EV.</p>
             <div style="text-align: center; font-weight: bold; color: #d9534f; margin-bottom: 15px;">Límite diario: <span id="daily-release-count">0</span>/3</div>
             <div id="sanctuary-grid" class="sanctuary-grid"></div>
             
@@ -1113,16 +1119,16 @@
                         <div id="id-card-quality" style="font-size: 22px; font-weight: 900; color: #fff; text-shadow: 0 2px 5px rgba(0,0,0,0.8);">--</div>
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 12px; margin-bottom: 15px;">
-                        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333;">❤️ Vit: <span id="id-card-hp" style="float: right; font-weight: bold; color: #fff;">--</span></div>
-                        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333;">⚔️ Fue: <span id="id-card-atk" style="float: right; font-weight: bold; color: #fff;">--</span></div>
-                        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333; grid-column: span 2; text-align: center;">🛡️ Defensa: <span id="id-card-def" style="font-weight: bold; color: #fff; margin-left: 10px;">--</span></div>
-                        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333;">⚡ Agi: <span id="id-card-spd" style="float: right; font-weight: bold; color: #fff;">--</span></div>
-                        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333;">🍀 Sue: <span id="id-card-luk" style="float: right; font-weight: bold; color: #fff;">--</span></div>
+                        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333; display: flex; align-items: center; justify-content: space-between;"><span style="display: flex; align-items: center; gap: 4px;"><svg viewBox="0 0 24 24" width="12" height="12" fill="#ff3b30" stroke="#ff3b30" style="display:inline-block; vertical-align:middle;"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> Vit</span><span id="id-card-hp" style="font-weight: bold; color: #fff;">--</span></div>
+                        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333; display: flex; align-items: center; justify-content: space-between;"><span style="display: flex; align-items: center; gap: 4px;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#ffcc00" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"></path><path d="M13 19l6-6"></path><path d="M16 16l4 4"></path><path d="M19 21l2-2"></path></svg> Fue</span><span id="id-card-atk" style="font-weight: bold; color: #fff;">--</span></div>
+                        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333; grid-column: span 2; display: flex; align-items: center; justify-content: center; gap: 10px;"><span style="display: flex; align-items: center; gap: 4px;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg> Defensa</span><span id="id-card-def" style="font-weight: bold; color: #fff;">--</span></div>
+                        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333; display: flex; align-items: center; justify-content: space-between;"><span style="display: flex; align-items: center; gap: 4px;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#ff9500" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg> Agi</span><span id="id-card-spd" style="font-weight: bold; color: #fff;">--</span></div>
+                        <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; border: 1px solid #333; display: flex; align-items: center; justify-content: space-between;"><span style="display: flex; align-items: center; gap: 4px;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#4cd964" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle;"><path d="M12 2c-3 0-6 3-6 6s2 5 5 5 7-3 7-6-3-5-6-5Z M12 12v10"/></svg> Sue</span><span id="id-card-luk" style="font-weight: bold; color: #fff;">--</span></div>
                     </div>
 
                     <div id="id-card-secret-gene" style="background: rgba(138, 43, 226, 0.15); border-radius: 8px; padding: 12px; text-align: center; border: 1px dashed #8A2BE2;">
                         <div style="font-size: 10px; color: #e0b0ff; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; font-weight: bold;">Gen Oculto</div>
-                        <div id="id-card-locked-text" style="color: #aaa; font-size: 12px; margin-bottom: 10px;">🔒 Secuencia Bloqueada</div>
+                        <div id="id-card-locked-text" style="color: #aaa; font-size: 12px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 6px;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="#d500f9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Secuencia Bloqueada</div>
                         <div id="id-card-dom" class="hidden" style="font-size: 11px; margin-bottom: 5px; text-align: left; padding: 6px; background: rgba(0,0,0,0.4); border-radius: 4px; border-left: 3px solid #80deea;"></div>
                         <div id="id-card-rec" class="hidden" style="font-size: 11px; text-align: left; padding: 6px; background: rgba(0,0,0,0.4); border-radius: 4px; border-left: 3px solid #8A2BE2;"></div>
                         <button id="btn-id-scan" style="background: linear-gradient(90deg, #8A2BE2, #00d2ff); color: white; border: none; padding: 10px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; text-transform: uppercase; width: 100%; box-shadow: 0 4px 10px rgba(138, 43, 226, 0.3);">Usar Escáner Molecular</button>
@@ -1440,7 +1446,7 @@
             <div id="battle-area" class="coliseum-card">
                 <!-- Banner de Asistencia de Entrenamiento de Bajo Nivel -->
                 <div id="coliseum-battle-notification" class="hidden" style="width: calc(100% + 40px); margin: -25px -20px 15px -20px; padding: 8px 15px; background: rgba(105, 240, 174, 0.12); border-bottom: 2px solid #69f0ae; color: #69f0ae; font-size: 11px; font-weight: bold; text-align: center; text-transform: uppercase; letter-spacing: 1px; border-radius: 14px 14px 0 0; box-shadow: 0 4px 10px rgba(105,240,174,0.1); z-index: 10; box-sizing: border-box;">
-                    🛡️ Asistencia de Entrenamiento Activa (-15% Stats Enemigo)
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block; vertical-align:middle; margin-right:4px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> Asistencia de Entrenamiento Activa (-15% Stats Enemigo)
                 </div>
                 
                 <div class="fighters-vs-container">
@@ -1502,9 +1508,9 @@
 
             <!-- Pestañas de Navegación -->
             <div class="tournament-tabs" style="display: flex; gap: 8px; margin-bottom: 12px; flex-shrink: 0; z-index: 10;">
-                <button id="tab-tourney-brackets" class="market-btn-neon active" onclick="TournamentManager.setTab('brackets')" style="margin: 0; flex: 1; padding: 8px 0; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">🏆 Copas</button>
-                <button id="tab-tourney-tematicos" class="market-btn-neon" onclick="TournamentManager.setTab('tematicos')" style="margin: 0; flex: 1; padding: 8px 0; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">🎯 Temáticos</button>
-                <button id="tab-tourney-ranking" class="market-btn-neon" onclick="TournamentManager.setTab('ranking')" style="margin: 0; flex: 1; padding: 8px 0; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">🏅 Ranking</button>
+                <button id="tab-tourney-brackets" class="market-btn-neon active" onclick="TournamentManager.setTab('brackets')" style="margin: 0; flex: 1; padding: 8px 0; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 4px;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6M18 9h1.5a2.5 2.5 0 0 0 0-5H18M4 22h16M10 14.66V17c0 .55-.45 1-1 1H4v2h16v-2h-5c-.55 0-1-.45-1-1v-2.34M12 2a6 6 0 0 1 6 6v3a6 6 0 0 1-6 6 6 6 0 0 1-6-6V8a6 6 0 0 1 6-6z"/></svg> Copas</button>
+                <button id="tab-tourney-tematicos" class="market-btn-neon" onclick="TournamentManager.setTab('tematicos')" style="margin: 0; flex: 1; padding: 8px 0; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 4px;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg> Temáticos</button>
+                <button id="tab-tourney-ranking" class="market-btn-neon" onclick="TournamentManager.setTab('ranking')" style="margin: 0; flex: 1; padding: 8px 0; font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; justify-content: center; gap: 4px;"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;"><circle cx="12" cy="8" r="7"/><path d="M8.21 13.89L7 23l5-3 5 3-1.21-9.12"/></svg> Ranking</button>
             </div>
 
             <!-- CONTENIDO DE PESTAÑA: COPAS DE LLAVES -->
@@ -1564,7 +1570,7 @@
                 <!-- Ranking Global -->
                 <div class="tourney-card" style="padding: 12px 15px; background: linear-gradient(135deg, rgba(255,215,0,0.08) 0%, rgba(138,43,226,0.08) 100%); border: 1.5px solid rgba(255,215,0,0.3);">
                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
-                        <div style="font-size: 11px; font-weight: bold; color: #ffd700; text-transform: uppercase; letter-spacing: 1px;">🌐 Leaderboard Global</div>
+                        <div style="font-size: 11px; font-weight: bold; color: #ffd700; text-transform: uppercase; letter-spacing: 1px;">Leaderboard Global</div>
                         <button onclick="TournamentManager.cargarLeaderboard()" id="btn-reload-leaderboard" style="background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); border-radius: 6px; color: #ffd700; font-size: 9px; font-weight: bold; padding: 4px 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 0.5px;">↻ Actualizar</button>
                     </div>
                     <div id="tourney-leaderboard-global" style="min-height: 80px;">
@@ -1574,7 +1580,7 @@
 
                 <!-- Historial Personal -->
                 <div class="tourney-card" style="padding: 12px 15px; background: linear-gradient(135deg, rgba(0,229,255,0.06) 0%, rgba(0,0,0,0.3) 100%); border: 1.5px solid rgba(0,229,255,0.2);">
-                    <div style="font-size: 11px; font-weight: bold; color: #00e5ff; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">📋 Mi Historial de Torneos</div>
+                    <div style="font-size: 11px; font-weight: bold; color: #00e5ff; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Mi Historial de Torneos</div>
                     <div id="tourney-leaderboard-personal" style="min-height: 60px;">
                         <div style="text-align: center; color: #555; font-size: 11px; padding: 15px;">Conéctate para ver tu historial.</div>
                     </div>
@@ -1590,7 +1596,7 @@
                     <div style="font-size: 10px; color: #888; margin-top: 2px;">Sincronizando jugadores (FIFO Matchmaking)</div>
                     <div id="tourney-queue-timer-display" style="font-size: 24px; font-weight: bold; color: #ffd700; font-family: monospace; margin-top: 10px;">06:00</div>
                     <div id="tourney-queue-status-text" style="font-size: 9px; color: #aaa; margin-top: 2px; text-transform: uppercase;">Lobby Regular</div>
-                    <button id="btn-speed-up-queue" class="market-btn-neon" onclick="TournamentManager.speedUpQueue()" style="margin: 10px auto 0 auto; padding: 6px 12px; font-size: 9px; background: rgba(0, 229, 255, 0.1); border: 1px solid #00e5ff; border-radius: 6px; display: block; width: auto; font-weight: bold; color: #00e5ff;">⚡ Acelerar Tiempo (Skip)</button>
+                    <button id="btn-speed-up-queue" class="market-btn-neon" onclick="TournamentManager.speedUpQueue()" style="margin: 10px auto 0 auto; padding: 6px 12px; font-size: 9px; background: rgba(0, 229, 255, 0.1); border: 1px solid #00e5ff; border-radius: 6px; display: block; width: auto; font-weight: bold; color: #00e5ff;">Acelerar Tiempo (Skip)</button>
                 </div>
 
                 <div style="display: flex; justify-content: space-between; border-bottom: 1.5px solid #384a5e; padding-bottom: 5px; margin-bottom: 10px;">
@@ -1654,6 +1660,8 @@
             </div>
             <button class="back-btn btn-go-home" onclick="navegarA('room-area')">Volver al Laboratorio</button>
         </div>
+
+        <div id="profile-screen" class="app-screen hidden"></div>
 
         <div id="implants-area" class="app-screen hidden"></div>
 
@@ -1733,6 +1741,15 @@
                         </div>
                         <span>Santuario</span>
                     </div>
+                    <div class="drawer-item" id="btn-profile">
+                        <div class="drawer-icon" style="display:flex; align-items:center; justify-content:center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D500F9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 5px #D500F9);">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+                                <circle cx="12" cy="7" r="4"/>
+                            </svg>
+                        </div>
+                        <span>Perfil</span>
+                    </div>
                     <div class="drawer-item" id="btn-market">
                         <div class="drawer-icon" style="display:flex; align-items:center; justify-content:center;"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00d2ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></div>
                         <span>Mercado</span>
@@ -1811,6 +1828,7 @@
     <script src="InventoryManager.js"></script>
     <script src="BreedingManager.js"></script>
     <script src="MarketManager.js"></script>
+    <script src="ProfileManager.js"></script>
     <script src="ShopManager.js"></script>
     <script src="AttackCatalog.js"></script>
     <script src="ColiseumLogic.js"></script>
@@ -1904,12 +1922,14 @@
             localStorage.setItem("player_avatar_idx", index);
             const box = document.getElementById("player-avatar-box");
             if (box) box.innerHTML = window.AVATAR_SVGS[index];
+            const pbox = document.getElementById("profile-avatar-box");
+            if (pbox) pbox.innerHTML = window.AVATAR_SVGS[index];
             document.getElementById("avatar-selector-modal").classList.add("hidden");
         };
 
         window.mostrarXPDetalle = function() {
             const xpNeeded = window.obtenerXPRequeridaLaboratorio(window.labLevel);
-            alert(`🧪 PROGRESO CIENTÍFICO (LABORATORIO)\n───────────────────────────────\nNivel del Laboratorio: Nv. ${window.labLevel}\nExperiencia actual: ${Math.floor(window.labXP)} / ${xpNeeded} XP`);
+            alert(`PROGRESO CIENTÍFICO (LABORATORIO)\n───────────────────────────────\nNivel del Laboratorio: Nv. ${window.labLevel}\nExperiencia actual: ${Math.floor(window.labXP)} / ${xpNeeded} XP`);
         };
 
         window.toggleSideDrawer = function() {
@@ -1956,12 +1976,12 @@
 
             const limpio = nuevo.trim();
             if (limpio.length < 3 || limpio.length > 10) {
-                alert("⚠️ El nombre debe tener entre 3 y 10 caracteres.");
+                alert("El nombre debe tener entre 3 y 10 caracteres.");
                 return;
             }
             const regex = /^[a-zA-Z0-9]+$/;
             if (!regex.test(limpio)) {
-                alert("⚠️ El nombre solo puede contener letras y números (sin espacios ni caracteres especiales).");
+                alert("El nombre solo puede contener letras y números (sin espacios ni caracteres especiales).");
                 return;
             }
 
@@ -1975,7 +1995,7 @@
             if (typeof window.guardarProgreso === 'function') {
                 window.guardarProgreso();
             }
-            alert(`✨ Tu nombre de jugador ha sido actualizado a: ${limpio}`);
+            alert(`Tu nombre de jugador ha sido actualizado a: ${limpio}`);
         };
 
         // Sincronizar HUD superior de perfil
@@ -1987,6 +2007,8 @@
             // Sincronizar Avatar
             const savedAvatarIdx = parseInt(localStorage.getItem("player_avatar_idx") || "0");
             if (avatarBox) avatarBox.innerHTML = window.AVATAR_SVGS[savedAvatarIdx];
+            const pbox = document.getElementById("profile-avatar-box");
+            if (pbox) pbox.innerHTML = window.AVATAR_SVGS[savedAvatarIdx];
 
             // Inicializar Player ID si no existe
             if (!window.playerUniqueID) {
@@ -2009,6 +2031,10 @@
             // Sincronizar nombre en pantalla
             if (usernameEl) {
                 usernameEl.innerText = window.playerName;
+            }
+            const profileUsernameEl = document.getElementById("profile-username");
+            if (profileUsernameEl) {
+                profileUsernameEl.innerText = window.playerName;
             }
 
             // Sincronizar ID de cuenta

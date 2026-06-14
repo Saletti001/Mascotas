@@ -75,7 +75,7 @@ class InventoryManager {
                     expiresAt: Date.now() + (24 * 60 * 60 * 1000) 
                 });
             } else {
-                alert("🎒 ¡Almacén y Espacios de Emergencia LLENOS!\nDebes destruir algo para hacer espacio.");
+                alert("[ALMACÉN LLENO] ¡Almacén y Espacios de Emergencia LLENOS!\nDebes destruir algo para hacer espacio.");
                 return false; 
             }
         }
@@ -263,7 +263,7 @@ class InventoryManager {
                     this.updateUI();
                     this.renderGrid();
                     this.guardarCambios();
-                    console.log("⚠️ Un ítem de emergencia ha sido destruido por falta de espacio.");
+                    console.log("[ALERTA] Un ítem de emergencia ha sido destruido por falta de espacio.");
                 }
             }
         }, 1000);
@@ -274,7 +274,7 @@ class InventoryManager {
 
         if (item.id === "apple_01") {
             if (!window.miMascota || window.miMascota.id === "temp") {
-                alert("❌ Debes tener un Geno seleccionado como Compañero activo para alimentarlo.");
+                alert("[ERROR] Debes tener un Geno seleccionado como Compañero activo para alimentarlo.");
                 return;
             }
             if (window.miMascota.hambre === undefined) window.miMascota.hambre = 100;
@@ -304,9 +304,9 @@ class InventoryManager {
             
             this.consumeItem(item.id, 1);
             if (gananciaExplicita > 0) {
-                alert(`🍱 Alimentaste a ${window.miMascota.name}. Hambre +20%, ¡Amistad +${gananciaExplicita}!`);
+                alert(`[ALIMENTAR] Alimentaste a ${window.miMascota.name}. Hambre +20%, ¡Amistad +${gananciaExplicita}!`);
             } else {
-                alert(`🍱 Alimentaste a ${window.miMascota.name}. Hambre +20%. (Amistad ya obtenida hoy)`);
+                alert(`[ALIMENTAR] Alimentaste a ${window.miMascota.name}. Hambre +20%. (Amistad ya obtenida hoy)`);
             }
             
             if (window.NexoEnergyManager) window.NexoEnergyManager.actualizarUI();
@@ -344,7 +344,7 @@ class InventoryManager {
             }
             
             this.consumeItem(item.id, 1);
-            alert(`🍱 Ración Automática activada por 24h. Todos los Genos en reserva han sido alimentados.`);
+            alert(`[RACIÓN] Ración Automática activada por 24h. Todos los Genos en reserva han sido alimentados.`);
             
             if (window.NexoEnergyManager) window.NexoEnergyManager.actualizarUI();
             this.guardarCambios();
@@ -374,7 +374,7 @@ class InventoryManager {
             }
             
             this.consumeItem(item.id, 1);
-            alert(`🧼 Ducha de Plasma activada. Higiene al 100% y Amistad (1-3 pts) para todos tus Genos elegibles hoy.`);
+            alert(`[DUCHA] Ducha de Plasma activada. Higiene al 100% y Amistad (1-3 pts) para todos tus Genos elegibles hoy.`);
             
             if (window.NexoEnergyManager) window.NexoEnergyManager.actualizarUI();
             this.guardarCambios();
@@ -382,13 +382,13 @@ class InventoryManager {
         } 
         else if (item.id === "pocion_energia") {
             if (!window.miMascota || window.miMascota.id === "temp") {
-                alert("❌ Debes tener un Geno seleccionado como Compañero activo para usar la poción.");
+                alert("[ERROR] Debes tener un Geno seleccionado como Compañero activo para usar la poción.");
                 return;
             }
             if (window.miMascota.resistencia === undefined) window.miMascota.resistencia = 100;
             
             if (window.miMascota.resistencia >= 100) {
-                alert("💚 Tu Geno ya tiene la Resistencia al máximo.");
+                alert("[INFO] Tu Geno ya tiene la Resistencia al máximo.");
                 return;
             }
 
@@ -403,7 +403,7 @@ class InventoryManager {
             }
             
             this.consumeItem(item.id, 1);
-            alert(`⚡ Usaste una Poción de Energía en ${window.miMascota.name || 'tu Geno'}. Resistencia +50% (Actual: ${window.miMascota.resistencia}%).`);
+            alert(`[ENERGÍA] Usaste una Poción de Energía en ${window.miMascota.name || 'tu Geno'}. Resistencia +50% (Actual: ${window.miMascota.resistencia}%).`);
             
             if (window.NexoEnergyManager) window.NexoEnergyManager.actualizarUI();
             this.guardarCambios();
@@ -411,26 +411,26 @@ class InventoryManager {
         }
         else if (item.id === "nexo_charge") {
             if (window.nexoEnergy >= 100) {
-                alert("⚡ Tu Energía Nexo ya está al máximo (100/100).");
+                alert("[ENERGÍA] Tu Energía Nexo ya está al máximo (100/100).");
                 return;
             }
             window.nexoEnergy = 100;
             this.consumeItem(item.id, 1);
-            alert("⚡ ¡Recarga Nexo activada! Energía Nexo restaurada al 100%.");
+            alert("[ENERGÍA] ¡Recarga Nexo activada! Energía Nexo restaurada al 100%.");
             
             if (window.NexoEnergyManager) window.NexoEnergyManager.actualizarUI();
             this.guardarCambios();
             if (window.Sonidos) window.Sonidos.play("heal");
         }
         else if (item.id === "tinta_habilidad") {
-            alert(`🧪 La Tinta de Habilidad es un material genético. Se utiliza en el Laboratorio para el refinamiento de genes y habilidades.`);
+            alert(`[TINTA] La Tinta de Habilidad es un material genético. Se utiliza en el Laboratorio para el refinamiento de genes y habilidades.`);
         }
         else if (item.id.startsWith("capsula_ev_")) {
             const evContenido = item.evContenido || parseInt(item.id.replace("capsula_ev_", "")) || 0;
             if (evContenido > 0) {
                 this.addEssence(evContenido);
                 this.consumeItem(item.id, 1);
-                alert(`✨ Has abierto la cápsula e inyectado ${typeof window.formatFullNumber === 'function' ? window.formatFullNumber(evContenido) : evContenido} EV en tu saldo digital.`);
+                alert(`[ESENCIA] Has abierto la cápsula e inyectado ${typeof window.formatFullNumber === 'function' ? window.formatFullNumber(evContenido) : evContenido} EV en tu saldo digital.`);
                 if (window.NexoEnergyManager) window.NexoEnergyManager.actualizarUI();
                 this.guardarCambios();
                 if (window.Sonidos) window.Sonidos.play("heal");
@@ -451,29 +451,29 @@ class InventoryManager {
             
             const btnFill = document.createElement("button");
             btnFill.id = "btn-debug-fill";
-            btnFill.innerText = "🧪 Llenar";
+            btnFill.innerText = "Llenar";
             btnFill.style = "background: #ff9800; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; color: white; font-weight: bold;";
             btnFill.addEventListener("click", () => {
                 let added = 0;
                 while (this.slots.length < this.maxSlots) {
-                    this.addItem({ id: "caja_test_" + Date.now() + Math.random(), name: "Caja de Suministros", icon: "📦", type: "basic", maxStack: 1, desc: "Ítem de relleno." });
+                    this.addItem({ id: "caja_test_" + Date.now() + Math.random(), name: "Caja de Suministros", icon: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#ffe082" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>', type: "basic", maxStack: 1, desc: "Ítem de relleno." });
                     added++;
                 }
-                if (added > 0) alert("🎒 Inventario lleno."); else alert("El inventario ya está lleno.");
+                if (added > 0) alert("[INVENTARIO] Inventario lleno."); else alert("El inventario ya está lleno.");
             });
 
             const btnEssence = document.createElement("button");
             btnEssence.id = "btn-debug-essence";
-            btnEssence.innerText = "🧪 +1000 ✨";
+            btnEssence.innerText = "+1000 EV";
             btnEssence.style = "background: #8b5cf6; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; color: white; font-weight: bold;";
             btnEssence.addEventListener("click", () => {
                 this.addEssence(1000);
             });
 
-            // ✨ BOTÓN 3: LA TIENDA DEV (Expande el Almacén y lee TODO el catálogo dinámicamente)
+            // BOTÓN 3: LA TIENDA DEV (Expande el Almacén y lee TODO el catálogo dinámicamente)
             const btnDevStore = document.createElement("button");
             btnDevStore.id = "btn-debug-devstore";
-            btnDevStore.innerText = "🛒 Tienda Dev";
+            btnDevStore.innerText = "Tienda Dev";
             btnDevStore.style = "background: #e91e63; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; color: white; font-weight: bold;";
             btnDevStore.addEventListener("click", () => {
                 
@@ -485,10 +485,10 @@ class InventoryManager {
 
                 // 2. Base de cosméticos
                 const devItems = [
-                    { id: "cosm_corona", name: "Corona Rey", icon: "👑", type: "Cosmético", subType: "head", id_cosmetico: "corona_rey", evCost: 0, desc: "Símbolo de realeza.", maxStack: 1 },
-                    { id: "cosm_jetpack", name: "Jetpack", icon: "🚀", type: "Cosmético", subType: "back", id_cosmetico: "jetpack", evCost: 0, desc: "Propulsores de combate.", maxStack: 1 },
-                    { id: "cosm_dron", name: "Dron Centinela", icon: "🤖", type: "Cosmético", subType: "skin", id_cosmetico: "malla_cibernetica", evCost: 0, desc: "Asistente automatizado.", maxStack: 1 },
-                    { id: "cosm_aura", name: "Fuego Solar", icon: "☀️", type: "Cosmético", subType: "aura", id_cosmetico: "fuego_solar", evCost: 0, desc: "Aura de plasma.", maxStack: 1 }
+                    { id: "cosm_corona", name: "Corona Rey", icon: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/></svg>', type: "Cosmético", subType: "head", id_cosmetico: "corona_rey", evCost: 0, desc: "Símbolo de realeza.", maxStack: 1 },
+                    { id: "cosm_jetpack", name: "Jetpack", icon: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#ff5722" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5c-1.5 1.5-2.5 3.5-2.5 5.5C4 22 6 21 7.5 19.5L18 9l-3-3L4.5 16.5z"/><path d="M12 5l3 3M19 5l-2.5 2.5"/></svg>', type: "Cosmético", subType: "back", id_cosmetico: "jetpack", evCost: 0, desc: "Propulsores de combate.", maxStack: 1 },
+                    { id: "cosm_dron", name: "Dron Centinela", icon: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#8A2BE2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/><circle cx="8" cy="16" r="1"/><circle cx="16" cy="16" r="1"/></svg>', type: "Cosmético", subType: "skin", id_cosmetico: "malla_cibernetica", evCost: 0, desc: "Asistente automatizado.", maxStack: 1 },
+                    { id: "cosm_aura", name: "Fuego Solar", icon: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#ffeb3b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>', type: "Cosmético", subType: "aura", id_cosmetico: "fuego_solar", evCost: 0, desc: "Aura de plasma.", maxStack: 1 }
                 ];
 
                 // 3. Extraer MÁGICAMENTE los 54 ataques de tu AttackCatalog.js
@@ -498,22 +498,22 @@ class InventoryManager {
                         
                         if (ramas.especiales) {
                             ramas.especiales.forEach(atk => {
-                                devItems.push({ id: "mt_" + atk.id, name: "MT " + atk.nombre, icon: "💿", type: "MT", subType: "Técnica", element: elemento, id_ataque: atk.id, power: atk.potencia || 0, evCost: 0, desc: atk.descripcion, maxStack: 1 });
+                                devItems.push({ id: "mt_" + atk.id, name: "MT " + atk.nombre, icon: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#00e5ff" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>', type: "MT", subType: "Técnica", element: elemento, id_ataque: atk.id, power: atk.potencia || 0, evCost: 0, desc: atk.descripcion, maxStack: 1 });
                             });
                         }
                         if (ramas.soportes) {
                             ramas.soportes.forEach(atk => {
-                                devItems.push({ id: "mt_" + atk.id, name: "MT " + atk.nombre, icon: "💿", type: "MT", subType: "Soporte", element: elemento, id_ataque: atk.id, power: atk.potencia || 0, evCost: 0, desc: atk.descripcion, maxStack: 1 });
+                                devItems.push({ id: "mt_" + atk.id, name: "MT " + atk.nombre, icon: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#00e5ff" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>', type: "MT", subType: "Soporte", element: elemento, id_ataque: atk.id, power: atk.potencia || 0, evCost: 0, desc: atk.descripcion, maxStack: 1 });
                             });
                         }
                         if (ramas.definitivos) {
                             ramas.definitivos.forEach(atk => {
-                                devItems.push({ id: "mt_" + atk.id, name: "MT " + atk.nombre, icon: "💿", type: "MT", subType: "Definitivo", element: elemento, id_ataque: atk.id, power: atk.potencia || 0, evCost: 0, desc: atk.descripcion, maxStack: 1 });
+                                devItems.push({ id: "mt_" + atk.id, name: "MT " + atk.nombre, icon: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#00e5ff" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>', type: "MT", subType: "Definitivo", element: elemento, id_ataque: atk.id, power: atk.potencia || 0, evCost: 0, desc: atk.descripcion, maxStack: 1 });
                             });
                         }
                     }
                 } else {
-                    alert("⚠️ No se encontró el AttackCatalog. Asegúrate de haberlo reemplazado primero.");
+                    alert("[ERROR] No se encontró el AttackCatalog. Asegúrate de haberlo reemplazado primero.");
                 }
 
                 let added = 0;
@@ -527,7 +527,7 @@ class InventoryManager {
                     }
                 });
                 
-                if(added > 0) alert(`🛒 ¡Almacén expandido a 100 slots! Se inyectaron ${added} objetos únicos. Ve al Laboratorio a ver tu arsenal completo.`);
+                if(added > 0) alert(`[DEV] ¡Almacén expandido a 100 slots! Se inyectaron ${added} objetos únicos. Ve al Laboratorio a ver tu arsenal completo.`);
                 else alert("Ya tienes todos los objetos de la Tienda Dev en tu inventario.");
                 
                 this.updateUI();

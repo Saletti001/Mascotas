@@ -100,7 +100,7 @@ const dicAuras = {
                 <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
         </defs>
-        <g class="anim-flotar" style="opacity: 0.8;">
+        <g class="anim-flotar" style="opacity: 0.8; transform-origin: 80px 85px;">
             <circle cx="80" cy="85" r="45" fill="none" stroke="#f97316" stroke-width="2.5" filter="url(#orange-glow)">
                 <animate attributeName="r" from="45" to="85" dur="2.5s" begin="0s" repeatCount="indefinite"/>
                 <animate attributeName="opacity" from="0.8" to="0" dur="2.5s" begin="0s" repeatCount="indefinite"/>
@@ -115,7 +115,7 @@ const dicAuras = {
                 <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
             </filter>
         </defs>
-        <g class="anim-flotar" style="opacity: 0.8;">
+        <g class="anim-flotar" style="opacity: 0.8; transform-origin: 80px 85px;">
             <circle cx="80" cy="85" r="70" fill="none" stroke="#f97316" stroke-width="6" stroke-dasharray="1 8" stroke-linecap="round" filter="url(#sun-glow)">
                 <animateTransform attributeName="transform" type="rotate" from="0 80 85" to="360 80 85" dur="20s" repeatCount="indefinite"/>
             </circle>

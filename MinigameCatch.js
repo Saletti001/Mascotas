@@ -54,11 +54,11 @@ class MinigameCatch {
         this.arcadeMenu.classList.add("hidden");
         this.screen.classList.remove("hidden");
         
-        // 🔥 Asegurar controles táctiles visibles
+        // Asegurar controles táctiles visibles
         const touchControls = document.getElementById("touch-controls");
         if (touchControls) touchControls.style.display = "flex";
 
-        // 🔥 Aplicar fondo dinámico verde
+        // Aplicar fondo dinámico verde
         this.playArea.className = "";
         this.playArea.classList.add("game-catch-bg");
 
@@ -83,7 +83,9 @@ class MinigameCatch {
             isEgg: false,
             scanned: false
         };
-        this.basket.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(cleanAdn) : "🧺";
+
+        const basketFallbackSvg = `<svg viewBox="0 0 24 24" width="50" height="50" fill="none" stroke="#ffea00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block; margin:auto; filter: drop-shadow(0 0 4px rgba(255,234,0,0.5));"><path d="M22 12h-4.58A6 6 0 0 0 12 6a6 6 0 0 0-5.42 6H2 M2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6M12 2v4"/></svg>`;
+        this.basket.innerHTML = typeof generarSvgGeno === 'function' ? generarSvgGeno(cleanAdn) : basketFallbackSvg;
         this.basket.style.fontSize = "initial";
         this.basket.style.display = "block"; // Asegurar visibilidad
         
@@ -110,31 +112,31 @@ class MinigameCatch {
     }
 
     updateUI() {
-        const evStr = this.evGanada > 0 ? ` | ⚡ +${this.evGanada.toFixed(2)} EV` : "";
+        const evStr = this.evGanada > 0 ? ` | +${this.evGanada.toFixed(2)} EV` : "";
         this.scoreDisplay.innerText = `Manzanas: ${this.score}${evStr}`;
-        this.timerDisplay.innerText = `⏱️ ${this.timeLeft}s`;
+        this.timerDisplay.innerText = `TIEMPO: ${this.timeLeft}s`;
     }
 
     spawnItem() {
         if (!this.isPlaying) return;
 
         const rand = Math.random();
-        let type, icon, speed;
+        let type, iconSvg, speed;
 
         if (rand < 0.15) {
             // Gema de EV — siempre cae rápido
             type  = Math.random() < 0.70 ? "ev_small" : "ev_large";
-            icon  = null; // usaremos SVG inline
+            iconSvg  = null; // usaremos SVG inline de gema
             speed = 9 + Math.random() * 2; // 9-11 px/tick
         } else if (rand < 0.40) {
             // Bomba
             type  = "bomb";
-            icon  = "💣";
+            iconSvg  = `<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#00e5ff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 4px rgba(0,229,255,0.5));"><circle cx="12" cy="12" r="8"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5.64 5.64l1.42 1.42M16.94 16.94l1.42 1.42M5.64 19.07l1.42-1.42M16.94 7.06l1.42-1.42"/><path d="M12 8v4l3 3" opacity="0.6"/></svg>`;
             speed = 4 + Math.random() * 3;
         } else {
             // Manzana
             type  = "apple";
-            icon  = "🍎";
+            iconSvg  = `<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#ff007f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 4px rgba(255,0,127,0.5));"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6c0-2 1-3 1-3 M9.5 8C8.5 7 8 5.5 8 5.5"/></svg>`;
             speed = 4 + Math.random() * 3;
         }
 
@@ -163,8 +165,10 @@ class MinigameCatch {
             item.style.filter = "drop-shadow(0 0 5px #FFD700) drop-shadow(0 0 10px rgba(255,215,0,0.6))";
             item.style.animation = "pulse 0.8s ease-in-out infinite alternate";
         } else {
-            item.style.fontSize = "30px";
-            item.innerText = icon;
+            item.style.fontSize = "0";
+            item.style.width = "30px";
+            item.style.height = "30px";
+            item.innerHTML = iconSvg;
         }
 
         this.playArea.appendChild(item);
@@ -183,12 +187,10 @@ class MinigameCatch {
             const basketRect = this.basket.getBoundingClientRect();
             const itemRect   = item.getBoundingClientRect();
             
-            // Hitbox más ceñida: el objeto debe caer 20px más abajo (para tocar la cabeza/cuerpo del Geno)
-            // y estar alineado al centro del contenedor (márgenes horizontales de 12px a cada lado).
             const collisionTop = basketRect.top + 20;
             const collisionLeft = basketRect.left + 12;
             const collisionRight = basketRect.right - 12;
-
+ 
             if (
                 itemRect.bottom >= collisionTop &&
                 itemRect.top    <= basketRect.bottom &&
@@ -242,7 +244,7 @@ class MinigameCatch {
         clearInterval(this.gameInterval);
         clearInterval(this.spawnInterval);
         
-        // 🔥 Limpiar clase de fondo de playArea
+        // Limpiar clase de fondo de playArea
         this.playArea.className = "";
         
         if (!quit) {
@@ -256,7 +258,7 @@ class MinigameCatch {
                 window.miInventario.addItem({
                     id: "apple_01",
                     name: "Manzana",
-                    icon: "🍎",
+                    icon: `<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="#ff007f" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 2px rgba(255,0,127,0.5));"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6c0-2 1-3 1-3 M9.5 8C8.5 7 8 5.5 8 5.5"/></svg>`,
                     type: "consumible",
                     maxStack: 20,
                     count: reward 
@@ -272,8 +274,6 @@ class MinigameCatch {
                 if (window.miMascota.diversion === undefined) window.miMascota.diversion = 100;
                 if (window.miMascota.amistad   === undefined) window.miMascota.amistad   = 0;
                 window.miMascota.diversion = Math.min(100, window.miMascota.diversion + 20);
-
-                // Sincronizar EV acumulada durante la partida - Eliminado para evitar que cuente contra el límite diario de cuidado
                 
                 const hoy = new Date().toDateString();
                 if (!window.miMascota.registroAmistadDiaria) window.miMascota.registroAmistadDiaria = {};
@@ -301,9 +301,9 @@ class MinigameCatch {
                 if (window.GameEconomyConfig && window.GameEconomyConfig.gameplay_rewards && window.GameEconomyConfig.gameplay_rewards.arcade_catch && window.GameEconomyConfig.gameplay_rewards.arcade_catch.apple_ratio !== undefined) {
                     appleRatio = window.GameEconomyConfig.gameplay_rewards.arcade_catch.apple_ratio;
                 }
-                let msg = `¡Tiempo terminado!\nAtrapaste ${this.score} manzana(s).\nRatio ${appleRatio}:1 = Ganas ${reward} 🍎.`;
-                if (this.evGanada > 0) msg += `\n⚡ +${this.evGanada.toFixed(2)} EV atrapada(s)!`;
-                if (xpObtenida > 0) msg += `\n🧪 +${xpObtenida} XP de Laboratorio!`;
+                let msg = `¡Tiempo terminado!\nAtrapaste ${this.score} manzana(s).\nRatio ${appleRatio}:1 = Ganas ${reward} Manzanas.`;
+                if (this.evGanada > 0) msg += `\n+${this.evGanada.toFixed(2)} EV atrapada(s)!`;
+                if (xpObtenida > 0) msg += `\n+${xpObtenida} XP de Laboratorio!`;
                 if (gananciaExplicita > 0) msg += `\n¡Diversión +20% y Amistad +${gananciaExplicita}!`;
                 else                       msg += `\n¡Diversión +20%! (Amistad por Arcade ya obtenida hoy)`;
                 alert(msg);
@@ -312,8 +312,8 @@ class MinigameCatch {
                 if (window.GameEconomyConfig && window.GameEconomyConfig.gameplay_rewards && window.GameEconomyConfig.gameplay_rewards.arcade_catch && window.GameEconomyConfig.gameplay_rewards.arcade_catch.apple_ratio !== undefined) {
                     appleRatio = window.GameEconomyConfig.gameplay_rewards.arcade_catch.apple_ratio;
                 }
-                let msg = `¡Tiempo terminado!\nAtrapaste ${this.score} manzana(s).\nRatio ${appleRatio}:1 = Ganas ${reward} 🍎.`;
-                if (xpObtenida > 0) msg += `\n🧪 +${xpObtenida} XP de Laboratorio!`;
+                let msg = `¡Tiempo terminado!\nAtrapaste ${this.score} manzana(s).\nRatio ${appleRatio}:1 = Ganas ${reward} Manzanas.`;
+                if (xpObtenida > 0) msg += `\n+${xpObtenida} XP de Laboratorio!`;
                 alert(msg);
             }
         }
