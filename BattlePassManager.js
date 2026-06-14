@@ -61,7 +61,7 @@ window.BattlePassManager = {
             return;
         }
 
-        const precioPOL = 5.0;
+        const precioPOL = 0.1;
         const polDisponibles = window.miWallet.pol || 0;
 
         if (polDisponibles < precioPOL) {
@@ -288,7 +288,7 @@ window.BattlePassManager = {
                             <h4 style="margin:0; font-size:11px; font-weight:bold; color:#e040fb; font-family:'Orbitron', sans-serif; letter-spacing:0.5px;">HABILITAR RUTA PREMIUM</h4>
                             <p style="margin:3px 0 0 0; font-size:9px; color:#ccc; line-height:1.2;">+1,000 EV extra por nivel, cosméticos y auras exclusivas.</p>
                         </div>
-                        <button id="btn-buy-bp-premium" onclick="window.BattlePassManager.buyPremium()" style="background:#e040fb; color:#101424; border:none; border-radius:6px; padding:6px 12px; font-size:10px; font-weight:bold; cursor:pointer; font-family:'Orbitron', sans-serif; transition:0.2s; box-shadow:0 0 10px rgba(224,64,251,0.4);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='none'">5.0 POL</button>
+                        <button id="btn-buy-bp-premium" onclick="window.BattlePassManager.buyPremium()" style="background:#e040fb; color:#101424; border:none; border-radius:6px; padding:6px 12px; font-size:10px; font-weight:bold; cursor:pointer; font-family:'Orbitron', sans-serif; transition:0.2s; box-shadow:0 0 10px rgba(224,64,251,0.4);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='none'">0.1 POL</button>
                     </div>
 
                     <!-- Levels List Grid Container -->
