@@ -207,6 +207,11 @@ window.cargarProgreso = function() {
                 } else if (window.BattlePassManager) {
                     window.BattlePassManager.init();
                 }
+
+                // Chequear reclamos pendientes
+                if (typeof window.checkPendingClaims === "function") {
+                    window.checkPendingClaims();
+                }
             }, 150); 
         });
         

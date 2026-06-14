@@ -209,6 +209,9 @@ window.DailyLoginManager = {
                 // Refrescar UI del modal
                 this.renderGrid();
                 this.updateClaimButton();
+                if (typeof window.checkPendingClaims === "function") {
+                    window.checkPendingClaims();
+                }
 
             } catch (err) {
                 console.error("Error al reclamar en Supabase:", err);
@@ -239,6 +242,9 @@ window.DailyLoginManager = {
 
             this.renderGrid();
             this.updateClaimButton();
+            if (typeof window.checkPendingClaims === "function") {
+                window.checkPendingClaims();
+            }
             if (btnClaim) btnClaim.disabled = false;
         }
     },

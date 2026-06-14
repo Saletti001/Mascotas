@@ -43,6 +43,10 @@ window.BattlePassManager = {
             window.guardarProgreso();
         }
 
+        if (typeof window.checkPendingClaims === 'function') {
+            window.checkPendingClaims();
+        }
+
         if (document.getElementById("battle-pass-modal") && document.getElementById("battle-pass-modal").style.display === "flex") {
             this.renderBattlePass();
         }
@@ -86,6 +90,10 @@ window.BattlePassManager = {
 
             if (typeof window.guardarProgreso === 'function') {
                 window.guardarProgreso();
+            }
+
+            if (typeof window.checkPendingClaims === 'function') {
+                window.checkPendingClaims();
             }
 
             this.renderBattlePass();
@@ -620,6 +628,9 @@ window.BattlePassManager = {
             if (typeof window.guardarProgreso === 'function') {
                 window.guardarProgreso();
             }
+            if (typeof window.checkPendingClaims === 'function') {
+                window.checkPendingClaims();
+            }
             this.renderBattlePass();
         }
     },
@@ -641,6 +652,9 @@ window.BattlePassManager = {
 
             if (typeof window.guardarProgreso === 'function') {
                 window.guardarProgreso();
+            }
+            if (typeof window.checkPendingClaims === 'function') {
+                window.checkPendingClaims();
             }
             this.renderBattlePass();
         }
@@ -674,6 +688,9 @@ window.BattlePassManager = {
             alert(`✨ ¡RECLAMO MASIVO COMPLETADO! ✨\nHas recibido:\n- ${itemsClaimed.join("\n- ")}`);
             if (typeof window.guardarProgreso === 'function') {
                 window.guardarProgreso();
+            }
+            if (typeof window.checkPendingClaims === 'function') {
+                window.checkPendingClaims();
             }
             this.renderBattlePass();
         } else {

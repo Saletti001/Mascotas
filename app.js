@@ -662,7 +662,7 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let i = 0; i < slotsLibres; i++) {
             const emptyCard = document.createElement("div");
             emptyCard.style = "background: rgba(26, 42, 54, 0.5); border: 1px dashed #4dd0e1; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0.5; height: 165px; box-sizing: border-box;";
-            emptyCard.innerHTML = `<div style="width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; color: #4dd0e1; flex: 1;"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="#4dd0e1" stroke-width="2" stroke-linecap="round"><path d="M4.5 10.5c3-6 12-6 15 0m-15 3c3 6 12 6 15 0"/><path d="M6 8v8m4-9v10m4-10v10m4-9v8"/></svg></div><span style="color: #4dd0e1; font-weight: bold; font-size: 11px; margin-top: 5px; text-align: center; flex-shrink: 0;">Vacío</span>`;
+            emptyCard.innerHTML = `<div style="width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; color: #4dd0e1; flex: 1;"><svg viewBox="0 0 64 64" width="44" height="44" fill="none" stroke="#4dd0e1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 5px rgba(77, 208, 225, 0.6));"><path d="M12 6 H6 V12" stroke="#4dd0e1" stroke-width="2"/><path d="M52 6 H58 V12" stroke="#4dd0e1" stroke-width="2"/><path d="M12 58 H6 V52" stroke="#4dd0e1" stroke-width="2"/><path d="M52 58 H58 V52" stroke="#4dd0e1" stroke-width="2"/><circle cx="32" cy="32" r="26" stroke="#4dd0e1" stroke-width="1.5" stroke-dasharray="3 4" opacity="0.35"/><path d="M22 16 Q32 32 42 48" stroke="#4dd0e1" stroke-width="3.2"/><path d="M42 16 Q32 32 22 48" stroke="#4dd0e1" stroke-width="3.2"/><circle cx="32" cy="32" r="4.5" fill="#1a2a36" stroke="#4dd0e1" stroke-width="2.5"/><line x1="25" y1="20" x2="39" y2="20" stroke="#4dd0e1" stroke-width="2" opacity="0.7"/><line x1="28" y1="26" x2="36" y2="26" stroke="#4dd0e1" stroke-width="2" opacity="0.7"/><line x1="28" y1="38" x2="36" y2="38" stroke="#4dd0e1" stroke-width="2" opacity="0.7"/><line x1="25" y1="44" x2="39" y2="44" stroke="#4dd0e1" stroke-width="2" opacity="0.7"/><line x1="14" y1="32" x2="50" y2="32" stroke="#ff007f" stroke-width="2" style="filter: drop-shadow(0 0 3px #ff007f);" opacity="0.95"/></svg></div><span style="color: #4dd0e1; font-weight: bold; font-size: 11px; margin-top: 5px; text-align: center; flex-shrink: 0;">Vacío</span>`;
             gridSwap.appendChild(emptyCard);
         }
 
@@ -1939,6 +1939,123 @@ function iniciarSecuenciaBienvenida() {
                     window.navegarA("room-area");
                 }
             });
+
+            // Función global para verificar recompensas pendientes en el menú lateral
+            window.checkPendingClaims = function() {
+                let missionsPending = false;
+                let battlePassPending = false;
+                let dailyLoginPending = false;
+
+                // 1. Verificar misiones
+                if (window.MissionsManager) {
+                    // Misiones Diarias completadas y no reclamadas
+                    if (window.MissionsManager.dailyConfig && window.MissionsManager.dailyProgress && window.MissionsManager.dailyClaimed) {
+                        for (let i = 0; i < window.MissionsManager.dailyConfig.length; i++) {
+                            const prog = window.MissionsManager.dailyProgress[i] || 0;
+                            const goal = window.MissionsManager.dailyConfig[i].goal;
+                            const claimed = window.MissionsManager.dailyClaimed[i];
+                            if (prog >= goal && !claimed) {
+                                missionsPending = true;
+                            }
+                        }
+                    }
+                    // Cofre de bono diario listo y no reclamado
+                    if (window.MissionsManager.dailyConfig && window.MissionsManager.dailyProgress) {
+                        const completedDailies = window.MissionsManager.dailyProgress.filter((p, idx) => {
+                            const config = window.MissionsManager.dailyConfig[idx];
+                            return config && p >= config.goal;
+                        }).length;
+                        if (completedDailies >= 3 && !window.MissionsManager.dailyBonusClaimed) {
+                            missionsPending = true;
+                        }
+                    }
+                    // Misiones Semanales completadas y no reclamadas
+                    if (window.MissionsManager.weeklyConfig && window.MissionsManager.weeklyProgress && window.MissionsManager.weeklyClaimed) {
+                        for (let i = 0; i < window.MissionsManager.weeklyConfig.length; i++) {
+                            const prog = window.MissionsManager.weeklyProgress[i] || 0;
+                            const goal = window.MissionsManager.weeklyConfig[i].goal;
+                            const claimed = window.MissionsManager.weeklyClaimed[i];
+                            if (prog >= goal && !claimed) {
+                                missionsPending = true;
+                            }
+                        }
+                    }
+                }
+
+                // 2. Verificar Pase de Batalla (Pase Nexo)
+                if (window.BattlePassManager) {
+                    const userLevel = window.BattlePassManager.level || 1;
+                    for (let l = 1; l <= userLevel; l++) {
+                        // Recompensa gratis pendiente
+                        if (window.BattlePassManager.freeRewards && window.BattlePassManager.freeRewards[l] && 
+                            window.BattlePassManager.claimedFree && !window.BattlePassManager.claimedFree.includes(l)) {
+                            battlePassPending = true;
+                        }
+                        // Recompensa premium pendiente
+                        if (window.BattlePassManager.premiumUnlocked && window.BattlePassManager.premiumRewards && 
+                            window.BattlePassManager.premiumRewards[l] && window.BattlePassManager.claimedPremium && 
+                            !window.BattlePassManager.claimedPremium.includes(l)) {
+                            battlePassPending = true;
+                        }
+                    }
+                }
+
+                // 3. Verificar Calendario de Ingreso Diario
+                if (window.DailyLoginManager) {
+                    if (typeof window.DailyLoginManager.checkEligibility === 'function') {
+                        if (window.DailyLoginManager.checkEligibility()) {
+                            dailyLoginPending = true;
+                        }
+                    }
+                }
+
+                // Actualizar botones de la interfaz si existen
+                const btnMissions = document.getElementById("btn-daily-missions");
+                if (btnMissions) {
+                    if (missionsPending) {
+                        btnMissions.classList.add("btn-alert-pulse");
+                    } else {
+                        btnMissions.classList.remove("btn-alert-pulse");
+                    }
+                }
+
+                const btnBattlePass = document.getElementById("btn-battle-pass");
+                if (btnBattlePass) {
+                    if (battlePassPending) {
+                        btnBattlePass.classList.add("btn-alert-pulse");
+                    } else {
+                        btnBattlePass.classList.remove("btn-alert-pulse");
+                    }
+                }
+
+                const btnDailyLogin = document.getElementById("btn-daily-login");
+                if (btnDailyLogin) {
+                    if (dailyLoginPending) {
+                        btnDailyLogin.classList.add("btn-alert-pulse");
+                    } else {
+                        btnDailyLogin.classList.remove("btn-alert-pulse");
+                    }
+                }
+
+                // Actualizar tirador (manija) del panel lateral
+                const handle = document.getElementById("side-drawer-handle");
+                if (handle) {
+                    const anyPending = missionsPending || battlePassPending || dailyLoginPending;
+                    if (anyPending) {
+                        if (!handle.classList.contains("drawer-alert-glow")) {
+                            handle.classList.add("drawer-alert-glow");
+                            handle.style.color = "";
+                            handle.style.textShadow = "";
+                        }
+                    } else {
+                        if (handle.classList.contains("drawer-alert-glow")) {
+                            handle.classList.remove("drawer-alert-glow");
+                            handle.style.color = "#00e5ff";
+                            handle.style.textShadow = "";
+                        }
+                    }
+                }
+            };
         }
     });
 })();

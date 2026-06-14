@@ -1360,7 +1360,7 @@
 
 /* Cañón */
 .bubble-cannon {
-    z-index: 8;
+    z-index: 5;
     pointer-events: none;
 }
 
@@ -1424,4 +1424,47 @@
     pointer-events: none;
     z-index: 4;
     opacity: 0.85;
+}
+
+/* Alertas de Recompensas Pendientes en Menú Lateral */
+@keyframes drawerRedPulse {
+    0% {
+        box-shadow: 4px 0 6px rgba(255, 23, 68, 0.4);
+        border-color: rgba(255, 23, 68, 0.5) !important;
+        color: #ff1744 !important;
+        text-shadow: 0 0 4px rgba(255, 23, 68, 0.4) !important;
+    }
+    100% {
+        box-shadow: 6px 0 15px rgba(255, 23, 68, 0.9), 4px 0 10px rgba(255, 23, 68, 0.5);
+        border-color: #ff1744 !important;
+        color: #ff8a80 !important;
+        text-shadow: 0 0 8px rgba(255, 23, 68, 0.8) !important;
+    }
+}
+
+.drawer-alert-glow {
+    animation: drawerRedPulse 1.0s infinite alternate ease-in-out !important;
+    background: rgba(45, 10, 20, 0.98) !important;
+}
+
+.drawer-alert-glow:hover {
+    color: #ffffff !important;
+    text-shadow: 0 0 6px #ffffff !important;
+    box-shadow: 6px 0 20px rgba(255, 23, 68, 0.9), 4px 0 10px rgba(255, 23, 68, 0.6) !important;
+}
+
+@keyframes buttonAlertPulse {
+    0% {
+        box-shadow: 0 0 4px rgba(255, 23, 68, 0.3);
+        border-color: rgba(255, 23, 68, 0.4) !important;
+    }
+    100% {
+        box-shadow: 0 0 12px rgba(255, 23, 68, 0.75);
+        border-color: #ff1744 !important;
+    }
+}
+
+.btn-alert-pulse {
+    animation: buttonAlertPulse 1.0s infinite alternate ease-in-out !important;
+    text-shadow: 0 0 4px rgba(255, 23, 68, 0.5) !important;
 }

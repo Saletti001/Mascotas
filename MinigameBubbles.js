@@ -18,7 +18,8 @@ class MinigameBubbles {
 
         // Físicas de descenso continuo
         this.gridY = 0;
-        this.descendSpeed = 1.8; // velocidad en px por segundo
+        this.descendSpeed = 4.5; // velocidad en px por segundo
+        this.shiftCount = 0;
 
         // Dimensiones del juego
         this.gameWidth = 350;
@@ -199,12 +200,13 @@ class MinigameBubbles {
         this.shotsCount = 0;
         this.firedBubble = null;
         this.gridY = 0;
-        this.descendSpeed = 1.8;
+        this.descendSpeed = 4.5;
+        this.shiftCount = 0;
         this.grid = Array(this.rows).fill(null).map(() => Array(this.cols).fill(null));
 
         // Rellenar las primeras 4 filas
         for (let r = 0; r < 4; r++) {
-            const maxCols = (r % 2 === 0) ? this.cols : this.cols - 1;
+            const maxCols = ((r + this.shiftCount) % 2 === 0) ? this.cols : this.cols - 1;
             for (let c = 0; c < maxCols; c++) {
                 const type = this.elements[Math.floor(Math.random() * this.elements.length)];
                 this.spawnGridBubble(r, c, type);
@@ -223,7 +225,7 @@ class MinigameBubbles {
     updateUI() {
         const evDisplay = ` | +${Number(this.evEarned).toFixed(2)} EV`;
         this.scoreDisplay.innerText = `Células: ${this.score}${evDisplay}`;
-        this.timerDisplay.innerText = `Dificultad: x${(this.descendSpeed / 1.8).toFixed(1)}`;
+        this.timerDisplay.innerText = `Dificultad: x${(this.descendSpeed / 4.5).toFixed(1)}`;
     }
 
     prepareNextBubbles() {
@@ -241,7 +243,7 @@ class MinigameBubbles {
         currEl.style.bottom = "20px";
         currEl.style.width = `${this.bubbleDiameter}px`;
         currEl.style.height = `${this.bubbleDiameter}px`;
-        currEl.style.zIndex = "9"; // Encima del cañón (z-index: 8) para que sea visible
+        currEl.style.zIndex = "10"; // Encima del cañón para que sea visible
         currEl.innerHTML = this.getBubbleSvg(activeType);
         this.playArea.appendChild(currEl);
 
@@ -257,11 +259,11 @@ class MinigameBubbles {
         previewEl.style.position = "absolute";
         previewEl.style.left = `${this.cannonX - 55}px`;
         previewEl.style.bottom = "12px";
-        previewEl.style.width = `28px`; // Aumentado para que no sea tan pequeña
-        previewEl.style.height = `28px`;
+        previewEl.style.width = `25px`; // Tamaño adecuado para vista previa, escalado nativamente
+        previewEl.style.height = `25px`;
         previewEl.style.opacity = "0.85";
-        previewEl.style.zIndex = "6";
-        previewEl.innerHTML = this.getBubbleSvg(nextType, true);
+        previewEl.style.zIndex = "10";
+        previewEl.innerHTML = this.getBubbleSvg(nextType);
         this.playArea.appendChild(previewEl);
 
         this.nextBubble = { element: previewEl, type: nextType };
@@ -341,7 +343,37 @@ class MinigameBubbles {
     updatePhysics() {
         if (!this.isPlaying) return;
 
-        // Mover proyectil disparado
+        // 1. Descenso continuo y progresión de dificultad
+        this.gridY += this.descendSpeed * 0.0166;
+        if (this.descendSpeed < 12.0) {
+            this.descendSpeed += 0.01 * 0.0166;
+        }
+
+        // Desplazar cuadrícula física si se supera el alto de una fila
+        if (this.gridY >= this.rowHeight) {
+            this.shiftGridDown();
+        }
+
+        // Actualizar la posición de todas las burbujas en el DOM
+        for (let r = 0; r < this.rows; r++) {
+            const maxCols = ((r + this.shiftCount) % 2 === 0) ? this.cols : this.cols - 1;
+            for (let c = 0; c < maxCols; c++) {
+                const cell = this.grid[r][c];
+                if (cell && cell.el) {
+                    const coords = this.getCellCoords(r, c);
+                    cell.el.style.left = `${coords.x - this.bubbleRadius}px`;
+                    cell.el.style.top = `${coords.y - this.bubbleRadius}px`;
+                }
+            }
+        }
+
+        // Control continuo de peligro
+        if (this.checkGameOverCondition()) {
+            this.endGame(false);
+            return;
+        }
+
+        // 2. Mover proyectil disparado
         if (this.firedBubble) {
             const fb = this.firedBubble;
             fb.x += fb.vx;
@@ -408,7 +440,7 @@ class MinigameBubbles {
 
     checkGridCollisions(bx, by) {
         for (let r = 0; r < this.rows; r++) {
-            const maxCols = (r % 2 === 0) ? this.cols : this.cols - 1;
+            const maxCols = ((r + this.shiftCount) % 2 === 0) ? this.cols : this.cols - 1;
             for (let c = 0; c < maxCols; c++) {
                 const cell = this.grid[r][c];
                 if (cell !== null) {
@@ -429,7 +461,7 @@ class MinigameBubbles {
         let minDist = Infinity;
 
         for (let r = 0; r < this.rows; r++) {
-            const maxCols = (r % 2 === 0) ? this.cols : this.cols - 1;
+            const maxCols = ((r + this.shiftCount) % 2 === 0) ? this.cols : this.cols - 1;
             for (let c = 0; c < maxCols; c++) {
                 if (this.grid[r][c] === null) {
                     const cellPos = this.getCellCoords(r, c);
@@ -479,17 +511,9 @@ class MinigameBubbles {
             return;
         }
 
-        // Controlar descenso del techo (cada 6 disparos)
-        if (this.shotsCount > 0 && this.shotsCount % 6 === 0) {
-            setTimeout(() => {
-                this.descendCeiling();
-                this.updateUI();
-            }, 300);
-        } else {
-            this.updateUI();
-            // Cargar la siguiente burbuja
-            setTimeout(() => this.prepareNextBubbles(), 150);
-        }
+        this.updateUI();
+        // Cargar la siguiente burbuja
+        setTimeout(() => this.prepareNextBubbles(), 150);
     }
 
     spawnGridBubble(r, c, type, existingEl = null) {
@@ -570,7 +594,7 @@ class MinigameBubbles {
         // Identificar y tumbar las huérfanas
         let droppedCount = 0;
         for (let r = 0; r < this.rows; r++) {
-            const maxCols = (r % 2 === 0) ? this.cols : this.cols - 1;
+            const maxCols = ((r + this.shiftCount) % 2 === 0) ? this.cols : this.cols - 1;
             for (let c = 0; c < maxCols; c++) {
                 if (this.grid[r][c] !== null && !connected[r][c]) {
                     const cell = this.grid[r][c];
@@ -599,46 +623,46 @@ class MinigameBubbles {
         }
     }
 
-    descendCeiling() {
+    shiftGridDown() {
         if (!this.isPlaying) return;
 
-        // Desplazar todas las filas hacia abajo
+        // Desplazar todas las filas hacia abajo en el array
         for (let r = this.rows - 1; r > 0; r--) {
             for (let c = 0; c < this.cols; c++) {
                 this.grid[r][c] = this.grid[r - 1][c];
-                // Actualizar posiciones DOM locales
-                const cell = this.grid[r][c];
-                if (cell && cell.el) {
-                    const coords = this.getCellCoords(r, c);
-                    cell.el.style.left = `${coords.x - this.bubbleRadius}px`;
-                    cell.el.style.top = `${coords.y - this.bubbleRadius}px`;
-                }
             }
         }
 
+        // Incrementar el contador de desplazamiento (afecta la paridad)
+        this.shiftCount++;
+
         // Crear una nueva fila superior en r = 0
-        const isEven = true; // fila 0 siempre es par
+        const maxCols = ((0 + this.shiftCount) % 2 === 0) ? this.cols : this.cols - 1;
         for (let c = 0; c < this.cols; c++) {
-            const type = this.elements[Math.floor(Math.random() * this.elements.length)];
-            this.grid[0][c] = null; // Limpiar anterior
-            this.spawnGridBubble(0, c, type);
+            if (c < maxCols) {
+                const type = this.elements[Math.floor(Math.random() * this.elements.length)];
+                this.grid[0][c] = null; // Limpiar anterior
+                this.spawnGridBubble(0, c, type);
+            } else {
+                this.grid[0][c] = null;
+            }
         }
 
-        if (window.Sonidos) window.Sonidos.play("lose");
+        // Restar rowHeight a gridY para mantener el desplazamiento continuo suave
+        this.gridY -= this.rowHeight;
+
+        if (window.Sonidos) window.Sonidos.play("click"); // Sonido leve de desplazamiento
 
         // Alerta de colapso si las burbujas pasaron el peligro
         if (this.checkGameOverCondition()) {
             this.endGame(false);
-        } else {
-            // Cargar burbuja cargada
-            this.prepareNextBubbles();
         }
     }
 
     checkGameOverCondition() {
         const dangerY = this.gameHeight - 90;
         for (let r = 0; r < this.rows; r++) {
-            const maxCols = (r % 2 === 0) ? this.cols : this.cols - 1;
+            const maxCols = ((r + this.shiftCount) % 2 === 0) ? this.cols : this.cols - 1;
             for (let c = 0; c < maxCols; c++) {
                 if (this.grid[r][c] !== null) {
                     const coords = this.getCellCoords(r, c);
@@ -653,15 +677,15 @@ class MinigameBubbles {
     }
 
     getCellCoords(r, c) {
-        const isEven = (r % 2 === 0);
-        const y = r * this.rowHeight + this.bubbleRadius + 5; // offset superior de 5px
+        const isEven = ((r + this.shiftCount) % 2 === 0);
+        const y = r * this.rowHeight + this.bubbleRadius + 5 + this.gridY; // offset superior de 5px + continuous descent
         const x = this.gridOffsetX + c * this.bubbleDiameter + this.bubbleRadius + (isEven ? 0 : this.bubbleDiameter / 2);
         return { x: x, y: y };
     }
 
     getNeighbors(r, c) {
         const neighbors = [];
-        const isEven = (r % 2 === 0);
+        const isEven = ((r + this.shiftCount) % 2 === 0);
         const offsets = isEven ? [
             { dr: -1, dc: -1 }, { dr: -1, dc: 0 },
             { dr: 0, dc: -1 },                  { dr: 0, dc: 1 },
@@ -676,7 +700,7 @@ class MinigameBubbles {
             const nr = r + o.dr;
             const nc = c + o.dc;
             if (nr >= 0 && nr < this.rows) {
-                const maxCols = (nr % 2 === 0) ? this.cols : this.cols - 1;
+                const maxCols = ((nr + this.shiftCount) % 2 === 0) ? this.cols : this.cols - 1;
                 if (nc >= 0 && nc < maxCols) {
                     neighbors.push({ r: nr, c: nc });
                 }
@@ -685,7 +709,7 @@ class MinigameBubbles {
         return neighbors;
     }
 
-    getBubbleSvg(type, preview = false) {
+    getBubbleSvg(type) {
         let strokeColor = "#00e5ff";
         let icon = "";
 
@@ -725,8 +749,7 @@ class MinigameBubbles {
                 break;
         }
 
-        const size = preview ? 22 : 30;
-        const innerRadius = preview ? 8 : 12;
+        const innerRadius = 12;
 
         return `
         <svg viewBox="0 0 32 32" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">

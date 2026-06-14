@@ -107,8 +107,13 @@ window.MissionsManager = {
             console.log("[MISSIONS] Reseteadas misiones semanales.");
         }
 
-        if (cambio && typeof window.guardarLocalSilencioso === 'function') {
-            window.guardarLocalSilencioso();
+        if (cambio) {
+            if (typeof window.guardarLocalSilencioso === 'function') {
+                window.guardarLocalSilencioso();
+            }
+            if (typeof window.checkPendingClaims === 'function') {
+                window.checkPendingClaims();
+            }
         }
     },
 
@@ -189,6 +194,9 @@ window.MissionsManager = {
     autoSaveAndRefresh: function() {
         if (typeof window.guardarProgreso === 'function') {
             window.guardarProgreso();
+        }
+        if (typeof window.checkPendingClaims === 'function') {
+            window.checkPendingClaims();
         }
         if (document.getElementById("missions-modal") && document.getElementById("missions-modal").style.display === "flex") {
             this.renderMissions();
