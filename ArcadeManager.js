@@ -92,6 +92,16 @@ class ArcadeManager {
             window.minigameFlappy.start();
         } else if (gameName === 'memory' && window.minigameMemory) {
             window.minigameMemory.start();
+        } else if (gameName === 'runner' && window.minigameRunner) {
+            window.minigameRunner.start();
+        } else if (gameName === 'sorting' && window.minigameSorting) {
+            window.minigameSorting.start();
+        } else if (gameName === 'defense' && window.minigameDefense) {
+            window.minigameDefense.start();
+        } else if (gameName === 'stacker' && window.minigameStacker) {
+            window.minigameStacker.start();
+        } else if (gameName === 'bubbles' && window.minigameBubbles) {
+            window.minigameBubbles.start();
         }
     }
 

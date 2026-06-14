@@ -112,7 +112,7 @@ class MinigameCatch {
     }
 
     updateUI() {
-        const evStr = this.evGanada > 0 ? ` | +${this.evGanada.toFixed(2)} EV` : "";
+        const evStr = ` | +${this.evGanada.toFixed(2)} EV`;
         this.scoreDisplay.innerText = `Manzanas: ${this.score}${evStr}`;
         this.timerDisplay.innerText = `TIEMPO: ${this.timeLeft}s`;
     }

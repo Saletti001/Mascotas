@@ -143,25 +143,39 @@
 #touch-controls { position: absolute; top: 0; width: 100%; height: 100%; display: flex; z-index: 5; }
 #touch-left, #touch-right { flex: 1; }
 #game-header { 
-    display: flex; 
-    justify-content: space-between; 
+    display: grid; 
+    grid-template-columns: 1fr auto 1fr; 
     align-items: center; 
-    padding: 12px 15px; 
+    padding: 8px 12px; 
     background: #0d1a24; 
     border-bottom: 1px solid #4dd0e1; 
     color: white;
+    gap: 8px;
+}
+.back-btn.small {
+    padding: 6px 12px;
+    margin: 0;
+    font-size: 11px;
+    border-radius: 4px;
+    justify-self: start;
 }
 #minigame-timer {
     color: #ffcc00;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 12px;
     text-shadow: 0 0 8px rgba(255, 204, 0, 0.3);
+    white-space: nowrap;
+    justify-self: center;
+    text-align: center;
 }
 #minigame-score {
     color: #00e5ff;
     font-weight: bold;
-    font-size: 14px;
+    font-size: 12px;
     text-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
+    white-space: nowrap;
+    justify-self: end;
+    text-align: right;
 }
 
 /* 3. SANTUARIO */
@@ -192,8 +206,12 @@
 .app-screen {
     background-color: #0d1a24 !important; 
     color: #fff !important; 
-    min-height: 100vh;
-    position: relative; /* ¡Esta es el ancla para el botón! */
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100% !important;
+    min-height: 100% !important;
     overflow: hidden;
 }
 
@@ -598,4 +616,812 @@
 .profile-right svg > *:not(defs):not(style):not(.g-cuerpo),
 .profile-view-right svg > *:not(defs):not(style):not(.g-cuerpo) {
     display: none !important;
+}
+
+/* ========================================= */
+/* RUNNER GENO (CARRERA DEL NEXO)            */
+/* ========================================= */
+#runner-player {
+    position: absolute;
+    width: 65px;
+    height: 65px;
+    z-index: 10;
+}
+#runner-player svg {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+.runner-ground-line {
+    position: absolute;
+    bottom: 120px; /* Anclado a 120px del fondo (aprox. 1/4 de la pantalla) */
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: #00ffcc;
+    box-shadow: 0 0 8px #00ffcc, 0 0 15px rgba(0, 255, 204, 0.5);
+    z-index: 2;
+}
+.runner-obstacle {
+    position: absolute;
+    z-index: 4;
+}
+.runner-obstacle svg {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+.runner-cell {
+    position: absolute;
+    z-index: 4;
+    animation: cellFloat 1.2s infinite ease-in-out;
+}
+.runner-cell svg {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+}
+@keyframes cellFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+}
+@keyframes runnerWarningFlash {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+.runner-warning {
+    animation: runnerWarningFlash 0.4s infinite ease-in-out;
+}
+
+#play-area.game-runner-bg {
+    background: linear-gradient(180deg, #0f051c 0%, #150930 50%, #08111e 100%) !important;
+}
+#play-area.game-runner-bg::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+        linear-gradient(rgba(138, 43, 226, 0.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(138, 43, 226, 0.15) 1px, transparent 1px);
+    background-size: 35px 35px;
+    pointer-events: none;
+    z-index: 1;
+}
+#play-area.game-runner-bg::after {
+    content: "";
+    position: absolute;
+    bottom: 120px;
+    left: 0;
+    right: 0;
+    height: 50px;
+    background: linear-gradient(0deg, rgba(0, 255, 204, 0.12) 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 3;
+}
+.runner-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 120px);
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0.22 !important;
+}
+.runner-subfloor {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    background: linear-gradient(180deg, #1c0e3a 0%, #0d061c 100%);
+    border-top: 3px solid #00ffcc;
+    box-shadow: 0 -3px 20px rgba(0, 255, 204, 0.7);
+    pointer-events: none;
+    z-index: 2;
+}
+.runner-subfloor::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-image: 
+        linear-gradient(rgba(0, 255, 204, 0.15) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(234, 0, 255, 0.12) 1px, transparent 1px);
+    background-size: 20px 20px;
+    pointer-events: none;
+}
+
+/* ========================================= */
+/* DNA SORTER (CLASIFICADOR DE ADN)          */
+/* ========================================= */
+#play-area.game-sorting-bg {
+    background: 
+        linear-gradient(rgba(0, 229, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 229, 255, 0.05) 1px, transparent 1px),
+        radial-gradient(circle at center, #1b1e36 0%, #090a14 100%) !important;
+    background-size: 25px 25px, 25px 25px, 100% 100% !important;
+    position: relative;
+    box-shadow: inset 0 0 40px rgba(0, 229, 255, 0.15);
+}
+
+/* El cuerpo del tubo de ensayo de vidrio */
+#play-area.game-sorting-bg::before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    max-width: 220px;
+    min-width: 160px;
+    height: calc(100% - 15px);
+    background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0.08) 0%, 
+        rgba(255, 255, 255, 0.02) 15%, 
+        rgba(255, 255, 255, 0) 50%, 
+        rgba(255, 255, 255, 0.02) 85%, 
+        rgba(255, 255, 255, 0.08) 100%
+    );
+    border: 2px solid rgba(0, 229, 255, 0.35);
+    border-top: none;
+    border-radius: 0 0 110px 110px; /* Fondo redondeado de tubo de ensayo */
+    box-shadow: 
+        0 0 25px rgba(0, 229, 255, 0.2),
+        inset 0 0 20px rgba(0, 229, 255, 0.15),
+        inset -12px 0 15px rgba(255, 255, 255, 0.08),
+        inset 12px 0 15px rgba(0, 0, 0, 0.4);
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* El líquido químico neón en el fondo del tubo */
+#play-area.game-sorting-bg::after {
+    content: "";
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    max-width: 220px;
+    min-width: 160px;
+    height: 100px; /* Cubre el fondo del tubo */
+    background: linear-gradient(180deg, rgba(224, 64, 251, 0.25) 0%, rgba(0, 229, 255, 0.5) 100%);
+    border-radius: 0 0 110px 110px;
+    box-shadow: 
+        inset 0 8px 15px rgba(0, 229, 255, 0.5),
+        0 0 25px rgba(0, 229, 255, 0.3);
+    border-top: 2px dashed rgba(0, 229, 255, 0.7);
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Receptáculos de clasificación (Izquierda y Derecha) */
+.sorting-zone-left, .sorting-zone-right {
+    position: absolute;
+    top: 0;
+    width: 25%; /* Ajustado de 33% a 25% para alinearse con los bordes del tubo */
+    height: calc(100% - 120px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    pointer-events: none;
+    transition: background 0.2s ease;
+}
+.sorting-zone-left {
+    left: 0;
+    border-right: 2px dashed rgba(0, 229, 255, 0.3);
+    background: linear-gradient(90deg, rgba(0, 229, 255, 0.06) 0%, transparent 100%);
+}
+.sorting-zone-right {
+    right: 0;
+    border-left: 2px dashed rgba(224, 64, 251, 0.3);
+    background: linear-gradient(-90deg, rgba(224, 64, 251, 0.06) 0%, transparent 100%);
+}
+
+.sorting-zone-label {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 9px; /* Reducido para evitar solapamiento en pantallas angostas */
+    font-weight: 800;
+    text-align: center;
+    letter-spacing: 0.5px;
+    opacity: 0.85;
+    text-transform: uppercase;
+    white-space: normal; /* Permitir salto de línea */
+    padding: 0 6px;
+    line-height: 1.4;
+}
+.sorting-zone-left .sorting-zone-label {
+    color: #00e5ff;
+    text-shadow: 0 0 8px rgba(0, 229, 255, 0.5);
+}
+.sorting-zone-right .sorting-zone-label {
+    color: #ff007f;
+    text-shadow: 0 0 8px rgba(255, 0, 127, 0.5);
+}
+
+/* El Bio-Núcleo */
+.sorting-nucleus {
+    position: absolute;
+    width: 64px;
+    height: 64px;
+    cursor: grab;
+    z-index: 5;
+    user-select: none;
+    touch-action: none;
+}
+.sorting-nucleus:active {
+    cursor: grabbing;
+}
+.sorting-nucleus svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+/* Badge de Combo */
+.sorting-combo-badge {
+    position: absolute;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 11px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    z-index: 10;
+    pointer-events: none;
+    border: 1.5px solid transparent;
+    transition: all 0.3s ease;
+}
+.sorting-combo-badge.combo-x1 {
+    color: #b0bec5;
+    background: rgba(30, 30, 45, 0.85);
+    border-color: rgba(176, 190, 197, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+.sorting-combo-badge.combo-x2 {
+    color: #ffd54f;
+    background: rgba(45, 38, 10, 0.9);
+    border-color: #ffd54f;
+    box-shadow: 0 0 10px rgba(255, 213, 79, 0.45);
+    transform: translateX(-50%) scale(1.08);
+}
+.sorting-combo-badge.combo-x3 {
+    color: #ff007f;
+    background: rgba(45, 10, 32, 0.95);
+    border-color: #ff007f;
+    box-shadow: 0 0 15px rgba(255, 0, 127, 0.6);
+    animation: BP-pulse-glow 0.8s infinite alternate;
+    transform: translateX(-50%) scale(1.15);
+}
+
+/* Textos flotantes (+EV / -EV) */
+.sorting-floating-text {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 16px;
+    font-weight: 900;
+    z-index: 100;
+    pointer-events: none;
+    animation: sortFloatUp 0.8s forwards ease-out;
+}
+.sorting-floating-text.correct {
+    color: #00ffcc;
+    text-shadow: 0 0 10px #00ffcc, 0 0 20px rgba(0, 255, 204, 0.5);
+}
+.sorting-floating-text.fail {
+    color: #ff1744;
+    text-shadow: 0 0 10px #ff1744, 0 0 20px rgba(255, 23, 68, 0.5);
+}
+
+@keyframes sortFloatUp {
+    0% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -100px) scale(1.2);
+        opacity: 0;
+    }
+}
+
+/* Animaciones y estilos para botes especiales del Clasificador */
+@keyframes bombBlink {
+    0%, 100% { filter: drop-shadow(0 0 6px #ff3d00); }
+    50% { filter: drop-shadow(0 0 14px #ff3d00) drop-shadow(0 0 2px #ff1744); }
+}
+.sorting-nucleus.bomb {
+    animation: bombBlink 0.6s infinite ease-in-out;
+}
+.sorting-bomb-glow {
+    transform-origin: center;
+    animation: bombGlowPulse 0.6s infinite alternate ease-in-out;
+}
+@keyframes bombGlowPulse {
+    0% { opacity: 0.25; transform: scale(0.9); }
+    100% { opacity: 0.55; transform: scale(1.1); }
+}
+
+@keyframes goldGlow {
+    0%, 100% { filter: drop-shadow(0 0 5px #ffd54f); }
+    50% { filter: drop-shadow(0 0 12px #ffd54f) drop-shadow(0 0 2px #ffb300); }
+}
+.sorting-nucleus.gold {
+    animation: goldGlow 0.8s infinite ease-in-out;
+}
+
+.sorting-floating-text.gold {
+    color: #ffd54f;
+    text-shadow: 0 0 10px #ffd54f, 0 0 20px rgba(255, 213, 79, 0.6);
+}
+
+/* Estilos para el Bio-Núcleo de Toxina (Calavera Verde Radioactiva) y Alerta de Controles Invertidos */
+@keyframes toxicGlow {
+    0%, 100% { filter: drop-shadow(0 0 5px #39ff14); }
+    50% { filter: drop-shadow(0 0 14px #39ff14) drop-shadow(0 0 2px #20c20e); }
+}
+.sorting-nucleus.toxic {
+    animation: toxicGlow 0.7s infinite ease-in-out;
+}
+
+.sorting-warning-inverted {
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(4, 26, 4, 0.9);
+    border: 2px solid #39ff14;
+    border-radius: 8px;
+    color: #39ff14;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.9rem;
+    font-weight: bold;
+    padding: 8px 16px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(57, 255, 20, 0.4), inset 0 0 10px rgba(57, 255, 20, 0.2);
+    z-index: 1000;
+    pointer-events: none;
+    animation: warningFlash 0.5s infinite alternate ease-in-out;
+}
+
+@keyframes warningFlash {
+    0% {
+        opacity: 0.6;
+        box-shadow: 0 0 5px rgba(57, 255, 20, 0.2);
+    }
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 20px rgba(57, 255, 20, 0.7);
+    }
+}
+
+/* Modo Pánico - Alerta visual de fin de tiempo */
+#play-area.panic-mode {
+    animation: panicFlash 0.5s infinite alternate ease-in-out;
+}
+
+@keyframes panicFlash {
+    0% {
+        box-shadow: inset 0 0 15px rgba(255, 23, 68, 0.2);
+        border: 2px solid rgba(255, 23, 68, 0.2);
+    }
+    100% {
+        box-shadow: inset 0 0 40px rgba(255, 23, 68, 0.6);
+        border: 2px solid #ff1744;
+    }
+}
+
+/* ========================================= */
+/* DEFENSA INMUNE (WHACK-A-MOLE)            */
+/* ========================================= */
+
+#play-area.game-defense-bg {
+    background: 
+        /* Rejilla técnica neón de laboratorio */
+        linear-gradient(rgba(0, 229, 255, 0.08) 1.5px, transparent 1.5px),
+        linear-gradient(90deg, rgba(0, 229, 255, 0.08) 1.5px, transparent 1.5px),
+        /* Brillo de célula cian izquierda */
+        radial-gradient(circle at 20% 30%, rgba(0, 229, 255, 0.22) 0%, transparent 60%),
+        /* Brillo de célula magenta derecha */
+        radial-gradient(circle at 80% 75%, rgba(224, 64, 251, 0.22) 0%, transparent 60%),
+        /* Degradado base muy colorido y futurista */
+        linear-gradient(135deg, #28144d 0%, #153258 50%, #0d2938 100%) !important;
+    background-size: 28px 28px, 28px 28px, 100% 100%, 100% 100%, 100% 100% !important;
+    position: relative;
+    box-shadow: 
+        inset 0 0 60px rgba(0, 229, 255, 0.25),
+        inset 0 0 120px rgba(224, 64, 251, 0.15);
+}
+
+.defense-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 14px;
+    width: 90%;
+    max-width: 320px;
+    aspect-ratio: 1 / 1;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+.defense-capsule {
+    position: relative;
+    background: rgba(18, 12, 32, 0.88); /* Menos translúcida (más sólida y definida) */
+    border: 2px solid rgba(170, 0, 255, 0.65); /* Borde neón púrpura más vibrante */
+    border-radius: 18px;
+    box-shadow: 
+        0 6px 15px rgba(0, 0, 0, 0.5),
+        inset 0 0 15px rgba(170, 0, 255, 0.15);
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.defense-capsule:active {
+    transform: scale(0.95);
+}
+
+/* Capa de brillo de vidrio de la cápsula */
+.defense-capsule-glass {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0) 50%, rgba(255, 255, 255, 0.02) 100%);
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.1);
+    z-index: 3;
+}
+
+/* Contenido de la cápsula */
+.defense-capsule-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px;
+    box-sizing: border-box;
+    z-index: 2;
+}
+
+/* Entidades */
+.defense-entity {
+    width: 100%;
+    height: 100%;
+    animation: entityPopIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    transform-origin: center;
+}
+
+@keyframes entityPopIn {
+    0% { transform: scale(0) rotate(-15deg); opacity: 0; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* Animación de sacudida (advertencia de escape) */
+.defense-capsule.shaking {
+    animation: shakeCapsule 0.15s infinite alternate ease-in-out;
+}
+.defense-capsule.shaking.shaking-danger {
+    border-color: rgba(255, 23, 68, 0.8) !important;
+    box-shadow: 0 0 14px rgba(255, 23, 68, 0.5) !important;
+}
+.defense-capsule.shaking.shaking-safe {
+    border-color: rgba(0, 230, 118, 0.8) !important;
+    box-shadow: 0 0 14px rgba(0, 230, 118, 0.5) !important;
+    animation: shakeCapsuleSafe 0.2s infinite alternate ease-in-out;
+}
+
+@keyframes shakeCapsule {
+    0% { transform: translate(-2px, 0) rotate(-1deg); }
+    100% { transform: translate(2px, 0) rotate(1deg); }
+}
+@keyframes shakeCapsuleSafe {
+    0% { transform: translate(-1px, 0) rotate(-0.5deg); }
+    100% { transform: translate(1px, 0) rotate(0.5deg); }
+}
+
+/* Desactivación exitosa (Impacto de virus) */
+.defense-capsule.tapped-success {
+    border-color: #00e5ff !important;
+    box-shadow: 0 0 20px rgba(0, 229, 255, 0.6), inset 0 0 15px rgba(0, 229, 255, 0.3) !important;
+    background: rgba(0, 229, 255, 0.05);
+}
+
+/* Expiración segura (Desaparición de Anticuerpos) */
+.defense-capsule.tapped-success-green {
+    border-color: #00e676 !important;
+    box-shadow: 0 0 20px rgba(0, 230, 118, 0.6), inset 0 0 15px rgba(0, 230, 118, 0.3) !important;
+    background: rgba(0, 230, 118, 0.05);
+}
+
+/* Error por tocar Aliado */
+.defense-capsule.tapped-fail {
+    border-color: #ff1744 !important;
+    box-shadow: 0 0 25px rgba(255, 23, 68, 0.7), inset 0 0 15px rgba(255, 23, 68, 0.4) !important;
+    background: rgba(255, 23, 68, 0.08);
+}
+
+/* Animación de colapso de cápsula cuando escapa un virus */
+.defense-capsule.capsule-broken {
+    animation: capsuleFracture 0.5s ease-out forwards;
+}
+
+@keyframes capsuleFracture {
+    0% {
+        border-color: #ff3d00;
+        box-shadow: 0 0 25px rgba(255, 61, 0, 0.8), inset 0 0 20px rgba(255, 61, 0, 0.5);
+        transform: scale(0.9);
+        opacity: 1;
+    }
+    50% {
+        background: rgba(255, 61, 0, 0.15);
+        opacity: 0.8;
+    }
+    100% {
+        border-color: rgba(170, 0, 255, 0.25);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* ========================================= */
+/* MINIJUEGO 7 - APILA-NÚCLEOS (STACKER)     */
+/* ========================================= */
+
+#play-area.game-stacker-bg {
+    background: linear-gradient(180deg, #18092b 0%, #0c1520 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+#play-area.game-stacker-bg::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background: repeating-linear-gradient(45deg, #ffeb3b, #ffeb3b 10px, #111 10px, #111 20px);
+    z-index: 10;
+    box-shadow: 0 2px 10px rgba(255, 235, 59, 0.4);
+}
+
+.stacker-crane-rail {
+    position: absolute;
+    top: 25px;
+    left: 5%;
+    width: 90%;
+    height: 4px;
+    background: #ffeb3b;
+    box-shadow: 0 0 10px #ffeb3b, 0 0 20px rgba(255, 235, 59, 0.5);
+    z-index: 8;
+    border-radius: 2px;
+}
+
+.stacker-crane-claw {
+    position: absolute;
+    top: 15px;
+    width: 24px;
+    height: 24px;
+    background: #263238;
+    border: 2.5px solid #ffeb3b;
+    box-shadow: 0 0 12px rgba(255, 235, 59, 0.6);
+    border-radius: 4px;
+    z-index: 9;
+    transition: left 0.02s linear;
+}
+
+.stacker-rope {
+    position: absolute;
+    top: 36px;
+    width: 2px;
+    background: linear-gradient(180deg, #ffeb3b, #00e5ff);
+    box-shadow: 0 0 8px #00e5ff, 0 0 15px rgba(0, 229, 255, 0.5);
+    z-index: 7;
+    transition: left 0.02s linear;
+}
+
+.stacker-tower-container {
+    transition: transform 0.02s linear;
+}
+
+.stacker-base {
+    position: absolute;
+    background: linear-gradient(90deg, #37474f, #90a4ae, #37474f);
+    border: 2px solid #00e5ff;
+    box-shadow: 0 0 15px rgba(0, 229, 255, 0.5), inset 0 0 10px rgba(0, 229, 255, 0.3);
+    border-radius: 4px 4px 0 0;
+    z-index: 6;
+}
+
+.stacker-block {
+    position: absolute;
+    background: linear-gradient(180deg, #0d253f 0%, #1565c0 100%);
+    border: 2px solid #00e5ff;
+    box-shadow: 0 0 12px rgba(0, 229, 255, 0.5), inset 0 0 8px rgba(0, 229, 255, 0.3);
+    border-radius: 4px;
+    z-index: 6;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.stacker-block::after {
+    content: "🧬";
+    font-size: 11px;
+    text-shadow: 0 0 4px #00e5ff;
+}
+
+.stacker-block.active {
+    background: linear-gradient(180deg, #0a1f1d 0%, #00acc1 100%);
+    border-color: #00e5ff;
+    box-shadow: 0 0 16px rgba(0, 229, 255, 0.7);
+    transition: left 0.02s linear;
+}
+
+.stacker-block.perfect {
+    animation: perfectPulse 0.4s ease-out;
+}
+
+.stacker-block.sliced {
+    animation: slicePulse 0.4s ease-out;
+}
+
+.stacker-block.falling-dead {
+    border-color: #ff1744 !important;
+    box-shadow: 0 0 20px rgba(255, 23, 68, 0.8) !important;
+    background: rgba(255, 23, 68, 0.15) !important;
+    z-index: 5;
+}
+
+.sliced-piece {
+    position: absolute;
+    background: linear-gradient(180deg, #3e2723 0%, #d84315 100%);
+    border: 1.5px solid #ff5722;
+    box-shadow: 0 0 10px rgba(255, 87, 34, 0.6);
+    border-radius: 2px;
+    z-index: 4;
+    box-sizing: border-box;
+    opacity: 0.85;
+}
+
+#play-area.crash-flash {
+    animation: screenCrash 0.6s ease-out;
+}
+
+@keyframes perfectPulse {
+    0% { border-color: #00e676; box-shadow: 0 0 25px #00e676, inset 0 0 15px #00e676; background: rgba(0, 230, 118, 0.2); transform: scale(1.03); }
+    100% { border-color: #00e5ff; box-shadow: 0 0 12px rgba(0, 229, 255, 0.5); transform: scale(1); }
+}
+
+@keyframes slicePulse {
+    0% { border-color: #ff9100; box-shadow: 0 0 20px #ff9100, inset 0 0 12px #ff9100; background: rgba(255, 145, 0, 0.2); }
+    100% { border-color: #00e5ff; box-shadow: 0 0 12px rgba(0, 229, 255, 0.5); }
+}
+
+@keyframes screenCrash {
+    0% { box-shadow: inset 0 0 35px rgba(255, 23, 68, 0.8); background: rgba(255, 23, 68, 0.2); }
+    100% { box-shadow: none; background: transparent; }
+}
+
+/* ========================================= */
+/* MINIJUEGO 8 - BURBUJAS ELEMENTALES        */
+/* ========================================= */
+
+#play-area.game-bubbles-bg {
+    background: linear-gradient(180deg, #090916 0%, #0d1222 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Rejilla cibernética sutil de fondo */
+#play-area.game-bubbles-bg::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(rgba(0, 229, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 229, 255, 0.02) 1px, transparent 1px);
+    background-size: 20px 20px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.danger-threshold-line {
+    border-top: 1.5px dashed #ff1744;
+    box-shadow: 0 0 8px rgba(255, 23, 68, 0.4);
+    opacity: 0.85;
+    z-index: 3;
+    pointer-events: none;
+    animation: laserPulse 1.2s infinite alternate ease-in-out;
+}
+
+@keyframes laserPulse {
+    0% { opacity: 0.4; box-shadow: 0 0 4px rgba(255, 23, 68, 0.2); }
+    100% { opacity: 0.95; box-shadow: 0 0 12px rgba(255, 23, 68, 0.6); }
+}
+
+.aim-guide-line {
+    stroke: #00e5ff;
+    stroke-width: 1.5;
+    filter: drop-shadow(0 0 4px #00e5ff);
+    opacity: 0.65;
+}
+
+/* Cañón */
+.bubble-cannon {
+    z-index: 8;
+    pointer-events: none;
+}
+
+.cannon-pipe {
+    position: absolute;
+    top: 0;
+    left: 11px;
+    width: 14px;
+    height: 32px;
+    background: linear-gradient(90deg, #37474f, #78909c, #37474f);
+    border: 2px solid #00e5ff;
+    box-shadow: 0 0 8px rgba(0, 229, 255, 0.5);
+    border-radius: 4px 4px 0 0;
+}
+
+.cannon-base {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 36px;
+    height: 18px;
+    background: linear-gradient(180deg, #546e7a, #263238);
+    border: 2px solid #00e5ff;
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+}
+
+/* Burbujas */
+.elemental-bubble {
+    border-radius: 50%;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.1s ease;
+}
+
+/* Tipos elementales */
+.elemental-bubble.biomutante svg { filter: drop-shadow(0 0 4px #00e676); }
+.elemental-bubble.viral svg { filter: drop-shadow(0 0 4px #d500f9); }
+.elemental-bubble.cibernetico svg { filter: drop-shadow(0 0 4px #00e5ff); }
+.elemental-bubble.radiactivo svg { filter: drop-shadow(0 0 4px #ff9100); }
+.elemental-bubble.toxico svg { filter: drop-shadow(0 0 4px #c6ff00); }
+.elemental-bubble.sintetico svg { filter: drop-shadow(0 0 4px #ff007f); }
+
+/* Animación de reventado (Pop) */
+.elemental-bubble.pop {
+    animation: popBubble 0.22s forwards cubic-bezier(0.1, 0.8, 0.3, 1);
+    pointer-events: none;
+    z-index: 10;
+}
+
+@keyframes popBubble {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.35); opacity: 0.8; filter: brightness(1.5) blur(1px); }
+    100% { transform: scale(0.1); opacity: 0; }
+}
+
+/* Burbujas caídas (físicas) */
+.elemental-bubble.falling {
+    pointer-events: none;
+    z-index: 4;
+    opacity: 0.85;
 }

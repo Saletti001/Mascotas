@@ -136,7 +136,7 @@ class MinigameFlappy {
     }
 
     updateUI() {
-        const evStr = this.evGanada > 0 ? ` | +${this.evGanada} EV` : "";
+        const evStr = ` | +${Number(this.evGanada).toFixed(2)} EV`;
         this.scoreDisplay.innerText = `Puntos: ${this.score}${evStr}`;
         this.timerDisplay.innerText = `Supervivencia`;
     }
